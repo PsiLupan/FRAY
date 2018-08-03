@@ -1,0 +1,7 @@
+/build
+/lib
+/include
+
+boot.dol
+boot.elf
+ntsc102.c
