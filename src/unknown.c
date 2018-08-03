@@ -81,10 +81,4 @@ u8* sub_801A4CE0(u8 a1)
       return result;
   }
   return 0;
-}
-
-//----- (801A50A0) --------------------------------------------------------
-struct MenuInfo* sub_801A50A0()
-{
-  return &menu_info;
 }*/

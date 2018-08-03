@@ -194,3 +194,9 @@ bool Scene_IsSinglePlayer(u8 scene){
 		return true;
 	return false;
 }
+
+//801A50A0
+struct Scenes* GetScenes()
+{
+  return &scenes;
+}

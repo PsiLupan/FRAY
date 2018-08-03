@@ -26,9 +26,20 @@ struct GameState {
 	u32 unk14;
 } game_state;
 
-struct MenuInfo {
-	
-} menu_info;
+struct Scenes { //0x2D scenes
+	SceneFuncs titlescreen;
+	SceneFuncs mainmenu;
+} scenes; //803DA920
+
+struct SceneFuncs {
+	u8 idx;
+	u16 pad;
+	u8 pad2;
+	void* OnFrame;
+	void* OnLoad;
+	void* SomeFunc;
+	void* SomeFunc2;
+}
 
 struct SceneInfo {
 	
@@ -47,5 +58,7 @@ u8 Scene_Get04();
 struct GameState* Scene_Set05(u8);
 u32 Scene_StoreTo10(u32);
 bool Scene_IsSinglePlayer(u8);
+
+struct Scenes* GetScenes();
 
 #endif
