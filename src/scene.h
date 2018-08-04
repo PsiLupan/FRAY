@@ -26,11 +26,6 @@ struct GameState {
 	u32 unk14;
 } game_state;
 
-struct Scenes { //0x2D scenes
-	SceneHandler title_screen;
-	SceneHandler main_menu;
-} scenes; //803DA920
-
 struct SceneHandler {
 	u8 idx;
 	u16 pad;
@@ -39,16 +34,12 @@ struct SceneHandler {
 	void* OnLoad;
 	void* SomeFunc;
 	void* SomeFunc2;
-}
+};
 
-struct SceneInfo {
-	SceneData_Title title_screen;
-	SceneData cs_screen;
-	SceneData classic_mode;
-	SceneData adventure_mode;
-	SceneData allstar_mode;
-	SceneData debug_menu;
-} scene_info; //803DACA4
+struct Scenes { //0x2D scenes
+	struct SceneHandler title_screen;
+	struct SceneHandler main_menu;
+} scenes; //803DA920
 
 struct SceneData {
 	u8 idx; //starts at 1
@@ -58,7 +49,7 @@ struct SceneData {
 	void* SceneExit;
 	struct SceneSubData* sdata;
 	bool unk_bool;
-}
+};
 
 struct SceneData_Title {
 	u8 idx; //starts at 1
@@ -69,11 +60,20 @@ struct SceneData_Title {
 	u8 unk;
 	struct SceneSubData* sdata;
 	bool unk_bool;
-}
+};
 
 struct SceneSubData {
 	
-}
+};
+
+struct SceneInfo {
+	struct SceneData_Title title_screen;
+	struct SceneData cs_screen;
+	struct SceneData classic_mode;
+	struct SceneData adventure_mode;
+	struct SceneData allstar_mode;
+	struct SceneData debug_menu;
+} scene_info; //803DACA4
 
 u32* Scene_RunFunc(u8);
 

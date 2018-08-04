@@ -136,7 +136,7 @@ void Game_Init(){
 
 //801A43A0
 u8* Game_MainLoop(u8 scene){
-	/*u32 *i; // r3@1
+	u32 *i; // r3@1
 	u8 *v3; // r30@3
 	u32 v4; // r4@5
 	u32 *result; // r3@7
@@ -158,7 +158,7 @@ u8* Game_MainLoop(u8 scene){
 	game_state.unk03 = 0;
 	game_state.unk04 = 0;
 	game_state.unk05 = 0;
-	result = (u32 *)sub_80018F58(*v3);
+	//result = (u32 *)sub_80018F58(*v3);
 	if ( !*((u32*)v3 + 1) )
 	{
 		result = 0;
@@ -166,13 +166,13 @@ u8* Game_MainLoop(u8 scene){
 		{
 			if ( game_state.unk10 )
 				return (u8*)result;
-			result = (u32*)Scene_RunFunc((u32)v3);
+			//result = (u32*)Scene_RunFunc((u32)v3);
 		}
 		result = &dword_8046B0F0;
 		if ( dword_8046B0F0.unk04 || !*((u32*)v3 + 2) )
 			result = &game_state.pending_major;
 	}
-	return (u8*)result;*/
+	return (u8*)result;
 }
 
 /*
