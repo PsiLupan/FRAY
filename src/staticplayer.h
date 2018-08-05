@@ -78,6 +78,11 @@ struct StaticPlayer* StaticPlayer_SetDefenseRatio(u32, f32);
 f32 StaticPlayer_GetModelScale(u32);
 struct StaticPlayer* StaticPlayer_SetModelScale(u32, f32);
 
+u16 StaticPlayer_GetStaminaHP(u32);
+struct StaticPlayer* StaticPlayer_SetStaminaHP(u32, u16);
+u32 StaticPlayer_GetFalls(u32);
+struct StaticPlayer* StaticPlayer_SetFalls(u32, u32);
+
 u8 StaticPlayer_GetStocks(u32);
 u8 StaticPlayer_GetPlayer1Stocks();
 u32 StaticPlayer_GetCurrentCoins(u32);

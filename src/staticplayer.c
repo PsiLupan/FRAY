@@ -90,6 +90,35 @@ struct StaticPlayer* StaticPlayer_SetModelScale(u32 slot, f32 scale){
 	return &players[slot];
 }
 
+//80034C04
+u16 StaticPlayer_GetStaminaHP(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	u16 hp = players[slot].stamina_hp;
+	if(hp < 0)
+		return 0;
+	return hp;
+}
+
+//80034524
+struct StaticPlayer* StaticPlayer_SetStaminaHP(u32 slot, u16 amt){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	players[slot].stamina_hp = amt;
+	return &players[slot];
+}
+
+//80034D78
+u32 StaticPlayer_GetFalls(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].falls;
+}
+
+//80034E04
+struct StaticPlayer* StaticPlayer_SetFalls(u32 slot, u32 amt){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	players[slot].falls = amt;
+	return &players[slot];
+}
+
 //80033BD8
 u8 StaticPlayer_GetStocks(u32 slot){
 	assert(slot >= 0 && slot < MAX_PLAYERS);

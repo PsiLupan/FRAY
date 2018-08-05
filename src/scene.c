@@ -1,6 +1,8 @@
 #include "scene.h"
 #include "unknown.h"
 
+u32* unk4F80[3];
+
 //801A4014
 /*u32* Scene_RunFunc(u8 a1)
 {
@@ -22,10 +24,10 @@
   signed int v16; // r3@31
 
   v1 = a1;
-  v2 = game_state.unk03;
+  v2 = GameState.unk03;
   v3 = *(u8 **)(a1 + 16);
-  v4 = 255 - game_state.unk03;
-  if ( game_state.unk03 < 255 )
+  v4 = 255 - GameState.unk03;
+  if ( GameState.unk03 < 255 )
   {
     do
     {
@@ -49,7 +51,7 @@
   }
   v7 = 0;
 LABEL_9:
-  game_state.unk03 = *(u8 *)v7;
+  GameState.unk03 = *(u8 *)v7;
   sub_801A3F48(v7);
   if ( *(_DWORD *)(v7 + 4) )
     return (_DWORD *)v7;
@@ -65,11 +67,11 @@ LABEL_9:
   {
     if ( *(_DWORD *)(v7 + 8) )
       return (_DWORD *)v7;
-    game_state.unk04 = game_state.unk03;
-    if (game_state.unk04)
+    GameState.unk04 = GameState.unk03;
+    if (GameState.unk04)
     {
-      game_state.unk03 = game_state.unk04 - 1;
-      game_state.unk05 = 0;
+      GameState.unk03 = GameState.unk04 - 1;
+      GameState.unk05 = 0;
     }
     else
     {
@@ -79,7 +81,7 @@ LABEL_9:
       v14 = *(u8 **)(v1 + 16);
       while ( *v13 != 255 )
       {
-        if ( *v14 > (unsigned int)(u8)game_state.unk03 )
+        if ( *v14 > (unsigned int)(u8)GameState.unk03 )
         {
           LOBYTE(v15) = v11[24 * v12];
           goto LABEL_28;
@@ -92,7 +94,7 @@ LABEL_9:
       if ( v15 == 255 )
         LOBYTE(v15) = 0;
 LABEL_28:
-      game_state.unk03 = v15;
+      GameState.unk03 = v15;
     }
   }
   sub_8001CDB4();
@@ -110,7 +112,7 @@ LABEL_28:
     sub_8001F800();
     while (sub_8038EA50(1));
     CheckLanguage();
-    memset(&game_state, 0, 20);
+    memset(&GameState, 0, 20);
     sub_801A3EF4();
     dword_8046B0F0.unk00 = 1;
     Scene_SetPendingMajor(40);
@@ -122,63 +124,67 @@ LABEL_28:
 
 //801A4310
 u8 Scene_LoadCurrentMajor(){
-	return game_state.curr_major;
+	return GameState.curr_major;
 }
 
 //801A42E8
 u8 Scene_UpdatePendingMajor(u8 val){
-	game_state.pending_major = val;
+	GameState.pending_major = val;
 	return val;
 }
 
 //801A42F8
 u8 Scene_SetPendingMajor(u8 val){
-	game_state.pending_major = val;
-	game_state.pending = true;
+	GameState.pending_major = val;
+	GameState.pending = true;
 	return val;
 }
 
 //801A42D4
 struct GameState* Scene_SetPendingTrue(){
-	game_state.pending = true;
-	return &game_state;
+	GameState.pending = true;
+	return &GameState;
 }
 
 //801A4320
 u8 Scene_LoadPrevMajor(){
-	return game_state.prev_major;
+	return GameState.prev_major;
 }
 
 //801A42C4
 u8 Scene_Get03(){
-	return game_state.unk03;
+	return GameState.unk03;
 }
 
 //801A428C
 u8 Scene_Set03And04(u8 val){
-	game_state.unk03 = val;
-	game_state.unk04 = val;
+	GameState.unk03 = val;
+	GameState.unk04 = val;
 	return val;
 }
 
 //801A42B4
 u8 Scene_Get04(){
-  return game_state.unk04;
+  return GameState.unk04;
 }
 
 //801A42A0
 struct GameState* Scene_Set05(u8 val){
 	u8 v1;
 	v1 = val + 1;
-	game_state.unk05 = v1;
-	return &game_state;
+	GameState.unk05 = v1;
+	return &GameState;
 }
 
 //801A4330
 u32 Scene_StoreTo10(u32 val){
-	game_state.unk10 = val;
+	GameState.unk10 = val;
 	return val;
 }
+
+/**
+* Is Scene X
+**/
 
 //801A4340
 bool Scene_IsSinglePlayer(u8 scene){
@@ -195,8 +201,46 @@ bool Scene_IsSinglePlayer(u8 scene){
 	return false;
 }
 
-//801A50A0
-struct Scenes* GetScenes()
-{
-  return &scenes;
+//8016B3A0
+bool Scene_IsCurrSceneSuperSuddenDeath(){
+	if(Scene_LoadCurrentMajor() == 16)
+		return true;
+	return false;
 }
+
+//8016B41C
+//8016B498
+bool Scene_IsCurrSceneSinglePlayer(){
+	u8 curr_major = Scene_LoadCurrentMajor();
+	return Scene_IsSinglePlayer(curr_major);
+}
+
+//8016B3D8
+bool Scene_IsSceneClassicAdvOrAllStar(){
+	u8 curr_major = Scene_LoadCurrentMajor();
+	if(curr_major < 6 && curr_major >= 3)
+		return true;
+	return false;
+}
+
+//801A50A0
+struct SceneHandlers* GetSceneHandlers()
+{
+  return &SceneHandlers;
+}
+
+//801A4B88
+/*u32* Scene_StorePtr4F80(u32* addr){
+	unk4F80 = addr;
+}*/
+
+//801A4B90
+u32* Scene_Load4F80Relative04(){
+	return unk4F80[1];
+}
+
+//801A4B9C
+u32* Scene_Load4F80Relative08(){
+	return unk4F80[2];
+}
+

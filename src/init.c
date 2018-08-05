@@ -109,8 +109,8 @@ void Game_Init(){
 	u32 *i; // r31@1
 	u8 curr_major; // r3@11
 	
-	memset(&game_state, 0, 20);
-	for ( i = &scene_info; ; i += 20 )
+	memset(&GameState, 0, 20);
+	for ( i = &SceneInfo; ; i += 20 )
 	{
 		if ( *(u8*)(i + 1) == 45 )
 		{
@@ -118,15 +118,15 @@ void Game_Init(){
 				byte_80479D30 = 39;
 			else
 				byte_80479D30 = 40;*/
-			game_state.curr_major = 40;
-			game_state.prev_major = 45;
+			GameState.curr_major = 40;
+			GameState.prev_major = 45;
 			while ( 1 )
 			{
-				curr_major = *Game_MainLoop(game_state.curr_major);
+				curr_major = *Game_MainLoop(GameState.curr_major);
 				if ( dword_8046B0F0.unk04 )
 					dword_8046B0F0.unk04 = 0;
-				game_state.prev_major = game_state.curr_major;
-				game_state.curr_major = curr_major;
+				GameState.prev_major = GameState.curr_major;
+				GameState.curr_major = curr_major;
 			}
 		}
 		if ( *(u32*)(i + 12) )
@@ -141,7 +141,7 @@ u8* Game_MainLoop(u8 scene){
 	u32 v4; // r4@5
 	u32 *result; // r3@7
 
-	for ( i = &scene_info; ; i += 20 )
+	for ( i = &SceneInfo; ; i += 20 )
 	{
 		v4 = *(u8 *)(i + 1);
 		if ( v4 == 45 )
@@ -154,23 +154,23 @@ u8* Game_MainLoop(u8 scene){
 	}
 	v3 = 0;
 	LABEL_7:
-	game_state.pending = false;
-	game_state.unk03 = 0;
-	game_state.unk04 = 0;
-	game_state.unk05 = 0;
+	GameState.pending = false;
+	GameState.unk03 = 0;
+	GameState.unk04 = 0;
+	GameState.unk05 = 0;
 	//result = (u32 *)sub_80018F58(*v3);
 	if ( !*((u32*)v3 + 1) )
 	{
 		result = 0;
-		while ( !game_state.pending )
+		while ( !GameState.pending )
 		{
-			if ( game_state.unk10 )
+			if ( GameState.unk10 )
 				return (u8*)result;
 			//result = (u32*)Scene_RunFunc((u32)v3);
 		}
 		result = &dword_8046B0F0;
 		if ( dword_8046B0F0.unk04 || !*((u32*)v3 + 2) )
-			result = &game_state.pending_major;
+			result = &GameState.pending_major;
 	}
 	return (u8*)result;
 }

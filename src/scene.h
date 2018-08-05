@@ -24,7 +24,7 @@ struct GameState {
 	u8 unk0F;
 	u32 unk10;
 	u32 unk14;
-} game_state;
+} GameState;
 
 struct SceneHandler {
 	u8 idx;
@@ -36,10 +36,10 @@ struct SceneHandler {
 	void* SomeFunc2;
 };
 
-struct Scenes { //0x2D scenes
+struct SceneHandlers { //0x2D scenes
 	struct SceneHandler title_screen;
 	struct SceneHandler main_menu;
-} scenes; //803DA920
+} SceneHandlers; //803DA920
 
 struct SceneData {
 	u8 idx; //starts at 1
@@ -73,7 +73,7 @@ struct SceneInfo {
 	struct SceneData adventure_mode;
 	struct SceneData allstar_mode;
 	struct SceneData debug_menu;
-} scene_info; //803DACA4
+} SceneInfo; //803DACA4
 
 u32* Scene_RunFunc(u8);
 
@@ -86,8 +86,19 @@ u8 Scene_Set03And04(u8);
 u8 Scene_Get04();
 struct GameState* Scene_Set05(u8);
 u32 Scene_StoreTo10(u32);
+
+/**
+* Is Scene X
+**/
+
 bool Scene_IsSinglePlayer(u8);
+bool Scene_IsCurrSceneSuperSuddenDeath();
+bool Scene_IsCurrSceneSinglePlayer();
+bool Scene_IsSceneClassicAdvOrAllStar();
 
 struct Scenes* GetScenes();
+
+u32* Scene_Load4F80Relative04();
+u32* Scene_Load4F80Relative08();
 
 #endif
