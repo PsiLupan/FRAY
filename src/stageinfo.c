@@ -1,5 +1,3 @@
-#include <sys/types.h>
-
 #include "stageinfo.h"
 
 //80224A54
