@@ -24,7 +24,9 @@ struct GameState {
 	u8 unk0F;
 	u32 unk10;
 	u32 unk14;
-} GameState;
+};
+
+extern struct GameState GameState;
 
 struct SceneHandler {
 	u8 idx;
@@ -39,7 +41,9 @@ struct SceneHandler {
 struct SceneHandlers { //0x2D scenes
 	struct SceneHandler title_screen;
 	struct SceneHandler main_menu;
-} SceneHandlers; //803DA920
+}; //803DA920
+
+extern struct SceneHandlers SceneHandlers;
 
 struct SceneData {
 	u8 idx; //starts at 1
@@ -49,31 +53,13 @@ struct SceneData {
 	void* SceneExit;
 	struct SceneSubData* sdata;
 	bool unk_bool;
-};
-
-struct SceneData_Title {
-	u8 idx; //starts at 1
-	u16 pad;
-	void* SceneInit;
-	void* UnkFunc;
-	void* SceneExit;
-	u8 unk;
-	struct SceneSubData* sdata;
-	bool unk_bool;
-};
+}; //803DACA4
 
 struct SceneSubData {
 	
 };
 
-struct SceneInfo {
-	struct SceneData_Title title_screen;
-	struct SceneData cs_screen;
-	struct SceneData classic_mode;
-	struct SceneData adventure_mode;
-	struct SceneData allstar_mode;
-	struct SceneData debug_menu;
-} SceneInfo; //803DACA4
+extern struct SceneData SceneData[45];
 
 u32* Scene_RunFunc(u8);
 
@@ -91,10 +77,10 @@ u32 Scene_StoreTo10(u32);
 * Is Scene X
 **/
 
-bool Scene_IsSinglePlayer(u8);
-bool Scene_IsCurrSceneSuperSuddenDeath();
-bool Scene_IsCurrSceneSinglePlayer();
-bool Scene_IsSceneClassicAdvOrAllStar();
+extern bool Scene_IsSinglePlayer(u8);
+extern bool Scene_IsCurrSceneSuperSuddenDeath();
+extern bool Scene_IsCurrSceneSinglePlayer();
+extern bool Scene_IsSceneClassicAdvOrAllStar();
 
 struct Scenes* GetScenes();
 

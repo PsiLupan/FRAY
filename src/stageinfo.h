@@ -38,7 +38,7 @@ struct StageInfo
 	f32 blastpos_bottom;
 	u32 trophy_drops;
 	u32 internal_id; //88
-} StageInfo;
+};
 
 f32 StageInfo_GetCamLimitLeft();
 f32 StageInfo_GetCamLimitRight();

@@ -152,17 +152,17 @@ struct Player
 	u8 collbubble_flags; //21FC
 };
 
-u32 Player_GetInternalID(struct Player*);
-u32 Player_GetSpawnCount(struct Player*);
-u8 Player_GetPort(struct Player*);
-u32 Player_GetActState(struct Player*);
-f32 Player_GetFacing(struct Player*);
-bool Player_IsInAir(struct Player*);
+extern u32 Player_GetInternalID(struct Player*);
+extern u32 Player_GetSpawnCount(struct Player*);
+extern u8 Player_GetPort(struct Player*);
+extern u32 Player_GetActState(struct Player*);
+extern f32 Player_GetFacing(struct Player*);
+extern bool Player_IsInAir(struct Player*);
 
-u32 Player_GetLastAtkerSlot(struct Player*);
+extern u32 Player_GetLastAtkerSlot(struct Player*);
 
-u32* Player_Get20A4(struct Player*);
+extern u32* Player_Get20A4(struct Player*);
 
-u8 Player_GetCollisionBubbleFlags(struct Entity*);
+extern u8 Player_GetCollisionBubbleFlags(struct Entity*);
 
 #endif 

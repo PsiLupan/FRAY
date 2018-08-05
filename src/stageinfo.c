@@ -1,5 +1,7 @@
 #include "stageinfo.h"
 
+static struct StageInfo StageInfo;
+
 //80224A54
 f32 StageInfo_GetCamLimitLeft(){
 	return StageInfo.cambounds_left + StageInfo.cam_xoff;

@@ -32,6 +32,6 @@ struct Item
 	void* proj_attribs;
 };
 
-u32 Item_GetItemType(struct Item*);
+extern u32 Item_GetItemType(struct Item*);
 
 #endif

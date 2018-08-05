@@ -24,6 +24,6 @@ struct Entity
 	void* unk_linkedlist3;
 };
 
-bool Entity_IsPlayer(struct Entity*);
+extern bool Entity_IsPlayer(struct Entity*);
 
 #endif

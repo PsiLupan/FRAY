@@ -6,12 +6,12 @@
 #include "player.h"
 
 //Death
-bool ActionState_IsDead(struct Player*);
-bool ActionState_IsDeadUp(struct Player*);
-bool ActionState_IsDeadStarUp(struct Player*);
-bool ActionState_IsDeadUpFall(struct Player*);
+extern bool ActionState_IsDead(struct Player*);
+extern bool ActionState_IsDeadUp(struct Player*);
+extern bool ActionState_IsDeadStarUp(struct Player*);
+extern bool ActionState_IsDeadUpFall(struct Player*);
 
-bool ActionState_IsRebirth(struct Player*);
-bool ActionState_IsEntry(struct Player*);
+extern bool ActionState_IsRebirth(struct Player*);
+extern bool ActionState_IsEntry(struct Player*);
 
 #endif

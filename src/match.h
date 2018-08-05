@@ -40,22 +40,24 @@ struct MatchInfo {
 	u32 unk38;
 	u16 unk3C;
 	u16 unk3E;
-} MatchInfo;
+};
 
-struct MatchInfo* MatchInfo_GetStruct();
-u8 MatchInfo_00Cntlzw();
-struct MatchInfo* MatchInfo_Set06True();
-bool MatchInfo_Is07Equal1();
-struct MatchInfo* MatchInfo_Set0BValPlusOne(u8);
-struct MatchInfo* MatchInfo_Set10ValPlusOne(u32);
-struct MatchInfo* MatchInfo_Set14ValPlusOne(u32);
-struct MatchInfo* MatchInfo_Set18(u8);
+extern struct MatchInfo MatchInfo;
 
-u32 MatchInfo_GetFrameCount();
-u32 MatchInfo_GetSeconds();
-u16 MatchInfo_GetSubSeconds();
+extern struct MatchInfo* MatchInfo_GetStruct();
+extern u8 MatchInfo_00Cntlzw();
+extern struct MatchInfo* MatchInfo_Set06True();
+extern bool MatchInfo_Is07Equal1();
+extern struct MatchInfo* MatchInfo_Set0BValPlusOne(u8);
+extern struct MatchInfo* MatchInfo_Set10ValPlusOne(u32);
+extern struct MatchInfo* MatchInfo_Set14ValPlusOne(u32);
+extern struct MatchInfo* MatchInfo_Set18(u8);
 
-f32 MatchInfo_Get34();
+extern u32 MatchInfo_GetFrameCount();
+extern u32 MatchInfo_GetSeconds();
+extern u16 MatchInfo_GetSubSeconds();
+
+extern f32 MatchInfo_Get34();
 
 /**
 * Match Controller
@@ -74,16 +76,18 @@ struct MatchController {
 	u32* unk18;
 	u32* dev_togglefunc;
 	u32 unk34;
-} MatchController;
+};
 
-u32 MatchController_LoadTimer();
+extern struct MatchController MatchController;
 
-u32 MatchController_LoadTimer2();
-struct MatchController* MatchController_ChangeScreen();
-struct MatchController* MatchController_ChangeScreen2();
-bool MatchController_IsFrozen();
+extern u32 MatchController_LoadTimer();
 
-u32* MatchController_StoreDevFuncPtr(u32*);
-u32 MatchController_Store34(u32);
+extern u32 MatchController_LoadTimer2();
+extern struct MatchController* MatchController_ChangeScreen();
+extern struct MatchController* MatchController_ChangeScreen2();
+extern bool MatchController_IsFrozen();
+
+extern u32* MatchController_StoreDevFuncPtr(u32*);
+extern u32 MatchController_Store34(u32);
 
 #endif

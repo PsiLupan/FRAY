@@ -1,4 +1,8 @@
 #include "unknown.h"
+
+struct unk_8043207C dword_8043207C;
+struct unk_8046B0F0 dword_8046B0F0;
+
 /*
 //8001822C
 struct unk_8043207C* GetStruct8043207C(){

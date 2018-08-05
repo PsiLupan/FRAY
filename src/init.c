@@ -106,13 +106,12 @@ int main(void){
 
 //801A4510
 void Game_Init(){
-	u32 *i; // r31@1
 	u8 curr_major; // r3@11
 	
 	memset(&GameState, 0, 20);
-	for ( i = &SceneInfo; ; i += 20 )
+	for (u32 i = 0; ; i += 1 )
 	{
-		if ( *(u8*)(i + 1) == 45 )
+		if ( SceneData[i].idx == 45 )
 		{
 			/*if ( VI_GetDTVStatus(result) && (*(_WORD *)(v2 - 19312) & 0x200 || OS_GetProgressiveMode() == 1) )
 				byte_80479D30 = 39;
@@ -136,19 +135,18 @@ void Game_Init(){
 
 //801A43A0
 u8* Game_MainLoop(u8 scene){
-	u32 *i; // r3@1
-	u8 *v3; // r30@3
+	struct SceneData *v3; // r30@3
 	u32 v4; // r4@5
 	u32 *result; // r3@7
 
-	for ( i = &SceneInfo; ; i += 20 )
+	for (u32 i = 0; ; i += 1 )
 	{
-		v4 = *(u8 *)(i + 1);
+		v4 = SceneData[i].idx;
 		if ( v4 == 45 )
 			break;
 		if ( v4 == scene )
 		{
-			v3 = (u8*)i;
+			v3 = &SceneData[i];
 			goto LABEL_7;
 		}
 	}
@@ -166,7 +164,7 @@ u8* Game_MainLoop(u8 scene){
 		{
 			if ( GameState.unk10 )
 				return (u8*)result;
-			//result = (u32*)Scene_RunFunc((u32)v3);
+			//result = Scene_RunFunc(v3);
 		}
 		result = &dword_8046B0F0;
 		if ( dword_8046B0F0.unk04 || !*((u32*)v3 + 2) )
