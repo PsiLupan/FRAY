@@ -1,5 +1,40 @@
 #include "match.h"
 
+//80167A64
+int InitPlayerAndMatchStruct(u8 *a1)
+{
+  u8 *v1; // r31@1
+  int v2; // r2@1
+  double v3; // fp0@1
+  int result; // r3@1
+
+  v1 = a1;
+  memset(a1, 0, 0x60u);
+  *v1 = *v1 & 0xE3 | 0x10;
+  v1[12] = 0;
+  v1[11] = 2;
+  *((_DWORD *)v1 + 9) = -1;
+  *((_DWORD *)v1 + 8) = -1;
+  *((_DWORD *)v1 + 10) = 0;
+  v1[3] = v1[3] & 0xBF | 0x40;
+  v1[3] = v1[3] & 0xFB | 4;
+  v1[3] = v1[3] & 0xF7 | 8;
+  v1[4] = v1[4] & 0x7F | 0x80;
+  v1[1] &= 0xFDu;
+  v1[2] = v1[2] & 0xFB | 4;
+  v1[2] = v1[2] & 0xFD | 2;
+  v3 = *(float *)(v2 - 22420);
+  *((float *)v1 + 11) = *(float *)(v2 - 22420);
+  *((float *)v1 + 12) = v3;
+  *((float *)v1 + 13) = v3;
+  v1[4] = v1[4] & 0xFD | 2;
+  result = (unsigned __int8)(v1[4] & 0xFE) | 1;
+  v1[4] = result;
+  v1[13] = 110;
+  v1[10] = 0;
+  return result;
+}
+
 /**
 * Match Info
 **/

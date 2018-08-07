@@ -3,8 +3,8 @@
 
 #include "scene.h"
 
-struct unk_8043207C{
-	
+struct unk_80432078{
+	void* unk970;
 };
 
 extern struct unk_8043207C dword_8043207C;

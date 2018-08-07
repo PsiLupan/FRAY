@@ -47,10 +47,10 @@ extern struct SceneHandlers SceneHandlers;
 
 struct SceneData {
 	u8 idx; //starts at 1
-	u16 pad;
-	void* SceneInit;
-	void* UnkFunc;
-	void* SceneExit;
+	u16 unk01;
+	u32* SceneInit;
+	u32* UnkFunc;
+	void (*StartupInit)();
 	struct SceneSubData* sdata;
 	bool unk_bool;
 }; //803DACA4

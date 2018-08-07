@@ -1,6 +1,6 @@
 #include "unknown.h"
 
-struct unk_8043207C dword_8043207C;
+struct unk_80432078 dword_80432078;
 struct unk_8046B0F0 dword_8046B0F0;
 
 /*

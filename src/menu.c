@@ -81,3 +81,35 @@ s32 sub_8022C010(s32 result, s32 a2){
   }
   return result;
 }
+
+//801A5598
+void Menu_GmRstStartupInit()
+{
+	Menu_InitUsableStructs("GmRst");
+	return sub_8015CDEC();
+}
+
+//80167B50
+int Menu_InitUsableStructs(char* menu_name)
+{
+  _BYTE *v1; // r29@1
+  signed int v2; // r31@1
+  u8 *v3; // r30@1
+  int result; // r3@2
+
+  v1 = a1;
+  InitPlayerAndMatchStruct(a1 + 8); //"pnlsce" for GmRst. TODO: Need to verify other callers, otherwise we have a struct to deal with.
+  v2 = 0;
+  v3 = v1 + 104;
+  do
+  {
+    result = sub_8016795C(v3);
+    ++v2;
+    v3 += 36;
+  }
+  while ( v2 < 6 );
+  *v1 = -1;
+  v1[1] = -1;
+  v1[2] = -1;
+  return result;
+}
