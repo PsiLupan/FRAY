@@ -1,7 +1,7 @@
 #include "match.h"
 
-struct StartMelee regularvs;
-struct StartMelee trainvs;
+struct StartMelee sm_regularvs;
+struct StartMelee sm_train;
 
 //80167A64
 int Match_InitStartMeleeStruct(s8 *addr){
