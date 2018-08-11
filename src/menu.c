@@ -248,14 +248,12 @@ u32 __InitStartMeleeData(s8 *a1){
 
 //80167B50
 u32 Menu_InitUsableStructs(s8* sm_struct){
-  s8* sm_baseptr; // r29@1
   u32 result; // r3@2
 
-  sm_baseptr = (s8*)sm_struct;
-  Match_InitStartMeleeStruct(&sm_baseptr[8]);
-  result = __InitStartMeleeData(&sm_baseptr[0x68u]);
-  sm_baseptr[0] = -1;
-  sm_baseptr[1] = -1;
-  sm_baseptr[2] = -1;
+  Match_InitStartMeleeStruct(&sm_struct[8]);
+  result = __InitStartMeleeData(&sm_struct[0x68u]);
+  sm_struct[0] = -1;
+  sm_struct[1] = -1;
+  sm_struct[2] = -1;
   return result;
 }
