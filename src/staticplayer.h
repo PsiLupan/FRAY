@@ -5,6 +5,8 @@
 
 #include "entity.h"
 
+#define MAX_PLAYERS 6
+
 struct StaticPlayer
 {
 	s32 state;
@@ -63,6 +65,8 @@ struct StaticPlayer
 	
 	u32 unk6A8;
 };
+
+extern struct StaticPlayer players[MAX_PLAYERS];
 
 extern u32 StaticPlayer_GetState(u32);
 extern u32 StaticPlayer_GetExternalID(u32);

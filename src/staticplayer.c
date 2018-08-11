@@ -1,8 +1,6 @@
 #include "staticplayer.h"
 
-#define MAX_PLAYERS 6
-
-static struct StaticPlayer players[MAX_PLAYERS];
+struct StaticPlayer players[MAX_PLAYERS];
 
 //800322C0
 u32 StaticPlayer_GetState(u32 slot){

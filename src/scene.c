@@ -237,6 +237,7 @@ struct SceneHandlers* GetSceneHandlers()
 //801A4B88
 /*u32* Scene_StorePtr4F80(u32* addr){
 	unk4F80 = addr;
+	return addr;
 }*/
 
 //801A4B90

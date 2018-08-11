@@ -8,6 +8,22 @@
 
 #include "unknown.h"
 
+struct StartMelee {
+	u8 header[0x8];
+	u8 data_main[0x60];
+	u8 data1[0x24];
+	u8 data2[0x24];
+	u8 data3[0x24];
+	u8 data4[0x24];
+	u8 data5[0x24];
+	u8 data6[0x24];
+};
+
+extern struct StartMelee sm_regularvs;
+extern struct StartMelee sm_train;
+
+extern int Match_InitStartMeleeStruct(s8*);
+
 /**
 * Match Info
 **/
