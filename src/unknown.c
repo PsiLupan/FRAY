@@ -3,6 +3,31 @@
 struct unk_80432078 dword_80432078;
 struct unk_8046B0F0 dword_8046B0F0;
 
+static int bss_grabber;
+void* r13_x77C0 = &bss_grabber; //r13 - 0x77C0; 8045A6C0 in-game, start of the bss
+
+//8000AD8C
+s8 sub_8000AD8C(){
+	return **(s8 **)r13_x77C0;
+}
+
+//8000AD98
+s32 sub_8000AD98(s32 result){
+	if ( result >= 0 && result < 2 )
+		**(s8 **)r13_x77C0 = result;
+	return result;
+}
+
+//8000ADB4
+bool sub_8000ADB4(){
+	return **(u8 **)r13_x77C0 == 0;
+}
+
+//8000ADD4
+bool sub_8000ADD4(){
+	return **(u8 **)r13_x77C0 == 1;
+}
+
 /*
 //8001822C
 struct unk_8043207C* GetStruct8043207C(){
