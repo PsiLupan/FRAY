@@ -25,11 +25,11 @@ struct StaticPlayer
 	u8 team_id;
 	u8 player_id;
 	u8 cpu_level;
-	u8 unk4A;
+	u8 cpu_type;
 	u8 handicap;
 	f32 unk4C;
+	f32 unk50;
 	f32 attack_ratio;
-	f32 unk54;
 	f32 dmgdef_ratio;
 	f32 model_scale;
 	u16 curr_lost_percent;
@@ -49,6 +49,8 @@ struct StaticPlayer
 	u8 unk8F;
 	u32 curr_coins;
 	u32 total_coins;
+	u32 unk98;
+	u32 unk9C;
 	u32 joymov_count;
 	u32 unkA4;
 	u32 nametag_slotid;
@@ -77,6 +79,13 @@ extern f32* StaticPlayer_GetNametagCoords(u32, f32*);
 extern f32 StaticPlayer_GetFacing(u32);
 extern struct StaticPlayer* StaticPlayer_SetFacing(u32, f32);
 
+extern u8 StaticPlayer_GetCPULevel(u32);
+
+extern struct StaticPlayer* StaticPlayer_SetHandicap(u32, u8);
+
+extern f32 StaticPlayer_Get50(u32);
+extern f32 StaticPlayer_GetAttackRatio(u32);
+extern struct StaticPlayer* StaticPlayer_SetAttackRatio(u32, f32);
 extern f32 StaticPlayer_GetDefenseRatio(u32);
 extern struct StaticPlayer* StaticPlayer_SetDefenseRatio(u32, f32);
 extern f32 StaticPlayer_GetModelScale(u32);
@@ -89,11 +98,19 @@ extern struct StaticPlayer* StaticPlayer_SetFalls(u32, u32);
 
 extern u8 StaticPlayer_GetStocks(u32);
 extern u8 StaticPlayer_GetPlayer1Stocks();
+extern struct StaticPlayer* StaticPlayer_SetStocks(u32, u32);
+extern u32 StaticPlayer_DecrementStocks(u32);
 extern u32 StaticPlayer_GetCurrentCoins(u32);
 extern struct StaticPlayer* StaticPlayer_SetCurrentCoins(u32, u32);
 extern u32 StaticPlayer_GetTotalCoins(u32);
 extern struct StaticPlayer* StaticPlayer_SetTotalCoins(u32, u32);
+extern u32 StaticPlayer_Get98(u32);
+extern struct StaticPlayer* StaticPlayer_Set98(u32, u32);
+extern u32 StaticPlayer_Get9C(u32);
+extern struct StaticPlayer* StaticPlayer_Set9C(u32, u32);
 
+extern struct Entity* StaticPlayer_GetCharacterEntity(u32, bool);
+extern struct Player* StaticPlayer_GetPlayerStruct(u32, bool);
 extern u32* StaticPlayer_GetStaleMoveTable(u32);
 extern u32* StaticPlayer_GetTotalAttacks(u32);
 

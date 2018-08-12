@@ -62,6 +62,44 @@ struct StaticPlayer* StaticPlayer_SetFacing(u32 slot, f32 facing){
 	return &players[slot];
 }
 
+//80033548
+u8 StaticPlayer_GetCPULevel(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].cpu_level;
+}
+
+//80033798
+u8 StaticPlayer_GetHandicap(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].handicap;
+}
+
+//80033808
+struct StaticPlayer* StaticPlayer_SetHandicap(u32 slot, u8 amt){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	players[slot].handicap = amt;
+	return &players[slot];
+}
+
+//80033884
+f32 StaticPlayer_Get50(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].unk50;
+}
+
+//800338F4
+f32 StaticPlayer_GetAttackRatio(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].attack_ratio;
+}
+
+//80033964
+struct StaticPlayer* StaticPlayer_SetAttackRatio(u32 slot, f32 amt){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	players[slot].attack_ratio = amt;
+	return &players[slot];
+}
+
 //800339E0
 f32 StaticPlayer_GetDefenseRatio(u32 slot){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
@@ -128,6 +166,21 @@ u8 StaticPlayer_GetPlayer1Stocks(){
 	return players[0].stocks;
 }
 
+//80033C60
+struct StaticPlayer* StaticPlayer_SetStocks(u32 slot, u32 amt){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	players[slot].stocks = amt;
+	return &players[slot];
+}
+
+//80033CE0
+u32 StaticPlayer_DecrementStocks(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	if(players[slot].stocks > 0)
+		players[slot].stocks = players[slot].stocks - 1;
+	return players[slot].stocks;
+}
+
 //80033D60
 u32 StaticPlayer_GetCurrentCoins(u32 slot){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
@@ -152,6 +205,50 @@ struct StaticPlayer* StaticPlayer_SetTotalCoins(u32 slot, u32 amt){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].total_coins = amt;
 	return &players[slot];
+}
+
+//80033F38
+u32 StaticPlayer_Get98(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].unk98;
+}
+
+//80033FA8
+struct StaticPlayer* StaticPlayer_Set98(u32 slot, u32 amt){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	players[slot].unk98 = amt;
+	return &players[slot];
+}
+
+//80034024
+u32 StaticPlayer_Get9C(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].unk9C;
+}
+
+//80034094
+struct StaticPlayer* StaticPlayer_Set9C(u32 slot, u32 amt){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	players[slot].unk9C = amt;
+	return &players[slot];
+}
+
+//8003418C
+struct Entity* StaticPlayer_GetCharacterEntity(u32 slot, bool subchar){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	if(subchar){
+		return players[slot].subchar_ent;
+	}
+	return players[slot].player_ent;
+}
+
+//80034110
+struct Player* StaticPlayer_GetPlayerStruct(u32 slot, bool subchar){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	if(subchar){
+		return (struct Player*)players[slot].subchar_ent->entity_data;
+	}
+	return (struct Player*)players[slot].player_ent->entity_data;
 }
 
 //80036244
