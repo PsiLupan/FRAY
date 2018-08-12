@@ -155,6 +155,33 @@ struct StaticPlayer* StaticPlayer_SetFalls(u32 slot, u32 amt){
 	return &players[slot];
 }
 
+//80034F24
+u32 StaticPlayer_GetKillCount(u32 slot, u32 tslot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].ko_counter[tslot];
+}
+
+//80035114
+s32 StaticPlayer_GetMatchFrames(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].match_frames;
+}
+
+//80035184
+s32 StaticPlayer_SetMatchFrames(u32 slot, bool r4){
+	s32 result = 0;
+	
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	if(!r4){
+		result = players[slot].match_frames;
+		if(result == -1){
+			result = MatchInfo_GetFrameCount();
+			players[slot].match_frames = result;
+		}
+	}
+	return result;
+}
+
 //80033BD8
 u8 StaticPlayer_GetStocks(u32 slot){
 	assert(slot >= 0 && slot < MAX_PLAYERS);

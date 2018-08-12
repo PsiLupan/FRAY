@@ -1,7 +1,5 @@
 #include "menu.h"
 
-
-
 //8022BFBC
 u32 sub_8022BFBC(u32 result){
   if ( result == 2 )
@@ -201,11 +199,10 @@ u8* Menu_ZeroFillPtr(){
 
 //8016795C
 u32 Menu_InitStartMeleeData(s8 *a1){
-  s8 *v1; // r31@1
+  s8 *v1 = a1; // r31@1
   u32 result; // r3@1
   double v4; // fp0@1
 
-  v1 = a1;
   memset(a1, 0, 0x24u);
   *v1 = 33;
   v1[1] = 3;
@@ -235,10 +232,9 @@ u32 Menu_InitStartMeleeData(s8 *a1){
 
 //80167A14
 u32 __InitStartMeleeData(s8 *a1){
-	s8 *v2; // r31@1
-	u32 result; // r3@2
-	
-	v2 = a1;
+	s8 *v2 = a1;
+	u32 result;
+
 	for(u32 i = 0; i < 6; ++i){
 		result = Menu_InitStartMeleeData(v2);
 		v2 += 36;

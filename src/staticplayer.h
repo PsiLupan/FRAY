@@ -4,6 +4,7 @@
 #include <gctypes.h>
 
 #include "entity.h"
+#include "match.h"
 
 #define MAX_PLAYERS 6
 
@@ -37,13 +38,8 @@ struct StaticPlayer
 	u16 stamina_hp;
 	u32 falls;
 	u32 nana_deaths;
-	u32 p1ko_counter;
-	u32 p2ko_counter;
-	u32 p3ko_counter;
-	u32 p4ko_counter;
-	u32 p5ko_counter;
-	u32 p6ko_counter;
-	u32 unk88;
+	u32 ko_counter[MAX_PLAYERS];
+	s32 match_frames;
 	u16 suicides;
 	u8 stocks;
 	u8 unk8F;
@@ -93,8 +89,13 @@ extern struct StaticPlayer* StaticPlayer_SetModelScale(u32, f32);
 
 extern u16 StaticPlayer_GetStaminaHP(u32);
 extern struct StaticPlayer* StaticPlayer_SetStaminaHP(u32, u16);
+
 extern u32 StaticPlayer_GetFalls(u32);
 extern struct StaticPlayer* StaticPlayer_SetFalls(u32, u32);
+
+extern u32 StaticPlayer_GetKillCount(u32, u32);
+extern s32 StaticPlayer_GetMatchFrames(u32);
+extern s32 StaticPlayer_SetMatchFrames(u32, bool);
 
 extern u8 StaticPlayer_GetStocks(u32);
 extern u8 StaticPlayer_GetPlayer1Stocks();
