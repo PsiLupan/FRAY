@@ -18,11 +18,4 @@ struct unk_8046B0F0 {
 
 extern struct unk_8046B0F0 dword_8046B0F0;
 
-extern void* r13_x77C0;
-
-s8 sub_8000AD8C();
-s32 sub_8000AD98(s32);
-bool sub_8000ADB4();
-bool sub_8000ADD4();
-
 #endif
