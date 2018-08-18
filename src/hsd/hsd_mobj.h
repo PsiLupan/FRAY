@@ -2,7 +2,29 @@
 #define _hsd_mobj_h_
 
 #include "hsd_aobj.h"
+#include "hsd_texp.h"
 #include "hsd_tobj.h"
+
+#define MOBJ_ANIM 0x4
+#define TOBJ_ANIM 0x10
+
+#define	HSD_A_M_AMBIENT_R   1
+#define	HSD_A_M_AMBIENT_G   2
+#define	HSD_A_M_AMBIENT_B   3
+#define	HSD_A_M_DIFFUSE_R   4
+#define	HSD_A_M_DIFFUSE_G   5
+#define	HSD_A_M_DIFFUSE_B   6
+#define	HSD_A_M_SPECULAR_R  7
+#define	HSD_A_M_SPECULAR_G  8
+#define	HSD_A_M_SPECULAR_B  9
+#define	HSD_A_M_ALPHA      10
+#define	HSD_A_M_PE_REF0    	11
+#define	HSD_A_M_PE_REF1    	12
+#define	HSD_A_M_PE_DSTALPHA	13
+
+#define RENDER_TOON	(1<<12)
+#define RENDER_SPECULAR (1<<3)
+#define RENDER_SHADOW (1<<26)
 
 //Material Object
 typedef struct _HSD_MObj {
@@ -33,8 +55,8 @@ typedef struct _HSD_MObjDesc {
 } HSD_MObjDesc;
 
 typedef struct _HSD_Material {
+	GXColor ambient;
 	GXColor diffuse;
-	GXColor ambience;
 	GXColor specular;
 	f32 alpha;
 	f32 shininess;
@@ -55,13 +77,18 @@ typdef struct _HSD_PEDesc {
 	u8 alpha_comp1;
 } HSD_PEDesc;
 
-typedef struct _HSD_TExpTevDesc {
+typedef struct _HSD_MatAnim {
+	struct _HSD_MatAnim *next;
+	struct _HSD_AObjDesc *aobjdesc;
+	struct _HSD_TexAnim *texanim;
+	struct _HSD_RenderAnim *renderanim;
+} HSD_MatAnim;
 
-} HSD_TExpTevDesc;
-
-typedef struct _HSD_TExp {
-
-} HSD_TExp;
+typedef struct _HSD_MatAnimJoint {
+	struct _HSD_MatAnimJoint *child;
+	struct _HSD_MatAnimJoint *next;
+	struct _HSD_MatAnim *matanim;
+} HSD_MatAnimJoint;
 
 typedef struct _HSD_MObjInfo {
   HSD_ClassInfo	parent;
@@ -74,5 +101,9 @@ typedef struct _HSD_MObjInfo {
 } HSD_MObjInfo;
 
 extern HSD_MObjInfo hsdMObj;
+
+#define HSD_MOBJ(o)		((HSD_MObj *)(o))
+#define HSD_MOBJ_INFO(i)	((HSD_MObjInfo *)(i))
+#define HSD_MOBJ_METHOD(o)	HSD_MOBJ_INFO(HSD_CLASS_METHOD(o))
 
 #endif

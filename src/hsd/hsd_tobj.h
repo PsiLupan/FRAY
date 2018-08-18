@@ -48,6 +48,9 @@ typedef struct _HSD_TObjDesc {
 	u8 repeat_s;
 	u8 repeat_t;
 	u32 flags;
+	#define TEX_COORD_UV 0
+	#define TEX_COORD_SHADOW 3
+	#define TEX_COORD_TOON 4 
 	f32 blending;
 	GXTexFilter magFilt;
 	HSD_ImageDesc* imagedesc;
@@ -120,10 +123,10 @@ typedef struct {
 
 typedef struct _HSD_TObjInfo {
 	HSD_ObjInfo		parent;
-	void (*make_mtx)	(HSD_TObj *tobj);
-	int (*load)		(HSD_TObj *tobj, HSD_TObjDesc *desc);
-	void (*make_texp)	(HSD_TObj *tobj, u32 lightmap, u32 lightmap_done, HSD_TExp **c, HSD_TExp **a, HSD_TExp **list);
-	void (*update)	(void *obj, u32 type, FObjData *val);
+	void (*make_mtx)(HSD_TObj *tobj);
+	int (*load)(HSD_TObj *tobj, HSD_TObjDesc *desc);
+	void (*make_texp)(HSD_TObj *tobj, u32 lightmap, u32 lightmap_done, HSD_TExp **c, HSD_TExp **a, HSD_TExp **list);
+	void (*update)(void *obj, u32 type, FObjData *val);
 } HSD_TObjInfo;
 
 typedef struct _HSD_TexAnim {
@@ -135,6 +138,10 @@ typedef struct _HSD_TexAnim {
 	u16 n_imagetbl;
 	u16 n_tluttbl;
 } HSD_TexAnim;
+
+#define HSD_TOBJ(o)		((HSD_TObj *)(o))
+#define HSD_TOBJ_INFO(i)	((HSD_TObjInfo *)(i))
+#define HSD_TOBJ_METHOD(o)	HSD_TOBJ_INFO(HSD_CLASS_METHOD(o))
 
 extern HSD_TObjInfo hsdTObj;
 
