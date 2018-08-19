@@ -11,13 +11,13 @@ typedef struct _HSD_DObj {
 	struct _HSD_DObj* next;
 	struct _HSD_MObj* mobj;
 	struct _HSD_PObj* pobj;
-	s32 unk;
-	s32 flags;
+	u32 unk;
+	u32 flags;
 } HSD_DObj;
 
 typedef struct _HSD_DObjDesc {
 	char* class_name;
-	HSD_DObjDesc* next;
+	struct _HSD_DObjDesc* next;
 	struct _HSD_MObjDesc* mobjdesc;
 	struct _HSD_PObjDesc* pobjdesc;
 } HSD_DObjDesc;

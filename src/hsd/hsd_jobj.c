@@ -10,7 +10,7 @@ void HSD_JObjRemoveAll(HSD_JObj *jobj){
 			if(prev)
 				prev->next = NULL;
 			else
-				jobj->parent->class_parent = NULL; //TODO: Verify this, probably wrong : *((_DWORD *)v16[3] + 4) = NULL;
+				jobj->parent->next = NULL; //TODO: Verify this, probably wrong : *((_DWORD *)v16[3] + 4) = NULL;
 		}
 		HSD_JObj *curr = jobj;
 		HSD_JObj *next = NULL;
