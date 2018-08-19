@@ -39,7 +39,7 @@ typedef struct _HSD_JObjDesc {
 } HSD_JObjDesc;
 
 typedef struct _HSD_JObjInfo {
-	
+	void (*disp)(HSD_JObj *jobj, MtxPtr vmtx, Mtx pmtx, HSD_TrspMask trsp_mask, u32 rendermode);
 } HSD_JObjInfo;
 
 extern HSD_JObjInfo hsdJObj;

@@ -46,7 +46,7 @@ typedef struct _HSD_MObj {
 } HSD_MObj;
 
 typedef struct _HSD_MObjDesc {
-	char* unused_class;
+	char* class_name;
 	u32 rendermode;
 	struct _HSD_TObjDesc* tobj;
 	HSD_Material* material;
