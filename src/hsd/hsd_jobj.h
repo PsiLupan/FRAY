@@ -32,9 +32,9 @@ typedef struct _HSD_JObj {
 typedef struct _HSD_JObjDesc {
 	char* class_name;
 	u32 flags;
-	HSD_JObj child;
-	HSD_JObj next;
-	struct _HSD_DObj* dobj;
+	struct _HSD_JObjDesc child;
+	struct _HSD_JObjDesc next;
+	struct _HSD_DObjDesc* dobj;
 	Vec rotation;
 	Vec scale;
 	Vec position;
