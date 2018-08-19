@@ -7,10 +7,12 @@
 
 #include "hsd_dobj.h"
 
+#define JOBJ_INSTANCE 0x1000
+
 //Joint Object
 typedef struct _HSD_JObj {
 	struct _HSD_Info *info;
-	HSD_Class parent;
+	HSD_Class class_parent;
 	HSD_JObj* next;
 	HSD_JObj* parent;
 	HSD_JObj* child;
