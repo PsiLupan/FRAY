@@ -8,18 +8,18 @@
 //Display Object
 typedef struct _HSD_DObj {
 	HSD_Class parent;
-	struct DObj* next;
-	struct MObj* mobj;
-	struct PObj* pobj;
+	struct _HSD_DObj* next;
+	struct _HSD_MObj* mobj;
+	struct _HSD_PObj* pobj;
 	s32 unk;
 	s32 flags;
 } HSD_DObj;
 
 typedef struct _HSD_DObjDesc {
-	char* unused_class;
+	char* class_name;
 	HSD_DObjDesc* next;
-	struct MObjDesc* mobjdesc;
-	struct PObjDesc* pobjdesc;
+	struct _HSD_MObjDesc* mobjdesc;
+	struct _HSD_PObjDesc* pobjdesc;
 } HSD_DObjDesc;
 
 typedef struct _HSD_DObjInfo {
