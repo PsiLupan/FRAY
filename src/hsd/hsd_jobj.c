@@ -1,5 +1,9 @@
 #include "hsd_jobj.h"
 
+static void JObjInfoInit();
+
+HSD_JObjInfo hsdJObj = { JObjInfoInit };
+
 static HSD_JObj *current_jobj = NULL;
 
 //80371590
