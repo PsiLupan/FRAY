@@ -1,14 +1,12 @@
 #include "hsd_init.h"
 
-static OSHeapHandle hsd_heap = -1;
+static OSHeapHandle hsd_heap = -1; //r13 - 0x58A0
 static void *hsd_heap_arena_lo = NULL;
 static void *hsd_heap_arena_hi = NULL;
 static void *hsd_heap_next_arena_lo = NULL;
 static void *hsd_heap_next_arena_hi = NULL;
 
 static void *FrameBuffer[HSD_VI_XFB_MAX];
-
-static HSD_RenderPass current_render_pass; //r13 - 0x58A0
 
 static bool shown; //r13 - 0x3DF0
 static bool init_done = false; //r13 - 0x3FD4
@@ -66,22 +64,22 @@ void HSD_OSInit(){
 			OSSetCurrentHeap(hsd_heap);
 			HSD_ObjSetHeap((u32)hsd_heap_arena_hi - (u32)hsd_heap_arena_lo, NULL);
 		} else {
-		arenaLo = (void*)OSRoundUp32B(OSGetArenaLo());
-		arenaHi = OSGetArenaHi();
+			arenaLo = (void*)OSRoundUp32B(OSGetArenaLo());
+			arenaHi = OSGetArenaHi();
 		
-		hsd_heap_arena_lo = arenaLo;
-		if (iparam_heap_size > 0) {
-			hsd_heap_arena_hi = arenaLo + iparam_heap_size;
-			if (hsd_heap_arena_hi > arenaHi)
-				hsd_heap_arena_hi = arenaHi;
-			hsd_heap_arena_hi = (void*)OSRoundDown32B(hsd_heap_arena_hi);
-		} else {
-			hsd_heap_arena_hi = (void*)OSRoundDown32B(arenaHi);
-		}
-		hsd_heap = OSCreateHeap(hsd_heap_arena_lo, hsd_heap_arena_hi);
-		OSSetCurrentHeap(hsd_heap);
-		HSD_ObjSetHeap((u32)hsd_heap_arena_hi - (u32)hsd_heap_arena_lo, NULL);
-		OSSetArenaLo(hsd_heap_arena_hi);
+			hsd_heap_arena_lo = arenaLo;
+			if (iparam_heap_size > 0) {
+				hsd_heap_arena_hi = arenaLo + iparam_heap_size;
+				if (hsd_heap_arena_hi > arenaHi)
+					hsd_heap_arena_hi = arenaHi;
+				hsd_heap_arena_hi = (void*)OSRoundDown32B(hsd_heap_arena_hi);
+			} else {
+				hsd_heap_arena_hi = (void*)OSRoundDown32B(arenaHi);
+			}
+			hsd_heap = OSCreateHeap(hsd_heap_arena_lo, hsd_heap_arena_hi);
+			OSSetCurrentHeap(hsd_heap);
+			HSD_ObjSetHeap((u32)hsd_heap_arena_hi - (u32)hsd_heap_arena_lo, NULL);
+			OSSetArenaLo(hsd_heap_arena_hi);
 		}
 	}
 }
@@ -246,11 +244,12 @@ bool HSD_SetInitParameter(HSD_InitParam param, ...){
 }
 
 //80375404
-HSD_RenderPass HSD_GetCurrentRenderPass(){
-  return current_render_pass;
+OSHeapHandle HSD_GetHeap(){
+	assert(iparam_memory_callbacks);
+	return hsd_heap;
 }
 
 //8037540C
-static void HSD_SetCurrentRenderPass(HSD_RenderPass pass){
-  current_render_pass = pass;
+static void HSD_SetHeap(OSHeapHandle heap){
+	hsd_heap = heap;
 }
