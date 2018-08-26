@@ -65,7 +65,7 @@ void HSD_AObjInvokeCallBacks(){
 }
 
 //8036410C
-void HSD_AObjReqAnim(HSD_AObj *aobj, float frame){
+void HSD_AObjReqAnim(HSD_AObj *aobj, f32 frame){
 	if(aobj){
 		aobj->curr_frame = frame;
 		aobj->flags = aobj->flags & 0xBFFFFFFF | 0x8000000;
@@ -105,7 +105,7 @@ void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void* updatecb){
 					HSD_FObjStopAnimAll(aobj->fobj);
 					f32 e_frame = aobj->end_frame - aobj->rewind_frame;
 					f32 c_frame = aobj->curr_frame - aobj->rewind_frame;
-					f32 r_frame = aobj->rewind_frame - (float)fmod((double)c_frame, (double)e_frame);
+					f32 r_frame = aobj->rewind_frame - (f32)fmod((f64)c_frame, (f64)e_frame);
 					aobj->curr_frame = r_frame;
 					HSD_FObjReqAnimAll(aobj->fobj, aobj->curr_frame);
 				}
@@ -189,7 +189,7 @@ void HSD_AObjRemove(HSD_AObj* aobj){
 }
 
 //8036453C
-AObj* HSD_AObjAlloc(){
+HSD_AObj* HSD_AObjAlloc(){
 	HSD_AObj *aobj = HSD_AOBJ(HSD_ObjAlloc(init_aobj));
 	assert(aobj);
 	memset(aobj, 0, sizeof(aobj));
@@ -205,25 +205,25 @@ void HSD_AObjFree(HSD_AObj* aobj){
 }
 
 //8036530C
-void HSD_AObjSetRate(HSD_AObj* aobj, float rate){
+void HSD_AObjSetRate(HSD_AObj* aobj, f32 rate){
 	if(aobj)
 		aobj->framerate = rate;
 }
 
 //8036531C
-void HSD_AObjSetRewindFrame(HSD_AObj* aobj, float frame){
+void HSD_AObjSetRewindFrame(HSD_AObj* aobj, f32 frame){
 	if(aobj)
 		aobj->rewind_frame = frame;
 }
 
 //8036532C
-void HSD_AObjSetEndFrame(HSD_AObj* aobj, float frame){
+void HSD_AObjSetEndFrame(HSD_AObj* aobj, f32 frame){
 	if(aobj)
 		aobj->end_frame = frame;
 }
 
 //8036533C
-void HSD_AObjSetCurrentFrame(HSD_AObj* aobj, float frame){
+void HSD_AObjSetCurrentFrame(HSD_AObj* aobj, f32 frame){
 	if(aobj && !(aobj->flags & 0x40000000){
 		aobj->curr_frame = frame;
 		aobj->flags = aobj->flags & 0xBFFFFFFF | 0x8000000;

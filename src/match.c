@@ -4,7 +4,7 @@ struct StartMelee sm_regularvs;
 struct StartMelee sm_train;
 
 //80167A64
-int Match_InitStartMeleeStruct(s8 *addr){
+void Match_InitStartMeleeStruct(s8 *addr){
   s8 *v1; // r31@1
   double v3; // fp0@1
   int result; // r3@1
@@ -33,7 +33,6 @@ int Match_InitStartMeleeStruct(s8 *addr){
   v1[4] = result;
   v1[13] = 110;
   v1[10] = 0;
-  return result;
 }
 
 /**
@@ -57,9 +56,8 @@ u8 MatchInfo_00Cntlzw(){
 }
 
 //8016B328
-struct MatchInfo* MatchInfo_Set06True(){
+void MatchInfo_Set06True(){
 	MatchInfo.unk06 = true;
-	return &MatchInfo;
 }
 
 //8016B184
@@ -70,27 +68,23 @@ bool MatchInfo_Is07Equal1(){
 }
 
 //8016B33C
-struct MatchInfo* MatchInfo_Set0BValPlusOne(u8 val){
+void MatchInfo_Set0BValPlusOne(u8 val){
 	MatchInfo.unk0B = val + 1;
-	return &MatchInfo;
 }
 
 //8016B350
-struct MatchInfo* MatchInfo_Set10ValPlusOne(u32 val){
+void MatchInfo_Set10ValPlusOne(u32 val){
 	MatchInfo.unk10 = val + 1;
-	return &MatchInfo;
 }
 
 //8016B364
-struct MatchInfo* MatchInfo_Set14ValPlusOne(u32 val){
+void MatchInfo_Set14ValPlusOne(u32 val){
 	MatchInfo.unk14 = val + 1;
-	return &MatchInfo;
 }
 
 //8016B378
-struct MatchInfo* MatchInfo_Set18(u8 val){
+void MatchInfo_Set18(u8 val){
 	MatchInfo.unk18 = val;
-	return &MatchInfo;
 }
 
 //8016AEDC
@@ -128,15 +122,13 @@ u32 MatchController_LoadTimer2(){
 }
 
 //801A4B60
-struct MatchController* MatchController_ChangeScreen(){
+void MatchController_ChangeScreen(){
 	MatchController.screen_ctrl = 1;
-	return &MatchController;
 }
 
 //801A4B74
-struct MatchController* MatchController_ChangeScreen2(){
+void MatchController_ChangeScreen2(){
 	MatchController.screen_ctrl = 2;
-	return &MatchController;
 }
 
 //801A4624
@@ -145,20 +137,17 @@ bool MatchController_IsFrozen(){
 }
 
 //801A4B08
-u32* MatchController_Store14_18(u32* ptr, u32* ptr2){
+void MatchController_Store14_18(u32* ptr, u32* ptr2){
 	MatchController.unk14 = ptr;
 	MatchController.unk18 = ptr2;
-	return ptr;
 }
 
 //801A4B40
-u32* MatchController_StoreDevFuncPtr(u32* func){
+void MatchController_StoreDevFuncPtr(u32* func){
 	MatchController.dev_togglefunc = func;
-	return func;
 }
 
 //801A4B50
-u32 MatchController_Store34(u32 val){
+void MatchController_Store34(u32 val){
 	MatchController.unk34 = val;
-	return val;
 }

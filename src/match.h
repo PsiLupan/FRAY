@@ -22,7 +22,7 @@ struct StartMelee {
 extern struct StartMelee sm_regularvs;
 extern struct StartMelee sm_train;
 
-extern int Match_InitStartMeleeStruct(s8*);
+extern void Match_InitStartMeleeStruct(s8*);
 
 /**
 * Match Info
@@ -62,12 +62,12 @@ extern struct MatchInfo MatchInfo;
 
 extern struct MatchInfo* MatchInfo_GetStruct();
 extern u8 MatchInfo_00Cntlzw();
-extern struct MatchInfo* MatchInfo_Set06True();
+extern void MatchInfo_Set06True();
 extern bool MatchInfo_Is07Equal1();
-extern struct MatchInfo* MatchInfo_Set0BValPlusOne(u8);
-extern struct MatchInfo* MatchInfo_Set10ValPlusOne(u32);
-extern struct MatchInfo* MatchInfo_Set14ValPlusOne(u32);
-extern struct MatchInfo* MatchInfo_Set18(u8);
+extern void MatchInfo_Set0BValPlusOne(u8);
+extern void MatchInfo_Set10ValPlusOne(u32);
+extern void MatchInfo_Set14ValPlusOne(u32);
+extern void MatchInfo_Set18(u8);
 
 extern u32 MatchInfo_GetFrameCount();
 extern u32 MatchInfo_GetSeconds();
@@ -99,11 +99,12 @@ extern struct MatchController MatchController;
 extern u32 MatchController_LoadTimer();
 
 extern u32 MatchController_LoadTimer2();
-extern struct MatchController* MatchController_ChangeScreen();
-extern struct MatchController* MatchController_ChangeScreen2();
+extern void MatchController_ChangeScreen();
+extern void MatchController_ChangeScreen2();
 extern bool MatchController_IsFrozen();
 
-extern u32* MatchController_StoreDevFuncPtr(u32*);
-extern u32 MatchController_Store34(u32);
+extern void MatchController_Store14_18(u32*, u32*);
+extern void MatchController_StoreDevFuncPtr(u32*);
+extern void MatchController_Store34(u32);
 
 #endif

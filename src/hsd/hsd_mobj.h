@@ -106,4 +106,28 @@ extern HSD_MObjInfo hsdMObj;
 #define HSD_MOBJ_INFO(i)	((HSD_MObjInfo *)(i))
 #define HSD_MOBJ_METHOD(o)	HSD_MOBJ_INFO(HSD_CLASS_METHOD(o))
 
+void HSD_MObjSetFlags(HSD_MObj *mobj, u32 flags);
+void HSD_MObjClearFlags(HSD_MObj *mobj, u32 flags);
+void HSD_MObjRemoveAnimByFlags(HSD_MObj *mobj, u32 flags);
+void HSD_MObjAddAnim(HSD_MObj *mobj, HSD_MatAnim *matanim);
+void HSD_MObjReqAnimByFlags(HSD_MObj *mobj, f32 startframe, u32 flags);
+void HSD_MObjReqAnim(HSD_MObj *mobj, f32 startframe);
+void HSD_MObjAnim(HSD_MObj *mobj);
+HSD_MObj* HSD_MObjLoadDesc(HSD_MObjDesc *mobjdesc);
+void HSD_MObjCompileTev(HSD_MObj *mobj);
+void HSD_MObjSetToonTextureImage(HSD_ImageDesc *toonimage);
+void HSD_MObjSetDiffuseColor(HSD_MObj *mobj, u8 r, u8 g, u8 b);
+void HSD_MObjSetAlpha(HSD_MObj *mobj, f32 alpha);
+HSD_TObj* HSD_MObjGetTObj(HSD_MObj *mobj);
+void HSD_MObjRemove(HSD_MObj *mobj);
+HSD_MObj* HSD_MObjAlloc();
+HSD_Material* HSD_MaterialAlloc();
+void HSD_MObjAddShadowTexture(HSD_TObj *tobj);
+void HSD_MObjDeleteShadowTexture(HSD_TObj *tobj);
+
+
+void HSD_MObjSetCurrent(HSD_MObj *mobj);
+void HSD_MObjSetup(HSD_MObj *mobj, u32 rendermode);
+void HSD_MObjUnset(HSD_MObj *mobj, u32 rendermode);
+
 #endif

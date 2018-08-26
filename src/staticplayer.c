@@ -15,10 +15,9 @@ u32 StaticPlayer_GetExternalID(u32 slot){
 }
 
 //800323A0
-struct StaticPlayer* StaticPlayer_SetExternalID(u32 slot, u32 id){
+void StaticPlayer_SetExternalID(u32 slot, u32 id){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].character_id = id;
-	return &players[slot];
 }
 
 //8003241C
@@ -28,10 +27,9 @@ u32 StaticPlayer_GetSlotType(u32 slot){
 }
 
 //8003254C
-struct StaticPlayer* StaticPlayer_SetSlotType(u32 slot, u32 type){
+void StaticPlayer_SetSlotType(u32 slot, u32 type){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].slot_type = type;
-	return &players[slot];
 }
 
 //800326CC
@@ -56,10 +54,9 @@ f32 StaticPlayer_GetFacing(u32 slot){
 }
 
 //80033094
-struct StaticPlayer* StaticPlayer_SetFacing(u32 slot, f32 facing){
+void StaticPlayer_SetFacing(u32 slot, f32 facing){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].facedir = facing;
-	return &players[slot];
 }
 
 //80033548
@@ -75,10 +72,9 @@ u8 StaticPlayer_GetHandicap(u32 slot){
 }
 
 //80033808
-struct StaticPlayer* StaticPlayer_SetHandicap(u32 slot, u8 amt){
+void StaticPlayer_SetHandicap(u32 slot, u8 amt){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].handicap = amt;
-	return &players[slot];
 }
 
 //80033884
@@ -94,10 +90,9 @@ f32 StaticPlayer_GetAttackRatio(u32 slot){
 }
 
 //80033964
-struct StaticPlayer* StaticPlayer_SetAttackRatio(u32 slot, f32 amt){
+void StaticPlayer_SetAttackRatio(u32 slot, f32 amt){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].attack_ratio = amt;
-	return &players[slot];
 }
 
 //800339E0
@@ -107,10 +102,9 @@ f32 StaticPlayer_GetDefenseRatio(u32 slot){
 }
 
 //80033A50
-struct StaticPlayer* StaticPlayer_SetDefenseRatio(u32 slot, f32 ratio){
+void StaticPlayer_SetDefenseRatio(u32 slot, f32 ratio){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].dmgdef_ratio = ratio;
-	return &players[slot];
 }
 
 //80033ACC
@@ -120,10 +114,9 @@ f32 StaticPlayer_GetModelScale(u32 slot){
 }
 
 //80033B3C
-struct StaticPlayer* StaticPlayer_SetModelScale(u32 slot, f32 scale){
+void StaticPlayer_SetModelScale(u32 slot, f32 scale){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].model_scale = scale;
-	return &players[slot];
 }
 
 //80034C04
@@ -136,10 +129,9 @@ u16 StaticPlayer_GetStaminaHP(u32 slot){
 }
 
 //80034524
-struct StaticPlayer* StaticPlayer_SetStaminaHP(u32 slot, u16 amt){
+void StaticPlayer_SetStaminaHP(u32 slot, u16 amt){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].stamina_hp = amt;
-	return &players[slot];
 }
 
 //80034D78
@@ -149,10 +141,9 @@ u32 StaticPlayer_GetFalls(u32 slot){
 }
 
 //80034E04
-struct StaticPlayer* StaticPlayer_SetFalls(u32 slot, u32 amt){
+void StaticPlayer_SetFalls(u32 slot, u32 amt){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].falls = amt;
-	return &players[slot];
 }
 
 //80034F24
@@ -194,10 +185,9 @@ u8 StaticPlayer_GetPlayer1Stocks(){
 }
 
 //80033C60
-struct StaticPlayer* StaticPlayer_SetStocks(u32 slot, u32 amt){
+void StaticPlayer_SetStocks(u32 slot, u32 amt){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].stocks = amt;
-	return &players[slot];
 }
 
 //80033CE0
@@ -215,10 +205,9 @@ u32 StaticPlayer_GetCurrentCoins(u32 slot){
 }
 
 //80033DD0
-struct StaticPlayer* StaticPlayer_SetCurrentCoins(u32 slot, u32 amt){
+void StaticPlayer_SetCurrentCoins(u32 slot, u32 amt){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].curr_coins = amt;
-	return &players[slot];
 }
 
 //80033E4C
@@ -228,10 +217,9 @@ u32 StaticPlayer_GetTotalCoins(u32 slot){
 }
 
 //80033EBC
-struct StaticPlayer* StaticPlayer_SetTotalCoins(u32 slot, u32 amt){
+void StaticPlayer_SetTotalCoins(u32 slot, u32 amt){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].total_coins = amt;
-	return &players[slot];
 }
 
 //80033F38
@@ -241,10 +229,9 @@ u32 StaticPlayer_Get98(u32 slot){
 }
 
 //80033FA8
-struct StaticPlayer* StaticPlayer_Set98(u32 slot, u32 amt){
+void StaticPlayer_Set98(u32 slot, u32 amt){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].unk98 = amt;
-	return &players[slot];
 }
 
 //80034024
@@ -254,10 +241,9 @@ u32 StaticPlayer_Get9C(u32 slot){
 }
 
 //80034094
-struct StaticPlayer* StaticPlayer_Set9C(u32 slot, u32 amt){
+void StaticPlayer_Set9C(u32 slot, u32 amt){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	players[slot].unk9C = amt;
-	return &players[slot];
 }
 
 //8003418C

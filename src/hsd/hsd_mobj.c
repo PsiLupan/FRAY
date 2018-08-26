@@ -66,7 +66,7 @@ void HSD_MObjReqAnimByFlags(HSD_MObj *mobj, f32 startframe, u32 flags){
 }
 
 //80362E98
-void HSD_MObjReqAnim(HSD_MObj *mobj, float startframe){
+void HSD_MObjReqAnim(HSD_MObj *mobj, f32 startframe){
 	if (mobj){
 		HSD_AObjReqAnim(mobj->aobj, startframe);
 		HSD_TObjReqAnimAllByFlags(mobj->tobj, startframe, ALL_ANIM);
@@ -327,7 +327,7 @@ void HSD_MObjSetDiffuseColor(HSD_MObj *mobj, u8 r, u8 g, u8 b){
 }
 
 //80363C2C
-void HSD_MObjSetAlpha(HSD_MObj *mobj, float alpha){
+void HSD_MObjSetAlpha(HSD_MObj *mobj, f32 alpha){
 	if (!mobj || !mobj->mat) {
 		return;
 	}
@@ -349,8 +349,7 @@ void HSD_MObjRemove(HSD_MObj *mobj){
 }
 
 //80363CA4
-HSD_MObj* HSD_MObjAlloc()
-{
+HSD_MObj* HSD_MObjAlloc(){
   HSD_MObj *mobj = hsdNew(HSD_MObjGetDefaultClass());
   assert(mobj);
   return mobj;

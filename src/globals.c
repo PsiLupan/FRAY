@@ -9,10 +9,9 @@ s8 sub_8000AD8C(){
 }
 
 //8000AD98
-s32 sub_8000AD98(s32 result){
+void sub_8000AD98(s32 result){
 	if ( result >= 0 && result < 2 )
 		**(s8 **)r13_x77C0 = result;
-	return result;
 }
 
 //8000ADB4
@@ -32,7 +31,7 @@ u8* Globals_Get1850(){
 
 //8015CC40
 u32* Globals_Get1868(){
-	return &bss[0x1868];
+	return (u32*)&bss[0x1868];
 }
 
 //8015CC58
@@ -42,20 +41,20 @@ u8* Globals_GetCurrentLanguage(){
 
 //8015CC90
 u16* Globals_Get1CD0(){
-	(u16*)&bss[0x1CD0];
+	return (u16*)&bss[0x1CD0];
 }
 
 //8015CC84
 u16* Globals_Get1CD2(){
-	(u16*)&bss[0x1CD2];
+	return (u16*)&bss[0x1CD2];
 }
 
 //8015CC78
 u16* Globals_Get1CD4(){
-	(u16*)&bss[0x1CD4];
+	return (u16*)&bss[0x1CD4];
 }
 
 //8015CC4C
 s32* Globals_Get2FF8(){
-	&bss[0x2FF8];
+	return (s32*)&bss[0x2FF8];
 }

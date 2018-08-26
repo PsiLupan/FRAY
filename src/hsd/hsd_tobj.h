@@ -3,7 +3,7 @@
 
 #include <gctypes.h>
 
-#include "../../include/mtx/GeoTypes.h"
+#include "../../include/dolphin.h"
 
 #include "hsd_aobj.h"
 
@@ -220,10 +220,51 @@ typedef struct _HSD_TexAnim {
 	u16 n_tluttbl;
 } HSD_TexAnim;
 
+extern HSD_TObjInfo hsdTObj;
+
 #define HSD_TOBJ(o)		((HSD_TObj *)(o))
 #define HSD_TOBJ_INFO(i)	((HSD_TObjInfo *)(i))
 #define HSD_TOBJ_METHOD(o)	HSD_TOBJ_INFO(HSD_CLASS_METHOD(o))
 
-extern HSD_TObjInfo hsdTObj;
+void HSD_TObjRemoveAnimAll(HSD_TObj *tobj);
+void HSD_TObjAddAnim(HSD_TObj *tobj, HSD_TexAnim *texanim);
+void HSD_TObjAddAnimAll(HSD_TObj *tobj, HSD_TexAnim *texanim);
+void HSD_TObjReqAnimAllByFlags(HSD_TObj *tobj, f32 startframe, u32 flags);
+void HSD_TObjReqAnim(HSD_TObj *tobj, f32 startframe);
+void HSD_TObjReqAnimAll(HSD_TObj *tobj, f32 startframe);
+void HSD_TObjAnim(HSD_TObj *tobj);
+void HSD_TObjAnimAll(HSD_TObj *tobj);
+void HSD_TObjRemoveAll(HSD_TObj *tobj);
+HSD_TObj* HSD_TObjGetNext(HSD_TObj *tobj);
+HSD_TObj* HSD_TObjAlloc();
+void HSD_TObjFree(HSD_TObj *tobj);
+
+void HSD_TObjSetDefaultClass(HSD_TObjInfo *info);
+HSD_TObjInfo* HSD_TObjGetDefaultClass();
+
+HSD_Tlut* HSD_TlutLoadDesc(HSD_TlutDesc *tlutdesc);
+HSD_Tlut* HSD_TlutAlloc();
+void HSD_TlutFree(HSD_Tlut *tlut);
+
+HSD_TObjTev* HSD_TObjTevLoadDesc(HSD_TObjTevDesc *tevdesc);
+HSD_TObjTev* HSD_TObjTevAlloc();
+
+HSD_TObj* HSD_TObjLoadDesc(HSD_TObjDesc *td);
+
+HSD_ImageDesc* HSD_ImageDescAlloc();
+void HSD_ImageDescFree(HSD_ImageDesc *idesc);
+void HSD_ImageDescCopyFromEFB(HSD_ImageDesc *idesc, u16 origx, u16 origy, GXBool clear, int sync);
+
+u32 HSD_TGTex2Index(GXTexGenSrc tgtex);
+GXTexGenSrc HSD_TexCoordID2TexGenSrc(GXTexCoordID coord);
+u32 HSD_TexCoord2Index(GXTexCoordID coord_id);
+GXTexCoordID HSD_Index2TexCoord(u32 index);
+u32 HSD_TexMtx2Index(GXTexMtx texmtx);
+GXTexMtx HSD_Index2TexMtx(u32 index);
+GXTexMapID HSD_Index2TexMap(u32 index);
+u32 HSD_TexMap2Index(GXTexMapID mapid);
+
+
+HSD_TObj* _HSD_TObjGetCurrentByType(HSD_TObj *from, u32 mapping);
 
 #endif

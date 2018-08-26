@@ -68,30 +68,30 @@ extern struct StaticPlayer players[MAX_PLAYERS];
 
 extern u32 StaticPlayer_GetState(u32);
 extern u32 StaticPlayer_GetExternalID(u32);
-extern struct StaticPlayer* StaticPlayer_SetExternalID(u32, u32);
+extern void StaticPlayer_SetExternalID(u32, u32);
 extern u32 StaticPlayer_GetSlotType(u32);
-extern struct StaticPlayer* StaticPlayer_SetSlotType(u32, u32);
+extern void StaticPlayer_SetSlotType(u32, u32);
 extern f32* StaticPlayer_GetNametagCoords(u32, f32*);
 extern f32 StaticPlayer_GetFacing(u32);
-extern struct StaticPlayer* StaticPlayer_SetFacing(u32, f32);
+extern void StaticPlayer_SetFacing(u32, f32);
 
 extern u8 StaticPlayer_GetCPULevel(u32);
 
-extern struct StaticPlayer* StaticPlayer_SetHandicap(u32, u8);
+extern void StaticPlayer_SetHandicap(u32, u8);
 
 extern f32 StaticPlayer_Get50(u32);
 extern f32 StaticPlayer_GetAttackRatio(u32);
-extern struct StaticPlayer* StaticPlayer_SetAttackRatio(u32, f32);
+extern void StaticPlayer_SetAttackRatio(u32, f32);
 extern f32 StaticPlayer_GetDefenseRatio(u32);
-extern struct StaticPlayer* StaticPlayer_SetDefenseRatio(u32, f32);
+extern void StaticPlayer_SetDefenseRatio(u32, f32);
 extern f32 StaticPlayer_GetModelScale(u32);
-extern struct StaticPlayer* StaticPlayer_SetModelScale(u32, f32);
+extern void StaticPlayer_SetModelScale(u32, f32);
 
 extern u16 StaticPlayer_GetStaminaHP(u32);
-extern struct StaticPlayer* StaticPlayer_SetStaminaHP(u32, u16);
+extern void StaticPlayer_SetStaminaHP(u32, u16);
 
 extern u32 StaticPlayer_GetFalls(u32);
-extern struct StaticPlayer* StaticPlayer_SetFalls(u32, u32);
+extern void StaticPlayer_SetFalls(u32, u32);
 
 extern u32 StaticPlayer_GetKillCount(u32, u32);
 extern s32 StaticPlayer_GetMatchFrames(u32);
@@ -99,16 +99,16 @@ extern s32 StaticPlayer_SetMatchFrames(u32, bool);
 
 extern u8 StaticPlayer_GetStocks(u32);
 extern u8 StaticPlayer_GetPlayer1Stocks();
-extern struct StaticPlayer* StaticPlayer_SetStocks(u32, u32);
+extern void StaticPlayer_SetStocks(u32, u32);
 extern u32 StaticPlayer_DecrementStocks(u32);
 extern u32 StaticPlayer_GetCurrentCoins(u32);
-extern struct StaticPlayer* StaticPlayer_SetCurrentCoins(u32, u32);
+extern void StaticPlayer_SetCurrentCoins(u32, u32);
 extern u32 StaticPlayer_GetTotalCoins(u32);
-extern struct StaticPlayer* StaticPlayer_SetTotalCoins(u32, u32);
+extern void StaticPlayer_SetTotalCoins(u32, u32);
 extern u32 StaticPlayer_Get98(u32);
-extern struct StaticPlayer* StaticPlayer_Set98(u32, u32);
+extern void StaticPlayer_Set98(u32, u32);
 extern u32 StaticPlayer_Get9C(u32);
-extern struct StaticPlayer* StaticPlayer_Set9C(u32, u32);
+extern void StaticPlayer_Set9C(u32, u32);
 
 extern struct Entity* StaticPlayer_GetCharacterEntity(u32, bool);
 extern struct Player* StaticPlayer_GetPlayerStruct(u32, bool);

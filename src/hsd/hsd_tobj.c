@@ -64,7 +64,7 @@ void HSD_TObjAddAnimAll(HSD_TObj *tobj, HSD_TexAnim *texanim){
 }
 
 //8035E760
-void HSD_TObjReqAnimAllByFlags(HSD_TObj *tobj, float startframe, u32 flags){
+void HSD_TObjReqAnimAllByFlags(HSD_TObj *tobj, f32 startframe, u32 flags){
 	HSD_TObj *tp;
 	if (tobj){
 		for (tp = tobj; tp; tp = tp->next) {
@@ -76,13 +76,13 @@ void HSD_TObjReqAnimAllByFlags(HSD_TObj *tobj, float startframe, u32 flags){
 }
 
 //8035E7D4
-void HSD_TObjReqAnim(HSD_TObj *tobj, float startframe){
+void HSD_TObjReqAnim(HSD_TObj *tobj, f32 startframe){
 	if(tobj)
 		HSD_AObjReqAnim(tobj->aobj, startframe);
 }
 
 //8035E800
-void HSD_TObjReqAnimAll(HSD_TObj *tobj, float startframe){
+void HSD_TObjReqAnimAll(HSD_TObj *tobj, f32 startframe){
 	HSD_TObj *tp;
 	if (tobj){
 		for (tp = tobj; tp; tp = tp->next) {
