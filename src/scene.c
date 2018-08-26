@@ -133,22 +133,19 @@ u8 Scene_LoadCurrentMajor(){
 }
 
 //801A42E8
-u8 Scene_UpdatePendingMajor(u8 val){
+void Scene_UpdatePendingMajor(u8 val){
 	GameState.pending_major = val;
-	return val;
 }
 
 //801A42F8
-u8 Scene_SetPendingMajor(u8 val){
+void Scene_SetPendingMajor(u8 val){
 	GameState.pending_major = val;
 	GameState.pending = true;
-	return val;
 }
 
 //801A42D4
-struct GameState* Scene_SetPendingTrue(){
+void Scene_SetPendingTrue(){
 	GameState.pending = true;
-	return &GameState;
 }
 
 //801A4320
@@ -162,10 +159,9 @@ u8 Scene_Get03(){
 }
 
 //801A428C
-u8 Scene_Set03And04(u8 val){
+void Scene_Set03And04(u8 val){
 	GameState.unk03 = val;
 	GameState.unk04 = val;
-	return val;
 }
 
 //801A42B4
@@ -174,11 +170,10 @@ u8 Scene_Get04(){
 }
 
 //801A42A0
-struct GameState* Scene_Set05(u8 val){
+void Scene_Set05(u8 val){
 	u8 v1;
 	v1 = val + 1;
 	GameState.unk05 = v1;
-	return &GameState;
 }
 
 //801A4330

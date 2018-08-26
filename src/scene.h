@@ -63,24 +63,24 @@ extern struct SceneData SceneData[45];
 
 u32* Scene_RunFunc(u8);
 
-u8 Scene_UpdatePendingMajor(u8);
-u8 Scene_SetPendingMajor(u8);
-struct GameState* Scene_SetPendingTrue();
+void Scene_UpdatePendingMajor(u8);
+void Scene_SetPendingMajor(u8);
+void Scene_SetPendingTrue();
 u8 Scene_LoadPrevMajor();
 u8 Scene_Get03();
-u8 Scene_Set03And04(u8);
+void Scene_Set03And04(u8);
 u8 Scene_Get04();
-struct GameState* Scene_Set05(u8);
+void Scene_Set05(u8);
 u32 Scene_StoreTo10(u32);
 
 /**
 * Is Scene X
 **/
 
-extern bool Scene_IsSinglePlayer(u8);
-extern bool Scene_IsCurrSceneSuperSuddenDeath();
-extern bool Scene_IsCurrSceneSinglePlayer();
-extern bool Scene_IsSceneClassicAdvOrAllStar();
+bool Scene_IsSinglePlayer(u8);
+bool Scene_IsCurrSceneSuperSuddenDeath();
+bool Scene_IsCurrSceneSinglePlayer();
+bool Scene_IsSceneClassicAdvOrAllStar();
 
 struct Scenes* GetScenes();
 
