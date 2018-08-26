@@ -21,9 +21,9 @@ void Game_Init(){
 		if ( SceneData[i].idx == 45 )
 		{
 			/*if ( VI_GetDTVStatus(result) && (*(_WORD *)(v2 - 19312) & 0x200 || OS_GetProgressiveMode() == 1) )
-				byte_80479D30 = 39;
+				GameState.curr_major = 39;
 			else
-				byte_80479D30 = 40;*/
+				GameState.curr_major = 40;*/
 			GameState.curr_major = 40;
 			GameState.prev_major = 45;
 			while ( 1 )
@@ -79,24 +79,3 @@ u8* Game_MainLoop(u8 scene){
 	}
 	return (u8*)result;
 }
-
-/*
-void Game_Loop(){
-	PAD_ScanPads();
-	
-	GX_SetViewport(0,0,rmode->fbWidth,rmode->efbHeight,0,1);
-	
-	//Draw Functions
-	
-	GX_DrawDone();
-	
-	
-	fb ^= 1;		// flip framebuffer
-	GX_SetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
-	GX_SetColorUpdate(GX_TRUE);
-	GX_CopyDisp(frameBuffer[fb],GX_TRUE);
-
-	VIDEO_SetNextFramebuffer(frameBuffer[fb]);
-	VIDEO_Flush();
-	VIDEO_WaitVSync();
-}*/

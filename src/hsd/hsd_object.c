@@ -14,4 +14,6 @@ void HSD_ObjFree(void* init_obj, void* obj){
 }
 
 //8037AD48
-void* HSD_ObjAllocInit(void* obj_def, u32 size, u32 count){}
+void* HSD_ObjAllocInit(void* obj_def, u32 size, u32 count){
+	
+}

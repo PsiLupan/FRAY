@@ -233,5 +233,5 @@ void HSD_AObjSetCurrentFrame(HSD_AObj* aobj, float frame){
 
 //80365390
 void _HSD_AObjForgetMemory(){
-	aobj_cb->active = false;
+	active_cb = false;
 }
