@@ -3,7 +3,6 @@
 
 //Frame Object
 typedef struct _HSD_FObj {
-	HSD_Class parent;
 	struct _HSD_FObj* next;
 	u32* curr_parse;
 	u32* parse_start;

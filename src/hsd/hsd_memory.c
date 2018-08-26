@@ -162,7 +162,7 @@ void hsdFreeMemPiece(void* addr, u32 len){
 	
 	v16 = addr;
 	if ( addr ){
-		addr = GetMemoryEntry(((len + 31) >> 5) + v17 - 1, a9, a10, a11, a12, a13, a14, a15, a16, a2, a3, a4, a5, a6, a7, a8);
+		addr = GetMemoryEntry(((len + 31) >> 5) + v17 - 1);
 		*v16 = *(void *)(addr + 12);
 		*(void *)(addr + 12) = v16;
 		++*(u32 *)(addr + 8);
