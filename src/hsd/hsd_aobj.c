@@ -1,11 +1,138 @@
 #include "hsd_aobj.h"
 
-static void* r13_4078 = NULL; //AObjDesc *, maybe?
+#include <math.h>
 
-static f32 rewind = 0;
-static f32 rate = 1.0; //Not aware of any evidence this is ever actually changed yet
+static u32 r13_4070 = 0; //frames elapsed
+static u32 r13_4074 = 0; //r13_4074 - callback/conditional frames elapsed
+static bool active_cb; //r13_4078
 
-ObjDef aobj_def = { 0, 0, 1, 0, 1, 0xFFFFFFFF}; //804C0880
+static f32 rewind = 0.0f;
+static f32 rate_1 = 1.0f;
+static f32 rate_2 = 300.0f;
+
+static HSD_AObj *init_aobj = NULL; //804C0880
+
+//80363FC8
+void HSD_AObjInitAllocData(){
+	HSD_ObjAllocInit(init_aobj, sizeof(HSD_AObj), 4);
+}
+
+//80363FF8
+HSD_AObj* HSD_AObjGetAllocData(){
+	return init_aobj;
+}
+
+//80364004
+u32 HSD_AObjGetFlags(HSD_AObj* aobj){
+	if(aobj)
+		return aobj->flags;
+	return 0;
+}
+
+//8036401C
+void HSD_AObjSetFlags(HSD_AObj* aobj, u32 flags){
+	if(aobj)
+		aobj->flags |= flags & 0x30000000;
+}
+
+//80364038
+void HSD_AObjClearFlags(HSD_AObj* aobj, u32 flags){
+	if(aobj)
+		aobj->flags &= ~flags;
+}
+
+//80364054
+void HSD_AObjSetFObj(HSD_AObj* aobj, HSD_FObj* fobj){
+	if(aobj){
+		if(aobj->fobj)
+			HSD_FObjRemoveAll(aobj->fobj);
+		aobj->fobj = fobj;
+	}
+}
+
+//803640A0
+void HSD_AObjInitEndCallBack(){
+	r13_4070 = 0;
+	r13_4074 = 0;
+}
+
+//803640B0
+void HSD_AObjInvokeCallBacks(){
+	if(r13_4074 && !r13_4070){
+		if(active_cb)
+			(void*)(r13_4074)();
+	}
+}
+
+//8036410C
+void HSD_AObjReqAnim(HSD_AObj *aobj, float frame){
+	if(aobj){
+		aobj->curr_frame = frame;
+		aobj->flags = aobj->flags & 0xBFFFFFFF | 0x8000000;
+		HSD_FObjReqAnimAll(aobj->fobj, frame);
+	}
+}
+
+//8036414C
+void HSD_AObjStopAnim(HSD_AObj *aobj){
+	if(aobj){
+		HSD_FObjStopAnimAll(aobj->fobj);
+		aobj->flags |= 0x40000000u;
+	}
+}
+
+//80364190
+void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void* updatecb){
+	f32 framerate = 0;
+	f32 curr_frame = 0;
+	
+	if(aobj){
+		if(!(aobj->flags & 0x40000000)){
+			if(aobj->flags & 0x8000000){
+				aobj->flags &= 0xF7FFFFFF;
+				framerate = rate_2;
+			}else{
+				framerate = aobj->framerate;
+				curr_frame = aobj->curr_frame;
+				curr_frame = curr_frame + framerate;
+				aobj->curr_frame = curr_frame;
+			}
+
+			if((aobj->flags & 0x20000000) && (aobj->end_frame <= aobj->curr_frame)){
+				if(aobj->rewind_frame >= aobj->end_frame){
+					aobj->curr_frame = aobj->end_frame;
+				}else{
+					HSD_FObjStopAnimAll(aobj->fobj);
+					f32 e_frame = aobj->end_frame - aobj->rewind_frame;
+					f32 c_frame = aobj->curr_frame - aobj->rewind_frame;
+					f32 r_frame = aobj->rewind_frame - (float)fmod((double)c_frame, (double)e_frame);
+					aobj->curr_frame = r_frame;
+					HSD_FObjReqAnimAll(aobj->fobj, aobj->curr_frame);
+				}
+				framerate = rate_2;
+				aobj->flags |= 0x4000000u;
+			}else{
+				aobj->flags &= 0xFBFFFFFF;
+			}
+			
+			if(aobj->flags & 0x10000000)
+				HSD_FObjInterpretAnimAll(aobj->fobj, caller_obj, 0);
+			else
+				HSD_FObjInterpretAnimAll(aobj->fobj, caller_obj, updatecb);
+			
+			if(!(aobj->flags & 0x20000000) && (aobj->end_frame <= aobj->curr_frame)){
+				HSD_FObjStopAnimAll(aobj->fobj, caller_obj, updatecb);
+				aobj->flags |= 0x40000000u;
+			}
+			
+			if(aobj->flags & 0x40000000){
+				r13_4074 += 1;
+			}else{
+				r13_4070 += 1;
+			}
+		}
+	}
+}
 
 //8036539C
 HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc){
@@ -63,18 +190,18 @@ void HSD_AObjRemove(HSD_AObj* aobj){
 
 //8036453C
 AObj* HSD_AObjAlloc(){
-	HSD_AObj *aobj = HSD_AOBJ(HSD_ObjAlloc(aobj_def));
+	HSD_AObj *aobj = HSD_AOBJ(HSD_ObjAlloc(init_aobj));
 	assert(aobj);
 	memset(aobj, 0, sizeof(aobj));
 	aobj->flags = 0x40000000;
-	aobj->framerate = rate;
+	aobj->framerate = rate_1;
 	return aobj;
 }
 
 //803645A8
 void HSD_AObjFree(HSD_AObj* aobj){
 	if(aobj)
-		HSD_ObjFree(aobj_def, aobj);
+		HSD_ObjFree(init_aobj, aobj);
 }
 
 //8036530C
@@ -106,5 +233,5 @@ void HSD_AObjSetCurrentFrame(HSD_AObj* aobj, float frame){
 
 //80365390
 void _HSD_AObjForgetMemory(){
-	r13_4078 = NULL;
+	aobj_cb->active = false;
 }

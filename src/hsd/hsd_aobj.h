@@ -1,6 +1,8 @@
 #ifndef _hsd_aobj_h_
 #define _hsd_aobj_h_
 
+#include <gctypes.h>
+
 #include "hsd_object.h"
 
 #include "hsd_fobj.h"
