@@ -243,10 +243,7 @@ void HSD_JObjDeleteRObj(HSD_JObj *jobj, HSD_RObj *robj){
 
 //80371CE8
 u32 HSD_JObjGetFlags(HSD_JObj *jobj){
-	if(jobj){
-		return jobj->flags;
-	}
-	return 0;
+	return (jobj) ? jobj->flags : 0;
 }
 
 //80371D00

@@ -6,10 +6,6 @@ static u32 r13_4070 = 0; //frames elapsed
 static u32 r13_4074 = 0; //r13_4074 - callback/conditional frames elapsed
 static bool active_cb; //r13_4078
 
-static f32 rewind = 0.0f;
-static f32 rate_1 = 1.0f;
-static f32 rate_2 = 300.0f;
-
 static HSD_AObj *init_aobj = NULL; //804C0880
 
 //80363FC8
@@ -24,9 +20,7 @@ HSD_AObj* HSD_AObjGetAllocData(){
 
 //80364004
 u32 HSD_AObjGetFlags(HSD_AObj* aobj){
-	if(aobj)
-		return aobj->flags;
-	return 0;
+	return (aobj) ? aobj->flags : 0;
 }
 
 //8036401C
@@ -90,7 +84,7 @@ void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void* updatecb){
 		if(!(aobj->flags & 0x40000000)){
 			if(aobj->flags & 0x8000000){
 				aobj->flags &= 0xF7FFFFFF;
-				framerate = rate_2;
+				framerate = 300.0f;
 			}else{
 				framerate = aobj->framerate;
 				curr_frame = aobj->curr_frame;
@@ -109,7 +103,7 @@ void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void* updatecb){
 					aobj->curr_frame = r_frame;
 					HSD_FObjReqAnimAll(aobj->fobj, aobj->curr_frame);
 				}
-				framerate = rate_2;
+				framerate = 300.0f;
 				aobj->flags |= 0x4000000u;
 			}else{
 				aobj->flags &= 0xFBFFFFFF;
@@ -140,7 +134,7 @@ HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc){
 		HSD_AObj* aobj = HSD_AObjAlloc();
 		if(aobj){
 			aobj->flags = aobjdesc->flags & 0x30000000;
-			HSD_AObjSetRewindFrame(aobj, 0);
+			HSD_AObjSetRewindFrame(aobj, 0.0f);
 			HSD_AObjSetEndFrame(aobj, aobjdesc->end_frame);
 			
 			HSD_FObj* fobj = HSD_FObjLoadDesc(aobjdesc->fobjdesc);
@@ -194,7 +188,7 @@ HSD_AObj* HSD_AObjAlloc(){
 	assert(aobj);
 	memset(aobj, 0, sizeof(aobj));
 	aobj->flags = 0x40000000;
-	aobj->framerate = rate_1;
+	aobj->framerate = 1.0f;
 	return aobj;
 }
 
