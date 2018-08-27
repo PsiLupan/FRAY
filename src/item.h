@@ -5,12 +5,12 @@
 
 #include <gctypes.h>
 
-#include "entity.h"
+#include "gobj.h"
 
 struct Item
 {
-	struct Entity* next_entity;
-	struct Entity* entity;
+	struct GObj* next;
+	struct GObj* parent;
 	u32 flags08;
 	u32 flags0C;
 	u32 item_type;

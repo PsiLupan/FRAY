@@ -3,9 +3,9 @@
 
 #include <gctypes.h>
 
-#include "entity.h"
+#include "gobj.h"
 
-struct Attributes {
+typedef struct _Attributes {
 	f32 walkInitVel; //0x00
 	f32 walkAccel; //0x04
 	f32 walkMaxVel; //0x08
@@ -102,11 +102,10 @@ struct Attributes {
 	u32 unkConst0x178;
 	u32 specialJumpAction; //0x17C - Pretty much an unknown, need to research what uses this
 	u32 throwSpeedFlags; //0x180		
-};
+} Attributes;
 
-struct Player
-{
-	struct Entity* entity;
+typedef struct _Player {
+	HSD_GObj* parent;
 	u32 internal_id;
 	u32 spawn_ctr;
 	u8 slot;
@@ -143,26 +142,26 @@ struct Player
 	void* unk104;
 	void* unk108;
 	void* unk10C;
-	struct Attributes attribs;
+	Attributes attribs;
 	
 	u32 last_atkeridx; //18C4
 	
 	u32 unk20A4;
 	
 	u8 collbubble_flags; //21FC
-};
+} Player;
 
-extern u32 Player_GetInternalID(struct Player*);
-extern u32 Player_GetSpawnCount(struct Player*);
-extern u8 Player_GetPort(struct Player*);
-extern u32 Player_GetActState(struct Player*);
-extern f32 Player_GetFacing(struct Player*);
-extern bool Player_IsInAir(struct Player*);
+u32 Player_GetInternalID(HSD_GObj* gobj);
+u32 Player_GetSpawnCount(HSD_GObj* gobj);
+u8 Player_GetPort(HSD_GObj* gobj);
+u32 Player_GetActState(HSD_GObj* gobj);
+f32 Player_GetFacing(HSD_GObj* gobj);
+bool Player_IsInAir(HSD_GObj* gobj);
 
-extern u32 Player_GetLastAtkerSlot(struct Player*);
+u32 Player_GetLastAtkerSlot(HSD_GObj* gobj);
 
-extern u32* Player_Get20A4(struct Player*);
+u32* Player_Get20A4(HSD_GObj* gobj);
 
-extern u8 Player_GetCollisionBubbleFlags(struct Entity*);
+u8 Player_GetCollisionBubbleFlags(HSD_GObj* gobj);
 
 #endif 

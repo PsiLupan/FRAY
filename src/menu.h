@@ -8,8 +8,8 @@
 
 u8 menu_804D6730[6]; //804D6730
 
-extern u32 sub_8022BFBC(u32 result);
-extern s32 sub_8022C010(s32 result, s32 a2);
+u32 sub_8022BFBC(u32 result);
+s32 sub_8022C010(s32 result, s32 a2);
 
 u8* Menu_GmRst_StartupInit();
 u32 Menu_GmTrain_StartupInit();

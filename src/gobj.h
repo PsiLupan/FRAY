@@ -1,11 +1,11 @@
-#ifndef _entity_h_
-#define _entity_h_
+#ifndef _gobj_h_
+#define _gobj_h_
 
 #include <assert.h>
 
 #include <gctypes.h>
 
-struct Entity
+typedef struct _HSD_GObj
 {
 	u16 classifier;
 	u8 unkflag02;
@@ -13,17 +13,17 @@ struct Entity
 	u16 padding;
 	u8 unkflag06;
 	u8 unkflag07;
-	struct Entity* next_entity;
-	struct Entity* prev_entity;
+	struct _HSD_GObj* next;
+	struct _HSD_GObj* prev;
 	void* unk_linkedlist;
 	void* commonmove_tbl;
 	void* unk_struct;
-	void* entity_data;
+	void* data;
 	void* destructor;
 	void* unk_linkedlist2;
 	void* unk_linkedlist3;
-};
+} HSD_GObj;
 
-extern bool Entity_IsPlayer(struct Entity*);
+bool GObj_IsPlayer(HSD_GObj* gobj);
 
 #endif

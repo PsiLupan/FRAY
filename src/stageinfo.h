@@ -3,7 +3,7 @@
 
 #include <gctypes.h>
 
-#include "entity.h"
+#include "gobj.h"
 
 //0x778 bytes
 struct StageInfo

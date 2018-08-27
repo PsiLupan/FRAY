@@ -159,7 +159,7 @@ s32 StaticPlayer_GetMatchFrames(u32 slot){
 }
 
 //80035184
-s32 StaticPlayer_SetMatchFrames(u32 slot, bool r4){
+void StaticPlayer_SetMatchFrames(u32 slot, bool r4){
 	s32 result = 0;
 	
 	assert(slot >= 0 && slot < MAX_PLAYERS);
@@ -170,7 +170,6 @@ s32 StaticPlayer_SetMatchFrames(u32 slot, bool r4){
 			players[slot].match_frames = result;
 		}
 	}
-	return result;
 }
 
 //80033BD8
@@ -247,21 +246,21 @@ void StaticPlayer_Set9C(u32 slot, u32 amt){
 }
 
 //8003418C
-struct Entity* StaticPlayer_GetCharacterEntity(u32 slot, bool subchar){
+HSD_GObj* StaticPlayer_GetCharacterGObj(u32 slot, bool subchar){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	if(subchar){
-		return players[slot].subchar_ent;
+		return players[slot].subchar;
 	}
-	return players[slot].player_ent;
+	return players[slot].player;
 }
 
 //80034110
-struct Player* StaticPlayer_GetPlayerStruct(u32 slot, bool subchar){
+Player* StaticPlayer_GetPlayerStruct(u32 slot, bool subchar){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	if(subchar){
-		return (struct Player*)players[slot].subchar_ent->entity_data;
+		return (Player*)players[slot].subchar->data;
 	}
-	return (struct Player*)players[slot].player_ent->entity_data;
+	return (Player*)players[slot].player->data;
 }
 
 //80036244

@@ -1,7 +1,8 @@
 #include "actionstate.h"
 
 //8008732C
-bool ActionState_IsDead(struct Player *ply){
+bool ActionState_IsDead(HSD_GObj *gobj){
+	Player* ply = (Player*)gobj->data;
 	u32 state = ply->action_state;
 	if(state >= 0 && state <= 10){
 		return true;
@@ -10,7 +11,8 @@ bool ActionState_IsDead(struct Player *ply){
 }
 
 //80087354
-bool ActionState_IsDeadUp(struct Player *ply){
+bool ActionState_IsDeadUp(HSD_GObj *gobj){
+	Player* ply = (Player*)gobj->data;
 	u32 state = ply->action_state;
 	if(state >= 3 && state <= 10){
 		return true;
@@ -19,7 +21,8 @@ bool ActionState_IsDeadUp(struct Player *ply){
 }
 
 //8008737C
-bool ActionState_IsDeadStarUp(struct Player *ply){
+bool ActionState_IsDeadStarUp(HSD_GObj *gobj){
+	Player* ply = (Player*)gobj->data;
 	u32 state = ply->action_state;
 	if(state >= 4 && state <= 5){
 		return true;
@@ -28,7 +31,8 @@ bool ActionState_IsDeadStarUp(struct Player *ply){
 }
 
 //800873A4
-bool ActionState_IsDeadUpFall(struct Player *ply){
+bool ActionState_IsDeadUpFall(HSD_GObj *gobj){
+	Player* ply = (Player*)gobj->data;
 	u32 state = ply->action_state;
 	if(state >= 6 && state <= 10){
 		return true;
@@ -37,7 +41,8 @@ bool ActionState_IsDeadUpFall(struct Player *ply){
 }
 
 //800873CC
-bool ActionState_IsRebirth(struct Player *ply){
+bool ActionState_IsRebirth(HSD_GObj *gobj){
+	Player* ply = (Player*)gobj->data;
 	u32 state = ply->action_state;
 	if(state >= 12 && state <= 13){
 		return true;
@@ -46,7 +51,8 @@ bool ActionState_IsRebirth(struct Player *ply){
 }
 
 //800873F4
-bool ActionState_IsEntry(struct Player *ply){
+bool ActionState_IsEntry(HSD_GObj *gobj){
+	Player* ply = (Player*)gobj->data;
 	u32 state = ply->action_state;
 	if(state >= 322 && state <= 324){
 		return true;
