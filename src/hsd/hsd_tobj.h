@@ -9,11 +9,11 @@
 
 #define TOBJ_ANIM 0x10
 
-#define	HSD_A_T_TIMG	     1
-#define	HSD_A_T_TRAU	     2
-#define	HSD_A_T_TRAV	     3
-#define	HSD_A_T_SCAU	     4
-#define	HSD_A_T_SCAV	     5
+#define HSD_A_T_TIMG	     1
+#define HSD_A_T_TRAU	     2
+#define HSD_A_T_TRAV	     3
+#define HSD_A_T_SCAU	     4
+#define HSD_A_T_SCAV	     5
 #define HSD_A_T_ROTX	     6
 #define HSD_A_T_ROTY	     7
 #define HSD_A_T_ROTZ	     8
@@ -83,10 +83,10 @@
 #define TEX_COORD_GRADATION	5
 #define TEX_COORD_BACKLIGHT	6
 #define TEX_COORD_MASK 	(0x0f)
-#define tobj_coord(T) ((T)->flag & TEX_COORD_MASK)
+#define tobj_coord(T) ((T)->flags & TEX_COORD_MASK)
 
 #define TEX_BUMP (0x1<<24)
-#define tobj_bump(T) ((T)->flag & TEX_BUMP)
+#define tobj_bump(T) ((T)->flags & TEX_BUMP)
 #define TEX_MTX_DIRTY (1<<31)
 
 //Texture Object
@@ -205,7 +205,7 @@ typedef struct {
 typedef struct _HSD_TObjInfo {
 	HSD_ObjInfo		parent;
 	void (*make_mtx)(HSD_TObj *tobj);
-	int (*load)(HSD_TObj *tobj, HSD_TObjDesc *desc);
+	int  (*load)(HSD_TObj *tobj, HSD_TObjDesc *desc);
 	void (*make_texp)(HSD_TObj *tobj, u32 lightmap, u32 lightmap_done, HSD_TExp **c, HSD_TExp **a, HSD_TExp **list);
 	void (*update)(void *obj, u32 type, FObjData *val);
 } HSD_TObjInfo;

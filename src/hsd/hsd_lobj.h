@@ -4,6 +4,7 @@
 #include "hsd_aobj.h"
 #include "hsd_cobj.h"
 #include "hsd_jobj.h"
+#include "hsd_wobj.h"
 #include "hsd_object.h"
 
 #define MAX_GXLIGHT 9
@@ -31,6 +32,10 @@
 #define LOBJ_ALPHA 7
 #define LOBJ_SPECULAR 8
 
+#define LOBJ_TYPE_MASK 3
+
+#define LOBJ_LIGHT_ATTN
+
 #define LOBJ_HIDDEN 0x20
 #define LOBJ_RAW_PARAM 0x40
 #define LOBJ_DIFF_DIRTY 0x80
@@ -40,15 +45,17 @@ typedef struct _HSD_LObj{
 	HSD_Obj obj;
 	u16 flags;
 	struct _HSD_LObj* next;
-	GXColor color;
+	GXColor color; //0x10
 	GXColor hw_color;
+	HSD_WObj* position; //0x18
+	HSD_WObj* interest; //0x1C
 	union {
 		struct {
-			f32 cutoff;
-			f32 ref_dist;
-			f32 ref_br;
-			GXSpotFn spot_func;
-			GXDistAttnFn dist_func;
+			f32 cutoff; //0x20
+			GXSpotFn spot_func; //0x24
+			f32 ref_br; //0x28
+			f32 ref_dist; //0x2C
+			GXDistAttnFn dist_func; //0x30
 		} spot;
 		struct {
 			f32 a0;
@@ -68,12 +75,30 @@ typedef struct _HSD_LObj{
 	GXLightObj* spec_lightobj;
 } HSD_LObj;
 
-typedef struct _HSD_LObjDesc {
-	
-} HSD_LObjDesc;
+typedef struct _HSD_LightDesc {
+	char* class_name; //0x00
+	u16 flags; //0x08
+	GXColor color; //0x0C
+	u16 attnflags; //TODO: verify size
+	union {
+		
+	} u;
+	HSD_WObjDesc* position;
+} HSD_LightDesc;
+
+typedef struct _HSD_LightAnim {
+	struct _HSD_LightAnim *next;
+	struct _HSD_AObjDesc *aobjdesc;
+	//position_anim;
+	//interest_anim;
+} HSD_LightAnim;
 
 typedef struct _HSD_LObjInfo {
-	
+	HSD_ClassInfo parent;
+	void    (*release)(HSD_Class *o);
+	void    (*amnesia)(HSD_ClassInfo *info);
+	int	    (*load)(HSD_LObj *lobj, HSD_LightDesc *ldesc);
+	void	(*update)(void *obj, u32 type, FObjData *val);
 } HSD_LObjInfo;
 
 extern HSD_LObjInfo hsdLObj;

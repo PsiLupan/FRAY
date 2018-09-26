@@ -366,41 +366,42 @@ static void setup_point_lightobj(HSD_LObj *l, MtxPtr vmtx){
 
 //80365D6C
 static void setup_spot_lightobj(HSD_LObj *l, MtxPtr vmtx){
-  Vec lpos, ldir;
-
-  HSD_LObjGetPosition(l, &lpos);
-  MTXMultVec(vmtx, &lpos, &lpos);
-  HSD_LObjGetLightVector(l, &ldir);
-  MTXMultVecSR(vmtx, &ldir, &ldir);
-  VECNormalize(&ldir, &ldir);
-  GXInitLightPosv(&l->lightobj, &lpos);
-  GXInitLightPosv(&l->spec_lightobj, &lpos);
-  GXInitLightDirv(&l->lightobj, &ldir);
-  if (l->flags & LOBJ_RAW_PARAM) {
-    GXInitLightAttn(&l->lightobj,
+	Vec lpos, ldir;
+	
+	HSD_LObjGetPosition(l, &lpos);
+	MTXMultVec(vmtx, &lpos, &lpos);
+	HSD_LObjGetLightVector(l, &ldir);
+	MTXMultVecSR(vmtx, &ldir, &ldir);
+	VECNormalize(&ldir, &ldir);
+	GXInitLightPosv(&l->lightobj, &lpos);
+	GXInitLightPosv(&l->spec_lightobj, &lpos);
+	GXInitLightDirv(&l->lightobj, &ldir);
+	if (l->flags & LOBJ_RAW_PARAM) {
+		GXInitLightAttn(&l->lightobj,
 		    l->u.attn.a0,
 		    l->u.attn.a1,
 		    l->u.attn.a2,
 		    l->u.attn.k0,
 		    l->u.attn.k1,
 		    l->u.attn.k2);
-  } else {
-    float ref_br = l->u.spot.ref_br;
-    float ref_dist = l->u.spot.ref_dist;
-    float cutoff = l->u.spot.cutoff;
-    GXSpotFn spot_func = l->u.spot.spot_func;
-    GXDistAttnFn dist_func = l->u.spot.dist_func;
-    
-    if (ref_dist < FLT_EPSILON) {
-      ref_dist = FLT_EPSILON;
-    }
-    if (ref_br < FLT_EPSILON) {
-      ref_br = FLT_EPSILON;
-    }
-    GXInitLightDistAttn(&l->lightobj, ref_dist, ref_br, dist_func);
-    GXInitLightDistAttn(&l->spec_lightobj, ref_dist, ref_br, dist_func);
-    GXInitLightSpot(&l->lightobj, cutoff, spot_func);
-  }
+	} else {
+		float ref_br = l->u.spot.ref_br;
+		float ref_dist = l->u.spot.ref_dist;
+		float cutoff = l->u.spot.cutoff;
+		GXSpotFn spot_func = l->u.spot.spot_func;
+		GXDistAttnFn dist_func = l->u.spot.dist_func;
+		
+		if (ref_dist < FLT_EPSILON) {
+			ref_dist = FLT_EPSILON;
+		}
+		if (ref_br < FLT_EPSILON) {
+			ref_br = FLT_EPSILON;
+		}
+		
+		GXInitLightDistAttn(&l->lightobj, ref_dist, ref_br, dist_func);
+		GXInitLightDistAttn(&l->spec_lightobj, ref_dist, ref_br, dist_func);
+		GXInitLightSpot(&l->lightobj, cutoff, spot_func);
+	}
 }
 
 //80365F28
@@ -462,8 +463,8 @@ void HSD_LObjSetupInit(HSD_CObj *cobj){
     }
   }
 
-  if (!HSD_LObjGetActiveByID(GX_LIGHT_AMBIENT)) {
-    for (; list; list=list->next) {
+  if (!HSD_LObjGetActiveByID(GX_MAX_LIGHT)) {
+    for (; list; list = list->next) {
       HSD_LObj *lobj = list->data;
       if (!lobj || lobj->flags & LOBJ_HIDDEN) {
 		  continue;
@@ -477,7 +478,7 @@ void HSD_LObjSetupInit(HSD_CObj *cobj){
   }
   
   num = HSD_LObjGetNbActive();
-  for (i=0; idx<MAX_GXLIGHT-1 && i<num; i++) {
+  for (i = 0; idx < MAX_GXLIGHT - 1 && i < num; i++) {
     HSD_LObj *lobj;
     u32 flags;
     
@@ -492,7 +493,7 @@ void HSD_LObjSetupInit(HSD_CObj *cobj){
     }
   }
 
-  for (i=0; i<num; i++) {
+  for (i = 0; i < num; i++) {
     HSD_LObj *lobj;
     
     if ((lobj = HSD_LObjGetActiveByIndex(i))) {
@@ -521,4 +522,345 @@ void HSD_LObjAddCurrent(HSD_LObj *lobj){
 		}
 		*listp = HSD_SListPrepend(*listp, lobj);
 	}
+}
+
+//803664D4
+void HSD_LObjDeleteCurrent(HSD_LObj *lobj){
+	HSD_SList **p;
+	int i;
+	
+	if (!lobj)
+		return;
+	
+	for (p=&current_lights; *p; p=&(*p)->next) {
+		if ((*p)->data == lobj) {
+			for (i=0; i < MAX_GXLIGHT; i++) {
+				if (lobj == active_lights[i]) {
+					active_lights[i] = NULL;
+				}
+			}
+			(*p) = HSD_SListRemove(*p);
+			HSD_LObjUnref(lobj);
+			return;
+		}
+	}
+}
+
+//80366654
+void HSD_LObjDeleteCurrentAll(HSD_LObj *lobj){
+	if (lobj) {
+		for (; lobj; lobj=lobj->next) {
+			HSD_LObjDeleteCurrent(lobj);
+		}
+	} else {
+		HSD_LObjClearActive();
+		while (current_lights) {
+			HSD_LObjUnref((HSD_LObj *)(current_lights->data));
+			current_lights = HSD_SListRemove(current_lights);
+		}
+	}
+}
+
+//803667A8
+void HSD_LObjSetCurrent(HSD_LObj *lobj){
+	HSD_LObjDeleteCurrentAll(NULL);
+	HSD_LObjAddCurrent(lobj);
+}
+
+//803668EC
+void HSD_LObjSetCurrentAll(HSD_LObj *lobj){
+	HSD_LObjDeleteCurrentAll(NULL);
+	
+	HSD_LObj *l;
+	for(l = lobj; l; l = l->next) {
+		HSD_LObjAddCurrent(l);
+	}
+}
+
+//80366A44
+HSD_LObj* HSD_LObjGetCurrentByType(u32 type){
+	HSD_SList *list;
+	
+	type &= LOBJ_TYPE_MASK;
+	for (list=current_lights; list; list=list->next) {
+		if (HSD_LObjGetType(list->data) == type) {
+			return list->data;
+		}
+	}
+	return NULL;
+}
+
+//80366A78
+u32 HSD_LightID2Index(GXLightID id){
+	u32 index;
+	switch (id) {
+		case GX_LIGHT0: index = 0; break;
+		case GX_LIGHT1: index = 1; break;
+		case GX_LIGHT2: index = 2; break;
+		case GX_LIGHT3: index = 3; break;
+		case GX_LIGHT4: index = 4; break;
+		case GX_LIGHT5: index = 5; break;
+		case GX_LIGHT6: index = 6; break;
+		case GX_LIGHT7: index = 7; break;
+		case GX_MAX_LIGHT: index = MAX_GXLIGHT-1; break;
+		default: assert(0);
+	}
+	return index;
+}
+
+//80366B64
+GXLightID HSD_Index2LightID(u32 index){
+	GXLightID id;
+	switch (index) {
+		case 0: id = GX_LIGHT0; break;
+		case 1: id = GX_LIGHT1; break;
+		case 2: id = GX_LIGHT2; break;
+		case 3: id = GX_LIGHT3; break;
+		case 4: id = GX_LIGHT4; break;
+		case 5: id = GX_LIGHT5; break;
+		case 6: id = GX_LIGHT6; break;
+		case 7: id = GX_LIGHT7; break;
+		case MAX_GXLIGHT-1: id = GX_MAX_LIGHT; break;
+		default: id = GX_LIGHT_NULL;
+	}
+	return id;
+}
+
+//80366BD4
+void HSD_LObjRemoveAll(HSD_LObj *lobj){
+	while (lobj != NULL) {
+		HSD_LObj *next = lobj->next;
+		HSD_LObjDeleteCurrent(lobj);
+		HSD_LObjUnref(lobj);
+		lobj = next;
+	}
+}
+
+//80366CA4
+void HSD_LObjSetColor(HSD_LObj *lobj, GXColor color){
+	lobj->color = color;
+}
+
+//80366CB0
+void HSD_LObjGetColor(HSD_LObj *lobj, GXColor *color){
+	*color = lobj->color;
+}
+
+//80366CBC
+void HSD_LObjSetSpot(HSD_LObj *lobj, f32 cutoff, GXSpotFn spot_func){
+	if (!lobj) 
+		return;
+	
+	lobj->u.spot.cutoff = cutoff;
+	lobj->u.spot.spot_func = spot_func;
+}
+
+//80366CD0
+void HSD_LObjSetDistAttn(HSD_LObj *lobj, f32 ref_distance, f32 ref_brightness, GXDistAttnFn dist_func){
+	if(!lobj)
+		return;
+	
+	lobj->u.spot.ref_dist  = ref_distance;
+	lobj->u.spot.ref_br    = ref_brightness;
+	lobj->u.spot.dist_func = dist_func;
+}
+
+//80366CE8
+void HSD_LObjSetPosition(HSD_LObj *lobj, VecPtr position){
+	assert(lobj);
+	if (!lobj->position) {
+		lobj->position = HSD_WObjAlloc();
+		assert(lobj->position);
+	}
+	HSD_WObjSetPosition(lobj->position, position);
+}
+
+//80366D70
+bool HSD_LObjGetPosition(HSD_LObj *lobj, VecPtr position){
+	if (lobj && lobj->position) {
+		HSD_WObjGetPosition(lobj->position, position);
+		return true;
+	}
+	return false;
+}
+
+//80366DB0
+void HSD_LObjSetInterest(HSD_LObj *lobj, VecPtr interest){
+	assert(lobj);
+	if(!lobj->interest){
+		lobj->interest = HSD_WObjAlloc();
+		assert(lobj->interest);
+	}
+	HSD_WObjSetPosition(lobj->interest, interest);
+}
+
+//80366E38
+bool HSD_LObjGetInterest(HSD_LObj *lobj, VecPtr interest){
+	if (lobj && lobj->interest) {
+		HSD_WObjGetPosition(lobj->interest, interest);
+		return true;
+	}
+	return false;
+}
+
+//80366E78
+HSD_WObj* HSD_LObjGetPositionWObj(HSD_LObj *lobj){
+	return (lobj) ? lobj->position : NULL;
+}
+
+//80366E90
+HSD_WObj* HSD_LObjGetInterestWObj(HSD_LObj *lobj){
+	return (lobj) ? lobj->interest : NULL;
+}
+
+//80366EA8
+static int LObjLoad(HSD_LObj *lobj, HSD_LightDesc *ldesc){
+	HSD_LObjSetColor(lobj, ldesc->color);
+	HSD_LObjSetFlags(lobj, ldesc->flags);
+	
+	switch (ldesc->flags & LOBJ_TYPE_MASK) {
+		case GX_MAX_LIGHT:
+		break;
+		
+		case LOBJ_INFINITE:
+		if(lobj){
+			HSD_WObjUnref(lobj->position);
+			lobj->position = HSD_WObjLoadDesc(ldesc->position);
+		}
+		break;
+
+		case LOBJ_POINT:
+		if(lobj){
+			HSD_WObjUnref(lobj->position);
+			lobj->position = HSD_WObjLoadDesc(ldesc->position);
+		}
+		if (ldesc->attnflags & LOBJ_LIGHT_ATTN) {
+			HSD_LObjSetFlags(lobj, LOBJ_RAW_PARAM);
+			if(lobj){
+				lobj->u.attn.k0 = ldesc->u.attn->dist.k0;
+				lobj->u.attn.k1 = ldesc->u.attn->dist.k1;
+				lobj->u.attn.k2 = ldesc->u.attn->dist.k2;
+			}
+		} else {
+			if(lobj){
+				lobj->u.spot.ref_dist  = ldesc->u.point->ref_dist;
+				lobj->u.spot.ref_br    = ldesc->u.point->ref_br;
+				lobj->u.spot.dist_func = ldesc->u.point->dist_func;
+			}
+		}
+		break;
+		
+		case LOBJ_SPOT:
+		if(lobj){
+			HSD_WObjUnref(lobj->position);
+			lobj->position = HSD_WObjLoadDesc(ldesc->position);
+			
+			HSD_WObjUnref(lobj->interest);
+			lobj->interest = HSD_WObjLoadDesc(ldesc->interest);
+		}
+		if (ldesc->attnflags & LOBJ_LIGHT_ATTN) {
+			HSD_LObjSetFlags(lobj, LOBJ_RAW_PARAM);
+			if(lobj){
+				lobj->u.attn.a0 = ldesc->u.attn->angle.a0;
+				lobj->u.attn.a1 = ldesc->u.attn->angle.a1;
+				lobj->u.attn.a2 = ldesc->u.attn->angle.a2;
+				lobj->u.attn.k0 = ldesc->u.attn->dist.k0;
+				lobj->u.attn.k1 = ldesc->u.attn->dist.k1;
+				lobj->u.attn.k2 = ldesc->u.attn->dist.k2;
+			}
+		} else {
+			if(lobj){
+				lobj->u.spot.ref_dist  = ldesc->u.spot->ref_dist;
+				lobj->u.spot.ref_br    = ldesc->u.spot->ref_br;
+				lobj->u.spot.dist_func = ldesc->u.spot->dist_func;
+				
+				lobj->u.spot.cutoff = ldesc->u.spot->cutoff;
+				lobj->u.spot.spot_func = ldesc->u.spot->spot_func;
+			}
+		}
+		break;
+		
+		default:
+		//HSD_Report("unexpected lightdesc flags (%x)\n", ldesc->flags);
+		//HSD_Halt("");
+	}
+	return 0;
+}
+
+//803672DC
+HSD_LObj* HSD_LObjLoadDesc(HSD_LightDesc *ldesc){
+  HSD_LObj *top, **p = &top;
+  
+  for (; ldesc; ldesc = ldesc->next) {
+    HSD_ClassInfo *info;
+
+    if (!ldesc->class_name || !(info = hsdSearchClassInfo(ldesc->class_name))){
+      *p = HSD_LObjAlloc();
+    } else {
+      *p = hsdNew(info);
+      assert(*p);
+    }
+    HSD_LOBJ_METHOD(*p)->load(*p, ldesc);
+    p = &(*p)->next;
+  }
+  *p = NULL;
+
+  return top;
+}
+
+//803673D8
+void HSD_LObjAddAnim(HSD_LObj *lobj, HSD_LightAnim *lanim){
+	HSD_LObj *lp;
+	HSD_LightAnim *la;
+	
+	for (lp = lobj, la = lanim; lp; lp = lp->next, la = la->next) {
+		if (lp){	
+			if (la) {
+				if (lp->aobj) {
+					HSD_AObjRemove(lp->aobj);
+				}
+				lp->aobj = HSD_AObjLoadDesc(la->aobjdesc);
+				HSD_WObjAddAnim(HSD_LObjGetPositionWObj(lp), la->position_anim);
+				HSD_WObjAddAnim(HSD_LObjGetInterestWObj(lp), la->interest_anim);
+			}
+		}
+	}
+}
+
+//803674B4
+static void LObjRelease(HSD_Class *o){
+	HSD_LObj *lobj = HSD_LOBJ(o);
+	
+	HSD_AObjRemove(lobj->aobj);
+	HSD_WObjUnref(HSD_LObjGetPositionWObj(lobj));
+	HSD_WObjUnref(HSD_LObjGetInterestWObj(lobj));
+	
+	HSD_PARENT_INFO(&hsdLObj)->release(o);
+}
+
+//80367628
+static void LObjAmnesia(HSD_ClassInfo *info){
+	if (info == HSD_CLASS_INFO(default_class)) {
+		default_class = NULL;
+	}
+	if (info == HSD_CLASS_INFO(&hsdLObj)) {
+		current_lights = NULL;
+	}
+	HSD_PARENT_INFO(&hsdLObj)->amnesia(info);
+}
+
+//80367688
+static void LObjInfoInit(void){
+	hsdInitClassInfo(HSD_CLASS_INFO(&hsdLObj),
+		HSD_CLASS_INFO(&hsdObj),
+		HSD_BASE_CLASS_LIBRARY,
+		"hsd_lobj",
+		sizeof(HSD_LObjInfo),
+		sizeof(HSD_LObj));
+		
+	HSD_CLASS_INFO(&hsdLObj)->release = LObjRelease;
+	HSD_CLASS_INFO(&hsdLObj)->amnesia = LObjAmnesia;
+	
+	HSD_LOBJ_INFO(&hsdLObj)->load     = LObjLoad;
+	HSD_LOBJ_INFO(&hsdLObj)->update   = LObjUpdateFunc;
 }
