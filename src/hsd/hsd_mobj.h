@@ -1,6 +1,9 @@
 #ifndef _hsd_mobj_h_
 #define _hsd_mobj_h_
 
+#include <gctypes.h>
+#include <ogc/gx.h>
+
 #include "hsd_aobj.h"
 #include "hsd_texp.h"
 #include "hsd_tobj.h"

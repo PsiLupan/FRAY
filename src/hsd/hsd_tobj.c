@@ -374,12 +374,12 @@ static int current_TexCoordID_index;
 
 //8035EF38
 static void MakeTextureMtx(HSD_TObj *tobj){
-	Vec scale;
+	guVector scale;
 	assert(tobj->repeat_s && tobj->repeat_t);
 	{
 		Mtx m;
-		Vec trans;
-		Quaternion rot;
+		guVector trans;
+		guQuaternion rot;
 		
 		scale.x = fabsf(tobj->scale.x) < EPSILON ? 0.0F : (float)tobj->repeat_s/tobj->scale.x;
 		scale.y = fabsf(tobj->scale.y) < EPSILON ? 0.0F : (float)tobj->repeat_t/tobj->scale.y;
@@ -391,11 +391,11 @@ static void MakeTextureMtx(HSD_TObj *tobj){
 		trans.y = -(tobj->translate.y + (tobj->wrap_t == GX_MIRROR ? 1.0F / (tobj->repeat_t / tobj->scale.y) : 0.0F));
 		trans.z = tobj->translate.z;
 		
-		MTXTrans(tobj->mtx, trans.x, trans.y, trans.z);
+		guMtxTrans(tobj->mtx, trans.x, trans.y, trans.z);
 		HSD_MkRotationMtx(m, &rot);
-		MTXConcat(m, tobj->mtx, tobj->mtx);
-		MTXScale(m, scale.x, scale.y, scale.z);
-		MTXConcat(m, tobj->mtx, tobj->mtx);
+		guMtxConcat(m, tobj->mtx, tobj->mtx);
+		guMtxScale(m, scale.x, scale.y, scale.z);
+		guMtxConcat(m, tobj->mtx, tobj->mtx);
 	}
 }
 
@@ -421,7 +421,7 @@ static void TObjSetupMtx(HSD_TObj *tobj){
 				mtx[i][2] =  0.0F;
 				mtx[i][3] =  0.5F * tobj->mtx[i][0] + 0.5F * tobj->mtx[i][1] + tobj->mtx[i][2] + tobj->mtx[i][3];
 			}
-		GXLoadTexMtxImm(mtx, tobj->mtxid, GX_MTX3x4);
+		GX_LoadTexMtxImm(mtx, tobj->mtxid, GX_MTX3x4);
 		}
 		break;
 		
@@ -431,18 +431,19 @@ static void TObjSetupMtx(HSD_TObj *tobj){
 			
 			if ((lobj = HSD_LObjGetCurrentByType(LOBJ_INFINITE)) != NULL) {
 				HSD_CObj *cobj;
-				Vec ldir, half;
+				guVector ldir, half;
 				Mtx mtx;
-				MtxPtr vmtx;
+				MtxP vmtx;
 				
 				cobj = HSD_CObjGetCurrent();
 				assert(cobj);
 				vmtx = HSD_CObjGetViewingMtxPtrDirect(cobj);
 				HSD_LObjGetLightVector(lobj, &ldir);
-				MTXMultVecSR(vmtx, &ldir, &ldir);
+				ps_guVecMultiplySR(vmtx, &ldir, &ldir);
 				ldir.z += -1.0F;
-
-				VECNormalize(&ldir, &half);
+				
+				half = ldir; //libogc implements normalize as just returning the result in the ptr, rather than DSDK's (*src, *rslt);
+				guVecNormalize(&half);
 				
 				half.x *= -0.5;
 				half.y *= -0.5;
@@ -459,14 +460,14 @@ static void TObjSetupMtx(HSD_TObj *tobj){
 				mtx[2][0] = mtx[2][1] = mtx[2][2] = 0.0F;
 				mtx[2][3] = 1.0F;
 				
-				GXLoadTexMtxImm(mtx, tobj->mtxid, GX_MTX3x4);
+				GX_LoadTexMtxImm(mtx, tobj->mtxid, GX_MTX3x4);
 			} else {
 				static Mtx zero = {
 					0.0F, 0.0F, 0.0F, 1.0F,
 					0.0F, 0.0F, 0.0F, 1.0F,
 					0.0F, 0.0F, 0.0F, 0.0F
 				};
-				GXLoadTexMtxImm(zero, tobj->mtxid, GX_MTX3x4);
+				GX_LoadTexMtxImm(zero, tobj->mtxid, GX_MTX3x4);
 			}
 		}
 		break;
@@ -476,16 +477,16 @@ static void TObjSetupMtx(HSD_TObj *tobj){
 			HSD_CObj *cobj = HSD_CObjGetCurrent();
 			Mtx mtx;
 			
-			MTXConcat(tobj->mtx, HSD_CObjGetInvViewingMtxPtrDirect(cobj), mtx);
-			GXLoadTexMtxImm(mtx, tobj->mtxid, GX_MTX3x4);
+			guMtxConcat(tobj->mtx, HSD_CObjGetInvViewingMtxPtrDirect(cobj), mtx);
+			GX_LoadTexMtxImm(mtx, tobj->mtxid, GX_MTX3x4);
 		}
 		break;
 		
 		default:
 		if (tobj_bump(tobj)) {
-			GXLoadTexMtxImm(tobj->mtx, tobj->mtxid, GX_MTX2x4);
+			GX_LoadTexMtxImm(tobj->mtx, tobj->mtxid, GX_MTX2x4);
 		} else {
-			GXLoadTexMtxImm(tobj->mtx, tobj->mtxid, GX_MTX3x4);
+			GX_LoadTexMtxImm(tobj->mtx, tobj->mtxid, GX_MTX3x4);
 		}
 		break;
 	}
@@ -495,19 +496,19 @@ static void TObjSetupMtx(HSD_TObj *tobj){
 static void HSD_TObjSetupTextureCoordGen(HSD_TObj *tobj){
 	switch (tobj_coord(tobj)) {
 		case TEX_COORD_SHADOW:
-			GXSetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_DISABLE, tobj->mtxid);
+			GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_DISABLE, tobj->mtxid);
 			break;
 		
 		case TEX_COORD_REFLECTION:
 		case TEX_COORD_HILIGHT:
-			GXSetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_ENABLE, tobj->mtxid);
+			GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_ENABLE, tobj->mtxid);
 			break;
 		
 		default:
 			if (tobj_bump(tobj)) {
-				GXSetTexCoordGen(tobj->coord, GX_TG_MTX2x4, tobj->src, tobj->mtxid);
+				GX_SetTexCoordGen(tobj->coord, GX_TG_MTX2x4, tobj->src, tobj->mtxid);
 			} else {
-				GXSetTexCoordGen2(tobj->coord, GX_TG_MTX2x4, tobj->src, GX_IDENTITY, GX_FALSE, tobj->mtxid);
+				GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX2x4, tobj->src, GX_IDENTITY, GX_FALSE, tobj->mtxid);
 			}
 	}
 }
@@ -823,7 +824,7 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
 
 
 //80360C38
-u32 HSD_TGTex2Index(GXTexGenSrc tgtex){
+u32 HSD_TGTex2Index(u32 tgtex){
 	switch (tgtex) {
 		case GX_TG_TEX0: return 0;
 		case GX_TG_TEX1: return 1;
@@ -839,7 +840,7 @@ u32 HSD_TGTex2Index(GXTexGenSrc tgtex){
 }
 
 //80360CCC
-GXTexGenSrc HSD_TexCoordID2TexGenSrc(GXTexCoordID coord){
+u32 HSD_TexCoordID2TexGenSrc(u16 coord){
 	switch (coord) {
 		case GX_TEXCOORD0: return GX_TG_TEXCOORD0;
 		case GX_TEXCOORD1: return GX_TG_TEXCOORD1;
@@ -856,7 +857,7 @@ GXTexGenSrc HSD_TexCoordID2TexGenSrc(GXTexCoordID coord){
 }
 
 //80360D54
-u32 HSD_TexCoord2Index(GXTexCoordID coord_id){
+u32 HSD_TexCoord2Index(u16 coord_id){
 	switch (coord_id) {
 		case GX_TEXCOORD0: return 0;
 		case GX_TEXCOORD1: return 1;
@@ -872,7 +873,7 @@ u32 HSD_TexCoord2Index(GXTexCoordID coord_id){
 }
 
 //80360DE4
-GXTexCoordID HSD_Index2TexCoord(u32 index){
+u16 HSD_Index2TexCoord(u32 index){
 	switch (index) {
 		case 0: return GX_TEXCOORD0;
 		case 1: return GX_TEXCOORD1;
@@ -888,7 +889,7 @@ GXTexCoordID HSD_Index2TexCoord(u32 index){
 }
 
 //80360E74
-u32 HSD_TexMtx2Index(GXTexMtx texmtx){
+u32 HSD_TexMtx2Index(u32 texmtx){
 	switch (texmtx) {
 		case GX_TEXMTX0: return 0;
 		case GX_TEXMTX1: return 1;
@@ -907,7 +908,7 @@ u32 HSD_TexMtx2Index(GXTexMtx texmtx){
 }
 
 //80360F24
-GXTexMtx HSD_Index2TexMtx(u32 index){
+u32 HSD_Index2TexMtx(u32 index){
 	switch (index) {
 		case 0: return GX_TEXMTX0;
 		case 1: return GX_TEXMTX1;
@@ -926,7 +927,7 @@ GXTexMtx HSD_Index2TexMtx(u32 index){
 }
 
 //80360FE0
-GXTexMapID HSD_Index2TexMap(u32 index){
+u8 HSD_Index2TexMap(u32 index){
 	switch (index) {
 		case 0: return GX_TEXMAP0;
 		case 1: return GX_TEXMAP1;
@@ -942,7 +943,7 @@ GXTexMapID HSD_Index2TexMap(u32 index){
 }
 
 //80361070
-u32 HSD_TexMap2Index(GXTexMapID mapid){
+u32 HSD_TexMap2Index(u8 mapid){
 	switch (mapid) {
 		case GX_TEXMAP0: return 0;
 		case GX_TEXMAP1: return 1;

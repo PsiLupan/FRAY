@@ -2,8 +2,7 @@
 #define _hsd_jobj_h_
 
 #include <gctypes.h>
-
-#include <dolphin/mtx/GeoTypes.h>
+#include <ogc/gu.h>
 
 #include "hsd_dobj.h"
 
@@ -18,11 +17,11 @@ typedef struct _HSD_JObj {
 	HSD_JObj* child;
 	u32 flags;
 	struct _HSD_DObj* dobj;
-	Quaternion rotation;
-	Vec scale;
-	Vec position;
+	guQuaternion rotation;
+	guVector scale;
+	guVector position;
 	Mtx mtx;
-	VecPtr pvec;
+	guVector* pvec;
 	MtxPtr vmtx;
 	struct _HSD_AObj* aobj;
 	struct _HSD_RObj* robj;
@@ -35,9 +34,9 @@ typedef struct _HSD_JObjDesc {
 	struct _HSD_JObjDesc child;
 	struct _HSD_JObjDesc next;
 	struct _HSD_DObjDesc* dobj;
-	Vec rotation;
-	Vec scale;
-	Vec position;
+	guVector rotation;
+	guVector scale;
+	guVector position;
 	Mtx mtx;
 	struct _HSD_RObjDesc* robj;
 } HSD_JObjDesc;
@@ -46,8 +45,8 @@ typedef struct _HSD_JObjInfo {
 	HSD_ClassInfo parent;
 	void (*setup)(HSD_JObj *jobj, u32 rendermode);
 	int (*load)(HSD_JObj *jobj, HSD_JObjDesc *desc);
-	void (*make_pmtx)(HSD_JObj *jobj, MtxPtr vmtx, Mtx pmtx);
-	void (*disp)(HSD_JObj *jobj, MtxPtr vmtx, Mtx pmtx, HSD_TrspMask trsp_mask, u32 rendermode);
+	void (*make_pmtx)(HSD_JObj *jobj, MtxP vmtx, Mtx pmtx);
+	void (*disp)(HSD_JObj *jobj, MtxP vmtx, Mtx pmtx, HSD_TrspMask trsp_mask, u32 rendermode);
 } HSD_JObjInfo;
 
 extern HSD_JObjInfo hsdJObj;

@@ -1,6 +1,8 @@
 #ifndef _hsd_pobj_h_
 #define _hsd_pobj_h_
 
+#include <gctypes.h>
+
 #include "hsd_jobj.h"
 
 //Polygon Object

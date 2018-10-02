@@ -2,8 +2,8 @@
 #define _hsd_tobj_h_
 
 #include <gctypes.h>
-
-#include "../../include/dolphin.h"
+#include <ogc/gu.h>
+#include <ogc/gx.h>
 
 #include "hsd_aobj.h"
 
@@ -89,24 +89,31 @@
 #define tobj_bump(T) ((T)->flags & TEX_BUMP)
 #define TEX_MTX_DIRTY (1<<31)
 
+typedef enum _GXTlutFmt {
+	GX_TL_IA8    = 0x0,
+    GX_TL_RGB565 = 0x1,
+    GX_TL_RGB5A3 = 0x2,
+    GX_MAX_TLUTFMT
+} GXTlutFmt;
+
 //Texture Object
 typedef struct _HSD_TObj {
 	HSD_Obj	object;
 	struct _HSD_TObj* next;
-	GXTexMapID id;
-	GXTexGenSrc src;
+	u8 id; //GXTexMapID
+	u32 src; //GXTexGenSrc
 	u32 mtxid;
 	Quaternion rotation;
 	Vec scale;
 	Vec translation;
-	GXTexWrapMode wrap_s;
-	GXTexWrapMode wrap_t;
+	u8 wrap_s; //GXTexWrapMode
+	u8 wrap_t; //GXTexWrapMode
 	u8 repeat_s;
 	u8 repeat_t;
 	u16 anim_id;
 	u32 flags;
 	f32 blending;
-	GXTexFilter magFilt;
+	u8 magFilt; //GXTexFilter
 	HSD_ImageDesc* imagedesc;
 	HSD_Tlut* tlut;
 	HSD_TexLODDesc* lod;
@@ -115,25 +122,25 @@ typedef struct _HSD_TObj {
 	Tlut **tluttbl;
 	u8 tlut_no;
 	Mtx mtx;
-	GXTexCoordID coord;
+	u16 coord; //GXTexCoordID
 	HSD_TObjTev *tev;
 } HSD_TObj;
 
 typedef struct _HSD_TObjDesc {
 	char* class_name;
 	HSD_TObjDesc* next;
-	GXTexMapID id;
-	GXTexGenSrc src;
+	u8 id; //GXTexMapID
+	u32 src; //GXTexGenSrc
 	Vec rotation;
 	Vec scale; 
 	Vec translation;
-	GXTexWrapMode wrap_s;
-	GXTexWrapMode wrap_t;
+	u8 wrap_s; //GXTexWrapMode
+	u8 wrap_t; //GXTexWrapMode
 	u8 repeat_s;
 	u8 repeat_t;
 	u32 flags;
 	f32 blending;
-	GXTexFilter magFilt;
+	u8 magFilt; //GXTexFilter
 	HSD_ImageDesc* imagedesc;
 	HSD_TlutDesc* tlutdesc;
 	HSD_TexLODDesc* lod;
@@ -155,18 +162,18 @@ typedef struct _HSD_TlutDesc {
 } HSD_TlutDesc;
 
 typedef struct _HSD_TexLODDesc {
-	GXTexFilter minFilt;
+	u8 minFilt; //GXTexFilter
 	f32 LODBias;
-	GXBool bias_clamp;
-	GXBool edgeLODEnable;
-	GXAnisotropy max_anisotropy;
+	u8 bias_clamp; //GXBool
+	u8 edgeLODEnable; //GXBool
+	u8 max_anisotropy; //GXAnisotropy
 } HSD_TexLODDesc;
 
 typedef struct _HSD_ImageDesc {
 	void *img_ptr;
 	u16 width;
 	u16 height;
-	GXTexFmt format;
+	u32 format;
 	u32 mipmap;
 	f32 minLOD;
 	f32 maxLOD;
@@ -212,7 +219,7 @@ typedef struct _HSD_TObjInfo {
 
 typedef struct _HSD_TexAnim {
 	struct _HSD_TexAnim *next;
-	GXTexMapID id;
+	u8 id; //GXTexMapID
 	struct _HSD_AObjDesc *aobjdesc;
 	HSD_ImageDesc **imagetbl;
 	HSD_TlutDesc **tluttbl;
@@ -255,14 +262,14 @@ HSD_ImageDesc* HSD_ImageDescAlloc();
 void HSD_ImageDescFree(HSD_ImageDesc *idesc);
 void HSD_ImageDescCopyFromEFB(HSD_ImageDesc *idesc, u16 origx, u16 origy, GXBool clear, int sync);
 
-u32 HSD_TGTex2Index(GXTexGenSrc tgtex);
-GXTexGenSrc HSD_TexCoordID2TexGenSrc(GXTexCoordID coord);
-u32 HSD_TexCoord2Index(GXTexCoordID coord_id);
-GXTexCoordID HSD_Index2TexCoord(u32 index);
-u32 HSD_TexMtx2Index(GXTexMtx texmtx);
-GXTexMtx HSD_Index2TexMtx(u32 index);
-GXTexMapID HSD_Index2TexMap(u32 index);
-u32 HSD_TexMap2Index(GXTexMapID mapid);
+u32 HSD_TGTex2Index(u32 tgtex);
+u32 HSD_TexCoordID2TexGenSrc(u16 coord);
+u32 HSD_TexCoord2Index(u16 coord_id);
+u16 HSD_Index2TexCoord(u32 index);
+u32 HSD_TexMtx2Index(u32 texmtx);
+u32 HSD_Index2TexMtx(u32 index);
+u8 HSD_Index2TexMap(u32 index);
+u32 HSD_TexMap2Index(u8 mapid);
 
 
 HSD_TObj* _HSD_TObjGetCurrentByType(HSD_TObj *from, u32 mapping);

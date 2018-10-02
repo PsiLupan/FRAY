@@ -1,5 +1,7 @@
 #include "hsd_init.h"
 
+#include <gctypes.h>
+
 #define HSD_OBJ_NOREF 0xFFFF
 
 typedef struct _HSD_Obj {
