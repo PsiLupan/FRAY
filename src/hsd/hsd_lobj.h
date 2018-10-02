@@ -1,6 +1,8 @@
 #ifndef _hsd_lobj_h_
 #define _hsd_lobj_h_
 
+#include <ogc/gx.h>
+
 #include "hsd_aobj.h"
 #include "hsd_cobj.h"
 #include "hsd_jobj.h"
@@ -41,6 +43,23 @@
 #define LOBJ_DIFF_DIRTY 0x80
 #define LOBJ_SPEC_DIRTY 0x100
 
+struct spot {
+	f32 cutoff;
+	u8 spot_func;
+	f32 ref_br;
+	f32 ref_dist;
+	u8 dist_func;
+};
+
+struct attn {
+	f32 a0;
+	f32 a1;
+	f32 a2;
+	f32 k0;
+	f32 k1;
+	f32 k2;
+};
+
 typedef struct _HSD_LObj{
 	HSD_Obj obj;
 	u16 flags;
@@ -50,28 +69,15 @@ typedef struct _HSD_LObj{
 	HSD_WObj* position; //0x18
 	HSD_WObj* interest; //0x1C
 	union {
-		struct {
-			f32 cutoff; //0x20
-			GXSpotFn spot_func; //0x24
-			f32 ref_br; //0x28
-			f32 ref_dist; //0x2C
-			GXDistAttnFn dist_func; //0x30
-		} spot;
-		struct {
-			f32 a0;
-			f32 a1;
-			f32 a2;
-			f32 k0;
-			f32 k1;
-			f32 k2;
-		} attn;
+		struct spot;
+		struct attn;
 	} u;
 	f32 shininess;
 	Vec lvec;
 	HSD_AObj* aobj;
-	GXLightID id;
+	u8 id; //GXLightID
 	GXLightObj* lightobj; //0x50
-	GXLightID spec_id; //0x90
+	u8 spec_id; //0x90 GXLightID
 	GXLightObj* spec_lightobj;
 } HSD_LObj;
 
@@ -81,7 +87,8 @@ typedef struct _HSD_LightDesc {
 	GXColor color; //0x0C
 	u16 attnflags; //TODO: verify size
 	union {
-		
+		struct spot* spot;
+		struct attn* attn;
 	} u;
 	HSD_WObjDesc* position;
 } HSD_LightDesc;

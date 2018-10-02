@@ -3,7 +3,7 @@
 
 #include <gctypes.h>
 
-#include "../../include/mtx/GeoTypes.h"
+#include <dolphin/mtx/GeoTypes.h>
 
 #include "hsd_dobj.h"
 

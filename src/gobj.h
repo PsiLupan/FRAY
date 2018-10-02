@@ -5,8 +5,7 @@
 
 #include <gctypes.h>
 
-typedef struct _HSD_GObj
-{
+typedef struct _HSD_GObj {
 	u16 classifier;
 	u8 unkflag02;
 	u8 unkflag03;
