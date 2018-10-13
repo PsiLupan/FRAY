@@ -9,7 +9,7 @@
 #include "unknown.h"
 
 //Length: 0x14(20)
-struct GameState {
+typedef struct _GameState {
 	u8 curr_major;
 	u8 pending_major;
 	u8 prev_major;
@@ -24,11 +24,11 @@ struct GameState {
 	u8 unk0F;
 	u32 unk10;
 	u32 unk14;
-};
+} GameState;
 
-extern struct GameState GameState;
+extern GameState gamestate;
 
-struct SceneHandler {
+typedef struct _SceneHandler {
 	u8 idx;
 	u16 pad;
 	u8 pad2;
@@ -36,32 +36,29 @@ struct SceneHandler {
 	void* OnLoad;
 	void* SomeFunc;
 	void* SomeFunc2;
-};
+} SceneHandler;
 
-struct SceneHandlers { //0x2D scenes
-	struct SceneHandler title_screen;
-	struct SceneHandler main_menu;
-}; //803DA920
+typedef struct _SceneHandlers { //0x2D scenes
+	SceneHandler title_screen;
+	SceneHandler main_menu;
+} SceneHandlers; //803DA920
 
-extern struct SceneHandlers SceneHandlers;
+extern struct SceneHandlers sceneHandlers;
 
-struct SceneData {
+typedef struct _SceneData {
 	u8 idx; //starts at 1
 	u16 unk01;
 	u32* SceneInit;
 	u32* UnkFunc;
 	void (*StartupInit)();
-	struct SceneSubData* sdata;
+	u8 scene_subdata[255];
 	bool unk_bool;
-}; //803DACA4
+} SceneData; //803DACA4
 
-struct SceneSubData {
-	
-};
-
-extern struct SceneData SceneData[45];
+extern SceneData sceneInfo[45];
 
 u32* Scene_RunFunc(u8);
+void Scene_RunStartupInit();
 
 void Scene_UpdatePendingMajor(u8);
 void Scene_SetPendingMajor(u8);
@@ -76,7 +73,7 @@ u32 Scene_StoreTo10(u32);
 /**
 * Is Scene X
 **/
-
+SceneData* Scene_GetSceneDataByIdx(u8 scene_idx);
 bool Scene_IsSinglePlayer(u8);
 bool Scene_IsCurrSceneSuperSuddenDeath();
 bool Scene_IsCurrSceneSinglePlayer();

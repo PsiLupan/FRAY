@@ -1,17 +1,16 @@
 #include "scene.h"
 #include "unknown.h"
 
-struct GameState GameState;
-struct SceneHandlers SceneHandlers;
+GameState gamestate;
+SceneHandlers sceneHandlers;
 
-struct SceneData SceneData[45]; //803DACA4
+SceneData sceneInfo[45]; //803DACA4
 
 u32* unk4F80[3];
 
 //801A4014
-/*u32* Scene_RunFunc(struct SceneData* scene)
+u32* Scene_RunFunc(SceneData* scene)
 {
-  u32 v1; // r28@1
   u32 v2; // r4@1
   u8 *v3; // r5@1
   u32 v4; // ctr@1
@@ -25,14 +24,13 @@ u32* unk4F80[3];
   int v12; // r4@21
   u8 *v13; // r6@21
   u8 *v14; // r3@21
-  int v15; // r3@23
+  u8 v15; // r3@23
   signed int v16; // r3@31
 
-  v1 = a1;
-  v2 = GameState.unk03;
-  v3 = *(u8 **)(a1 + 16);
-  v4 = 255 - GameState.unk03;
-  if ( GameState.unk03 < 255 )
+  v2 = gamestate.unk03;
+  v3 = scene->scene_subdata;
+  v4 = 255 - gamestate.unk03;
+  if ( gamestate.unk03 < 255 )
   {
     do
     {
@@ -56,39 +54,37 @@ u32* unk4F80[3];
   }
   v7 = 0;
 LABEL_9:
-  GameState.unk03 = *(u8 *)v7;
+  gamestate.unk03 = *(u8 *)v7;
   sub_801A3F48(v7);
-  if ( *(_DWORD *)(v7 + 4) )
-    return (_DWORD *)v7;
+  if ( *(u32 *)(v7 + 4) )
+    return (u32 *)v7;
   v10 = (int *)sub_801A4CE0(*(u8 *)(v7 + 12));
   sub_801A4BD4();
   sub_801A4B88(v7 + 12);
   if ( v10[2] )
-    return *(_DWORD **)(v7 + 16);
+    return *(u32 **)(v7 + 16);
   sub_801A4D34(v10[1]);
   if ( !dword_8046B0F0.unk04 && v10[3] )
-    return *(_DWORD **)(v7 + 20);
+    return *(u32 **)(v7 + 20);
   if ( !dword_8046B0F0.unk04 )
   {
-    if ( *(_DWORD *)(v7 + 8) )
-      return (_DWORD *)v7;
-    GameState.unk04 = GameState.unk03;
-    if (GameState.unk04)
+    if ( *(u32 *)(v7 + 8) )
+      return (u32 *)v7;
+    gamestate.unk04 = gamestate.unk03;
+    
+    if (gamestate.unk04)
     {
-      GameState.unk03 = GameState.unk04 - 1;
-      GameState.unk05 = 0;
-    }
-    else
+      gamestate.unk03 = gamestate.unk04 - 1;
+      gamestate.unk05 = 0;
+    }else
     {
-      v11 = *(u8 **)(v1 + 16);
+      v11 = scene->scene_subdata;
       v12 = 0;
-      v13 = *(u8 **)(v1 + 16);
-      v14 = *(u8 **)(v1 + 16);
-      while ( *v13 != 255 )
-      {
-        if ( *v14 > (unsigned int)(u8)GameState.unk03 )
-        {
-          LOBYTE(v15) = v11[24 * v12];
+      v13 = scene->scene_subdata;
+      v14 = scene->scene_subdata;
+      while ( *v13 != 255 ){
+        if ( *v14 > (unsigned int)(u8)gamestate.unk03 ){
+          v15 = v11[24 * v12];
           goto LABEL_28;
         }
         v14 += 24;
@@ -97,94 +93,111 @@ LABEL_9:
       }
       v15 = *v11;
       if ( v15 == 255 )
-        LOBYTE(v15) = 0;
+        v15 = NULL;
 LABEL_28:
-      GameState.unk03 = v15;
+      gamestate.unk03 = v15;
     }
   }
   sub_8001CDB4();
   sub_8001B760(11);
   result = sub_8001F800();
-  if ( dword_8046B0F0.unk04 )
-  {
+  if ( dword_8046B0F0.unk04 ){
     sub_80027DBC((unsigned int)result);
     sub_80377D18();
     do {
       v16 = sub_8001B6F8();
-	} while ( v16 == 11 );
+    } while ( v16 == 11 );
     if ( !DVD_CheckDisk(v16) )
       SYS_ResetSystem(1u, 0, 0);
     sub_8001F800();
     while (sub_8038EA50(1));
     CheckLanguage();
-    memset(&GameState, 0, 20);
-    sub_801A3EF4();
+    memset(&gamestate, 0, 20);
+    Scene_RunStartupInit();
     dword_8046B0F0.unk00 = 1;
     Scene_SetPendingMajor(40);
     VIDEO_SetBlack(FALSE);
-	result = 0;
+    result = NULL;
   }
   return result;
-}*/
+}
+
+//801A3EF4
+void Scene_RunStartupInit(){  
+  for (u32 i = 0; sceneInfo[i].idx != 45; i += 1 ){
+    if(sceneInfo[i].StartupInit){
+      (*sceneInfo[i].StartupInit)();
+    }
+  }
+}
 
 //801A4310
 u8 Scene_LoadCurrentMajor(){
-	return GameState.curr_major;
+	return gamestate.curr_major;
 }
 
 //801A42E8
 void Scene_UpdatePendingMajor(u8 val){
-	GameState.pending_major = val;
+	gamestate.pending_major = val;
 }
 
 //801A42F8
 void Scene_SetPendingMajor(u8 val){
-	GameState.pending_major = val;
-	GameState.pending = true;
+	gamestate.pending_major = val;
+	gamestate.pending = true;
 }
 
 //801A42D4
 void Scene_SetPendingTrue(){
-	GameState.pending = true;
+	gamestate.pending = true;
 }
 
 //801A4320
 u8 Scene_LoadPrevMajor(){
-	return GameState.prev_major;
+	return gamestate.prev_major;
 }
 
 //801A42C4
 u8 Scene_Get03(){
-	return GameState.unk03;
+	return gamestate.unk03;
 }
 
 //801A428C
 void Scene_Set03And04(u8 val){
-	GameState.unk03 = val;
-	GameState.unk04 = val;
+	gamestate.unk03 = val;
+	gamestate.unk04 = val;
 }
 
 //801A42B4
 u8 Scene_Get04(){
-  return GameState.unk04;
+  return gamestate.unk04;
 }
 
 //801A42A0
 void Scene_Set05(u8 val){
 	u8 v1;
 	v1 = val + 1;
-	GameState.unk05 = v1;
+	gamestate.unk05 = v1;
 }
 
 //801A4330
 u32 Scene_StoreTo10(u32 val){
-	GameState.unk10 = val;
+	gamestate.unk10 = val;
 	return val;
 }
 
 /**
 * Is Scene X
 **/
+
+//801A4CE0
+SceneData* Scene_GetSceneDataByIdx(u8 scene_idx){
+  for ( int i = 0; sceneInfo[i].idx >= 45 ; i++ ){
+    if ( sceneInfo[i].idx == scene_idx )
+      return &sceneInfo[i];
+  }
+  return NULL;
+}
 
 //801A4340
 bool Scene_IsSinglePlayer(u8 scene){
@@ -224,9 +237,8 @@ bool Scene_IsSceneClassicAdvOrAllStar(){
 }
 
 //801A50A0
-struct SceneHandlers* GetSceneHandlers()
-{
-  return &SceneHandlers;
+struct SceneHandlers* GetSceneHandlers(){
+  return &sceneHandlers;
 }
 
 //801A4B88

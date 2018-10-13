@@ -3,12 +3,6 @@
 
 #include "scene.h"
 
-typedef struct _unk_80432078{
-	void* unk970;
-} unk_80432078;
-
-extern unk_80432078 dword_80432078;
-
 typedef struct _unk_8046B0F0 {
 	u32 unk00;
 	u32 unk04;

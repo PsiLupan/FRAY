@@ -14,7 +14,7 @@ void HSD_JObjRemoveAll(HSD_JObj *jobj){
 			if(prev)
 				prev->next = NULL;
 			else
-				jobj->parent->next = NULL; //TODO: Verify this, probably wrong : *((_DWORD *)v16[3] + 4) = NULL;
+				jobj->parent->next = NULL; //TODO: Verify this, probably wrong : *((u32 *)v16[3] + 4) = NULL;
 		}
 		HSD_JObj *curr = jobj;
 		HSD_JObj *next = NULL;
@@ -56,7 +56,7 @@ void RecalcParentTrspBits(HSD_JObj *jobj){
 	if(jobj){
 		for(HSD_JObj* i = jobj; i; i->next){
 			u32 v2 = 0x8FFFFFFF;
-			for(HSD_JObj j = jobj->child; j->next; j = j->next){
+			for(HSD_JObj* j = jobj->child; j->next; j = j->next){
 				v2 |= (j->flags | (j->flags << 10)) & 0x70000000;
 			}
 			if(!(i->flags & ~v2))
@@ -114,7 +114,7 @@ void HSD_JObjReparent(HSD_JObj *jobj, HSD_JObj *pjobj){
 				while(prchild){
 					u32 flags = prchild->flags;
 					prchild = prchild->next;
-					a3 |= (flag | (flags << 10)) & 0x70000000;
+					a3 |= (flags | (flags << 10)) & 0x70000000;
 				}
 				if(!(i->flags & ~a3))
 					break;
@@ -166,19 +166,19 @@ void HSD_JObjAddNext(HSD_JObj *jobj, HSD_JObj *next){
 		}
 		
 		while(v18){
-			/**((_DWORD *)v18 + 3) = next;
+			/**((u32 *)v18 + 3) = next;
 			v38 = next;
-			result = (char **)*((_DWORD *)v18 + 5);
-			v39 = ((unsigned int)result | ((_DWORD)result << 10)) & 0x70000000;
+			result = (char **)*((u32 *)v18 + 5);
+			v39 = ((unsigned int)result | ((u32)result << 10)) & 0x70000000;
 			while ( v38 )
 			{
 				result = (char **)v38[5];
 				if ( !(v39 & ~(unsigned int)result) )
 					break;
 				v38[5] = (unsigned int)result | v39;
-				v38 = (_DWORD *)v38[3];
+				v38 = (u32 *)v38[3];
 			}
-			v18 = (char *)*((_DWORD *)v18 + 2);
+			v18 = (char *)*((u32 *)v18 + 2);
 			*/
 		}
 	}
@@ -214,7 +214,7 @@ HSD_DObj* HSD_JObjGetDObj(HSD_JObj *jobj){
 
 //80371C24
 void HSD_JObjAddDObj(HSD_JObj *jobj, HSD_DObj *dobj){
-	if(jobj && dobj && ((jobj->flags & 0x4020) == 0){
+	if(jobj && dobj && (jobj->flags & 0x4020) == 0){
 		dobj->next = jobj->dobj;
 		jobj->dobj = dobj;
 	}
@@ -274,8 +274,7 @@ bool HSD_JObjSetFlagsAll(HSD_JObj *jobj, u32 flags){
 		jobj->flags |= flags;
 		
 		if(!(jobj->flags & JOBJ_INSTANCE)){
-			HSD_JObj* i;
-			for(i = jobj->child; i; i = i->child){
+			for(HSD_JObj* i = jobj->child; i; i = i->child){
 				if(i){
 					if((i->flags ^ flags) & 8){
 						result = false;
@@ -287,7 +286,7 @@ bool HSD_JObjSetFlagsAll(HSD_JObj *jobj, u32 flags){
 					i->flags |= flags;
 					
 					if(!(i->flags & JOBJ_INSTANCE)){
-						for ( j = i->child; j; j = j->child )
+						for (HSD_JObj* j = i->child; j; j = j->child )
 							result = HSD_JObjSetFlagsAll(j, flags);
 					}
 				}
