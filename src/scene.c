@@ -9,7 +9,7 @@ struct SceneData SceneData[45]; //803DACA4
 u32* unk4F80[3];
 
 //801A4014
-/*u32* Scene_RunFunc(struct SceneData scene)
+/*u32* Scene_RunFunc(struct SceneData* scene)
 {
   u32 v1; // r28@1
   u32 v2; // r4@1

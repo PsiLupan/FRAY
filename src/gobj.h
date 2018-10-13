@@ -5,7 +5,7 @@
 
 #include <gctypes.h>
 
-#define GOBJ_NODATA 0xFF
+#define GOBJ_NOREF 0xFF
 
 //This has 0x20 aligned size - assuming this is actually something related to HSD_Memory and can be scrapped later
 typedef struct _GObj_LinkedList {
@@ -21,8 +21,8 @@ typedef struct _HSD_GObj {
 	u8 gx_link;
 	u8 unk04;
 	u8 unk05;
-	u8 obj_kind;
-	u8 ref_flag;
+	s8 obj_kind;
+	s8 data_kind;
 	struct _HSD_GObj* next;
 	struct _HSD_GObj* prev;
 	struct _HSD_GObj* next_gx;
@@ -32,6 +32,7 @@ typedef struct _HSD_GObj {
 	void* unk20;
 	void* unk24;
 	void* data;
+	void* hsd_obj; //JObj or CObj known
 	void (*user_data_remove_func)(void* data);
 	GObj_LinkedList* unk_linkedlist2;
 	GObj_LinkedList* unk_linkedlist3;

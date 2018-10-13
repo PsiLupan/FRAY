@@ -57,7 +57,7 @@ u8* Game_MainLoop(u8 scene){
 			goto LABEL_7;
 		}
 	}
-	scene_ptr = 0;
+	scene_ptr = NULL;
 LABEL_7:
 	GameState.pending = false;
 	GameState.unk03 = 0;
@@ -66,7 +66,7 @@ LABEL_7:
 	unkstatestruct_set970(*scene_ptr);
 	if ( !scene_ptr->idx )
 	{
-		result = 0;
+		result = NULL;
 		while ( !GameState.pending )
 		{
 			if ( GameState.unk10 )
