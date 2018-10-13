@@ -5,8 +5,7 @@
 #define HSD_OBJ_NOREF 0xFFFF
 
 typedef struct _HSD_Obj {
-	u16 unk00;
-	u16 unk02;
+	void* class_init;
 	u16 ref_count;
 } HSD_Obj;
 
