@@ -38,6 +38,8 @@ typedef struct _HSD_GObj {
 	GObj_LinkedList* unk_linkedlist3;
 } HSD_GObj;
 
+void GObj_Free(HSD_GObj* gobj);
+void GObj_CallHSDDestructor(HSD_GObj* gobj);
 void GObj_CallDestructor(HSD_GObj *gobj);
 bool GObj_IsPlayer(HSD_GObj* gobj);
 
