@@ -1,10 +1,12 @@
+#include <ogc/gx.h>
+
 #include "hsd_cobj.h"
 #include "hsd_jobj.h"
 #include "hsd_state.h"
 
 typedef struct _HSD_ZList {
 	Mtx pmtx;
-	MtxPtr vmtx;
+	MtxP vmtx;
 	HSD_JObj *jobj;
 	u32 rendermode;
 	
@@ -37,11 +39,12 @@ static int	 zlist_xlu_nb = 0;
 
 #define ZLIST_NEXT(list,offset) (*(HSD_ZList **)(((u8 *)(list)) + (offset)))
 
+#define MTXRowCol(pmtx, row, col) (pmtx[row][col])
+
 //80374680
 static HSD_ZList* zlist_sort(HSD_ZList *list, int nb, int offset){
 	HSD_ZList *fore, *hind, **ptr;
 	int nb_fore, nb_hind;
-	int i;
 	
 	if (nb <= 1) {
 		if (list) {
@@ -54,7 +57,7 @@ static HSD_ZList* zlist_sort(HSD_ZList *list, int nb, int offset){
 	nb_hind = nb - nb_fore;
 	
 	hind = list;
-	for (i=0; i<nb_fore; i++) {
+	for (int i = 0; i < nb_fore; i++) {
 		hind = ZLIST_NEXT(hind, offset);
 	}
 	
@@ -97,7 +100,7 @@ void _HSD_ZListSort(void){
 //80374848
 void _HSD_ZListDisp(){
 	HSD_ZList *list;
-	MtxPtr vmtx;
+	MtxP vmtx;
 	HSD_CObj *cobj;
 	
 	cobj = HSD_CObjGetCurrent();
@@ -141,7 +144,7 @@ void _HSD_ZListClear(void){
 }
 
 //803749B0
-void HSD_JObjDisp(HSD_JObj *jobj, MtxPtr vmtx, HSD_TrspMask trsp_mask, u32 rendermode){
+void HSD_JObjDisp(HSD_JObj *jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 rendermode){
 	if (jobj){
 		if (union_type_dobj(jobj)) {
 			HSD_JObjDispDObj(jobj, vmtx, trsp_mask, rendermode);
@@ -261,8 +264,7 @@ void HSD_EraseRect(float top, float bottom, float left, float right, float z, in
 
 //80374E14
 extern void _HSD_DispForgetMemory(void); 
-void _HSD_DispForgetMemory(void)
-{
+void _HSD_DispForgetMemory(void) {
   zlist_top = NULL;
   zlist_bottom = &zlist_top;
 

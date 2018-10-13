@@ -58,12 +58,12 @@ u8* Game_MainLoop(u8 scene){
 		}
 	}
 	scene_ptr = 0;
-	LABEL_7:
+LABEL_7:
 	GameState.pending = false;
 	GameState.unk03 = 0;
 	GameState.unk04 = 0;
 	GameState.unk05 = 0;
-	//result = (u32 *)sub_80018F58(*scene_ptr);
+	unkstatestruct_set970(*scene_ptr);
 	if ( !scene_ptr->idx )
 	{
 		result = 0;
@@ -77,5 +77,5 @@ u8* Game_MainLoop(u8 scene){
 		if ( dword_8046B0F0.unk04 || !scene_ptr->unk01 )
 			result = &GameState.pending_major;
 	}
-	return (u8*)result;
+	return result;
 }

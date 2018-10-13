@@ -1,7 +1,13 @@
 #include "unknown.h"
 
-struct unk_80432078 dword_80432078;
-struct unk_8046B0F0 dword_8046B0F0;
+unk_80432078 dword_80432078;
+unk_8046B0F0 dword_8046B0F0;
+
+//80018F58
+void unkstatestruct_set970(void* scene_ptr){
+	unk970 = scene_ptr;
+}
+
 
 /*
 //8001822C
