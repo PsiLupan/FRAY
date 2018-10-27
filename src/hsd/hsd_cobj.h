@@ -5,14 +5,16 @@
 #include <ogc/gu.h>
 
 #include "hsd_aobj.h"
+#include "hsd_object.h"
 #include "hsd_wobj.h"
+
 
 #define PROJ_PERSPECTIVE 1
 #define PROJ_FRUSTRUM 2
 #define PROJ_ORTHO 3
 
 typedef struct _HSD_CObj {
-    HSD_Class parent;
+    struct _HSD_Obj class_parent;
     u32 flags; //0x08
     f32 viewport_left; //0x0C
     f32 viewport_right; //0x10

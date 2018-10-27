@@ -2,12 +2,14 @@
 #define _hsd_video_h_
 
 #include <gctypes.h>
+#include <ogc/gx.h>
 
 #include "hsd_init.h"
 
 #define HSD_ANTIALIAS_OVERLAP 4
 #define HSD_ANTIALIAS_GARBAGE_SIZE	(640 * HSD_ANTIALIAS_OVERLAP * VI_DISPLAY_PIX_SZ)
-typedef HSD_VIGXDrawDoneCallback void*
+typedef void* HSD_VIGXDrawDoneCallback;
+typedef void* VIRetraceCallback;
 
 enum HSD_VIXFBDrawDispStatus {
 	HSD_VI_XFB_NONE, 
@@ -22,15 +24,15 @@ enum HSD_VIXFBDrawDispStatus {
 };
 
 struct HSD_VIStatus {
-	GXRenderModeObj rmode;
-	GXBool black;
-	GXBool vf;
-	GXGamma gamma;
+	GXRModeObj rmode;
+	u8 black;
+	u8 vf;
+	u8 gamma;
 	GXColor clear_clr;
 	u32 clear_z;
-	GXBool update_clr;
-	GXBool update_alpha;
-	GXBool update_z;
+	u8 update_clr;
+	u8 update_alpha;
+	u8 update_z;
 };
 
 struct HSD_VIInfo {

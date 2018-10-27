@@ -3,8 +3,6 @@
 
 #include <gctypes.h>
 
-#include "hsd_object.h"
-
 #include "hsd_fobj.h"
 #include "hsd_jobj.h"
 

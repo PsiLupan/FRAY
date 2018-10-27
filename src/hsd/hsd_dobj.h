@@ -9,7 +9,7 @@
 
 //Display Object
 typedef struct _HSD_DObj {
-	HSD_Class parent;
+	struct _HSD_Obj class_parent;
 	struct _HSD_DObj* next;
 	struct _HSD_MObj* mobj;
 	struct _HSD_PObj* pobj;

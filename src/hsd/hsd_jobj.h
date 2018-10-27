@@ -5,13 +5,13 @@
 #include <ogc/gu.h>
 
 #include "hsd_dobj.h"
+#include "hsd_object.h"
 
 #define JOBJ_INSTANCE 0x1000
 
 //Joint Object
 typedef struct _HSD_JObj {
-	struct _HSD_Info *info;
-	HSD_Class class_parent;
+	struct _HSD_Obj class_parent;
 	HSD_JObj* next;
 	HSD_JObj* parent;
 	HSD_JObj* child;

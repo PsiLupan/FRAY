@@ -31,7 +31,7 @@
 
 //Material Object
 typedef struct _HSD_MObj {
-	HSD_Class parent;
+	struct _HSD_Obj class_parent;
 	u32 rendermode;
 	struct _HSD_TObj* tobj;
 	HSD_Material *mat;

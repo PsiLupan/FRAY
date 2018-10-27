@@ -6,8 +6,8 @@
 #include "hsd_aobj.h"
 #include "hsd_cobj.h"
 #include "hsd_jobj.h"
-#include "hsd_wobj.h"
 #include "hsd_object.h"
+#include "hsd_wobj.h"
 
 #define MAX_GXLIGHT 9
 
@@ -60,8 +60,8 @@ struct attn {
 	f32 k2;
 };
 
-typedef struct _HSD_LObj{
-	HSD_Obj obj;
+typedef struct _HSD_LObj {
+	struct _HSD_Obj parent_class;
 	u16 flags;
 	struct _HSD_LObj* next;
 	GXColor color; //0x10

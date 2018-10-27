@@ -7,6 +7,7 @@
 
 #include "hsd_aobj.h"
 #include "hsd_lobj.h"
+#include "hsd_object.h"
 
 #define TOBJ_ANIM 0x10
 
@@ -112,7 +113,7 @@
 
 //Texture Object
 typedef struct _HSD_TObj {
-	HSD_Obj	object;
+	struct _HSD_Obj	class_parent;
 	u16 flags;
 	struct _HSD_TObj* next;
 	u8 id; //GXTexMapID

@@ -7,7 +7,7 @@ static u32 r13_4074 = 0; //conditional frames elapsed
 
 typedef struct _callback {
 	u32 count;
-	void* func_ptr;
+	void (*func_ptr)();
 } callback;
 
 static callback r13_4078;
@@ -60,7 +60,7 @@ void HSD_AObjInitEndCallBack(){
 void HSD_AObjInvokeCallBacks(){
 	if(!r13_4070){
 		if(r13_4078.count > 0){
-			(void)(r13_4078.func_ptr)();
+			(r13_4078.func_ptr)();
 		}
 	}
 }
