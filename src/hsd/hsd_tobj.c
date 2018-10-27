@@ -39,9 +39,9 @@ void HSD_TObjAddAnim(HSD_TObj *tobj, HSD_TexAnim *texanim){
 				HSD_Free(tobj->tluttbl);
 			}
 			
-			if (ta->nb_tluttbl) {
-				tobj->tluttbl = HSD_Alloc((int) sizeof(HSD_Tlut*) * (ta->nb_tluttbl + 1));
-				for (i = 0; i < ta->nb_tluttbl; i++) {
+			if (ta->n_tluttbl) {
+				tobj->tluttbl = HSD_Alloc((int) sizeof(HSD_Tlut*) * (ta->n_tluttbl + 1));
+				for (i = 0; i < ta->n_tluttbl; i++) {
 					tobj->tluttbl[i] = HSD_TlutLoadDesc(ta->tluttbl[i]);
 				}
 				tobj->tluttbl[i] = NULL;
@@ -94,7 +94,7 @@ void HSD_TObjReqAnimAll(HSD_TObj *tobj, f32 startframe){
 //8035E860
 static void TObjUpdateFunc(void *obj, u32 type, FObjData *val){
 	HSD_TObj *tobj = obj;
-	if (tobj)
+	if (tobj){
 		switch (type) {
 			case HSD_A_T_TIMG:
 			{
@@ -146,7 +146,7 @@ static void TObjUpdateFunc(void *obj, u32 type, FObjData *val){
 			case HSD_A_T_SCAV:
 			tobj->scale.y = val->fv;
 		mtxdirty:
-			tobj->flag |= TEX_MTX_DIRTY;
+			tobj->flags |= TEX_MTX_DIRTY;
 			break;
 			
 			case HSD_A_T_LOD_BIAS:
@@ -157,25 +157,25 @@ static void TObjUpdateFunc(void *obj, u32 type, FObjData *val){
 			
 			case HSD_A_T_KONST_R:
 			if (tobj->tev) {
-				tobj->tev->konst.r = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
+				tobj->tev->constant.r = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
 			}
 			break;
 			
 			case HSD_A_T_KONST_G:
 			if (tobj->tev) {
-				tobj->tev->konst.g = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
+				tobj->tev->constant.g = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
 			}
 			break;
 			
 			case HSD_A_T_KONST_B:
 			if (tobj->tev) {
-				tobj->tev->konst.b = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
+				tobj->tev->constant.b = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
 			}
 			break;
 			
 			case HSD_A_T_KONST_A:
 			if (tobj->tev) {
-				tobj->tev->konst.a = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
+				tobj->tev->constant.a = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
 			}
 			break;
 			
@@ -266,14 +266,14 @@ static int TObjLoad(HSD_TObj *tobj, HSD_TObjDesc *td){
 	tobj->wrap_t = td->wrap_t;
 	tobj->repeat_s = td->repeat_s;
 	tobj->repeat_t = td->repeat_t;
-	tobj->flag = td->flag;
+	tobj->flags = td->flags;
 	tobj->blending = td->blending;
 	tobj->magFilt = td->magFilt;
 	tobj->imagedesc = td->imagedesc;
 	tobj->tlut = HSD_TlutLoadDesc(td->tlutdesc);
 	tobj->lod = td->lod;
 	tobj->aobj = NULL;
-	tobj->flag |= TEX_MTX_DIRTY;
+	tobj->flags |= TEX_MTX_DIRTY;
 	tobj->tlut_no = (u8) -1;
 	tobj->tev = HSD_TObjTevLoadDesc(td->tev);
 	
@@ -335,31 +335,31 @@ HSD_TObj* _HSD_TObjGetCurrentByType(HSD_TObj *from, u32 mapping){
 }
 
 //8035EEA4
-static u32 HSD_TexMapID2PTTexMtx(GXTexMapID id){
+static u32 HSD_TexMapID2PTTexMtx(u32 id){
 	switch (id) {
 		case GX_TEXMAP0:
-		return GX_PTTEXMTX0;
+		return 64;
 		
 		case GX_TEXMAP1:
-		return GX_PTTEXMTX1;
+		return 67;
 		
 		case GX_TEXMAP2:
-		return GX_PTTEXMTX2;
+		return 70;
 		
 		case GX_TEXMAP3:
-		return GX_PTTEXMTX3;
+		return 73;
 		
 		case GX_TEXMAP4:
-		return GX_PTTEXMTX4;
+		return 76;
 		
 		case GX_TEXMAP5:
-		return GX_PTTEXMTX5;
+		return 79;
 		
 		case GX_TEXMAP6:
-		return GX_PTTEXMTX6;
+		return 82;
 		
 		case GX_TEXMAP7:
-		return GX_PTTEXMTX7;
+		return 85;
 		
 		default:
 		assert(0); //HSD_Halt
@@ -404,9 +404,9 @@ static void TObjSetupMtx(HSD_TObj *tobj){
 	if (tobj_coord(tobj) == TEX_COORD_TOON)
 		return;
 	
-	if (tobj->flag & TEX_MTX_DIRTY) {
+	if (tobj->flags & TEX_MTX_DIRTY) {
 		HSD_TOBJ_METHOD(tobj)->make_mtx(tobj);
-		tobj->flag &= ~TEX_MTX_DIRTY;
+		tobj->flags &= ~TEX_MTX_DIRTY;
 	}
 	
 	switch (tobj_coord(tobj)) {
@@ -519,11 +519,6 @@ void HSD_TObjSetupVolatileTev(HSD_TObj *tobj, u32 rendermode){ //TODO: Verify - 
 	for (; tobj; tobj=tobj->next) {
 		if (tobj->id == GX_TEXMAP_NULL)
 			continue;
-		#if !defined(UNUSED_BUMP) && DOLPHIN_API_AGE >= 1 && !defined(EMU)
-		if (tobj_bump(tobj)) {
-			SetupEmbossBumpTev(tobj);
-		}
-		#endif
 		if (tobj_lightmap(tobj) & TEX_LIGHTMAP_SHADOW) {
 			TObjSetupTevModulateShadow(tobj);
 			break;
@@ -562,7 +557,7 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
   int use_reg1_a = 0;
 
   in = &tev->color_a;
-  for (i=0; i<4; i++) {
+  for (i=0; i < 4; i++) {
     switch (in[i]) {
     case TOBJ_TEV_CC_KONST_RGB: use_k_rgb = 1; break;
     case TOBJ_TEV_CC_KONST_RRR: use_k_r = 1; break;
@@ -604,19 +599,19 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
   }
 
   if (use_k_rgb) {
-    konst_rgb = HSD_TExpCnst(&tobj->tev->konst, HSD_TE_RGB, HSD_TE_U8, list);
+    konst_rgb = HSD_TExpCnst(&tobj->tev->constant, HSD_TE_RGB, HSD_TE_U8, list);
   }
   if (use_k_r) {
-    konst_r = HSD_TExpCnst(&tobj->tev->konst.r, HSD_TE_X, HSD_TE_U8, list);
+    konst_r = HSD_TExpCnst(&tobj->tev->constant.r, HSD_TE_X, HSD_TE_U8, list);
   }
   if (use_k_g) {
-    konst_g = HSD_TExpCnst(&tobj->tev->konst.g, HSD_TE_X, HSD_TE_U8, list);
+    konst_g = HSD_TExpCnst(&tobj->tev->constant.g, HSD_TE_X, HSD_TE_U8, list);
   }
   if (use_k_b) {
-    konst_b = HSD_TExpCnst(&tobj->tev->konst.b, HSD_TE_X, HSD_TE_U8, list);
+    konst_b = HSD_TExpCnst(&tobj->tev->constant.b, HSD_TE_X, HSD_TE_U8, list);
   }
   if (use_k_a) {
-    konst_a = HSD_TExpCnst(&tobj->tev->konst.a, HSD_TE_X, HSD_TE_U8, list);
+    konst_a = HSD_TExpCnst(&tobj->tev->constant.a, HSD_TE_X, HSD_TE_U8, list);
   }
   if (use_reg0_rgb) {
     reg0_rgb = HSD_TExpCnst(&tobj->tev->tev0, HSD_TE_RGB, HSD_TE_U8, list);
@@ -632,7 +627,7 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
   }
 
   e0 = HSD_TExpTev(list);
-  HSD_TExpOrder  (e0, tobj, GX_COLOR_NULL);
+  HSD_TExpOrder  (e0, tobj, 0xFF); //GX_COLOR_NULL = 0xFF
 
   if (tev->active & TOBJ_TEVREG_ACTIVE_COLOR_TEV) {
     HSD_TEInput sel[4];
@@ -736,9 +731,9 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
       }
     }
 
-    HSD_TExpColorOp(e0, (GXTevOp)tev->color_op,
-			(GXTevBias)tev->color_bias,
-			(GXTevScale)tev->color_scale,
+    HSD_TExpColorOp(e0, tev->color_op,
+			tev->color_bias,
+			tev->color_scale,
 			tev->color_clamp);
     HSD_TExpColorIn(e0, sel[0], exp[0],
 			sel[1], exp[1],
@@ -809,9 +804,9 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
       }
     }
 
-    HSD_TExpAlphaOp(e0, (GXTevOp)tev->alpha_op,
-			(GXTevBias)tev->alpha_bias,
-			(GXTevScale)tev->alpha_scale,
+    HSD_TExpAlphaOp(e0, tev->alpha_op,
+			tev->alpha_bias,
+			tev->alpha_scale,
 			tev->alpha_clamp);
     HSD_TExpAlphaIn(e0, sel[0], exp[0],
 			sel[1], exp[1],
@@ -1035,17 +1030,17 @@ void HSD_ImageDescFree(HSD_ImageDesc *idesc){
 }
 
 //80361374
-void HSD_ImageDescCopyFromEFB(HSD_ImageDesc *idesc, u16 origx, u16 origy, GXBool clear, int sync){
+void HSD_ImageDescCopyFromEFB(HSD_ImageDesc *idesc, u16 origx, u16 origy, u8 clear, int sync){
 	if (idesc){
-		GXSetTexCopySrc(origx, origy, idesc->width, idesc->height);
-		GXSetTexCopyDst(idesc->width, idesc->height, idesc->format, idesc->mipmap? GX_TRUE : GX_FALSE);
+		GX_SetTexCopySrc(origx, origy, idesc->width, idesc->height);
+		GX_SetTexCopyDst(idesc->width, idesc->height, idesc->format, idesc->mipmap? GX_TRUE : GX_FALSE);
 		if (clear) {
 			HSD_StateSetZMode(GX_TRUE, GX_LEQUAL, GX_TRUE);
 		}
-		GXCopyTex(idesc->image_ptr, clear);
+		GX_CopyTex(idesc->img_ptr, clear);
 		if (sync) {
-			GXPixModeSync();
-			GXInvalidateTexAll();
+			GX_PixModeSync();
+			GX_InvalidateTexAll();
 		}
 	}
 }
@@ -1081,7 +1076,7 @@ static void TObjAmnesia(HSD_ClassInfo *info){
 //80361548
 static void TObjInfoInit(){
 	hsdInitClassInfo(HSD_CLASS_INFO(&hsdTObj),
-		HSD_CLASS_INFO(&hsdObj),
+		HSD_CLASS_INFO(&hsdClass),
 		HSD_BASE_CLASS_LIBRARY,
 		"hsd_tobj",
 		sizeof(HSD_TObjInfo),

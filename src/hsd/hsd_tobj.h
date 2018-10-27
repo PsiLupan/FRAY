@@ -6,6 +6,7 @@
 #include <ogc/gx.h>
 
 #include "hsd_aobj.h"
+#include "hsd_lobj.h"
 
 #define TOBJ_ANIM 0x10
 
@@ -85,27 +86,41 @@
 #define TEX_COORD_MASK 	(0x0f)
 #define tobj_coord(T) ((T)->flags & TEX_COORD_MASK)
 
+# define TEX_LIGHTMAP_DIFFUSE	(0x1<<4)
+# define TEX_LIGHTMAP_SPECULAR	(0x1<<5)
+# define TEX_LIGHTMAP_AMBIENT	(0x1<<6)
+# define TEX_LIGHTMAP_EXT	(0x1<<7)
+# define TEX_LIGHTMAP_SHADOW	(0x1<<8)
+# define TEX_LIGHTMAP_MASK \
+  (TEX_LIGHTMAP_DIFFUSE \
+   |TEX_LIGHTMAP_SPECULAR \
+   |TEX_LIGHTMAP_AMBIENT \
+   |TEX_LIGHTMAP_EXT \
+   |TEX_LIGHTMAP_SHADOW)
+# define tobj_lightmap(T) ((T)->flags & TEX_LIGHTMAP_MASK)
+
 #define TEX_BUMP (0x1<<24)
 #define tobj_bump(T) ((T)->flags & TEX_BUMP)
 #define TEX_MTX_DIRTY (1<<31)
 
-typedef enum _GXTlutFmt {
-	GX_TL_IA8    = 0x0,
-    GX_TL_RGB565 = 0x1,
-    GX_TL_RGB5A3 = 0x2,
+/*typedef enum _GXTlutFmt {
+	GX_TL_IA8,
+    GX_TL_RGB565,
+    GX_TL_RGB5A3,
     GX_MAX_TLUTFMT
-} GXTlutFmt;
+} GXTlutFmt;*/
 
 //Texture Object
 typedef struct _HSD_TObj {
 	HSD_Obj	object;
+	u16 flags;
 	struct _HSD_TObj* next;
 	u8 id; //GXTexMapID
 	u32 src; //GXTexGenSrc
 	u32 mtxid;
-	Quaternion rotation;
-	Vec scale;
-	Vec translation;
+	guQuaternion rotate;
+	guVector scale;
+	guVector translate;
 	u8 wrap_s; //GXTexWrapMode
 	u8 wrap_t; //GXTexWrapMode
 	u8 repeat_s;
@@ -119,7 +134,7 @@ typedef struct _HSD_TObj {
 	HSD_TexLODDesc* lod;
 	struct _HSD_AObj* aobj;
 	HSD_ImageDesc **imagetbl;
-	Tlut **tluttbl;
+	HSD_Tlut **tluttbl;
 	u8 tlut_no;
 	Mtx mtx;
 	u16 coord; //GXTexCoordID
@@ -131,9 +146,9 @@ typedef struct _HSD_TObjDesc {
 	HSD_TObjDesc* next;
 	u8 id; //GXTexMapID
 	u32 src; //GXTexGenSrc
-	Vec rotation;
-	Vec scale; 
-	Vec translation;
+	guVector rotate;
+	guVector scale; 
+	guVector translate;
 	u8 wrap_s; //GXTexWrapMode
 	u8 wrap_t; //GXTexWrapMode
 	u8 repeat_s;
@@ -149,14 +164,14 @@ typedef struct _HSD_TObjDesc {
 
 typedef struct _HSD_Tlut {
 	void *lut;
-	GXTlutFmt fmt;
+	u32 fmt;
 	u32 tlut_name;
 	u16 n_entries;
 } HSD_Tlut;
 
 typedef struct _HSD_TlutDesc {
 	void *lut;
-	GXTlutFmt fmt;
+	u32 fmt;
 	u32 tlut_name;
 	u16 n_entries;
 } HSD_TlutDesc;

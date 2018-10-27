@@ -35,27 +35,18 @@ typedef struct _HSD_MObj {
 	u32 rendermode;
 	struct _HSD_TObj* tobj;
 	HSD_Material *mat;
-	HSD_PEDesc* pedesc;
+	HSD_PEDesc* pe;
 	struct _HSD_AObj* aobj;
 	struct _HSD_TObj* ambient_tobj;
 	struct _HSD_TObj* specular_tobj;
-	HSD_TExpTevDesc *tevdesc;
-	HSD_TExp *texp;
+	struct _HSD_TExpTevDesc *tevdesc;
+	struct _HSD_TExp *texp;
 
-	HSD_TObj* tobj_toon;
-	HSD_TObj* tobj_gradation;
-	HSD_TObj* tobj_backlight;
+	struct _HSD_TObj* tobj_toon;
+	struct _HSD_TObj* tobj_gradation;
+	struct _HSD_TObj* tobj_backlight;
 	f32 z_offset;
 } HSD_MObj;
-
-typedef struct _HSD_MObjDesc {
-	char* class_name;
-	u32 rendermode;
-	struct _HSD_TObjDesc* tobj;
-	HSD_Material* material;
-	struct _HSD_RenderDesc renderdesc;
-	HSD_PEDesc* pedesc;
-} HSD_MObjDesc;
 
 typedef struct _HSD_Material {
 	GXColor ambient;
@@ -65,7 +56,7 @@ typedef struct _HSD_Material {
 	f32 shininess;
 } HSD_Material;
 
-typdef struct _HSD_PEDesc {
+typedef struct _HSD_PEDesc {
 	u8 flags;
 	u8 ref0;
 	u8 ref1;
@@ -79,6 +70,15 @@ typdef struct _HSD_PEDesc {
 	u8 alpha_op;
 	u8 alpha_comp1;
 } HSD_PEDesc;
+
+typedef struct _HSD_MObjDesc {
+	char* class_name;
+	u32 rendermode;
+	struct _HSD_TObjDesc* tobj;
+	HSD_Material* material;
+	struct _HSD_RenderDesc renderdesc;
+	HSD_PEDesc* pedesc;
+} HSD_MObjDesc;
 
 typedef struct _HSD_MatAnim {
 	struct _HSD_MatAnim *next;
