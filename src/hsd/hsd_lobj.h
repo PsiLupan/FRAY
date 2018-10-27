@@ -36,7 +36,7 @@
 
 #define LOBJ_TYPE_MASK 3
 
-#define LOBJ_LIGHT_ATTN
+#define LOBJ_LIGHT_ATTN 1 //TODO: Figure this shit out
 
 #define LOBJ_HIDDEN 0x20
 #define LOBJ_RAW_PARAM 0x40
@@ -69,11 +69,11 @@ typedef struct _HSD_LObj{
 	HSD_WObj* position; //0x18
 	HSD_WObj* interest; //0x1C
 	union {
-		struct spot;
-		struct attn;
+		struct spot spot;
+		struct attn attn;
 	} u;
 	f32 shininess;
-	Vec lvec;
+	guVector lvec;
 	HSD_AObj* aobj;
 	u8 id; //GXLightID
 	GXLightObj* lightobj; //0x50
@@ -85,19 +85,22 @@ typedef struct _HSD_LightDesc {
 	char* class_name; //0x00
 	u16 flags; //0x08
 	GXColor color; //0x0C
+	struct _HSD_LightDesc* next;
 	u16 attnflags; //TODO: verify size
 	union {
-		struct spot* spot;
-		struct attn* attn;
+		struct spot point;
+		struct spot spot;
+		struct attn attn;
 	} u;
 	HSD_WObjDesc* position;
+	HSD_WObjDesc* interest;
 } HSD_LightDesc;
 
 typedef struct _HSD_LightAnim {
 	struct _HSD_LightAnim *next;
 	struct _HSD_AObjDesc *aobjdesc;
-	//position_anim;
-	//interest_anim;
+	struct _HSD_AObj position_anim;
+	struct _HSD_AObj interest_anim;
 } HSD_LightAnim;
 
 typedef struct _HSD_LObjInfo {

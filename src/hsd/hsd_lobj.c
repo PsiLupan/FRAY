@@ -180,14 +180,14 @@ void HSD_LObjReqAnimAll(HSD_LObj *lobj, float startframe){
 }
 
 //80365778
-void HSD_LObjGetLightVector(HSD_LObj *lobj, VecPtr dir){
-	Vec position = {0.0F, 0.0F, 0.0F};
-	Vec interest = {0.0F, 0.0F, 0.0F};
+void HSD_LObjGetLightVector(HSD_LObj *lobj, guVector* dir){
+	guVector position = {0.0F, 0.0F, 0.0F};
+	guVector interest = {0.0F, 0.0F, 0.0F};
 	
 	if (lobj){
 		HSD_LObjGetPosition(lobj, &position);
 		HSD_LObjGetInterest(lobj, &interest);
-		VECSubtract(&interest, &position, dir);
+		guVecSub(&interest, &position, dir);
 		if (vec_normalize_check(dir, dir) != 0) {
 			dir->x = 0;
 			dir->y = 0;
@@ -232,9 +232,9 @@ void HSD_LObjSetup(HSD_LObj *lobj, GXColor color, f32 shininess){
 }
 
 //8036597C
-void HSD_LObjSetupSpecularInit(MtxPtr pmtx){
+void HSD_LObjSetupSpecularInit(MtxP pmtx){
 	int i, num;
-	Vec cdir, jpos;
+	guVector cdir, jpos;
 	
 	HSD_MtxColVec(pmtx, 3, &jpos);
 	if (vec_normalize_check(&jpos, &cdir) != 0) {
@@ -245,7 +245,7 @@ void HSD_LObjSetupSpecularInit(MtxPtr pmtx){
 	
 	num = HSD_LObjGetNbActive();
 	for (i = 0; i < num; i++) {
-		Vec half, ldir;	
+		guVector half, ldir;	
 		HSD_LObj *lobj = HSD_LObjGetActiveByIndex(i);
 		
 		if (lobj->spec_id == GX_LIGHTNULL) {
@@ -330,8 +330,8 @@ static void setup_spec_lightobj(HSD_LObj *lobj, Mtx vmtx, u8 spec_id){
 }
 
 //80365C50
-static void setup_point_lightobj(HSD_LObj *l, MtxPtr vmtx){
-	Vec lpos;
+static void setup_point_lightobj(HSD_LObj *l, MtxP vmtx){
+	guVector lpos;
 	
 	GX_InitLightColor(&l->lightobj, l->color);
 	l->hw_color = l->color;
@@ -365,8 +365,8 @@ static void setup_point_lightobj(HSD_LObj *l, MtxPtr vmtx){
 }
 
 //80365D6C
-static void setup_spot_lightobj(HSD_LObj *l, MtxPtr vmtx){
-	Vec lpos, ldir;
+static void setup_spot_lightobj(HSD_LObj *l, MtxP vmtx){
+	guVector lpos, ldir;
 	
 	HSD_LObjGetPosition(l, &lpos);
 	MTXMultVec(vmtx, &lpos, &lpos);
@@ -406,7 +406,7 @@ static void setup_spot_lightobj(HSD_LObj *l, MtxPtr vmtx){
 
 //80365F28
 void HSD_LObjSetupInit(HSD_CObj *cobj){
-  MtxPtr vmtx;
+  MtxP vmtx;
   int i, num, idx;
   HSD_SList *list;
 
@@ -666,7 +666,7 @@ void HSD_LObjSetDistAttn(HSD_LObj *lobj, f32 ref_distance, f32 ref_brightness, u
 }
 
 //80366CE8
-void HSD_LObjSetPosition(HSD_LObj *lobj, VecPtr position){
+void HSD_LObjSetPosition(HSD_LObj *lobj, guVector* position){
 	assert(lobj);
 	if (!lobj->position) {
 		lobj->position = HSD_WObjAlloc();
@@ -676,7 +676,7 @@ void HSD_LObjSetPosition(HSD_LObj *lobj, VecPtr position){
 }
 
 //80366D70
-bool HSD_LObjGetPosition(HSD_LObj *lobj, VecPtr position){
+bool HSD_LObjGetPosition(HSD_LObj *lobj, guVector* position){
 	if (lobj && lobj->position) {
 		HSD_WObjGetPosition(lobj->position, position);
 		return true;
@@ -685,7 +685,7 @@ bool HSD_LObjGetPosition(HSD_LObj *lobj, VecPtr position){
 }
 
 //80366DB0
-void HSD_LObjSetInterest(HSD_LObj *lobj, VecPtr interest){
+void HSD_LObjSetInterest(HSD_LObj *lobj, guVector* interest){
 	assert(lobj);
 	if(!lobj->interest){
 		lobj->interest = HSD_WObjAlloc();
@@ -695,7 +695,7 @@ void HSD_LObjSetInterest(HSD_LObj *lobj, VecPtr interest){
 }
 
 //80366E38
-bool HSD_LObjGetInterest(HSD_LObj *lobj, VecPtr interest){
+bool HSD_LObjGetInterest(HSD_LObj *lobj, guVector* interest){
 	if (lobj && lobj->interest) {
 		HSD_WObjGetPosition(lobj->interest, interest);
 		return true;
@@ -737,15 +737,15 @@ static int LObjLoad(HSD_LObj *lobj, HSD_LightDesc *ldesc){
 		if (ldesc->attnflags & LOBJ_LIGHT_ATTN) {
 			HSD_LObjSetFlags(lobj, LOBJ_RAW_PARAM);
 			if(lobj){
-				lobj->u.attn.k0 = ldesc->u.attn->dist.k0;
-				lobj->u.attn.k1 = ldesc->u.attn->dist.k1;
-				lobj->u.attn.k2 = ldesc->u.attn->dist.k2;
+				lobj->u.attn.k0 = ldesc->u.attn.k0;
+				lobj->u.attn.k1 = ldesc->u.attn.k1;
+				lobj->u.attn.k2 = ldesc->u.attn.k2;
 			}
 		} else {
 			if(lobj){
-				lobj->u.spot.ref_dist  = ldesc->u.point->ref_dist;
-				lobj->u.spot.ref_br    = ldesc->u.point->ref_br;
-				lobj->u.spot.dist_func = ldesc->u.point->dist_func;
+				lobj->u.spot.ref_dist  = ldesc->u.point.ref_dist;
+				lobj->u.spot.ref_br    = ldesc->u.point.ref_br;
+				lobj->u.spot.dist_func = ldesc->u.point.dist_func;
 			}
 		}
 		break;
@@ -761,21 +761,21 @@ static int LObjLoad(HSD_LObj *lobj, HSD_LightDesc *ldesc){
 		if (ldesc->attnflags & LOBJ_LIGHT_ATTN) {
 			HSD_LObjSetFlags(lobj, LOBJ_RAW_PARAM);
 			if(lobj){
-				lobj->u.attn.a0 = ldesc->u.attn->angle.a0;
-				lobj->u.attn.a1 = ldesc->u.attn->angle.a1;
-				lobj->u.attn.a2 = ldesc->u.attn->angle.a2;
-				lobj->u.attn.k0 = ldesc->u.attn->dist.k0;
-				lobj->u.attn.k1 = ldesc->u.attn->dist.k1;
-				lobj->u.attn.k2 = ldesc->u.attn->dist.k2;
+				lobj->u.attn.a0 = ldesc->u.attn.a0;
+				lobj->u.attn.a1 = ldesc->u.attn.a1;
+				lobj->u.attn.a2 = ldesc->u.attn.a2;
+				lobj->u.attn.k0 = ldesc->u.attn.k0;
+				lobj->u.attn.k1 = ldesc->u.attn.k1;
+				lobj->u.attn.k2 = ldesc->u.attn.k2;
 			}
 		} else {
 			if(lobj){
-				lobj->u.spot.ref_dist  = ldesc->u.spot->ref_dist;
-				lobj->u.spot.ref_br    = ldesc->u.spot->ref_br;
-				lobj->u.spot.dist_func = ldesc->u.spot->dist_func;
+				lobj->u.spot.ref_dist  = ldesc->u.spot.ref_dist;
+				lobj->u.spot.ref_br    = ldesc->u.spot.ref_br;
+				lobj->u.spot.dist_func = ldesc->u.spot.dist_func;
 				
-				lobj->u.spot.cutoff = ldesc->u.spot->cutoff;
-				lobj->u.spot.spot_func = ldesc->u.spot->spot_func;
+				lobj->u.spot.cutoff = ldesc->u.spot.cutoff;
+				lobj->u.spot.spot_func = ldesc->u.spot.spot_func;
 			}
 		}
 		break;
