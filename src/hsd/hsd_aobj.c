@@ -3,8 +3,14 @@
 #include <math.h>
 
 static u32 r13_4070 = 0; //frames elapsed
-static u32 r13_4074 = 0; //r13_4074 - callback/conditional frames elapsed
-static bool active_cb; //r13_4078
+static u32 r13_4074 = 0; //conditional frames elapsed
+
+typedef struct _callback {
+	u32 count;
+	void* func_ptr;
+} callback;
+
+static callback r13_4078;
 
 static HSD_AObj *init_aobj = NULL; //804C0880
 
@@ -52,9 +58,10 @@ void HSD_AObjInitEndCallBack(){
 
 //803640B0
 void HSD_AObjInvokeCallBacks(){
-	if(r13_4074 && !r13_4070){
-		if(active_cb)
-			(void*)(r13_4074)();
+	if(!r13_4070){
+		if(r13_4078.count > 0){
+			(void)(r13_4078.func_ptr)();
+		}
 	}
 }
 
@@ -176,7 +183,7 @@ void HSD_AObjRemove(HSD_AObj* aobj){
 		HSD_JObj* jobj = HSD_JOBJ(aobj->hsd_obj);
 		if(jobj)
 			HSD_JObjUnref(jobj);
-		aobj->jobj = NULL;
+		aobj->hsd_obj = NULL;
 		
 		HSD_AObjFree(aobj);
 	}
@@ -218,7 +225,7 @@ void HSD_AObjSetEndFrame(HSD_AObj* aobj, f32 frame){
 
 //8036533C
 void HSD_AObjSetCurrentFrame(HSD_AObj* aobj, f32 frame){
-	if(aobj && !(aobj->flags & 0x40000000){
+	if(aobj && !(aobj->flags & 0x40000000)){
 		aobj->curr_frame = frame;
 		aobj->flags = aobj->flags & 0xBFFFFFFF | 0x8000000;
 		HSD_FObjReqAnimAll(aobj->fobj, frame);
@@ -227,5 +234,5 @@ void HSD_AObjSetCurrentFrame(HSD_AObj* aobj, f32 frame){
 
 //80365390
 void _HSD_AObjForgetMemory(){
-	active_cb = false;
+	r13_4078.count = 0;
 }
