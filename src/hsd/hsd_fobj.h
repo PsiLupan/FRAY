@@ -1,6 +1,8 @@
 #ifndef _hsd_fobj_h_
 #define _hsd_fobj_h_
 
+#include <gctypes.h>
+
 //Frame Object
 typedef struct _HSD_FObj {
 	struct _HSD_FObj* next;

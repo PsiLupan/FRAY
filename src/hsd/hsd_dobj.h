@@ -1,6 +1,8 @@
 #ifndef _hsd_dobj_h_
 #define _hsd_dobj_h_
 
+#include <gctypes.h>
+
 #include "hsd_jobj.h"
 #include "hsd_mobj.h"
 #include "hsd_pobj.h"
