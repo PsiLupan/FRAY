@@ -9,13 +9,17 @@ typedef struct _HSD_FObj {
 	u32* curr_parse;
 	u32* parse_start;
 	u32 parse_len;
-	u32 unk10;
+	u8 flags; //0x10
+	u8 unk11;
+	u8 unk12;
+	u8 unk13;
 	u32 unk14;
-	u32 unk18;
+	u16 unk18;
+	u16 unk1A;
 	u32 unk1C;
-	u32 unk20;
-	u32 unk24;
-	u32 unk28;
+	f32 unk20;
+	f32 unk24;
+	f32 unk28;
 	u32 unk2C;
 	u32 unk30;
 } HSD_FObj;
