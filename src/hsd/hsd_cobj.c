@@ -75,6 +75,31 @@ void CObjUpdateFunc(HSD_CObj* cobj, u32 type, guVector vec){ //TODO: This absolu
     }
 }
 
+//80367B68
+bool makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx){
+    bool isOrtho;
+    switch(cobj->projection_type){
+        case PROJ_PERSPECTIVE:
+        isOrtho = false;
+        guPerspective(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->near, cobj->far);
+        break;
+        
+        case PROJ_FRUSTRUM:
+        isOrtho = false;
+        guFrustum(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->left, cobj->right, cobj->near, cobj->far);
+        break;
+        
+        case PROJ_ORTHO:
+        isOrtho = true;
+        guOrtho(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->left, cobj->right, cobj->near, cobj->far);
+        break;
+
+        default:
+        assert(true);
+        break;
+    }
+}
+
 //803686AC
 void HSD_CObjGetInterest(HSD_CObj* cobj, guVector interest){
     assert(cobj);
