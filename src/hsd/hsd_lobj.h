@@ -10,6 +10,8 @@
 #include "hsd_util.h"
 #include "hsd_wobj.h"
 
+#define FLT_EPSILON 1.19209290E-07F
+
 #define MAX_GXLIGHT 9
 
 #define HSD_A_L_LITC_R 0

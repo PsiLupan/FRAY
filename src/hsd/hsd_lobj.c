@@ -178,7 +178,7 @@ void HSD_LObjReqAnimAll(HSD_LObj *lobj, float startframe){
 		}
 	}
 }
-
+	
 //80365778
 void HSD_LObjGetLightVector(HSD_LObj *lobj, guVector* dir){
 	guVector position = {0.0F, 0.0F, 0.0F};
@@ -188,11 +188,7 @@ void HSD_LObjGetLightVector(HSD_LObj *lobj, guVector* dir){
 		HSD_LObjGetPosition(lobj, &position);
 		HSD_LObjGetInterest(lobj, &interest);
 		guVecSub(&interest, &position, dir);
-		if (vec_normalize_check(dir, dir) != 0) {
-			dir->x = 0;
-			dir->y = 0;
-			dir->z = 1;
-		}
+		guVecNormalize(dir);
 	}
 }
 
@@ -467,12 +463,11 @@ void HSD_LObjSetupInit(HSD_CObj *cobj){
     for (; list; list = list->next) {
       HSD_LObj *lobj = list->data;
       if (!lobj || lobj->flags & LOBJ_HIDDEN) {
-		  continue;
+				continue;
       }
-      if (HSD_LObjGetType(lobj) == LOBJ_AMBIENT && (lobj->flags & (LOBJ_DIFFUSE|LOBJ_ALPHA)))
-      {
-		  HSD_LObjSetActive(lobj);
-		  break;
+      if (HSD_LObjGetType(lobj) == LOBJ_AMBIENT && (lobj->flags & (LOBJ_DIFFUSE|LOBJ_ALPHA))){
+				HSD_LObjSetActive(lobj);
+				break;
       }
     }
   }
