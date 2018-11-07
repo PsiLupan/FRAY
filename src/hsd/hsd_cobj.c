@@ -100,6 +100,12 @@ bool makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx){
     }
 }
 
+//80368608
+void HSD_CObjEndCurrent(){
+    _HSD_ZListSort();
+    _HSD_ZListDisp();
+}
+
 //803686AC
 void HSD_CObjGetInterest(HSD_CObj* cobj, guVector interest){
     assert(cobj);

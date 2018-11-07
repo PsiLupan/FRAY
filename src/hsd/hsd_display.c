@@ -215,7 +215,7 @@ void HSD_EraseRect(float top, float bottom, float left, float right, float z, in
 	} else {
 		GXSetNumTexGens(0);
 		GXSetNumTevStages(1);
-		GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+		GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORDNULL, GX_TEXMAP_NULL, GX_COLOR0A0);
 		GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
 	}
 	
@@ -229,7 +229,7 @@ void HSD_EraseRect(float top, float bottom, float left, float right, float z, in
 	GXSetAlphaUpdate(enable_alpha? GX_ENABLE : GX_DISABLE);
 	
 	GXSetNumChans(1);
-	GXSetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+	GXSetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHTNULL, GX_DF_NONE, GX_AF_NONE);
 	
 	GXClearVtxDesc();
 	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
