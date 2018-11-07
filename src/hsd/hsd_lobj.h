@@ -7,6 +7,7 @@
 #include "hsd_cobj.h"
 #include "hsd_jobj.h"
 #include "hsd_object.h"
+#include "hsd_util.h"
 #include "hsd_wobj.h"
 
 #define MAX_GXLIGHT 9
