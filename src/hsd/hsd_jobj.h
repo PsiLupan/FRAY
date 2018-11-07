@@ -22,7 +22,7 @@ typedef struct _HSD_JObj {
 	guVector position;
 	Mtx mtx;
 	guVector* pvec;
-	MtxPtr vmtx;
+	MtxP vmtx;
 	struct _HSD_AObj* aobj;
 	struct _HSD_RObj* robj;
 	HSD_JObjDesc* desc;

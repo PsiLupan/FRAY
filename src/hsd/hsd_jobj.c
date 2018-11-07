@@ -24,13 +24,15 @@ void HSD_JObjRemoveAll(HSD_JObj *jobj){
 			curr->next = NULL;
 			
 			if(curr){			
-				/*v19 = *((u16*)v16 + 2);
-				v20 = 0xFFFF == v19;
-				if(!v20){
-					*((u16*)v16 + 2) = v19 - 1;
-					v20 = v19 == 0;
+				u16 curr_refs = curr->class_parent.ref_count;
+				bool isMaxMinRefs = 0xFFFF == curr_refs;
+				if(isMaxMinRefs){
+					curr_refs -= 1;
+					curr->class_parent.ref_count = curr_refs;
+					isMaxMinRefs = curr_refs == 0;
 				}
-				if(v20){
+				/*
+				if(isMaxMinRefs){
 					v21 = (_WORD *)((char *)v16 + 6);
 					result = (char **)*((unsigned __int16 *)v16 + 3);
 					if ( (signed int)result - 1 >= 0 ){
@@ -336,7 +338,7 @@ bool HSD_JObjClearFlagsAll(HSD_JObj *jobj, u32 flags){
 					i->flags &= ~flags;
 					
 					if(!(i->flags & JOBJ_INSTANCE)){
-						for ( j = i->child; j; j = j->child )
+						for (HSD_JObj* j = i->child; j; j = j->child )
 							result = HSD_JObjClearFlagsAll(j, flags);
 					}
 				}
