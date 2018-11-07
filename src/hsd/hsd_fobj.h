@@ -1,6 +1,8 @@
 #ifndef _hsd_fobj_h_
 #define _hsd_fobj_h_
 
+#include <string.h>
+
 #include <gctypes.h>
 
 //Frame Object
