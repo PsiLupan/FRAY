@@ -106,6 +106,18 @@ void HSD_CObjEndCurrent(){
     _HSD_ZListDisp();
 }
 
+//8036862C
+HSD_WObj* HSD_CObjGetInterestWObj(HSD_CObj* cobj){
+    assert(cobj);
+    return cobj->interest;
+}
+
+//8036866C
+HSD_WObj* HSD_CObjGetEyePositionWObj(HSD_CObj* cobj){
+    assert(cobj);
+    return cobj->eye_position;
+}
+
 //803686AC
 void HSD_CObjGetInterest(HSD_CObj* cobj, guVector interest){
     assert(cobj);
@@ -118,10 +130,31 @@ void HSD_CObjSetInterest(HSD_CObj* cobj, guVector interest){
     HSD_WObjSetPosition(cobj->interest, interest);
 }
 
+//80368784
+void HSD_CObjGetEyePosition(HSD_CObj* cobj, guVector pos){
+    assert(cobj);
+    HSD_WObjGetPosition(cobj->eye_position, pos);
+}
+
 //803687F0
 void HSD_CObjSetEyePosition(HSD_CObj* cobj, guVector pos){
     assert(cobj);
     HSD_WObjSetPosition(cobj->eye_position, pos);
+}
+
+//8036885C
+void HSD_CObjGetEyeVector(HSD_CObj* cobj){
+
+}
+
+//80368A08
+void HSD_CObjGetEyeDistance(HSD_CObj* cobj){
+
+}
+
+//80369564
+void HSD_CObjSetMtxDirty(HSD_CObj* cobj){
+    cobj->flags |= 0xC0000000;
 }
 
 //80369BC8
