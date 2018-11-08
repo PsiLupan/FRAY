@@ -3,6 +3,9 @@
 
 #include <gctypes.h>
 
+#include <string.h>
+
 #include "hsd_init.h"
+#include "hsd_object.h"
 
 #endif

@@ -1,4 +1,29 @@
+#include "hsd_memory.h"
+
 static u32 alignment_sz = 0x20;
+
+static u32 hsd_iddata[4][12];
+static u8 hsd_idtable[404]; //804C23EC
+
+//8037CD80
+u32* HSD_IDGetAllocData(){
+	return &hsd_iddata;
+}
+
+//8037CD8C
+void HSD_IDInitAllocData(){
+	HSD_ObjAllocInit(&hsd_iddata, 12, 4);
+}
+
+//8037CDBC
+void* HSD_IDSetup(){
+	return memset(&hsd_idtable, 0, 404);
+}
+
+//8037D020
+void _HSD_IDForgetMemory(){
+	return memset(&hsd_idtable, 0, 404);
+}
 
 //8037F1B0
 void HSD_Free(void* ptr){
@@ -17,7 +42,7 @@ void* HSD_MemAlloc(u32 size){
 }
 
 //80381D58
-void GetMemoryEntry(u32 idx){
+void* GetMemoryEntry(u32 idx){
 	int v16; // r13@0
 	int v17; // r29@1
 	int v18; // r0@3
