@@ -59,10 +59,12 @@ void HSD_FObjReqAnimAll(HSD_FObj* fobj, float frame){
 	
 }
 
+//8036ADDC
+
 //8036AE38
 void FObjConditionalAdjust(HSD_FObj* fobj){
     if(fobj->flags & 0x40){
-        fobj->state = fobj->unk11;
+        fobj->obj_state = fobj->parsed_state;
         fobj->flags &= 0xBFu;
         fobj->flags |= 0x80u;
         fobj->unk20 = fobj->unk24;
@@ -73,12 +75,12 @@ void FObjConditionalAdjust(HSD_FObj* fobj){
 void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FObjData)){
     FObjData fobjdata;
     if(obj_update){
-        u8 state = fobj->state;
+        u8 state = fobj->obj_state;
         if(state == 2){
             u8 flags = fobj->flags;
             if(flags & 0x20){
                 fobj->flags = flags & 0xDF;
-                if(fobj->unk1A != 0){
+                if(fobj->parse_res != 0){
                     fobj->unk28 = (fobj->unk24 - fobj->unk20) / 4.58594f; //Magic number
                 }
             }else{
@@ -87,8 +89,8 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
             }
             fobjdata.fv = fobj->unk28 * fobj->unk1C + fobj->unk20;
         }else if(state == 1){
-            f64 fVal = 176.0;
-            f64 val = (fVal + fobj->unk1A) - fVal;
+            f64 fVal = 0x4330000000000000;
+            f64 val = (fVal + fobj->parse_res) - fVal;
             if(fobj->unk1C < val){
                 fobjdata.fv = fobj->unk24;
             }else{
@@ -100,10 +102,10 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
             fobjdata.fv = fobj->unk20;
             fobj->flags &= 0x7Fu;
         }else if(state < 6){
-            if(fobj->unk1A != 0){
-                f64 fVal = 176.0;
+            if(fobj->parse_res != 0){
+                f64 fVal = 0x4330000000000000;
                 f64 fVal2 = 1.0;
-                f64 f0 = (fVal + fobj->unk1A) - fVal;
+                f64 f0 = (fVal + fobj->parse_res) - fVal;
                 f32 f1 = fVal2 / f0;
                 fobjdata.fv = splGetHelmite(f0, f1, fobj->unk1C, fobj->unk20, fobj->unk24, fobj->unk28, fobj->unk2C);
             }else{
@@ -115,19 +117,162 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
 }
 
 //8036B030
-void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* caller_obj, void (*callback)(), f32 frame){
-    u8 state = 0;
+void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 frame){
+    u8 result = 0;
+    f32 v22 = 0;
+
     if(fobj != NULL)
-        state = FObjGetState(fobj);
-    if(state == 0)
+        result = FObjGetState(fobj);
+    if(result == 0)
         return;
 
-    f32 fVal = fobj->unk1C + frame;
-    fobj->unk1C = fVal;
-    if(fVal < /*r2 - 5360*/ )
+    fobj->unk1C = fobj->unk1C + frame;
+    if(fobj->unk1C < 0)
         return;
     
-    
+    while(true){
+        while(result != 4){
+            switch(result) {
+            
+            case 0:
+            return;
+
+            case 1:
+            case 2:
+            if((fobj->curr_parse - fobj->parse_start) < fobj->parse_len){
+                fobj->obj_state = fobj->parsed_state;
+                if(fobj->unk16 == 0){
+                    fobj->parsed_state = *fobj->curr_parse & 0xF;
+                    fobj->unk16 = sub_8036ADDC(fobj->curr_parse);
+                }
+                fobj->unk16 -= 1;
+                u8 state = fobj->parsed_state;
+                u8 flags = fobj->flags & 0xF;
+                assert((flags - 1) > 1);
+                switch(state){
+                    case 1:
+                    case 2:
+                    fobj->unk20 = fobj->unk24;
+                    fobj->unk2C = FObjLoadData(fobj->curr_parse, fobj->unk14);
+                    if(fobj->obj_state != 5){
+                        fobj->unk28 = fobj->unk2C;
+                        fobj->unk2C = 0;
+                    }
+                    if(flags == 1){
+                        result = 3;
+                    }else{
+                        result = 4;
+                    }
+                    fobj->flags = result & 0xF | fobj->flags & 0xF0;
+                    break;
+
+                    case 3:
+                    fobj->unk20 = fobj->unk24;
+                    fobj->unk28 = fobj->unk2C;
+                    fobj->unk24 = FObjLoadData(fobj->curr_parse, fobj->unk14);
+                    fobj->unk2C = 0;
+                    if(flags == 1){
+                        result = HSD_FObjSetState(fobj, 3);
+                    }else{
+                        result = HSD_FObjSetState(fobj, 4);
+                    }
+                    break;
+
+                    case 4:
+                    fobj->unk20 = fobj->unk24;
+                    fobj->unk24 = FObjLoadData(fobj->curr_parse, fobj->unk14);
+                    fobj->unk28 = fobj->unk2C;
+                    fobj->unk2C = FObjLoadData(fobj->curr_parse, fobj->unk15);
+                    if(flags == 1){
+                        result = HSD_FObjSetState(fobj, 3);
+                    }else{
+                        result = HSD_FObjSetState(fobj, 4);
+                    }
+                    break;
+
+                    case 5:
+                    fobj->unk20 = fobj->unk24;
+                    fobj->unk24 = FObjLoadData(fobj->curr_parse, fobj->unk14);
+                    result = HSD_FObjGetState(fobj);
+                    break;
+
+                    case 6:
+                    FObjConditionalAdjust(fobj);
+                    fobj->unk24 = FObjLoadData(fobj->curr_parse, fobj->unk14);
+                    fobj->flags |= 0x40u;
+
+                    if(flags == 1){
+                        result = HSD_FObjSetState(fobj, 3);
+                    }else{
+                        result = HSD_FObjSetState(fobj, 4);
+                    }
+                    break;
+
+                    default:
+                    result = 0;
+                    break;
+                }
+            }else{
+                result = 6;
+            }
+            break;
+
+            case 3:
+            if(fobj->flags & 0x80)
+                FObjUpdateAnim(fobj, obj, obj_update);
+            assert(fobj->flags & 0xF != 3);
+
+            if((fobj->curr_parse - fobj->parse_start) < fobj->parse_len){
+                u32 parse_res;
+                u32 lshift = 0;
+                u8 parse;
+                do {
+                    u8* pos = fobj->curr_parse;
+                    fobj->curr_parse += 1;
+                    parse = *pos;
+                    parse_res |= (parse & 0x7F) << lshift;
+                    lshift += 7;
+                } while((parse & 0x80) != 0);
+                fobj->parse_res = parse_res;
+                fobj->flags |= 0x20u;
+                result = 2;
+                fobj->flags = fobj->flags & 0xF0 | result;
+            }else{
+                result = 6;
+            }
+            break;
+
+            case 5:
+            result = 4;
+            fobj->flags = fobj->flags & 0xF0 | result;
+            break;
+
+            case 6:
+            fobj->unk1C = fobj->unk1C + v22;
+            FObjConditionalAdjust(fobj);
+            FObjUpdateAnim(fobj, obj, obj_update);
+            return;
+            break;
+
+            default:
+            break;
+            }
+        }
+        //8036B5F0
+        f64 val = 0x4330000000000000;
+        f64 v56 = 0x4330000000000000;
+        v56 = fobj->parse_res - val;
+        if(v56 > fobj->unk1C)
+            break;
+        
+        fobj->unk1C = fobj->unk1C - fobj->parse_res;
+        v22 = v56;
+        result = 3;
+        fobj->flags = fobj->flags & 0xF0 | result;
+    }
+    FObjUpdateAnim(fobj, obj, obj_update);
+    result = 5;
+    fobj->flags = fobj->flags & 0xF0 | result;
 }
 
 //8036B6CC

@@ -8,22 +8,24 @@
 
 //Frame Object
 typedef struct _HSD_FObj {
-	struct _HSD_FObj* next;
-	u32* curr_parse;
-	u32* parse_start;
-	u32 parse_len;
+	struct _HSD_FObj* next; //0x00
+	u8* curr_parse; //0x04
+	u8* parse_start; //0x08
+	u32 parse_len; //0x0C
 	u8 flags; //0x10
-	u8 unk11;
-	u8 state; //0x12
+	u8 parsed_state; //0x11
+	u8 obj_state; //0x12
 	u8 obj_type; //0x13
-	u32 unk14;
+	u8 unk14;
+	u8 unk15;
+	u16 unk16;
 	u16 unk18;
-	u16 unk1A;
+	u16 parse_res; //0x1A
 	f32 unk1C;
 	f32 unk20;
 	f32 unk24;
 	f32 unk28;
-	u32 unk2C;
+	f32 unk2C;
 	u32 unk30;
 } HSD_FObj;
 
