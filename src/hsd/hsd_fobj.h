@@ -9,7 +9,7 @@
 //Frame Object
 typedef struct _HSD_FObj {
 	struct _HSD_FObj* next; //0x00
-	u8* curr_parse; //0x04
+	u8** curr_parse; //0x04
 	u8* parse_start; //0x08
 	u32 parse_len; //0x0C
 	u8 flags; //0x10

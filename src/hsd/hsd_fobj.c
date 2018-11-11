@@ -60,6 +60,28 @@ void HSD_FObjReqAnimAll(HSD_FObj* fobj, float frame){
 }
 
 //8036ADDC
+u16 sub_8036ADDC(u8** curr_parse){
+    u8* temp = *curr_parse;
+    *curr_parse += 1;
+    u8 parse_start = *temp;
+    
+    u8* parse;
+    u8 result;
+    u32 lshift = 3;
+
+    if((parse_start & 0x80) == 0){
+        return ((parse_start >> 4) & 7) + 1;
+    }
+    result = ((parse_start >> 4) & 7) + 1;
+
+    do {
+        u8* parse = *curr_parse;
+        *curr_parse += 1;
+        result += *parse & 0x7F << lshift;
+        lshift += 7;
+    } while((*parse & 0x80) != 0);
+    return result;
+}
 
 //8036AE38
 void FObjConditionalAdjust(HSD_FObj* fobj){
@@ -139,16 +161,17 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
 
             case 1:
             case 2:
-            if((fobj->curr_parse - fobj->parse_start) < fobj->parse_len){
+            if((*fobj->curr_parse - fobj->parse_start) < fobj->parse_len){
                 fobj->obj_state = fobj->parsed_state;
                 if(fobj->unk16 == 0){
-                    fobj->parsed_state = *fobj->curr_parse & 0xF;
+                    fobj->parsed_state = **fobj->curr_parse & 0xF;
                     fobj->unk16 = sub_8036ADDC(fobj->curr_parse);
                 }
                 fobj->unk16 -= 1;
                 u8 state = fobj->parsed_state;
                 u8 flags = fobj->flags & 0xF;
                 assert((flags - 1) > 1);
+                
                 switch(state){
                     case 1:
                     case 2:
@@ -222,13 +245,13 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                 FObjUpdateAnim(fobj, obj, obj_update);
             assert(fobj->flags & 0xF != 3);
 
-            if((fobj->curr_parse - fobj->parse_start) < fobj->parse_len){
+            if((*fobj->curr_parse - fobj->parse_start) < fobj->parse_len){
                 u32 parse_res;
                 u32 lshift = 0;
                 u8 parse;
                 do {
-                    u8* pos = fobj->curr_parse;
-                    fobj->curr_parse += 1;
+                    u8* pos = *fobj->curr_parse;
+                    *fobj->curr_parse += 1;
                     parse = *pos;
                     parse_res |= (parse & 0x7F) << lshift;
                     lshift += 7;
