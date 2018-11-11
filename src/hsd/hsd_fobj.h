@@ -14,7 +14,7 @@ typedef struct _HSD_FObj {
 	u32 parse_len;
 	u8 flags; //0x10
 	u8 unk11;
-	u8 unk12;
+	u8 state; //0x12
 	u8 obj_type; //0x13
 	u32 unk14;
 	u16 unk18;

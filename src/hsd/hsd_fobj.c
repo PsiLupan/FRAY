@@ -62,7 +62,7 @@ void HSD_FObjReqAnimAll(HSD_FObj* fobj, float frame){
 //8036AE38
 void FObjConditionalAdjust(HSD_FObj* fobj){
     if(fobj->flags & 0x40){
-        fobj->unk12 = fobj->unk11;
+        fobj->state = fobj->unk11;
         fobj->flags &= 0xBFu;
         fobj->flags |= 0x80u;
         fobj->unk20 = fobj->unk24;
@@ -70,10 +70,10 @@ void FObjConditionalAdjust(HSD_FObj* fobj){
 }
 
 //8036AE70
-void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(s32, u8, FObjData)){
+void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FObjData)){
     FObjData fobjdata;
     if(obj_update){
-        u8 state = fobj->unk12;
+        u8 state = fobj->state;
         if(state == 2){
             u8 flags = fobj->flags;
             if(flags & 0x20){
