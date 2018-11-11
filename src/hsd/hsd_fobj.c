@@ -56,7 +56,74 @@ u8 HSD_FObjGetState(HSD_FObj* fobj){
 
 //8036AA80
 void HSD_FObjReqAnimAll(HSD_FObj* fobj, float frame){
-	
+    if(fobj){
+        v3 = r2 - 5384;
+        v4 = r2 - 5392;
+        for(HSD_FObj* curr = fobj; curr != NULL; curr = curr->next){
+            *curr->curr_parse = curr->parse_start;
+            
+            fobj->unk1C = (f32)(fobj->unk18 ^ 0x80000000) - v3 + frame;
+            curr->flags &= 0xBFu;
+            curr->parsed_state = 0;
+            curr->obj_type = 0;
+            fobj->flags &= 0xF0u;
+            fobj->unk20 = 0;
+            fobj->unk24 = 0;
+            fobj->unk28 = 0;
+            fobj->flags = fobj->flags & 0xF0 | 1;
+        }
+    }
+}
+
+//8036AB24
+void HSD_FObjStopAnim(HSD_FObj* fobj, void* obj, void(obj_update)(), f32 frame){
+    if(fobj){
+        if(fobj->obj_state == 6){
+            HSD_FObjInterpretAnim(fobj, obj, obj_update, frame);
+        }
+        fobj->flags &= 0xF0u;
+    }
+}
+
+//8036AB78
+void HSD_FObjStopAnimAll(HSD_FObj* fobj, void* obj, void(obj_update)(), f32 frame){
+    for(HSD_FObj* curr = fobj; curr != NULL; curr = curr->next){
+        if(fobj->obj_state == 6){
+            HSD_FObjInterpretAnim(curr, obj, obj_update, frame);
+        }
+        curr->flags &= 0xF0u;
+    }
+}
+
+//8036AC10
+f32 FObjLoadData(u8** curr_parse, u8 unk){
+    if(unk){
+        u8 flag = unk & 0xE0;
+        if(flag == 96){
+
+        }else if(flag < 96){
+            if(flag == 64){
+
+            }else{
+                if(flag > 64 || flag != 32){
+                    return /*v2 - 5392*/;
+                }
+            }
+        }else{
+            if(flag != 128){
+                return /*v2 - 5392*/;
+            }
+        }
+        return;
+    }
+    u8* parse_pos = (*curr_parse)++;
+    u32 data = *parse_pos;
+    parse_pos = (*curr_parse)++;
+    data |= (*parse_pos << 8);
+    parse_pos = (*curr_parse)++;
+    data |= (*parse_pos << 16);
+    parse_pos = (*curr_parse)++;
+    return (f32)(data | (*parse_pos << 24));
 }
 
 //8036ADDC
