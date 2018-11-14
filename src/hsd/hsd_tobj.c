@@ -381,8 +381,8 @@ static void MakeTextureMtx(HSD_TObj *tobj){
 		guVector trans;
 		guQuaternion rot;
 		
-		scale.x = fabsf(tobj->scale.x) < EPSILON ? 0.0F : (float)tobj->repeat_s/tobj->scale.x;
-		scale.y = fabsf(tobj->scale.y) < EPSILON ? 0.0F : (float)tobj->repeat_t/tobj->scale.y;
+		scale.x = fabsf(tobj->scale.x) < FLT_EPSILON ? 0.0F : (float)tobj->repeat_s/tobj->scale.x;
+		scale.y = fabsf(tobj->scale.y) < FLT_EPSILON ? 0.0F : (float)tobj->repeat_t/tobj->scale.y;
 		scale.z = tobj->scale.z;
 		rot.x = tobj->rotate.x;
 		rot.y = tobj->rotate.y;
@@ -679,7 +679,7 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
 	break;
       case TOBJ_TEV_CC_TEX0_RGB:
 	tmp = HSD_TExpTev(list);
-	HSD_TExpOrder  (tmp, NULL, GX_COLOR_NULL);
+	HSD_TExpOrder  (tmp, NULL, GX_COLORNULL);
 	HSD_TExpColorOp(tmp, GX_TEV_ADD, GX_TB_ZERO,
 			     GX_CS_SCALE_1, GX_ENABLE);
 	HSD_TExpColorIn(tmp, HSD_TE_0, HSD_TEXP_ZERO,
@@ -691,7 +691,7 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
 	break;
       case TOBJ_TEV_CC_TEX0_AAA:
 	tmp = HSD_TExpTev(list);
-	HSD_TExpOrder  (tmp, NULL, GX_COLOR_NULL);
+	HSD_TExpOrder  (tmp, NULL, GX_COLORNULL);
 	HSD_TExpColorOp(tmp, GX_TEV_ADD, GX_TB_ZERO,
 			     GX_CS_SCALE_1, GX_ENABLE);
 	HSD_TExpColorIn(tmp, HSD_TE_0, HSD_TEXP_ZERO,
@@ -703,7 +703,7 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
 	break;
       case TOBJ_TEV_CC_TEX1_RGB:
 	tmp = HSD_TExpTev(list);
-	HSD_TExpOrder  (tmp, NULL, GX_COLOR_NULL);
+	HSD_TExpOrder  (tmp, NULL, GX_COLORNULL);
 	HSD_TExpColorOp(tmp, GX_TEV_ADD, GX_TB_ZERO,
 			     GX_CS_SCALE_1, GX_ENABLE);
 	HSD_TExpColorIn(tmp, HSD_TE_0, HSD_TEXP_ZERO,
@@ -715,7 +715,7 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
 	break;
       case TOBJ_TEV_CC_TEX1_AAA:
 	tmp = HSD_TExpTev(list);
-	HSD_TExpOrder  (tmp, NULL, GX_COLOR_NULL);
+	HSD_TExpOrder  (tmp, NULL, GX_COLORNULL);
 	HSD_TExpColorOp(tmp, GX_TEV_ADD, GX_TB_ZERO,
 			     GX_CS_SCALE_1, GX_ENABLE);
 	HSD_TExpColorIn(tmp, HSD_TE_0, HSD_TEXP_ZERO,
@@ -776,7 +776,7 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
 	break;
       case TOBJ_TEV_CA_TEX0_A:
 	tmp = HSD_TExpTev(list);
-	HSD_TExpOrder  (tmp, NULL, GX_COLOR_NULL);
+	HSD_TExpOrder  (tmp, NULL, GX_COLORNULL);
 	HSD_TExpAlphaOp(tmp, GX_TEV_ADD, GX_TB_ZERO,
 			     GX_CS_SCALE_1, GX_ENABLE);
 	HSD_TExpAlphaIn(tmp, HSD_TE_0, HSD_TEXP_ZERO,
@@ -788,7 +788,7 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
 	break;
       case TOBJ_TEV_CA_TEX1_A:
 	tmp = HSD_TExpTev(list);
-	HSD_TExpOrder  (tmp, NULL, GX_COLOR_NULL);
+	HSD_TExpOrder  (tmp, NULL, GX_COLORNULL);
 	HSD_TExpAlphaOp(tmp, GX_TEV_ADD, GX_TB_ZERO,
 			     GX_CS_SCALE_1, GX_ENABLE);
 	HSD_TExpAlphaIn(tmp, HSD_TE_0, HSD_TEXP_ZERO,

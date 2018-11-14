@@ -349,8 +349,7 @@ bool HSD_JObjClearFlagsAll(HSD_JObj *jobj, u32 flags){
 }
 
 //8037210C
-HSD_JObj* HSD_JObjAlloc()
-{
+HSD_JObj* HSD_JObjAlloc(){
   HSD_JObj *jobj = hsdNew(HSD_JObjGetDefaultClass());
   assert(jobj);
   return jobj;

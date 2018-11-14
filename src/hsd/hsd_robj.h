@@ -3,11 +3,15 @@
 
 #include <gctypes.h>
 
+#include "hsd_jobj.h"
 #include "hsd_object.h"
 
 typedef struct _HSD_RObj {
-    struct _HSD_Obj class_parent;
-    u32 flags;
+    HSD_RObj* next; //0x00
+    u32 flags; //0x04
+    union {
+        HSD_JObj* jobj; //0x08
+    } u;
 } HSD_RObj;
 
 #endif
