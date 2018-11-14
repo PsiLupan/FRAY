@@ -10,8 +10,9 @@ typedef struct _HSD_RObj {
     HSD_RObj* next; //0x00
     u32 flags; //0x04
     union {
-        HSD_JObj* jobj; //0x08
+        struct _HSD_JObj* jobj; //0x08
     } u;
+    struct _HSD_AObj* aobj; //0x18
 } HSD_RObj;
 
 #endif
