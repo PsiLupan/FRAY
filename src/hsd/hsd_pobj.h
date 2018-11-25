@@ -26,18 +26,18 @@ typedef struct _HSD_PObjDesc {
 	HSD_Weight* weight;
 } HSD_PObjDesc;
 
-typedef struct {
+typedef struct _HSD_Display {
 	u8 unk;
 	u8 primitive;
 	u16 indices;
 } HSD_Display;
 
-typedef struct {
+typedef struct _HSD_Weight {
 	struct _HSD_JObj* jobj;
 	f32 weight;
 } HSD_Weight;
 
-typedef struct {
+typedef struct _HSD_VertAttr {
 	u32 ident;
 	u32 usage;
 	u32 format;
@@ -48,14 +48,14 @@ typedef struct {
 	Vertex* vertex;
 } HSD_VertAttr;
 
-typedef struct {
+typedef struct _Vertex {
 
 } Vertex;
 
-typedef _HSD_PObjInfo {
+typedef struct _HSD_PObjInfo {
 	
 } HSD_PObjInfo;
 
-extern PObjInfo hsdPObj;
+extern HSD_PObjInfo hsdPObj;
 
 #endif

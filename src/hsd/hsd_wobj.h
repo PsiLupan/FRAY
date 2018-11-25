@@ -5,9 +5,11 @@
 #include <ogc/gu.h>
 
 #include "hsd_aobj.h"
+#include "hsd_object.h"
 #include "hsd_robj.h"
 
 typedef struct _HSD_WObj {
+    struct _HSD_Class class_parent;
     u32 flags; //0x08
     u32 x; //0x0C
     u32 y; //0x10
@@ -20,5 +22,11 @@ typedef struct _HSD_WObjDesc {
     char* class_name;
     struct _HSD_WObjDesc* next;
 } HSD_WObjDesc;
+
+typedef struct _HSD_WObjInfo {
+    HSD_ClassInfo parent;
+} HSD_WObjInfo;
+
+extern HSD_WObjInfo hsdWObj;
 
 #endif

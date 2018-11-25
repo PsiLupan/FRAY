@@ -1,5 +1,7 @@
 #include "hsd_wobj.h"
 
+HSD_WObjInfo hsdWObj = { HSD_WObjInfoInit };
+
 //8037D050
 void HSD_WObjRemoveAnim(HSD_WObj* wobj){
     if(wobj){
@@ -37,3 +39,8 @@ void HSD_WObjSetPosition(HSD_WObj* wobj, guVector* pos){
         wobj->flags &= 0xFFFFFFFE;
     }
 }
+
+//8037D900
+static void HSD_WObjInfoInit(){
+    hsdInitClassInfo(HSD_CLASS_INFO(&hsdWObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_wobj", sizeof(HSD_WObjInfo), sizeof(HSD_WObj));
+} //TODO: remainder of func

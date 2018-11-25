@@ -410,12 +410,12 @@ static void MObjRelease(HSD_Class *o){
 	if (mobj->pe)
 		hsdFreeMemPiece(mobj->pe, sizeof(HSD_PEDesc));
 	
-	HSD_PARENT_INFO(&hsdMObj)->release(o);
+	hsdMObj.parent.release(o);
 }
 
 //80363EC4
 static void MObjAmnesia(HSD_ClassInfo *info){
-	if (info == HSD_CLASS_INFO(default_class)) {
+	if (info == HSD_CLASS_INFO(default_class)) { //HSD_CLASS_INFO(default_class)
 		default_class = NULL;
 	}
 	if (info == HSD_CLASS_INFO(&hsdMObj)) {

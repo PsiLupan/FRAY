@@ -113,7 +113,7 @@
 
 //Texture Object
 typedef struct _HSD_TObj {
-	struct _HSD_Obj	class_parent;
+	HSD_Class class_parent;
 	u16 flags;
 	struct _HSD_TObj* next;
 	u8 id; //GXTexMapID
@@ -144,7 +144,7 @@ typedef struct _HSD_TObj {
 
 typedef struct _HSD_TObjDesc {
 	char* class_name;
-	HSD_TObjDesc* next;
+	struct _HSD_TObjDesc* next;
 	u8 id; //GXTexMapID
 	u32 src; //GXTexGenSrc
 	guVector rotate;
@@ -226,7 +226,7 @@ typedef struct {
 } HSD_TObjTevDesc;
 
 typedef struct _HSD_TObjInfo {
-	HSD_ObjInfo		parent;
+	HSD_ClassInfo parent;
 	void (*make_mtx)(HSD_TObj *tobj);
 	int  (*load)(HSD_TObj *tobj, HSD_TObjDesc *desc);
 	void (*make_texp)(HSD_TObj *tobj, u32 lightmap, u32 lightmap_done, HSD_TExp **c, HSD_TExp **a, HSD_TExp **list);
@@ -276,7 +276,7 @@ HSD_TObj* HSD_TObjLoadDesc(HSD_TObjDesc *td);
 
 HSD_ImageDesc* HSD_ImageDescAlloc();
 void HSD_ImageDescFree(HSD_ImageDesc *idesc);
-void HSD_ImageDescCopyFromEFB(HSD_ImageDesc *idesc, u16 origx, u16 origy, GXBool clear, int sync);
+void HSD_ImageDescCopyFromEFB(HSD_ImageDesc *idesc, u16 origx, u16 origy, u8 clear, int sync);
 
 u32 HSD_TGTex2Index(u32 tgtex);
 u32 HSD_TexCoordID2TexGenSrc(u16 coord);

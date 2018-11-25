@@ -11,6 +11,7 @@
 
 #define MOBJ_ANIM 0x4
 #define TOBJ_ANIM 0x10
+#define ALL_ANIM 0x7FF
 
 #define	HSD_A_M_AMBIENT_R   1
 #define	HSD_A_M_AMBIENT_G   2
@@ -32,7 +33,7 @@
 
 //Material Object
 typedef struct _HSD_MObj {
-	struct _HSD_Obj class_parent;
+	HSD_Class class_parent;
 	u32 rendermode;
 	struct _HSD_TObj* tobj;
 	HSD_Material *mat;
@@ -75,9 +76,9 @@ typedef struct _HSD_PEDesc {
 typedef struct _HSD_MObjDesc {
 	char* class_name;
 	u32 rendermode;
-	struct _HSD_TObjDesc* tobj;
-	HSD_Material* material;
-	struct _HSD_RenderDesc renderdesc;
+	struct _HSD_TObjDesc* texdesc;
+	HSD_Material* mat;
+	void* renderdesc;
 	HSD_PEDesc* pedesc;
 } HSD_MObjDesc;
 

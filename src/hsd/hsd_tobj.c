@@ -1075,19 +1075,12 @@ static void TObjAmnesia(HSD_ClassInfo *info){
 
 //80361548
 static void TObjInfoInit(){
-	hsdInitClassInfo(HSD_CLASS_INFO(&hsdTObj),
-		HSD_CLASS_INFO(&hsdClass),
-		HSD_BASE_CLASS_LIBRARY,
-		"hsd_tobj",
-		sizeof(HSD_TObjInfo),
-		sizeof(HSD_TObj));
+	hsdInitClassInfo(HSD_CLASS_INFO(&hsdTObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_tobj", sizeof(HSD_TObjInfo),	sizeof(HSD_TObj));
 	
-	HSD_CLASS_INFO(&hsdTObj)->init     = TObjInit;
 	HSD_CLASS_INFO(&hsdTObj)->release  = TObjRelease;
 	HSD_CLASS_INFO(&hsdTObj)->amnesia  = TObjAmnesia;
 	HSD_TOBJ_INFO(&hsdTObj)->load      = TObjLoad;
 	HSD_TOBJ_INFO(&hsdTObj)->make_texp = TObjMakeTExp;
-
-	hsdTObj.make_mtx = MakeTextureMtx;
-	hsdTObj.update   = TObjUpdateFunc;
+	HSD_TOBJ_INFO(&hsdTObj)->make_mtx = MakeTextureMtx;
+	HSD_TOBJ_INFO(&hsdTObj)->update   = TObjUpdateFunc;
 }

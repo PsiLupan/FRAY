@@ -7,7 +7,7 @@
 #include "hsd_object.h"
 
 typedef struct _HSD_RObj {
-    HSD_RObj* next; //0x00
+    struct _HSD_RObj* next; //0x00
     u32 flags; //0x04
     union {
         struct _HSD_JObj* jobj; //0x08

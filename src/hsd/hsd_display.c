@@ -153,8 +153,8 @@ void HSD_JObjDisp(HSD_JObj *jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 renderm
 			if (sptcl_callback) {
 				for (sp = jobj->u.ptcl; sp; sp = sp->next) {
 					if (((u32)sp->data) & JOBJ_PTCL_ACTIVE) {
-						u32 bank = JOBJ_PTCL_BANK_MASK&((u32)sp->data);
-						u32 offset = (JOBJ_PTCL_OFFSET_MASK&((u32)sp->data))>>JOBJ_PTCL_OFFSET_SHIFT;
+						u32 bank = JOBJ_PTCL_BANK_MASK & ((u32)sp->data);
+						u32 offset = (JOBJ_PTCL_OFFSET_MASK & ((u32)sp->data)) >> JOBJ_PTCL_OFFSET_SHIFT;
 						(*sptcl_callback)(0, bank, offset, jobj);
 					}
 					sp->data = (void *)((u32)sp->data & ~JOBJ_PTCL_ACTIVE);
@@ -180,7 +180,7 @@ void HSD_SetEraseColor(u8 r, u8 g, u8 b, u8 a){
 //80374AA0
 void HSD_EraseRect(float top, float bottom, float left, float right, float z, int enable_color, int enable_alpha, int enable_depth){
 	GXTexObj texobj;
-	static u8 depth_image[] ATTRIBUTE_ALIGN(32) = {
+	static u8 depth_image[] = {
 		255, 255, 255, 255, 255, 255, 255, 255,
 		255, 255, 255, 255, 255, 255, 255, 255,
 		255, 255, 255, 255, 255, 255, 255, 255,
@@ -204,60 +204,60 @@ void HSD_EraseRect(float top, float bottom, float left, float right, float z, in
 		return;
 	
 	if (enable_depth) {
-		GXInitTexObj(&texobj, depth_image, 4, 4, GX_TF_Z8, GX_REPEAT, GX_REPEAT, GX_DISABLE);
-		GXLoadTexObj(&texobj, GX_TEXMAP0);
-		GXSetNumTexGens(1);
-		GXSetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY);
-		GXSetNumTevStages(1);
-		GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
-		GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
-		GXSetZTexture(GX_ZT_REPLACE, GX_TF_Z8, 0);
+		GX_InitTexObj(&texobj, depth_image, 4, 4, GX_TF_Z8, GX_REPEAT, GX_REPEAT, GX_DISABLE);
+		GX_LoadTexObj(&texobj, GX_TEXMAP0);
+		GX_SetNumTexGens(1);
+		GX_SetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY);
+		GX_SetNumTevStages(1);
+		GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
+		GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
+		GX_SetZTexture(GX_ZT_REPLACE, GX_TF_Z8, 0);
 	} else {
-		GXSetNumTexGens(0);
-		GXSetNumTevStages(1);
-		GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORDNULL, GX_TEXMAP_NULL, GX_COLOR0A0);
-		GXSetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
+		GX_SetNumTexGens(0);
+		GX_SetNumTevStages(1);
+		GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORDNULL, GX_TEXMAP_NULL, GX_COLOR0A0);
+		GX_SetTevOp(GX_TEVSTAGE0, GX_PASSCLR);
 	}
 	
-	GXSetCullMode(GX_CULL_NONE);
+	GX_SetCullMode(GX_CULL_NONE);
 	
-	GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_OR, GX_ALWAYS, 0);
-	GXSetZCompLoc(GX_TRUE);
-	GXSetZMode(GX_ENABLE, GX_ALWAYS, enable_depth? GX_ENABLE : GX_DISABLE);
-	GXSetBlendMode(GX_BM_LOGIC, GX_BL_ONE, GX_BL_ZERO, GX_LO_COPY);
-	GXSetColorUpdate(enable_color? GX_ENABLE : GX_DISABLE);
-	GXSetAlphaUpdate(enable_alpha? GX_ENABLE : GX_DISABLE);
+	GX_SetAlphaCompare(GX_ALWAYS, 0, GX_AOP_OR, GX_ALWAYS, 0);
+	GX_SetZCompLoc(GX_TRUE);
+	GX_SetZMode(GX_ENABLE, GX_ALWAYS, enable_depth? GX_ENABLE : GX_DISABLE);
+	GX_SetBlendMode(GX_BM_LOGIC, GX_BL_ONE, GX_BL_ZERO, GX_LO_COPY);
+	GX_SetColorUpdate(enable_color? GX_ENABLE : GX_DISABLE);
+	GX_SetAlphaUpdate(enable_alpha? GX_ENABLE : GX_DISABLE);
 	
-	GXSetNumChans(1);
-	GXSetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHTNULL, GX_DF_NONE, GX_AF_NONE);
+	GX_SetNumChans(1);
+	GX_SetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHTNULL, GX_DF_NONE, GX_AF_NONE);
 	
-	GXClearVtxDesc();
-	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
-	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGBA8, 0);
-	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_U8, 0);
-	GXLoadPosMtxImm(HSD_identityMtx, GX_PNMTX0);
-	GXSetCurrentMtx(GX_PNMTX0);
-	GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
-	GXSetVtxDesc(GX_VA_CLR0, GX_DIRECT);
-	GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
+	GX_ClearVtxDesc();
+	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
+	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGBA8, 0);
+	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_U8, 0);
+	GX_LoadPosMtxImm(HSD_identityMtx, GX_PNMTX0);
+	GX_SetCurrentMtx(GX_PNMTX0);
+	GX_SetVtxDesc(GX_VA_POS, GX_DIRECT);
+	GX_SetVtxDesc(GX_VA_CLR0, GX_DIRECT);
+	GX_SetVtxDesc(GX_VA_TEX0, GX_DIRECT);
 	
 	color = HSD_GetEraseColor();
-	GXBegin(GX_QUADS, GX_VTXFMT0, 4);
-	GXPosition3f32(left, top, z);
-	GXColor4u8(color.r, color.g, color.b, color.a);
-	GXTexCoord2u8(0, 0);
-	GXPosition3f32(right, top, z);
-	GXColor4u8(color.r, color.g, color.b, color.a);
-	GXTexCoord2u8(1, 0);
-	GXPosition3f32(right, bottom, z);
-	GXColor4u8(color.r, color.g, color.b, color.a);
-	GXTexCoord2u8(1, 1);
-	GXPosition3f32(left, bottom, z);
-	GXColor4u8(color.r, color.g, color.b, color.a);
-	GXTexCoord2u8(0, 1);
-	GXEnd();
+	GX_Begin(GX_QUADS, GX_VTXFMT0, 4);
+	GX_Position3f32(left, top, z);
+	GX_Color4u8(color.r, color.g, color.b, color.a);
+	GX_TexCoord2u8(0, 0);
+	GX_Position3f32(right, top, z);
+	GX_Color4u8(color.r, color.g, color.b, color.a);
+	GX_TexCoord2u8(1, 0);
+	GX_Position3f32(right, bottom, z);
+	GX_Color4u8(color.r, color.g, color.b, color.a);
+	GX_TexCoord2u8(1, 1);
+	GX_Position3f32(left, bottom, z);
+	GX_Color4u8(color.r, color.g, color.b, color.a);
+	GX_TexCoord2u8(0, 1);
+	GX_End();
 	
-	GXSetZTexture(GX_ZT_DISABLE, GX_TF_Z8, 0);
+	GX_SetZTexture(GX_ZT_DISABLE, GX_TF_Z8, 0);
 	
 	HSD_StateInvalidate(HSD_STATE_ALL);
 }
