@@ -1,5 +1,7 @@
 #include "hsd_wobj.h"
 
+static void HSD_WObjInfoInit();
+
 HSD_WObjInfo hsdWObj = { HSD_WObjInfoInit };
 
 //8037D050

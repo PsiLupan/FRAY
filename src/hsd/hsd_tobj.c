@@ -1,6 +1,6 @@
 #include "hsd_tobj.h"
 
-static void TObjInfoInit(void);
+static void TObjInfoInit();
 
 HSD_TObjInfo hsdTObj = { TObjInfoInit };
 
