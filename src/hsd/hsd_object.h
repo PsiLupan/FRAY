@@ -29,7 +29,7 @@ typedef struct _HSD_ClassInfo {
 	void* unk20;
 	void* unk24;
 	void* unk28;
-	void (*init)(HSD_Class* o);
+	void (*init)(HSD_Class* o); //0x2C
 	void (*release)(HSD_Class* o); //0x30
 	void (*destroy)(HSD_Class* o); //0x34
 	void (*amnesia)(HSD_ClassInfo* info); //0x38

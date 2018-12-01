@@ -362,9 +362,16 @@ HSD_CObjInfo* HSD_CObjGetDefaultClass(){
 }
 
 //8036A55C
-static void CObjInit(r3, r4){
-    if(r3 && r4)
-        HSD_CObjLoad();
+static void CObjInit(HSD_Class *o){
+    HSD_PARENT_INFO(&hsdCObj)->init(o);
+    
+    if(o != NULL){
+        HSD_CObj* cobj = HSD_COBJ(o);
+        cobj->flags |= 0xC000;
+
+        cobj->eye_position = HSD_WObjAlloc();
+        cobj->interest = HSD_WObjAlloc();
+    }
 }
 
 //8036A6C8
@@ -394,7 +401,7 @@ static void CObjRelease(HSD_Class* o){
     if(cobj->proj_mtx != NULL){
         HSD_MtxFree(cobj->proj_mtx);
     }
-    
+
     HSD_PARENT_INFO(&hsdCObj)->release(o);
 }
 
