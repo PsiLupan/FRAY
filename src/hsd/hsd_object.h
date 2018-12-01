@@ -9,9 +9,10 @@
 #define HSD_OBJ_NOREF 0xFFFF
 
 #define HSD_CLASS_INFO(s)	((HSD_ClassInfo*)(s))
+#define HSD_PARENT_INFO(s)  (((HSD_ClassInfo*)(s))->parent_info)
 
 typedef struct _HSD_Class {
-	void* class_init;
+	HSD_ClassInfo* class_init;
 	u16 ref_count;
 } HSD_Class;
 
@@ -28,7 +29,7 @@ typedef struct _HSD_ClassInfo {
 	void* unk20;
 	void* unk24;
 	void* unk28;
-	void* unk2C;
+	void (*init)(HSD_Class* o);
 	void (*release)(HSD_Class* o); //0x30
 	void (*destroy)(HSD_Class* o); //0x34
 	void (*amnesia)(HSD_ClassInfo* info); //0x38

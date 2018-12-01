@@ -25,7 +25,7 @@ void HSD_JObjRemoveAll(HSD_JObj *jobj){
 			
 			if(curr){			
 				u16 curr_refs = curr->class_parent.ref_count;
-				bool isMaxMinRefs = 0xFFFF == curr_refs;
+				bool isMaxMinRefs = HSD_OBJ_NOREF == curr_refs;
 				if(isMaxMinRefs){
 					curr_refs -= 1;
 					curr->class_parent.ref_count = curr_refs;

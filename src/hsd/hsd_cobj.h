@@ -47,6 +47,12 @@ typedef struct _HSD_CObj {
 
 typedef struct _HSD_CObjInfo {
     HSD_ClassInfo parent;
+    int	(*load) (HSD_CObj *cobj, HSD_CObjDesc *desc);
 } HSD_CObjInfo;
+
+
+#define HSD_COBJ(o)		((HSD_CObj *)(o))
+#define HSD_COBJ_INFO(i)	((HSD_CObjInfo *)(i))
+#define HSD_COBJ_METHOD(o)	HSD_COBJ_INFO(HSD_CLASS_METHOD(o))
 
 #endif

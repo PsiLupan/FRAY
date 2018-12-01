@@ -151,7 +151,7 @@ HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc){
 			
 			u32 id = aobjdesc->obj_id;
 			if(id){
-				HSD_Obj* hsdObj = HSD_IDGetDataFromTable(0, id, 0);
+				HSD_Class* hsdObj = HSD_IDGetDataFromTable(0, id, 0);
 				void* obj = (void*)hsdObj;
 				
 				if(hsdObj){

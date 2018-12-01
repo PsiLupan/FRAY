@@ -183,6 +183,14 @@ static int MObjLoad(HSD_MObj *mobj, HSD_MObjDesc *desc){
 	return 0;
 }
 
+void HSD_MObjSetDefaultClass(HSD_MObjInfo *info){
+	default_class = info;
+}
+
+HSD_MObjInfo* HSD_MObjGetDefaultClass(){
+	return default_class ? default_class : &hsdMObj;
+}
+
 //803631E4
 HSD_MObj* HSD_MObjLoadDesc(HSD_MObjDesc *mobjdesc){
 	if (mobjdesc) {
@@ -410,12 +418,12 @@ static void MObjRelease(HSD_Class *o){
 	if (mobj->pe)
 		hsdFreeMemPiece(mobj->pe, sizeof(HSD_PEDesc));
 	
-	hsdMObj.parent.release(o);
+	HSD_PARENT_INFO(&hsdMObj)->release(o);
 }
 
 //80363EC4
 static void MObjAmnesia(HSD_ClassInfo *info){
-	if (info == HSD_CLASS_INFO(default_class)) { //HSD_CLASS_INFO(default_class)
+	if (info == HSD_CLASS_INFO(default_class)) {
 		default_class = NULL;
 	}
 	if (info == HSD_CLASS_INFO(&hsdMObj)) {

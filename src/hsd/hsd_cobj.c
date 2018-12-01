@@ -1,5 +1,9 @@
 #include "hsd_cobj.h"
 
+static HSD_CObjInfo hsdCObj = { CObjInfoInit };
+
+static HSD_CObjInfo *default_class = NULL;
+
 static HSD_CObj *current_cobj = NULL;
 
 //803676F8
@@ -24,7 +28,7 @@ void HSD_CObjAddAnim(HSD_CObj* cobj, HSD_AObjDesc* aobjdesc){
             HSD_AObjRemove(cobj->aobj);
         
         cobj->aobj = HSD_AObjLoadDesc(aobjdesc);
-        //HSD_WObjAddAnim(HSD_CObjgetEyePositionWObj(cobj), aobjdesc->0x04);
+        //HSD_WObjAddAnim(HSD_CObjGetEyePositionWObj(cobj), aobjdesc->0x04);
         //HSD_WObjAddAnim(HSD_CObjGetInterestWObj(cobj), aobjdesc->0x08);
     }
 }
@@ -339,16 +343,78 @@ HSD_CObj* HSD_CObjGetCurrent(){
 
 //8036A290
 HSD_CObj* HSD_CObjAlloc(){
-
+    HSD_CObj* cobj = hsdNew(HSD_CObjGetDefaultClass());
+    assert(cobj != NULL);
+    return cobj;
 }
 
 //8036A2EC
-void HSD_CObjLoad(){
+static int HSD_CObjLoad(){
 
 }
 
+void HSD_CObjSetDefaultClass(HSD_CObjInfo *info){
+	default_class = info;
+}
+
+HSD_CObjInfo* HSD_CObjGetDefaultClass(){
+	return default_class ? default_class : &hsdCObj;
+}
+
 //8036A55C
-void HSD_CObjInit(r3, r4){
+static void CObjInit(r3, r4){
     if(r3 && r4)
         HSD_CObjLoad();
+}
+
+//8036A6C8
+static void CObjRelease(HSD_Class* o){
+    HSD_CObj *cobj = HSD_COBJ(o);
+
+    HSD_AObjRemove(cobj->aobj);
+
+    HSD_WObj* wobj = cobj->eye_position;
+    if(wobj != NULL){
+        wobj->class_parent.ref_count -= 1;
+        if(wobj->class_parent.ref_count == 0){
+            wobj->class_parent.class_init->release(wobj);
+            wobj->class_parent.class_init->destroy(wobj);
+        }
+    }
+
+    wobj = cobj->interest;
+    if(wobj != NULL){
+        wobj->class_parent.ref_count -= 1;
+        if(wobj->class_parent.ref_count == 0){
+            wobj->class_parent.class_init->release(wobj);
+            wobj->class_parent.class_init->destroy(wobj);
+        }
+    }
+
+    if(cobj->proj_mtx != NULL){
+        HSD_MtxFree(cobj->proj_mtx);
+    }
+    
+    HSD_PARENT_INFO(&hsdCObj)->release(o);
+}
+
+//8036A85C
+static void CObjAmnesia(HSD_ClassInfo *info){
+	if (info == HSD_CLASS_INFO(default_class)) {
+		default_class = NULL;
+	}
+	if (info == HSD_CLASS_INFO(&hsdCObj)) {
+		current_cobj = NULL;
+	}
+	HSD_PARENT_INFO(&hsdCObj)->amnesia(info);
+}
+
+//8036A8BC
+static void CObjInfoInit(){
+    hsdInitClassInfo(HSD_CLASS_INFO(&hsdCObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_cobj", sizeof(HSD_CObjInfo), sizeof(HSD_CObj));
+
+    HSD_CLASS_INFO(&hsdCObj)->init = CObjInit;
+    HSD_CLASS_INFO(&hsdCObj)->release = CObjRelease;
+    HSD_CLASS_INFO(&hsdCObj)->amnesia = CObjAmnesia;
+    HSD_COBJ_INFO(&hsdCObj)->load = HSD_CObjLoad;
 }
