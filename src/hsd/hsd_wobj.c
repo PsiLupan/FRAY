@@ -46,3 +46,17 @@ void HSD_WObjSetPosition(HSD_WObj* wobj, guVector* pos){
 static void HSD_WObjInfoInit(){
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdWObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_wobj", sizeof(HSD_WObjInfo), sizeof(HSD_WObj));
 } //TODO: remainder of func
+
+static void WObjUnref(HSD_WObj* wobj){
+    if(wobj != NULL){
+        BOOL norefs = HSD_OBJ_NOREF == wobj->class_parent.ref_count;
+        if(norefs == FALSE){
+            wobj->class_parent.ref_count -= 1;
+            norefs = wobj->class_parent.ref_count == 0;
+        }
+        if(norefs == TRUE && wobj != NULL){
+            wobj->class_parent.class_init->release(wobj);
+            wobj->class_parent.class_init->destroy(wobj);
+        }
+    }
+}

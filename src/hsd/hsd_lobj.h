@@ -62,7 +62,7 @@ struct attn {
 };
 
 typedef struct _HSD_LObj {
-	struct _HSD_Obj parent_class;
+	HSD_Class class_parent;
 	u16 flags;
 	struct _HSD_LObj* next;
 	GXColor color; //0x10

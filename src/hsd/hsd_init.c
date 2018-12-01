@@ -8,8 +8,12 @@ static void *hsd_heap_next_arena_hi = NULL;
 
 static void *FrameBuffer[HSD_VI_XFB_MAX];
 
-static bool shown; //r13 - 0x3DF0
-static bool init_done = false; //r13 - 0x3FD4
+static GXRModeObj *rmode = &TVNtsc480IntDf;
+
+static HSD_RenderPass current_render_pass;
+
+static BOOL shown; //r13 - 0x3DF0
+static BOOL init_done = FALSE; //r13 - 0x3FD4
 
 //80374F28
 void HSD_InitComponent(){
@@ -137,14 +141,14 @@ void HSD_ObjInit(){
 }
 
 //803756F8
-bool HSD_SetInitParameter(HSD_InitParam param, ...){
+BOOL HSD_SetInitParameter(HSD_InitParam param, ...){
 	va_list ap;
-	bool result = false;
+	BOOL result = TRUE;
 	if (init_done) {
-		shown = false;
+		shown = FALSE;
 		if (!shown) {
 			//HSD_Report("init parameter should be set before invoking HSD_Init().\n");
-			shown = true;
+			shown = TRUE;
 		}
 		return result;
 	}
@@ -155,8 +159,8 @@ bool HSD_SetInitParameter(HSD_InitParam param, ...){
     {
       u32 fifo_size = va_arg(ap, u32);
       if (fifo_size > 0) {
-		iparam_fifo_size = fifo_size;
-		result = 1;
+        iparam_fifo_size = fifo_size;
+        result = TRUE;
       }
     }
     break;
@@ -165,8 +169,8 @@ bool HSD_SetInitParameter(HSD_InitParam param, ...){
     {
       u32 xfb_max_num = va_arg(ap, u32);
       if (xfb_max_num > 0) {
-		iparam_xfb_max_num = xfb_max_num;
-		result = 1;
+        iparam_xfb_max_num = xfb_max_num;
+        result = TRUE;
       }
     }
     break;
@@ -175,8 +179,8 @@ bool HSD_SetInitParameter(HSD_InitParam param, ...){
     {
       u32 heap_size = va_arg(ap, u32);
       if (heap_size < OSGetPhysicalMemSize()) {
-		  iparam_heap_size = heap_size;
-		  result = 1;
+        iparam_heap_size = heap_size;
+        result = TRUE;
       }
     }
     break;
@@ -188,7 +192,7 @@ bool HSD_SetInitParameter(HSD_InitParam param, ...){
 
       hsd_heap_next_arena_lo = arena_lo;
       hsd_heap_next_arena_hi = arena_hi;
-      result = true;
+      result = TRUE;
     }
     break;
 
@@ -206,19 +210,19 @@ bool HSD_SetInitParameter(HSD_InitParam param, ...){
       if (terminate != NULL) {
 		  //ERROR STATE
       } else {
-		  _HSD_MemSetCallbacks(&cb, sizeof(cb));
-		  iparam_memory_callbacks = 1;
-		  result = true;
+        _HSD_MemSetCallbacks(&cb, sizeof(cb));
+        iparam_memory_callbacks = 1;
+        result = TRUE;
       }
     }
     break;
 
   case HSD_INIT_RENDER_MODE_OBJ:
     {
-      GXRenderModeObj *tmp = va_arg(ap, GXRenderModeObj *);
+      GXRModeObj *tmp = va_arg(ap, GXRModeObj *);
       if (tmp) {
-		rmode = tmp;
-		result = 1;
+        rmode = tmp;
+        result = TRUE;
       }
     }
     break;
@@ -227,7 +231,7 @@ bool HSD_SetInitParameter(HSD_InitParam param, ...){
     {
       int num = va_arg(ap, int);
       if (num == 0) {
-		  result = true;
+        result = TRUE;
       }
     }
     break;

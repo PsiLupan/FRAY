@@ -527,9 +527,9 @@ void HSD_LObjDeleteCurrent(HSD_LObj *lobj){
 	if (!lobj)
 		return;
 	
-	for (p=&current_lights; *p; p=&(*p)->next) {
+	for (p = &current_lights; *p; p = &(*p)->next) {
 		if ((*p)->data == lobj) {
-			for (i=0; i < MAX_GXLIGHT; i++) {
+			for (i = 0; i < MAX_GXLIGHT; i++) {
 				if (lobj == active_lights[i]) {
 					active_lights[i] = NULL;
 				}
@@ -858,4 +858,17 @@ static void LObjInfoInit(void){
 	
 	HSD_LOBJ_INFO(&hsdLObj)->load     = LObjLoad;
 	HSD_LOBJ_INFO(&hsdLObj)->update   = LObjUpdateFunc;
+}
+
+static void LObjUnref(HSD_LObj* lobj){
+	if(lobj != NULL){
+        BOOL norefs = HSD_OBJ_NOREF == lobj->class_parent.ref_count;
+        if(norefs == FALSE){
+            lobj->class_parent.ref_count -= 1;
+            norefs = lobj->class_parent.ref_count == 0;
+        }
+        if(norefs == TRUE && lobj != NULL){
+            lobj->class_parent.class_init->release(lobj);
+        }
+    }
 }

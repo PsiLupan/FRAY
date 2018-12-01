@@ -24,12 +24,10 @@ void HSD_JObjRemoveAll(HSD_JObj *jobj){
 			curr->next = NULL;
 			
 			if(curr){			
-				u16 curr_refs = curr->class_parent.ref_count;
-				bool isMaxMinRefs = HSD_OBJ_NOREF == curr_refs;
-				if(isMaxMinRefs){
-					curr_refs -= 1;
-					curr->class_parent.ref_count = curr_refs;
-					isMaxMinRefs = curr_refs == 0;
+				BOOL norefs = HSD_OBJ_NOREF == curr->class_parent.ref_count;
+				if(norefs == FALSE){
+					curr->class_parent.ref_count -= 1;
+					norefs = curr->class_parent.ref_count == 0;
 				}
 				/*
 				if(isMaxMinRefs){

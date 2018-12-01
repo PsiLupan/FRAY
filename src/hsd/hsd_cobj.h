@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include "hsd_aobj.h"
+#include "hsd_display.c"
 #include "hsd_object.h"
 #include "hsd_wobj.h"
 
