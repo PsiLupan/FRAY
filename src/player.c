@@ -7,7 +7,7 @@ void sub_8007D174(Player* player, f32 vel, f32 mobility_1, f32 mobility_2, f32 f
 
 //8007D264
 void Player_UpdateHorzVelocity(Player* player){
-	Player_CalculateHorzVelocity(player, player->vel_self.x);
+	Player_CalculateHorzMobility(player, player->vel_self.x);
 }
 
 //8007D28C
