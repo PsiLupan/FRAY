@@ -3,6 +3,7 @@
 
 #include <gctypes.h>
 #include <ogc/gu.h>
+
 #include <math.h>
 
 #include "gobj.h"

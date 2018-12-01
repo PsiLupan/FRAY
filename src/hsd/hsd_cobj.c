@@ -28,8 +28,8 @@ void HSD_CObjAddAnim(HSD_CObj* cobj, HSD_AObjDesc* aobjdesc){
             HSD_AObjRemove(cobj->aobj);
         
         cobj->aobj = HSD_AObjLoadDesc(aobjdesc);
-        //HSD_WObjAddAnim(HSD_CObjGetEyePositionWObj(cobj), aobjdesc->0x04);
-        //HSD_WObjAddAnim(HSD_CObjGetInterestWObj(cobj), aobjdesc->0x08);
+        HSD_WObjAddAnim(HSD_CObjGetEyePositionWObj(cobj), aobjdesc->0x04);
+        HSD_WObjAddAnim(HSD_CObjGetInterestWObj(cobj), aobjdesc->0x08);
     }
 }
 
@@ -86,6 +86,15 @@ void CObjUpdateFunc(HSD_CObj* cobj, u32 type, f32* val){
             default:
             break;
         }
+    }
+}
+
+//80367AB8
+void HSD_CObjAnim(HSD_CObj* cobj){
+    if(cobj != NULL){
+        HSD_AObjInterpretAnim(cobj->aobj, cobj, CObjUpdateFunc);
+        HSD_WObjInterpretAnim(cobj->eye_position, cobj);
+        HSD_WObjInterpretAnim(cobj->interest, cobj);
     }
 }
 
@@ -233,7 +242,15 @@ void HSD_CObjSetAspect(HSD_CObj* cobj, f32 aspect){
 
 //80369C50
 f32 HSD_CObjGetTop(HSD_CObj* cobj){
-
+    if(cobj){
+        if(cobj->projection_type == PROJ_FRUSTRUM || cobj->projection_type == PROJ_ORTHO){
+            return cobj->fov_top;
+        }
+        if(cobj->projection_type == PROJ_PERSPECTIVE){
+          return cobj->near * tan(0.5f * (cobj->fov_top * 0.017453292f));
+        }
+    }
+    return 0.0f;
 }
 
 //80369CE4
