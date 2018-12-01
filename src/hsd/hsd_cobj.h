@@ -33,8 +33,8 @@ typedef struct _HSD_CObj {
     f32 far; //0x3C
     f32 fov_top; //0x40
     f32 aspect_bottom; //0x44
-    f32 left; //0x48
-    f32 right; //0x4C
+    f32 proj_left; //0x48
+    f32 proj_right; //0x4C
     u8 projection_type; //0x50
     u8 unk51;
     u8 unk52;
