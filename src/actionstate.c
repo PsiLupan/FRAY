@@ -1,5 +1,14 @@
 #include "actionstate.h"
 
+//8007D92C
+void ActionState_FallOrWait(HSD_GObj *gobj){
+	Player* ply = (Player*)gobj->data;
+	if(ply->in_air == TRUE){
+		return /*ActionState_Fall(gobj)*/;
+	}
+	return /*ActionState_Wait(gobj)*/;
+}
+
 //8008732C
 bool ActionState_IsDead(HSD_GObj *gobj){
 	Player* ply = (Player*)gobj->data;

@@ -2,6 +2,8 @@
 #define _player_h_
 
 #include <gctypes.h>
+#include <ogc/gu.h>
+#include <math.h>
 
 #include "gobj.h"
 
@@ -33,7 +35,7 @@ typedef struct _Attributes {
 	f32 termVel; //0x60
 	f32 airMobilityA; //0x64
 	f32 airMobilityB; //0x68
-	f32 airMaxHorzMobility; //0x6C
+	f32 airMaxHorzSpeed; //0x6C
 	f32 airFriction; //0x70
 	f32 fallTermVel; //0x74
 	u32 tiltTurnDuration; //0x78
@@ -120,20 +122,23 @@ typedef struct _Player {
 	void* state_ptr;
 	void* hitboxdata_endptr;
 	f32 facedir;
-	f32 facedir_dup;
+	f32 facedir_model;
 	f32 scale;
 	f32 scale_dup;
 	f32 depth_scale;
 	void* unkptr40;
 	void* unkptr44;
 	u32 linklist_len;
-	f32 pos[3];
-	f32 pos_prevframe[3];
-	f32 pos_delta[3];
+	guVector vel_self;
+	guVector vel_attk;
+	f32 unkA0;
+	guVector pos;
+	guVector pos_prevframe;
+	guVector pos_delta;
 	bool in_air;
-	f32 horz_vel_queue;
+	f32 x_vel_queue;
 	f32 unkE8;
-	f32 horz_vel_self;
+	f32 x_vel_ground_self;
 	f32 unkF0;
 	f32 unkF4;
 	f32 unkF8;
@@ -143,8 +148,23 @@ typedef struct _Player {
 	void* unk108;
 	void* unk10C;
 	Attributes attribs;
+
+	f32 joystick_x; //620
+	f32 joystick_y;
+	f32 prev_joystick_x;
+	f32 prev_joystick_y; //62C
+
+	f32 cstick_x; //638
+	f32 cstick_y;
+
+	u32 unk820;
+	u32 ecb_inactive_frames;
 	
 	u32 last_atkeridx; //18C4
+
+	u8 jumps_used; //1968
+
+	u16 grabbable_flags; //1A6A
 	
 	u32 unk20A4;
 	
