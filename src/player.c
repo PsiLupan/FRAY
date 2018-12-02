@@ -127,7 +127,7 @@ u8 Player_GetPort(HSD_GObj* gobj){
 //80086C0C
 u32 Player_GetActState(HSD_GObj* gobj){
 	Player* ply = (Player*)gobj->data;
-	return ply->action_state;
+	return ply->x10_action_state;
 }
 
 //800872A4
