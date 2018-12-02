@@ -108,56 +108,56 @@ void Player_SetGrabbableFlags(Player* player, u16 flags){
 
 //800865C0
 f32 Player_GetFacing(HSD_GObj* gobj){
-	Player* ply = (Player*)gobj->data;
+	Player* ply = GOBJ_PLAYER(gobj);
 	return ply->facedir;
 }
 
 //800865CC
 BOOL Player_IsInAir(HSD_GObj* gobj){
-	Player* ply = (Player*)gobj->data;
+	Player* ply = GOBJ_PLAYER(gobj);
 	return ply->xE0_in_air;
 }
 
 //80086BE0
 u8 Player_GetPort(HSD_GObj* gobj){
-	Player* ply = (Player*)gobj->data;
+	Player* ply = GOBJ_PLAYER(gobj);
 	return ply->slot;
 }
 
 //80086C0C
 u32 Player_GetActState(HSD_GObj* gobj){
-	Player* ply = (Player*)gobj->data;
+	Player* ply = GOBJ_PLAYER(gobj);
 	return ply->x10_action_state;
 }
 
 //800872A4
 u32 Player_GetInternalID(HSD_GObj* gobj){
-	Player* ply = (Player*)gobj->data;
+	Player* ply = GOBJ_PLAYER(gobj);
 	return ply->internal_id;
 }
 
 //800872B0
 u32* Player_Get20A4(HSD_GObj* gobj){
-	Player* ply = (Player*)gobj->data;
+	Player* ply = GOBJ_PLAYER(gobj);
 	return &ply->x20A4_unk;
 }
 
 //80087300
 u32 Player_GetLastAtkerIdx(HSD_GObj* gobj){
-	Player* ply = (Player*)gobj->data;
+	Player* ply = GOBJ_PLAYER(gobj);
 	return ply->x18C4_last_atkeridx;
 }
 
 //80087460
 u32 Player_GetSpawnCount(HSD_GObj* gobj){
-	Player* ply = (Player*)gobj->data;
+	Player* ply = GOBJ_PLAYER(gobj);
 	return ply->spawn_ctr;
 }
 
 //8022697C
 u8 Player_GetCollisionBubbleFlags(HSD_GObj* gobj){
 	if(GObj_IsPlayer(gobj)){
-		Player* ply = (Player*)gobj->data;
+		Player* ply = GOBJ_PLAYER(gobj);
 		return ply->x21FC_collbubble_flags;
 	}
 	return 0;
