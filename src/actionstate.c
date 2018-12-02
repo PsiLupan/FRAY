@@ -78,6 +78,7 @@ f32 ActionState_HammerFrameCount(Player* ply){
 	return 0.0f;
 }
 
+//800C53E4
 //800C54C4
 BOOL ActionState_IsHammer(Player* ply){
 	u32 state = ply->x10_action_state;
