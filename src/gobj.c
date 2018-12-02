@@ -1,5 +1,13 @@
 #include "gobj.h"
 
+//80086960
+bool GObj_IsPlayer(HSD_GObj* gobj){
+	if(gobj->classifier == 0x04){
+		return true;
+	}
+	return false;
+}
+
 //80390228
 void GObj_Free(HSD_GObj* gobj){
 	assert(gobj);
@@ -27,12 +35,4 @@ void GObj_CallDestructor(HSD_GObj* gobj){
 		gobj->data_kind = GOBJ_NOREF;
 		gobj->data = NULL;
 	}
-}
-
-//???? - Fuck me where was it
-bool GObj_IsPlayer(HSD_GObj* gobj){
-	if(gobj->classifier == 0x04){
-		return true;
-	}
-	return false;
 }
