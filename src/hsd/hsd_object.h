@@ -1,3 +1,6 @@
+#ifndef _hsd_object_h_
+#define _hsd_object_h_
+
 #include "hsd_init.h"
 
 #include <gctypes.h>
@@ -41,3 +44,5 @@ struct unk_80406E48 {
 };
 
 extern HSD_ClassInfo hsdClass;
+
+#endif
