@@ -8,6 +8,16 @@
 
 #include "gobj.h"
 
+#define GOBJ_PLAYER(s) ((Player*)s->data)
+
+#define INTERNAL_MARIO 0x00
+#define INTERNAL_FOX 0x01
+#define INTERNAL_CFALCON 0x02
+#define INTERNAL_DKONG 0x03
+#define INTERNAL_KIRBY 0x04
+#define INTERNAL_MASTERHAND 0x1B
+#define INTERNAL_CRAZYHAND 0x1C
+
 typedef struct _Attributes {
 	f32 walkInitVel; //0x00
 	f32 walkAccel; //0x04
@@ -108,14 +118,14 @@ typedef struct _Attributes {
 } Attributes;
 
 typedef struct _Player {
-	HSD_GObj* parent;
+	struct _HSD_GObj* parent;
 	u32 internal_id;
 	u32 spawn_ctr;
 	u8 slot;
 	u8 flag1;
 	u8 flag2;
 	u8 flag3;
-	u32 action_state;
+	u32 x10_action_state;
 	u32 anim_state;
 	u32 tblconstant;
 	void* shrdaction_tbl;
@@ -132,57 +142,54 @@ typedef struct _Player {
 	u32 linklist_len;
 	guVector vel_self;
 	guVector vel_attk;
-	f32 unkA0;
-	guVector pos;
-	guVector pos_prevframe;
-	guVector pos_delta;
-	bool in_air;
-	f32 x_vel_queue;
-	f32 unkE8;
-	f32 x_vel_ground_self;
-	f32 unkF0;
-	f32 unkF4;
-	f32 unkF8;
-	f32 unkFC;
-	f32 unk100;
+	f32 xA0_unk;
+	guVector xB0_pos;
+	guVector xBC_pos_prevframe;
+	guVector xC8_pos_delta;
+	BOOL xE0_in_air;
+	f32 xE4_vel_queue_x;
+	f32 xE8_unk;
+	f32 xEC_vel_ground_self_x;
+	f32 xF0_unk;
+	f32 xF4_unk;
+	f32 xF8_unk;
+	f32 xFC_unk;
+	f32 x100_unk;
 	void* unk104;
 	void* unk108;
 	void* unk10C;
 	Attributes attribs;
 
-	f32 joystick_x; //620
-	f32 joystick_y;
-	f32 prev_joystick_x;
-	f32 prev_joystick_y; //62C
+	f32 x620_joystick_x;
+	f32 x624_joystick_y;
+	f32 x628_prev_joystick_x;
+	f32 x62C_prev_joystick_y;
 
-	f32 cstick_x; //638
-	f32 cstick_y;
+	f32 x638_cstick_x;
+	f32 x63C_cstick_y;
 
-	u32 unk820;
-	u32 ecb_inactive_frames;
+	u32 x820_unk;
+
+	u32 x88C_ecb_inactive_frames;
+
+	f32 x894_action_state_frames;
 	
-	u32 last_atkeridx; //18C4
+	u32 x18C4_last_atkeridx;
 
-	u8 jumps_used; //1968
+	u8 x1968_jumps_used;
 
-	u16 grabbable_flags; //1A6A
+	struct _Item* x1974_held_item;
+
+	u16 x1A64_grabbable_flags;
 	
-	u32 unk20A4;
+	u32 x20A4_unk;
 	
-	u8 collbubble_flags; //21FC
+	u8 x21FC_collbubble_flags;
+
+	u8 x2224_flags;
+
+	u32 x2340_flags;
+	f32 x2344_flags;
 } Player;
-
-u32 Player_GetInternalID(HSD_GObj* gobj);
-u32 Player_GetSpawnCount(HSD_GObj* gobj);
-u8 Player_GetPort(HSD_GObj* gobj);
-u32 Player_GetActState(HSD_GObj* gobj);
-f32 Player_GetFacing(HSD_GObj* gobj);
-bool Player_IsInAir(HSD_GObj* gobj);
-
-u32 Player_GetLastAtkerSlot(HSD_GObj* gobj);
-
-u32* Player_Get20A4(HSD_GObj* gobj);
-
-u8 Player_GetCollisionBubbleFlags(HSD_GObj* gobj);
 
 #endif 

@@ -6,13 +6,19 @@
 #include "gobj.h"
 #include "player.h"
 
-//Death
-extern bool ActionState_IsDead(HSD_GObj *gobj);
-extern bool ActionState_IsDeadUp(HSD_GObj *gobj);
-extern bool ActionState_IsDeadStarUp(HSD_GObj *gobj);
-extern bool ActionState_IsDeadUpFall(HSD_GObj *gobj);
+#define ACTIONSTATE_FALL 0x1D
+#define ACTIONSTATE_HAMMERWAIT 0x133
+#define ACTIONSTATE_HAMMERFALL 0x137
+#define ACTIONSTATE_HAMMERLANDING 0x139
+#define ACTIONSTATE_ENTRY 0x142
+#define ACTIONSTATE_ENTRYEND 0x144
 
-extern bool ActionState_IsRebirth(HSD_GObj *gobj);
-extern bool ActionState_IsEntry(HSD_GObj *gobj);
+extern BOOL ActionState_IsDead(HSD_GObj *gobj);
+extern BOOL ActionState_IsDeadUp(HSD_GObj *gobj);
+extern BOOL ActionState_IsDeadStarUp(HSD_GObj *gobj);
+extern BOOL ActionState_IsDeadUpFall(HSD_GObj *gobj);
+
+extern BOOL ActionState_IsRebirth(HSD_GObj *gobj);
+extern BOOL ActionState_IsEntry(HSD_GObj *gobj);
 
 #endif

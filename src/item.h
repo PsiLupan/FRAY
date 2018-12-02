@@ -6,31 +6,34 @@
 #include <gctypes.h>
 
 #include "gobj.h"
+#include "player.h"
 
-struct Item
+#define ITEM_HAMMER 0x1C
+
+typedef struct _Item
 {
-	struct GObj* next;
-	struct GObj* parent;
-	u32 flags08;
-	u32 flags0C;
+	struct _HSD_GObj* next;
+	struct _HSD_GObj* parent;
+	u32 x08_flags;
+	u32 x0C_flags;
 	u32 item_type;
 	u32 item_subtype;
 	u32 spawn_ctr;
-	u32 flags20;
-	u32 unk24;
+	u32 x20_flags;
+	u32 x24_unk;
 	u32 state_idx;
 	f32 direction;
 	f32 direction_s;
-	f32 unk34;
+	f32 x34_unk;
 	f32 scale;
-	f32 velocity[3];
-	f32 position[3];
+	guVector velocity;
+	guVector position;
 	f32 direction_pos;
-	void* static_dataB8;
-	void* static_dataBC;
-	void* static_dataC4;
+	void* xB8_static_data;
+	void* xBC_static_data;
+	void* xC4_static_data;
 	void* proj_attribs;
-};
+} Item;
 
 extern u32 Item_GetItemType(struct Item*);
 
