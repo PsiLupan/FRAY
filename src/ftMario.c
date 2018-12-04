@@ -57,6 +57,16 @@ static void Mario_SpawnProjectile(HSD_GObj* gobj, guVector pos){
     }
 }
 
+//800E1040
+static void Mario_Special_Neutral_Air_SetActionState(HSD_GObj* gobj){
+    Player* player = GOBJ_PLAYER(gobj);
+    player->x2200_iasa_avail = FALSE;
+    player->x2210_flags = 0;
+    Player_ChangeActionState(gobj, MARIO_ACTIONSTATE_SPECIAL_NEUTRAL, 0, NULL, 0.0f, 1.0f, 0.0f);
+    sub_8006EBA4(gobj);
+    player->x21BC_Projectile_Spawn = Mario_SpawnProjectile;
+}
+
 //800E1178
 static void Mario_Special_Neutral_SetActionState(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
