@@ -9,6 +9,8 @@
 #include "player.h"
 
 #define ITEM_HAMMER 0x1C
+#define ITEM_MARIO_FIREBALL 0x30
+#define ITEM_DRMARIO_PILL 0x31
 
 typedef struct _Item
 {

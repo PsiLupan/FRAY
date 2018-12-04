@@ -10,6 +10,8 @@
 
 #define GOBJ_PLAYER(s) ((Player*)s->data)
 
+#define BONE_LOOKUP_STRUCT_SIZE 0x10
+
 #define INTERNAL_MARIO 0x00
 #define INTERNAL_FOX 0x01
 #define INTERNAL_CFALCON 0x02
@@ -119,8 +121,8 @@ typedef struct _Attributes {
 
 typedef struct _Player {
 	struct _HSD_GObj* parent;
-	u32 internal_id;
-	u32 spawn_ctr;
+	u32 x4_internal_id;
+	u32 x8_spawn_ctr;
 	u8 slot;
 	u8 flag1;
 	u8 flag2;
@@ -155,10 +157,12 @@ typedef struct _Player {
 	f32 xF8_unk;
 	f32 xFC_unk;
 	f32 x100_unk;
-	void* unk104;
-	void* unk108;
-	void* unk10C;
+	void* x104_unk;
+	void* x108_unk;
+	void* x10C_unk;
 	Attributes attribs;
+
+	u32* x5E8_bone_lookup_table;
 
 	f32 x620_joystick_x;
 	f32 x624_joystick_y;
@@ -168,7 +172,11 @@ typedef struct _Player {
 	f32 x638_cstick_x;
 	f32 x63C_cstick_y;
 
+	s32 x72C_floor_id_actionstate;
+
 	u32 x820_unk;
+	s32 x83C_floor_id;
+	u32 x840_ground_type;
 
 	u32 x88C_ecb_inactive_frames;
 
@@ -183,10 +191,17 @@ typedef struct _Player {
 	u16 x1A64_grabbable_flags;
 	
 	u32 x20A4_unk;
-	
+
+	void (*Projectile_Spawn)(HSD_GObj* gobj);
+
 	u8 x21FC_collbubble_flags;
+	BOOL x2200_iasa_avail;
+
+	u8 x2210_flags;
 
 	u8 x2224_flags;
+	u32 x222C_flags;
+	u32 x2230_flags;
 
 	u32 x2340_flags;
 	f32 x2344_flags;

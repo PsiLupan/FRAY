@@ -1,8 +1,39 @@
 #include "player.h"
 
+//8004CBE8
+void Player_MoveGroundTypeOffset(Player* player){
+	player->x72C_floor_id_actionstate = player->x83C_floor_id;
+}
+
+//8004CBF4
+void Player_SetInvalidGround(Player* player){
+	player->x72C_floor_id_actionstate = -1;
+}
+
 //800693AC
 void Player_ChangeActionState(HSD_GObj* gobj, u32 state, u32 flags, HSD_GObj* gobj_2, f32 frames, f32 unk2, f32 unk3){
 
+}
+
+//8007500C
+u32 Player_BoneID2Index(Player* player, u32 bone_id){
+	/*u32* r3 = -0x515C(r13)*/
+
+	/*Points to an array pointers that go to the below struct
+	static bone_id* bone_ids[ACTIVE_OBJECTS];
+
+	Which points to struct:
+	struct {
+		u8* unk_ids;
+		u8* bone_ids;
+		u32 num_bones;
+	}
+	*/
+
+	/*u32* result_1 = (u32*)(*((u32*)(r3 + (player->x4_internal_id * 4))));
+	u8* bones = (result_1 + 0x4);
+	return bone[bone_id];
+	*/
 }
 
 //8007D174
@@ -125,7 +156,7 @@ u8 Player_GetPort(HSD_GObj* gobj){
 }
 
 //80086C0C
-u32 Player_GetActState(HSD_GObj* gobj){
+u32 Player_GetActionState(HSD_GObj* gobj){
 	Player* ply = GOBJ_PLAYER(gobj);
 	return ply->x10_action_state;
 }
@@ -133,7 +164,7 @@ u32 Player_GetActState(HSD_GObj* gobj){
 //800872A4
 u32 Player_GetInternalID(HSD_GObj* gobj){
 	Player* ply = GOBJ_PLAYER(gobj);
-	return ply->internal_id;
+	return ply->x4_internal_id;
 }
 
 //800872B0
@@ -151,7 +182,7 @@ u32 Player_GetLastAtkerIdx(HSD_GObj* gobj){
 //80087460
 u32 Player_GetSpawnCount(HSD_GObj* gobj){
 	Player* ply = GOBJ_PLAYER(gobj);
-	return ply->spawn_ctr;
+	return ply->x8_spawn_ctr;
 }
 
 //8022697C
