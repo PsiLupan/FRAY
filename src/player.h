@@ -192,7 +192,7 @@ typedef struct _Player {
 	
 	u32 x20A4_unk;
 
-	void (*Projectile_Spawn)(HSD_GObj* gobj);
+	void (*x21BC_Projectile_Spawn)(HSD_GObj* gobj);
 
 	u8 x21FC_collbubble_flags;
 	BOOL x2200_iasa_avail;
