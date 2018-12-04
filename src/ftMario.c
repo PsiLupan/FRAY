@@ -61,6 +61,6 @@ static void Mario_SpawnProjectile(HSD_GObj* gobj, guVector pos){
 static void Mario_Special_Neutral_SetActionState(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
     Player_LoseGroundJump_ECBDisable(player);
-    Player_ChangeActionState(gobj, MARIO_ACTIONSTATE_SPECIAL_NEUTRAL, 0x5000, 0, player->x894_action_state_frames, 1.0f, 0.0f);
+    Player_ChangeActionState(gobj, MARIO_ACTIONSTATE_SPECIAL_NEUTRAL, 0x5000, NULL, player->x894_action_state_frames, 1.0f, 0.0f);
     player->Projectile_Spawn = Mario_SpawnProjectile;
 }
