@@ -152,7 +152,7 @@ BOOL Player_IsInAir(HSD_GObj* gobj){
 //80086BE0
 u8 Player_GetPort(HSD_GObj* gobj){
 	Player* ply = GOBJ_PLAYER(gobj);
-	return ply->slot;
+	return ply->xC_slot;
 }
 
 //80086C0C
@@ -183,6 +183,20 @@ u32 Player_GetLastAtkerIdx(HSD_GObj* gobj){
 u32 Player_GetSpawnCount(HSD_GObj* gobj){
 	Player* ply = GOBJ_PLAYER(gobj);
 	return ply->x8_spawn_ctr;
+}
+
+//800A2040
+BOOL Player_IsCPU(Player* player){
+	if(sub_8003248C(player->xC_slot, (player->x221F_flags >> 3) & 1) == TRUE){
+		return player->x1A94_cpu_flags != 5;
+	}
+	return 0;
+}
+
+//800DE9B8
+BOOL Player_IsDPadUpInstantPressed(HSD_GObj* gobj){
+    Player* player = GOBJ_PLAYER(gobj);
+    return (player->x668_instant_buttons & 8) != 0;
 }
 
 //8022697C

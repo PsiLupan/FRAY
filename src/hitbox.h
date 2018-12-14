@@ -3,9 +3,9 @@
 
 #include <gctypes.h>
 
-struct Hitbox {
-	bool active;
-};
+typedef struct _Hitbox {
+	BOOL x4_active;
+} Hitbox;
 
 extern void Hitbox_Deactivate(struct Hitbox*);
 extern void Hitbox_Activate(struct Hitbox*);

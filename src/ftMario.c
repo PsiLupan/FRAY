@@ -1,7 +1,7 @@
 #include "ftMario.h"
 
 //800E0DA8
-static void Mario_Special_Neutral_SetActionState_x157(HSD_GObj* gobj){
+void Mario_Special_Neutral_SetActionState_x157(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
     player->x2200_iasa_avail = FALSE;
     player->x2210_flags = 0;
@@ -11,7 +11,7 @@ static void Mario_Special_Neutral_SetActionState_x157(HSD_GObj* gobj){
 }
 
 //800E0E54
-static void Mario_Special_Neutral_IASA(HSD_GObj* gobj){
+void Mario_Special_Neutral_IASA(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
     if(player->x2200_iasa_avail == TRUE){
         Interrupt_Wait(gobj);
@@ -19,19 +19,19 @@ static void Mario_Special_Neutral_IASA(HSD_GObj* gobj){
 }
 
 //800E0E84
-static void Mario_Special_Neutral_Physics(HSD_GObj* gobj){
+void Mario_Special_Neutral_Physics(HSD_GObj* gobj){
     sub_80084F3C(gobj);
 }
 
 //800E0EA4
-static void Mario_Special_Neutral_CollInterrupt(HSD_GObj* gobj){
+void Mario_Special_Neutral_CollInterrupt(HSD_GObj* gobj){
     if(Player_CopyCurrFramePhysicsToPrev(gobj) == TRUE){
         Mario_Special_Neutral_SetActionState_x158(gobj);
     }
 }
 
 //800E0EE0
-static void Mario_SpawnProjectile(HSD_GObj* gobj, guVector pos){
+void Mario_SpawnProjectile(HSD_GObj* gobj, guVector pos){
     Player* player = GOBJ_PLAYER(gobj);
     BOOL new_fireball = FALSE;
     if((player->x2210_flags >> 7) & 1){
@@ -68,7 +68,7 @@ static void Mario_SpawnProjectile(HSD_GObj* gobj, guVector pos){
 }
 
 //800E1040
-static void Mario_Special_Neutral_Air_SetActionState_x158(HSD_GObj* gobj){
+void Mario_Special_Neutral_Air_SetActionState_x158(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
     player->x2200_iasa_avail = FALSE;
     player->x2210_flags = 0;
@@ -78,7 +78,7 @@ static void Mario_Special_Neutral_Air_SetActionState_x158(HSD_GObj* gobj){
 }
 
 //800E1178
-static void Mario_Special_Neutral_SetActionState_x158(HSD_GObj* gobj){
+void Mario_Special_Neutral_SetActionState_x158(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
     Player_LoseGroundJump_ECBDisable(player);
     Player_ChangeActionState(gobj, MARIO_ACTIONSTATE_SPECIAL_NEUTRAL_158, 0x5000, NULL, player->x894_action_state_frames, 1.0f, 0.0f);
@@ -86,7 +86,7 @@ static void Mario_Special_Neutral_SetActionState_x158(HSD_GObj* gobj){
 }
 
 //800E11E0
-static void Mario_Special_Neutral_Air_SetActionState_x157(HSD_GObj* gobj){
+void Mario_Special_Neutral_Air_SetActionState_x157(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
     sub_8007D7FC(player);
     Player_ChangeActionState(gobj, MARIO_ACTIONSTATE_SPECIAL_NEUTRAL_157, 0x5000, NULL, player->x894_action_state_frames, 1.0f, 0.0f);
