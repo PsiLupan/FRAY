@@ -8,6 +8,7 @@
 
 #include "gobj.h"
 #include "hitbox.h"
+#include "subaction.h"
 
 #define GOBJ_PLAYER(s) ((Player*)s->data)
 
@@ -120,12 +121,6 @@ typedef struct _Attributes {
 	u32 throwSpeedFlags; //0x180		
 } Attributes;
 
-typedef struct _SubactionInfo {
-	u32 timer;
-	f32 frame_count;
-	u32* data_position;
-} SubactionInfo;
-
 typedef struct _Player {
 	struct _HSD_GObj* parent;
 	u32 x4_internal_id;
@@ -168,6 +163,8 @@ typedef struct _Player {
 	void* x108_unk;
 	void* x10C_unk;
 	Attributes attribs;
+
+	SubactionInfo x3E4_subaction_info;
 
 	u32* x5E8_bone_lookup_table;
 
@@ -212,6 +209,8 @@ typedef struct _Player {
 	BOOL x2200_iasa_avail;
 
 	u8 x2210_flags;
+	u8 x2218_flags;
+	u8 x2219_flags;
 	u8 x221F_flags;
 
 	u8 x2224_flags;

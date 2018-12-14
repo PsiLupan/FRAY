@@ -3,11 +3,14 @@
 
 #include <gctypes.h>
 
+#include "gobj.h"
+#include "player.h"
+
 typedef struct _Hitbox {
 	BOOL x4_active;
 } Hitbox;
 
-extern void Hitbox_Deactivate(struct Hitbox*);
-extern void Hitbox_Activate(struct Hitbox*);
+void Hitbox_Deactivate(Hitbox*);
+void Hitbox_Activate(Hitbox*);
 
 #endif
