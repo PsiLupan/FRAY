@@ -95,12 +95,8 @@ void Scene_RunMajor(MajorScene* scene)
   u32 v4; // ctr@1
   MinorScene** minor_scenes;
   MinorScene* minor_scene = NULL;
-  u32 *result; // r3@10
   MinorSceneHandler *scene_handler;
   MinorScene *v11; // r7@21
-  s32 v12; // r4@21
-  u8 *v13; // r6@21
-  u8 *v14; // r3@21
   u8 v15; // r3@23
   s32 v16; // r3@31
   
