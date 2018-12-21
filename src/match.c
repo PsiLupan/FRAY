@@ -3,6 +3,18 @@
 struct StartMelee sm_regularvs;
 struct StartMelee sm_train;
 
+static u32* unk77C0;
+
+u32* sub_8015CE44(u32 offset, u32 unk){
+	if(unk != 0x78){
+		return (u32*)(unk77C0 + 0x1F2C * (unk / 0x13) + 0x1A4 * (unk % 0x13) + 0x319A);
+	}
+	if(offset >= 4){
+		return NULL;
+	}
+	return (u32*)(unk77C0 + offset + 0x588); //r13 - 77C0 points to an address containing 0x8045A6C0
+}
+
 //80167A64
 void Match_InitStartMeleeStruct(s8 *addr){
   s8 *v1; // r31@1

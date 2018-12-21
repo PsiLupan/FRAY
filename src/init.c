@@ -18,7 +18,7 @@ void Game_Init(){
 	memset(&gamestate, 0, 20);
 	for (u32 i = 0; ; i += 1 )
 	{
-		if ( sceneInfo[i].idx == 45 )
+		if ( major_scenes[i].idx == 45 )
 		{
 			/*if ( VI_GetDTVStatus(result) && (*(_WORD *)(v2 - 19312) & 0x200 || OS_GetProgressiveMode() == 1) )
 				gamestate.curr_major = 39;
@@ -35,8 +35,8 @@ void Game_Init(){
 				gamestate.curr_major = curr_major;
 			}
 		}
-		if ( sceneInfo[i].StartupInit ){ //For things such as VS, this points to a function that allocates the memory for StartMelee, etc..
-			sceneInfo[i].StartupInit();
+		if ( major_scenes[i].Init ){ //For things such as VS, this points to a function that allocates the memory for StartMelee, etc..
+			major_scenes[i].Init();
 			break;
 		}
 	}
@@ -44,21 +44,21 @@ void Game_Init(){
 
 //801A43A0
 u8* Game_MainLoop(u8 scene){
-	SceneData *scene_ptr; // r30@3
+	MajorScene *scene_ptr; // r30@3
 	u32 *result; // r3@7
 
 	for (u32 i = 0; ; i += 1 )
 	{
-		if ( sceneInfo[i].idx == 45 )
+		if ( major_scenes[i].idx == 45 )
 			break;
-		if ( sceneInfo[i].idx == scene )
+		if ( major_scenes[i].idx == scene )
 		{
-			scene_ptr = &sceneInfo[i];
-			goto LABEL_7;
+			scene_ptr = &major_scenes[i];
+			goto JMP_NULL;
 		}
 	}
 	scene_ptr = NULL;
-LABEL_7:
+JMP_NULL:
 	gamestate.pending = false;
 	gamestate.unk03 = 0;
 	gamestate.unk04 = 0;
@@ -71,10 +71,10 @@ LABEL_7:
 		{
 			if ( gamestate.unk10 )
 				return (u8*)result;
-			result = Scene_RunFunc(scene_ptr);
+			Scene_RunMajor(scene_ptr);
 		}
 		result = &dword_8046B0F0;
-		if ( dword_8046B0F0.unk04 || !scene_ptr->unk01 )
+		if ( dword_8046B0F0.unk04 || !scene_ptr->flags )
 			result = &gamestate.pending_major;
 	}
 	return result;

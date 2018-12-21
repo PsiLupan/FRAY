@@ -8,7 +8,6 @@
 #include <gccore.h>
 
 #include "scene.h"
-#include "unknown.h"
 
 #define DEFAULT_FIFO_SIZE	(256*1024)
 

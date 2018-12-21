@@ -6,6 +6,7 @@
 #include <gccore.h>
 #include <gctypes.h>
 
+#include "match.h"
 #include "unknown.h"
 
 //Length: 0x14(20)
@@ -28,60 +29,43 @@ typedef struct _GameState {
 
 extern GameState gamestate;
 
-typedef struct _SceneHandler {
-	u8 idx;
+typedef struct _MinorSceneHandler {
+	u8 class_id;
 	u16 pad;
 	u8 pad2;
-	void* OnFrame;
-	void* OnLoad;
-	void* SomeFunc;
-	void* SomeFunc2;
-} SceneHandler;
+	void (*OnFrame)();
+	void (*OnLoad)();
+	void (*OnLeave)();
+	void (*unk_func)();
+} MinorSceneHandler;
 
-typedef struct _SceneHandlers { //0x2D scenes
-	SceneHandler title_screen;
-	SceneHandler main_menu;
-} SceneHandlers; //803DA920
+typedef struct _MajorScene {
+	BOOL preload;
+	u8 idx;
+	u16 flags;
+	void (*Load)();
+	void (*Unload)();
+	void (*Init)();
+	MinorScene** minor_scenes;
+} MajorScene; //803DACA4
 
-extern struct SceneHandlers sceneHandlers;
+typedef struct _MinorScene {
+	u8 idx;
+	u8 preload;
+	u16 flags;
 
-typedef struct _SceneData {
-	u8 idx; //starts at 1
-	u16 unk01;
-	u32* SceneInit;
-	u32* UnkFunc;
-	void (*StartupInit)();
-	u8 scene_subdata[255];
-	bool unk_bool;
-} SceneData; //803DACA4
+	void (*Prep)();
+	void (*Decide)();
 
-extern SceneData sceneInfo[45];
+	u8 class_id;
+	u8 unk_1;
+	u8 unk_2;
+	u8 unk_3;
 
-u32* Scene_RunFunc(u8);
-void Scene_RunStartupInit();
+	void* unk_struct_0;
+	void* unk_struct_1;
+} MinorScene;
 
-void Scene_UpdatePendingMajor(u8);
-void Scene_SetPendingMajor(u8);
-void Scene_SetPendingTrue();
-u8 Scene_LoadPrevMajor();
-u8 Scene_Get03();
-void Scene_Set03And04(u8);
-u8 Scene_Get04();
-void Scene_Set05(u8);
-u32 Scene_StoreTo10(u32);
-
-/**
-* Is Scene X
-**/
-SceneData* Scene_GetSceneDataByIdx(u8 scene_idx);
-bool Scene_IsSinglePlayer(u8);
-bool Scene_IsCurrSceneSuperSuddenDeath();
-bool Scene_IsCurrSceneSinglePlayer();
-bool Scene_IsSceneClassicAdvOrAllStar();
-
-struct Scenes* GetScenes();
-
-u32* Scene_Load4F80Relative04();
-u32* Scene_Load4F80Relative08();
+extern MajorScene major_scenes[45];
 
 #endif

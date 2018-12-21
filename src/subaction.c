@@ -10,7 +10,7 @@ void Subaction_MoveToNextPosition(SubactionInfo* event){
 }
 
 //8007162C
-void Subaction_Event_30(HSD_GObj* gobj, SubactionInfo* event){ //???
+void Subaction_Event_30(HSD_GObj* gobj, SubactionInfo* event){ //Scale Hitbox Damage by Model Scale (Unstaled)
     Player* player = GOBJ_PLAYER(gobj);
     
     u16 event_id = *(u16*)event->data_position; //Example is in Ness's jab: 30800004 where the hitbox ID is 1 and the data is 4
