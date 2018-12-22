@@ -4,7 +4,7 @@
 GameState gamestate;
 static MinorSceneHandler scene_handlers[45]; //803DA920 - 45 in length
 
-MajorScene major_scenes[45]; //803DACA4
+static MajorScene major_scenes[45]; //803DACA4
 
 u8 menu_804D6730[6];
 
@@ -292,6 +292,10 @@ MinorSceneHandler* Scene_GetSceneHandlerByClass(u8 class_id){
 //801A50A0
 MinorSceneHandler* GetSceneHandlers(){
   return scene_handlers;
+}
+
+MajorScene* Scene_GetMajorScenes(){
+  return major_scenes;
 }
 
 //801A55C4
