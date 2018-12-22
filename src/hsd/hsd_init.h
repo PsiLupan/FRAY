@@ -3,7 +3,6 @@
 
 #include <stdarg.h>
 #include <gctypes.h>
-#include <dolphin/os.h>
 #include <ogc/system.h>
 #include <ogc/video_types.h>
 
