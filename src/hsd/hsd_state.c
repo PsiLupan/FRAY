@@ -92,6 +92,25 @@ void HSD_SetupRenderModeWithCustomPE(u32 rendermode, HSD_PEDesc *pe){
     HSD_SetupChannelMode(rendermode);
 }
 
+//8036199C
+void HSD_SetupRenderMode(u32 rendermode){
+    if(!HSD_StateGetNumTevStages()){
+        HSD_TevDesc tevdesc;
+        tevdesc.flags = TEVOP_MODE;
+        tevdesc.stage = HSD_StateAssignTev();
+        tevdesc.coord = GX_TEXCOORDNULL;
+        tevdesc.map = GX_TEXMAP_NULL;
+        tevdesc.color = GX_COLOR0A0;
+        tevdesc.u.tevop.tevmode = GX_PASSCLR;
+        HSD_SetupTevStage(&tevdesc);
+    }
+    HSD_SetupPEMode(rendermode, NULL);
+    HSD_SetTevRegAll();
+    HSD_StateSetNumTevStages();
+    HSD_StateSetNumTexGens();
+    HSD_SetupChannelMode(rendermode);
+}
+
 //803623D0
 void HSD_StateSetNumChans(u8 num){
     if(num != state_num_chans){
