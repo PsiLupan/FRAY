@@ -9,7 +9,10 @@ static void stub(){
 //8015FEB4
 int main(void){
 
-	OSInit();
+	SYS_Init();
+	VIDEO_Init();
+	DVD_Init();
+	PAD_Init();
 
 	HSD_SetInitParameter(1, 2); //Set XFB Max Num
 	HSD_SetInitParameter(4, &TVNtsc480IntDf); //Set RModeObj

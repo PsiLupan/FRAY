@@ -10,6 +10,7 @@
 #include "hsd_aobj.h"
 #include "hsd_fobj.h"
 #include "hsd_lobj.h"
+#include "hsd_memory.h"
 #include "hsd_robj.h"
 #include "hsd_video.h"
 

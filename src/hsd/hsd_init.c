@@ -135,19 +135,27 @@ void HSD_SetHeap(OSHeapHandle heap){
   hsd_heap = heap;
 }
 
+//80375414
+void HSD_SetNextArena(void *start, void *end){
+  if ((!start && end) || (start && !end)) {
+    assert(TRUE);
+    return;
+  }
+  hsd_heap_next_arena_lo = start;
+  hsd_heap_next_arena_hi = end;
+}
+
 //80375538
 void HSD_StartRender(HSD_RenderPass pass){
   current_render_pass = pass;
-  {
-    GXRModeObj *rmode = HSD_VIGetConfigure();
-
-    if (rmode->aa) {
-      GX_SetPixelFmt(GX_PF_RGB565_Z16, current_z_fmt);
-    } else {
-      GX_SetPixelFmt(current_pix_fmt, GX_ZC_LINEAR);
-    }
-    GX_SetFieldMode(rmode->field_rendering, rmode->xfbHeight < rmode->viHeight);
+  
+  GXRModeObj *rmode = HSD_VIGetConfigure();
+  if (rmode->aa) {
+    GX_SetPixelFmt(GX_PF_RGB565_Z16, current_z_fmt);
+  } else {
+    GX_SetPixelFmt(current_pix_fmt, GX_ZC_LINEAR);
   }
+  GX_SetFieldMode(rmode->field_rendering, rmode->xfbHeight < rmode->viHeight);
 }
 
 //803755B4
