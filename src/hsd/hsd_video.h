@@ -4,6 +4,8 @@
 #include <gctypes.h>
 #include <ogc/gx.h>
 #include <ogc/irq.h>
+#include <ogc/video.h>
+#include <ogc/video_types.h>
 
 #include "hsd_init.h"
 
@@ -12,8 +14,8 @@
 #define VI_DISPLAY_PIX_SZ 2
 #define HSD_ANTIALIAS_GARBAGE_SIZE	(640 * HSD_ANTIALIAS_OVERLAP * VI_DISPLAY_PIX_SZ)
 
-typedef void* HSD_VIGXDrawDoneCallback;
-typedef void* VIRetraceCallback;
+typedef void (*HSD_VIGXDrawDoneCallback)();
+typedef void (*VIRetraceCallback)();
 
 typedef enum _HSD_VIXFBDrawDispStatus {
 	HSD_VI_XFB_NONE, 
@@ -47,20 +49,34 @@ typedef struct _HSD_VIStatus {
 	u8 update_z;
 } HSD_VIStatus;
 
+typedef struct _current {
+		BOOL chg_flag;
+		struct _HSD_VIStatus vi;
+} Current;
+
+typedef struct _XFB {
+	HSD_VIXFBDrawDispStatus status;
+	void* mem;
+	Current vi_all;
+} XFB;
+
+
+
 typedef struct _HSD_VIInfo {
+	XFB xfb[HSD_VI_XFB_MAX];
+
 	VIRetraceCallback pre_cb;
 	VIRetraceCallback post_cb;
 	
 	struct drawdone {
-		bool waiting;
+		BOOL waiting;
 		int arg;
 		HSD_VIGXDrawDoneCallback cb;
 	} drawdone;
 	
-	struct current {
-		bool chg_flag;
-		struct _HSD_VIStatus vi;
-	} current;
+	Current current;
+
+	
 } HSD_VIInfo;
 
 #endif

@@ -1,9 +1,39 @@
 #include "init.h"
 
+static u64 sys_time;
+
+//8015FDA0
+static void stub(){
+}
+
 //8015FEB4
 int main(void){
 
-	
+	OSInit();
+
+	HSD_SetInitParameter(1, 2); //Set XFB Max Num
+	HSD_SetInitParameter(4, &TVNtsc480IntDf); //Set RModeObj
+	HSD_SetInitParameter(0, 0x40000); //Set FifoSize
+	HSD_SetInitParameter(2, 4); //Set Heap Size
+	//sub_80228C4C - Checks DebuggerIsPresent, so may be used to init the leak checker or something of that nature
+
+	HSD_AllocateXFB(2, &TVNtsc480IntDf);
+	void* fifo = HSD_AllocateFIFO(0x40000);
+	GXFifoObj* fifoobj = GX_Init(fifo, 0x40000);
+	HSD_GXSetFifoObj(fifoobj);
+
+	HSD_InitComponent();
+
+	GX_SetMisc(1, 8);
+
+	sys_time = SYS_Time();
+
+	//sub_8002838C();
+
+	//sub_80019AAC(&8015FDA0);
+
+	HSD_VISetUserPostRetraceCallback(&stub);
+
 	Game_Init();
 	
 	return 0;

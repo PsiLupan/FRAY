@@ -2,21 +2,19 @@
 
 static u32 HSD_VINumXFB = 0; 
 HSD_VIInfo HSD_VIData;
+HSD_VIStatus vi;
 
 #define _p	((HSD_VIInfo *)&HSD_VIData)
 
 static u8 garbage[HSD_ANTIALIAS_GARBAGE_SIZE];
 
 //8037588C
-static int HSD_VISearchXFBByStatus(HSD_VIXFBDrawDispStatus status)
-{
-  int i;
-
-  for (i = 0; i < HSD_VI_XFB_MAX; i++){
-	  if (_p->xfb[i].status == status) 
-		  return i;
-  }
-  return -1;
+static s32 HSD_VISearchXFBByStatus(HSD_VIXFBDrawDispStatus status){
+	for (u32 i = 0; i < HSD_VI_XFB_MAX; i++){
+		if (_p->xfb[i].status == status) 
+		return i;
+	}
+	return -1;
 }
 
 //803758DC
@@ -64,7 +62,7 @@ static void HSD_VIGXDrawDoneCB(){
 }
 
 //80375E60
-static int HSD_VIGetDrawDoneWaitingFlag(){
+static BOOL HSD_VIGetDrawDoneWaitingFlag(){
   return _p->drawdone.waiting;
 }
 
@@ -72,7 +70,7 @@ static int HSD_VIGetDrawDoneWaitingFlag(){
 void HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, HSD_RenderPass rpass)
 {
   GXRModeObj *rmode = &vi->rmode;
-  int n_xfb_lines;
+  u32 n_xfb_lines;
   u16 lines;
   u32 offset;
 
@@ -96,21 +94,22 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, HSD_RenderPass rpass)
     break;
 
   case HSD_RP_TOPHALF:
-    HSD_VICopyEFB2XFBHiResoAA(rmode);
+	GX_SetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
+	n_xfb_lines = GX_SetDispCopyYScale(1.0);
+	GX_SetDispCopyDst(rmode->fbWidth, n_xfb_lines);
     GX_SetCopyClamp(GX_CLAMP_TOP);
     lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
     GX_SetDispCopySrc(0, 0, rmode->fbWidth, lines);
     GX_CopyDisp(buffer, GX_TRUE);
-    GX_PixModeSync();
     return;
 
   case HSD_RP_BOTTOMHALF:
     GX_SetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-	GX_SetDispCopyDst(rmode->fbWidth, GXSetDispCopyYScale(1.0));
+	GX_SetDispCopyDst(rmode->fbWidth, GX_SetDispCopyYScale(1.0));
     GX_SetCopyClamp(GX_CLAMP_BOTTOM);
 	lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
 	GX_SetDispCopySrc(0, HSD_ANTIALIAS_OVERLAP, rmode->fbWidth, lines);
-    offset = (VIPadFrameBufferWidth(rmode->fbWidth) * lines * (u32) VI_DISPLAY_PIX_SZ);
+    offset = (VIDEO_PadFramebufferWidth(rmode->fbWidth) * lines * (u32) VI_DISPLAY_PIX_SZ);
     GX_CopyDisp((void *)((u32)buffer + offset), GX_TRUE);
     GX_SetDispCopySrc(0, 0, rmode->fbWidth, HSD_ANTIALIAS_OVERLAP);
     GX_SetCopyClamp((GX_CLAMP_TOP | GX_CLAMP_BOTTOM));
@@ -121,29 +120,29 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, HSD_RenderPass rpass)
     //HSD_PANIC("unexpected type of render pass.\n")
   }
 
-  GXPixModeSync();
+  GX_PixModeSync();
 }
 
 //803761C0
 void HSD_VICopyXFBASync(HSD_RenderPass rpass){
-	int idx = -1;
+	s32 idx = -1;
 	
 	if (HSD_VIGetNumXFB() >= 2){
 		while((idx = HSD_VIGetXFBDrawEnable()) == -1)
-			VIWaitForRetrace();
+			VIDEO_WaitVSync();
 
-		HSD_VICopyEFB2XFBPtr(HSD_VIGetVIStatus(), HSD_VIGetXFBPtr(idx), rpass);
+		HSD_VICopyEFB2XFBPtr(&vi, HSD_VIGetXFBPtr(idx), rpass);
 		
-		BOOL intr;
-  		intr = OSDisableInterrupts();
+		u32 intr;
+  		intr = IRQ_Disable();
 		assert(_p->xfb[idx].status == HSD_VI_XFB_DRAWING);
 		_p->xfb[idx].status = HSD_VI_XFB_WAITDONE;
 		_p->xfb[idx].vi_all = _p->current;
 		_p->current.chg_flag = 0;
-		OSRestoreInterrupts(intr);
+		IRQ_Restore(intr);
 	
 		while (HSD_VIGetDrawDoneWaitingFlag())
-			GXWaitDrawDone();
+			GX_WaitDrawDone();
 		_p->drawdone.waiting = 1;
 		_p->drawdone.arg = idx;
 		GXSetDrawDone();
@@ -191,17 +190,17 @@ s32 HSD_VIGetXFBLastDrawDone()
 }
 
 //80375E70
-int HSD_VIGetXFBDrawEnable(){
-	bool intr;
-	int idx = -1;
+s32 HSD_VIGetXFBDrawEnable(){
+	u32 intr;
+	s32 idx = -1;
 	
 	if (HSD_VIGetNumXFB() >= 2){
-		intr = OSDisableInterrupts();
+		intr = IRQ_Disable();
 		if ((idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_DRAWING)) == -1)
 			if ((idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_FREE)) != -1)
 				_p->xfb[idx].status = HSD_VI_XFB_DRAWING;
 	
-		OSRestoreInterrupts(intr);
+		IRQ_Restore(intr);
 	}
 	return idx;
 }

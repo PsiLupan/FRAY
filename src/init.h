@@ -7,6 +7,8 @@
 #include <math.h>
 #include <gccore.h>
 
+#include "hsd/hsd_init.h"
+
 #include "scene.h"
 
 #define DEFAULT_FIFO_SIZE	(256*1024)

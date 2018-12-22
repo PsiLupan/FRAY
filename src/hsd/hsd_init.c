@@ -11,9 +11,16 @@ static void *FrameBuffer[HSD_VI_XFB_MAX];
 static GXRModeObj *rmode = &TVNtsc480IntDf;
 
 static HSD_RenderPass current_render_pass;
+static GXFifoObj* DefaultFifoObj = NULL;
+static u8 current_pix_fmt = GX_PF_RGB8_Z24;
+static u8 current_z_fmt = GX_ZC_MID;
 
 static BOOL shown; //r13 - 0x3DF0
 static BOOL init_done = FALSE; //r13 - 0x3FD4
+static u32 iparam_fifo_size	= HSD_DEFAULT_FIFO_SIZE;
+static u32 iparam_xfb_max_num	= HSD_DEFAULT_XFB_MAX_NUM;
+static u32 iparam_heap_max_num	= 0;
+static u32 iparam_audio_heap_size = HSD_DEFAULT_AUDIO_SIZE;
 
 //80374F28
 void HSD_InitComponent(){
@@ -37,93 +44,110 @@ void HSD_InitComponent(){
 	HSD_GXInit();
 	HSD_DVDInit();
 	HSD_IDSetup();
-	VIWaitForRetrace();
+	VIDEO_WaitVSync();
 	HSD_ObjInit();
-	init_done = 1;
+	init_done = TRUE;
+}
+
+//80374F60
+void HSD_GXSetFifoObj(GXFifoObj* fifo){
+  //memReport.gxfifo = iparam_fifo_size;
+  DefaultFifoObj  = fifo;
+}
+
+//80374F78
+void HSD_DVDInit(void)
+{
+}
+
+//80374F7C
+void** HSD_AllocateXFB(int nbBuffer, GXRModeObj *rm){
+  u32 fbSize;
+
+  if (!rm) 
+    return NULL;
+
+  fbSize = (VIDEO_PadFramebufferWidth(rm->fbWidth) * rm->xfbHeight * (u32)VI_DISPLAY_PIX_SZ);
+  
+  for (u32 i = 0; i < nbBuffer; i++) {
+    if ((FrameBuffer[i] = (void *) OSAllocFromArenaLo(fbSize, 32)) == NULL) {
+      assert(TRUE);
+    }
+  }
+
+  for (u32 i = nbBuffer; i < HSD_VI_XFB_MAX; i++) {
+    FrameBuffer[i] = NULL;
+  }
+
+  return FrameBuffer;
+}
+
+//80375194
+void* HSD_AllocateFIFO(u32 size){
+  void *fifo;
+  
+  fifo = OSAllocFromArenaLo(size, 32);
+  if (!fifo) {
+    assert(TRUE);
+    //HSD_Halt("no space remains for gx fifo.\n");
+  }
+
+  return fifo;
+}
+
+//80375258
+void HSD_GXInit(void)
+{
+  {
+    GXLightObj lightobj;
+    static GXColor black = {0, 0, 0, 0};
+    int i;
+
+    GX_InitLightPos(&lightobj, 1.0, 0.0, 0.0);
+    GX_InitLightDir(&lightobj, 1.0, 0.0, 0.0);
+    GX_InitLightAttn(&lightobj, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+    GX_InitLightColor(&lightobj, black);
+    for (i = 0; i < MAX_GXLIGHT - 1; i++)
+      GX_LoadLightObj(&lightobj, HSD_Index2LightID(i));
+  }
+  HSD_StateInvalidate(HSD_STATE_ALL);
 }
 
 //80375304
 void HSD_OSInit(){
-	u8*    arenaLo;
-	u8*    arenaHi;
-    arenaLo = OSGetArenaLo();
-    arenaHi = OSGetArenaHi();
-	
-	if (!iparam_memory_callbacks) {
-		HSD_MemCallbacks cb;
-		cb.alloc_func = _HSD_MemAllocDefaultCB;
-		cb.free_func = _HSD_MemFreeDefaultCB;
-		cb.remain_func = _HSD_MemGetRemainDefaultCB;
-		cb.clear_func = _HSD_MemClearDefaultCB;
-		cb.own_func = _HSD_MemCheckOwnDefaultCB;
-		_HSD_MemSetCallbacks(&cb, sizeof(cb));
-		
-		if (hsd_heap_next_arena_lo && hsd_heap_next_arena_hi) {
-			hsd_heap_arena_lo = hsd_heap_next_arena_lo;
-			hsd_heap_arena_hi = hsd_heap_next_arena_hi;
-			hsd_heap_next_arena_lo = NULL;
-			hsd_heap_next_arena_hi = NULL;
-			
-			hsd_heap = OSCreateHeap(hsd_heap_arena_lo, hsd_heap_arena_hi);
-			OSSetCurrentHeap(hsd_heap);
-			HSD_ObjSetHeap((u32)hsd_heap_arena_hi - (u32)hsd_heap_arena_lo, NULL);
-		} else {
-			arenaLo = (void*)OSRoundUp32B(OSGetArenaLo());
-			arenaHi = OSGetArenaHi();
-		
-			hsd_heap_arena_lo = arenaLo;
-			if (iparam_heap_size > 0) {
-				hsd_heap_arena_hi = arenaLo + iparam_heap_size;
-				if (hsd_heap_arena_hi > arenaHi)
-					hsd_heap_arena_hi = arenaHi;
-				hsd_heap_arena_hi = (void*)OSRoundDown32B(hsd_heap_arena_hi);
-			} else {
-				hsd_heap_arena_hi = (void*)OSRoundDown32B(arenaHi);
-			}
-			hsd_heap = OSCreateHeap(hsd_heap_arena_lo, hsd_heap_arena_hi);
-			OSSetCurrentHeap(hsd_heap);
-			HSD_ObjSetHeap((u32)hsd_heap_arena_hi - (u32)hsd_heap_arena_lo, NULL);
-			OSSetArenaLo(hsd_heap_arena_hi);
-		}
-	}
+  hsd_heap_arena_lo = (void*)ROUNDUP32(SYS_GetArenaLo());
+  hsd_heap_arena_hi = (void*)ROUNDDOWN32(SYS_GetArenaHi());
+
+  void* arena_start = OSInitAlloc(hsd_heap_arena_lo, hsd_heap_arena_hi, iparam_heap_max_num);
+	hsd_heap = OSCreateHeap(hsd_heap_arena_lo, hsd_heap_arena_hi);
+	OSSetCurrentHeap(hsd_heap);
+	HSD_ObjSetHeap((u32)hsd_heap_arena_hi - (u32)hsd_heap_arena_lo, NULL);
+	SYS_SetArenaLo(hsd_heap_arena_hi);
 }
 
-static void* _HSD_MemAllocDefaultCB(u32 size, u32 align, u32 flags)
-{
-#pragma unused(align, flags)
-  void *addr;
-
-  if (size == 0)
-    return NULL;
-
-  addr = OSAllocFromHeap(HSD_GetHeap(), size);
-  assert (addr);
-  return addr;
-} 
-
-static void _HSD_MemFreeDefaultCB(void *addr){
-	OSFreeToHeap(HSD_GetHeap(), addr);
+//80375404
+OSHeapHandle HSD_GetHeap(){
+  return hsd_heap;
 }
 
-static u32 _HSD_MemGetRemainDefaultCB(void){
-	return OSCheckHeap(HSD_GetHeap());
+//8037540C
+void HSD_SetHeap(OSHeapHandle heap){
+  hsd_heap = heap;
 }
 
-static void _HSD_MemClearDefaultCB(void)
-{
-  OSDestroyHeap(hsd_heap);
-  if (hsd_heap_next_arena_lo && hsd_heap_next_arena_hi) {
-    hsd_heap_arena_lo = hsd_heap_next_arena_lo;
-    hsd_heap_arena_hi = hsd_heap_next_arena_hi;
-    hsd_heap_next_arena_lo = NULL;
-    hsd_heap_next_arena_hi = NULL;
+//80375538
+void HSD_StartRender(HSD_RenderPass pass){
+  current_render_pass = pass;
+  {
+    GXRModeObj *rmode = HSD_VIGetConfigure();
+
+    if (rmode->aa) {
+      GX_SetPixelFmt(GX_PF_RGB565_Z16, current_z_fmt);
+    } else {
+      GX_SetPixelFmt(current_pix_fmt, GX_ZC_LINEAR);
+    }
+    GX_SetFieldMode(rmode->field_rendering, rmode->xfbHeight < rmode->viHeight);
   }
-  hsd_heap = OSCreateHeap(hsd_heap_arena_lo, hsd_heap_arena_hi);
-  OSSetCurrentHeap(hsd_heap);
-}
-
-static int _HSD_MemCheckOwnDefaultCB(void *addr){
-	return hsd_heap_arena_lo <= addr && addr < hsd_heap_arena_hi;
 }
 
 //803755B4
@@ -138,6 +162,10 @@ void HSD_ObjInit(){
   HSD_RenderInitAllocData();
   HSD_ShadowInitAllocData();
   HSD_ZListInitAllocData();
+}
+
+//803755F8
+void HSD_ObjDumpStat(){
 }
 
 //803756F8
@@ -175,47 +203,25 @@ BOOL HSD_SetInitParameter(HSD_InitParam param, ...){
     }
     break;
 
-  case HSD_INIT_HEAP_SIZE:
-    {
-      u32 heap_size = va_arg(ap, u32);
-      if (heap_size < OSGetPhysicalMemSize()) {
-        iparam_heap_size = heap_size;
-        result = TRUE;
-      }
-    }
-    break;
-  
-  case HSD_INIT_HEAP_ARENA:
-    {
-      void *arena_lo = va_arg(ap, void *);
-      void *arena_hi = va_arg(ap, void *);
-
-      hsd_heap_next_arena_lo = arena_lo;
-      hsd_heap_next_arena_hi = arena_hi;
+  case HSD_INIT_HEAP_MAX_NUM:
+  {
+    u32 heap_size = va_arg(ap, u32);
+    if (heap_size > 0) {
+      iparam_heap_max_num = heap_size;
       result = TRUE;
     }
-    break;
-
-  case HSD_INIT_MEMORY_CALLBACKS:
-    {
-      HSD_MemCallbacks cb;
-      void *terminate;
-
-      cb.alloc_func = va_arg(ap, HSD_MemAllocFunc);
-      cb.free_func = va_arg(ap, HSD_MemFreeFunc);
-      cb.clear_func = va_arg(ap, HSD_MemClearFunc);
-      cb.remain_func = va_arg(ap, HSD_MemGetRemainFunc);
-      cb.own_func = va_arg(ap, HSD_MemCheckOwnFunc);
-      terminate = va_arg(ap, void *);
-      if (terminate != NULL) {
-		  //ERROR STATE
-      } else {
-        _HSD_MemSetCallbacks(&cb, sizeof(cb));
-        iparam_memory_callbacks = 1;
-        result = TRUE;
-      }
+  }
+  break;
+  
+  case HSD_INIT_AUDIO_HEAP_SIZE:
+  {
+    u32 heap_size = va_arg(ap, u32);
+    if (heap_size > 0) {
+      iparam_audio_heap_size = heap_size;
+      result = TRUE;
     }
-    break;
+  }
+  break;
 
   case HSD_INIT_RENDER_MODE_OBJ:
     {
@@ -227,33 +233,10 @@ BOOL HSD_SetInitParameter(HSD_InitParam param, ...){
     }
     break;
 
-  case HSD_INIT_HEAP_MAX_NUM:
-    {
-      int num = va_arg(ap, int);
-      if (num == 0) {
-        result = TRUE;
-      }
-    }
-    break;
-  
-  case HSD_INIT_AUDIO_HEAP_SIZE:
-    break;
-
   default:
     break;
   }
   va_end(ap);
 
   return result;
-}
-
-//80375404
-OSHeapHandle HSD_GetHeap(){
-	assert(iparam_memory_callbacks);
-	return hsd_heap;
-}
-
-//8037540C
-static void HSD_SetHeap(OSHeapHandle heap){
-	hsd_heap = heap;
 }
