@@ -28,4 +28,6 @@ typedef enum _HSD_InitParam {
     HSD_INIT_RENDER_MODE_OBJ
 } HSD_InitParam;
 
+extern GXRModeObj* rmode;
+
 #endif
