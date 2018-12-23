@@ -79,18 +79,16 @@ void HSD_ObjFree(HSD_ObjDef* init_obj, u32* obj){
 //8037AD48
 void HSD_ObjAllocInit(u32* init_obj, u32 size, u32 count){
 	assert(init_obj != NULL);
-	u32 i = 0;
 	while(true){
 		u32* obj = *current_obj;
-		if(obj == NULL){
+		if(!*current_obj){
 			break;
 		}
 		if(obj == init_obj){
-			*current_obj = obj[10];
+			*current_obj = (void*)obj[10];
 		}else{
-			current_obj = current_obj[i];
+			current_obj = (void**)(obj + 0x28);
 		}
-		i++;
 	}
 	memset(init_obj, 0, 0x2Cu);
 	init_obj[5] = -1;
