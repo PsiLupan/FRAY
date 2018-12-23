@@ -25,9 +25,15 @@ typedef enum _HSD_VIXFBDrawDispStatus {
 	HSD_VI_XFB_WAITDONE,
 	HSD_VI_XFB_DRAWING,
 	HSD_VI_XFB_DRAWDONE,
+	HSD_VI_XFB_COPYEFB,
 	HSD_VI_XFB_NEXT,
 	HSD_VI_XFB_DISPLAY
 } HSD_VIXFBDrawDispStatus;
+
+typedef enum _HSD_VIEFBDrawDispStatus {
+	HSD_VI_EFB_FREE,
+	HSD_VI_EFB_DRAWDONE
+} HSD_VIEFBDrawDispStatus;
 
 
 typedef enum _HSD_RenderPass {
@@ -56,26 +62,34 @@ typedef struct _current {
 
 typedef struct _XFB {
 	HSD_VIXFBDrawDispStatus status;
-	void* mem;
 	Current vi_all;
+	void* buffer;
 } XFB;
 
-
-
 typedef struct _HSD_VIInfo {
-	XFB xfb[HSD_VI_XFB_MAX];
-
-	VIRetraceCallback pre_cb;
+	VIRetraceCallback pre_cb;	
 	VIRetraceCallback post_cb;
 	
+	Current current;
+
 	struct drawdone {
 		BOOL waiting;
 		int arg;
 		HSD_VIGXDrawDoneCallback cb;
 	} drawdone;
-	
-	Current current;
 
+	struct EFB {
+		HSD_VIEFBDrawDispStatus status;
+		Current vi_all;
+	} efb;
+
+	struct perf {
+		u32 frame_period;
+		u32 frame_renew;
+	} perf;
+
+	u32 nb_xfb;
+	XFB xfb[HSD_VI_XFB_MAX];
 	
 } HSD_VIInfo;
 
