@@ -38,6 +38,17 @@ typedef struct _HSD_ClassInfo {
 	void (*amnesia)(HSD_ClassInfo* info); //0x38
 } HSD_ClassInfo;
 
+typedef struct _HSD_ObjDef {
+	u32 flags;
+	void** obj_ptr;
+	u32 unk_ctr;
+	u32 unk_ctr2;
+	u32 unk_ctr3;
+	u32 unk_14;
+	u32 obj_size;
+	s32 unk_1C;
+} HSD_ObjDef;
+
 struct unk_80406E48 {
 	void* unk00;
 	u32 unk0C;

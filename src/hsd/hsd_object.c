@@ -2,13 +2,72 @@
 
 HSD_ClassInfo hsdClass = { ObjInfoInit };
 
+static struct {
+	void* heap_start;
+	void* heap_pos;
+	u32 size;
+	u32 bytes_remaining;
+} objheap; //80406E48
+
+//8037A94C
+void HSD_ObjSetHeap(u32 size, void* unk){
+	objheap.heap_start = unk;
+	objheap.heap_pos = unk;
+	objheap.size = size;
+	objheap.bytes_remaining = size;
+}
+
+//8037A968
+void HSD_ObjAllocAddFree(HSD_ObjDef* obj_def, u32 unk){
+	assert(obj_def != NULL);
+}
+
 //8037ABC8
-void* HSD_ObjAlloc(void* obj_def){
-	
+void* HSD_ObjAlloc(HSD_ObjDef* obj_def){
+	if( ((obj_def->flags >> 7) & 1) && (obj_def->unk_ctr >= obj_def->unk_14) ){
+		return NULL;
+	}
+	if( ((obj_def->flags >> 6) & 1) ){
+		if(obj_def->unk_1C == -1){
+			u64 bytes_avail;
+			if(objheap.heap_start){
+				bytes_avail = objheap.bytes_remaining;
+			}else{
+				bytes_avail = OSCheckHeap(HSD_GetHeap());
+			}
+			if(bytes_avail <= obj_def->obj_size){
+				obj_def->unk_1C = obj_def->unk_ctr + obj_def->unk_ctr2;
+			}
+		}else{
+			u64 bytes_avail;
+			if(objheap.heap_start){
+				bytes_avail = objheap.bytes_remaining;
+			}else{
+				bytes_avail = OSCheckHeap(HSD_GetHeap());
+			}
+			if(bytes_avail > obj_def->obj_size){
+				obj_def->unk_1C = -1;
+			}
+		}
+	}
+	if(obj_def->unk_ctr2 == 0){
+		HSD_ObjAllocAddFree(obj_def, 1);
+		if(obj_def->unk_ctr2 == 0){
+			return NULL;
+		}
+	}
+	void* obj_ptr = *obj_def->obj_ptr;
+	obj_def->obj_ptr = obj_ptr;
+	obj_def->unk_ctr += 1;
+	obj_def->unk_ctr2 -= 1;
+	if(obj_def->unk_ctr > obj_def->unk_ctr3){
+		obj_def->unk_ctr3 = obj_def->unk_ctr;
+	}
+	return obj_ptr;
 }
 
 //8037AD20
-void HSD_ObjFree(void* init_obj, void* obj){
+void HSD_ObjFree(u32* init_obj, u32* obj){
 	obj[0] = init_obj[1];
 	init_obj[1] = obj;
 	init_obj[3] += 1;
