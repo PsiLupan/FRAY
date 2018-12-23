@@ -230,7 +230,7 @@ void HSD_VICopyXFBASync(HSD_RenderPass rpass){
 		assert(_p->xfb[idx].status == HSD_VI_XFB_DRAWING);
 		_p->xfb[idx].status = HSD_VI_XFB_WAITDONE;
 		_p->xfb[idx].vi_all = _p->current;
-		_p->current.chg_flag = 0;
+		_p->current.chg_flag = FALSE;
 		IRQ_Restore(intr);
 	
 		while (HSD_VIGetDrawDoneWaitingFlag())
@@ -296,7 +296,7 @@ void HSD_VISetEFBDrawDone(void){
 	
 	intr = IRQ_Disable();
 	_p->efb.vi_all = _p->current;
-	_p->current.chg_flag = 0;
+	_p->current.chg_flag = FALSE;
 	
 	_p->efb.status = HSD_VI_EFB_DRAWDONE;
 	IRQ_Restore(intr);
@@ -305,7 +305,13 @@ void HSD_VISetEFBDrawDone(void){
 //80376718
 void HSD_VISetConfigure(GXRModeObj *rmode){
   _p->current.vi.rmode = *rmode;
-  _p->current.chg_flag = 1;
+  _p->current.chg_flag = TRUE;
+}
+
+//803767A0
+void HSD_VISetBlack(u8 black){
+	_p->current.vi.black = black;
+	_p->current.chg_flag = TRUE;
 }
 
 //803767B8
@@ -315,7 +321,7 @@ void HSD_VIInit(HSD_VIStatus *vi, void *xfb0, void *xfb1, void *xfb2){
 	VIDEO_Init();
 	
 	_p->current.vi = *vi;
-	_p->current.chg_flag = 0;
+	_p->current.chg_flag = FALSE;
 	
 	_p->xfb[0].buffer = xfb0;
 	_p->xfb[1].buffer = xfb1;

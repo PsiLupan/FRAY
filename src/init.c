@@ -35,7 +35,9 @@ int main(void){
 
 	//sub_80019AAC(&8015FDA0);
 
-	HSD_VISetUserPostRetraceCallback(&stub);
+	HSD_VISetUserPostRetraceCallback(stub);
+	HSD_VISetUserGXDrawDoneCallback(HSD_VIDrawDoneXFB);
+	HSD_VISetBlack(0);
 
 	Game_Init();
 	

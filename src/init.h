@@ -8,6 +8,7 @@
 #include <gccore.h>
 
 #include "hsd/hsd_init.h"
+#include "hsd/hsd_video.h"
 
 #include "scene.h"
 

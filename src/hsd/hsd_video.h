@@ -56,8 +56,8 @@ typedef struct _HSD_VIStatus {
 } HSD_VIStatus;
 
 typedef struct _current {
-		BOOL chg_flag;
 		struct _HSD_VIStatus vi;
+		BOOL chg_flag;
 } Current;
 
 typedef struct _XFB {
