@@ -118,6 +118,71 @@ void HSD_StateSetNumChans(u8 num){
     }
 }
 
+//803624E4
+u32 HSD_StateGetNumTevStages(){
+    return state_num_tevstages;
+}
+
+//803624EC
+u8 HSD_StateAssignTev(){
+    u8 tevstage = state_num_tevstages;
+    state_num_tevstages += 1;
+    return HSD_Index2TevStage(state_num_tevstages);
+}
+
+//80362518
+void HSD_StateSetNumTevStages()
+{
+    GX_SetNumTevStages(state_num_tevstages);
+    state_num_tevstages = 0;
+}
+
+//80362768
+u8 HSD_Index2TevStage(u8 idx){
+    switch(idx){
+        case 0: return GX_TEVSTAGE0;
+        case 1: return GX_TEVSTAGE1;
+        case 2: return GX_TEVSTAGE2;
+        case 3: return GX_TEVSTAGE3;
+        case 4: return GX_TEVSTAGE4;
+        case 5: return GX_TEVSTAGE5;
+        case 6: return GX_TEVSTAGE6;
+        case 7: return GX_TEVSTAGE7;
+        case 8: return GX_TEVSTAGE8;
+        case 9: return GX_TEVSTAGE9;
+        case 10: return GX_TEVSTAGE10;
+        case 11: return GX_TEVSTAGE11;
+        case 12: return GX_TEVSTAGE12;
+        case 13: return GX_TEVSTAGE13;
+        case 14: return GX_TEVSTAGE14;
+        case 15: return GX_TEVSTAGE15;
+        default: assert(TRUE); break;
+    }
+}
+
+//80362838
+u8 HSD_TevStage2Index(u8 idx){
+    switch(idx){
+        case GX_TEVSTAGE0: return 0;
+        case GX_TEVSTAGE1: return 1;
+        case GX_TEVSTAGE2: return 2;
+        case GX_TEVSTAGE3: return 3;
+        case GX_TEVSTAGE4: return 4;
+        case GX_TEVSTAGE5: return 5;
+        case GX_TEVSTAGE6: return 6;
+        case GX_TEVSTAGE7: return 7;
+        case GX_TEVSTAGE8: return 8;
+        case GX_TEVSTAGE9: return 9;
+        case GX_TEVSTAGE10: return 10;
+        case GX_TEVSTAGE11: return 11;
+        case GX_TEVSTAGE12: return 12;
+        case GX_TEVSTAGE13: return 13;
+        case GX_TEVSTAGE14: return 14;
+        case GX_TEVSTAGE15: return 15;
+        default: assert(TRUE); break;
+    }
+}
+
 //80362CA0
 void _HSD_StateInvalidateColorChannel(){
 

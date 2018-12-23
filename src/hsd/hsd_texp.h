@@ -18,6 +18,7 @@
 #define HSD_TE_U16 1
 #define HSD_TE_U32 2
 #define HSD_TE_F32 3
+#define HSD_TE_ALL 7
 
 typedef struct _HSD_TExpTevDesc {
 
