@@ -91,11 +91,11 @@ void Game_Init(){
 	{
 		if ( major_scenes[i].idx == 45 )
 		{
-			/*if ( VI_GetDTVStatus(result) && (*(_WORD *)(v2 - 19312) & 0x200 || OS_GetProgressiveMode() == 1) )
+			if ( (VIDEO_HaveComponentCable() && (rmode->viTVMode & 0x02)) /*|| OS_GetProgressiveMode() == 1)*/ ){
 				gamestate.curr_major = 39;
-			else
-				gamestate.curr_major = 40;*/
-			gamestate.curr_major = 40;
+			}else {
+				gamestate.curr_major = 40;
+			}
 			gamestate.prev_major = 45;
 			while ( 1 )
 			{
