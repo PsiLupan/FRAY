@@ -161,8 +161,11 @@ typedef struct _Player {
 	f32 x100_unk;
 	void* x104_unk;
 	void* x108_unk;
-	void* x10C_unk;
+	void* x10C_char_dat;
 	Attributes attribs;
+
+	f32* x2D4_player_article_floats;
+	f32* x2D8_player_article_floats;
 
 	SubactionInfo x3E4_subaction_info;
 
