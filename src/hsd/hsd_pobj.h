@@ -5,6 +5,11 @@
 
 #include "hsd_jobj.h"
 
+#define POBJ_SHAPEANIM 1<<3
+#define POBJ_ANIM 1<<3
+
+#define SHAPESET_ADDITIVE 1<<1
+
 //Polygon Object
 typedef struct _HSD_PObj {
 	HSD_Class parent;
@@ -14,6 +19,8 @@ typedef struct _HSD_PObj {
 	u16 n_display;
 	HSD_Display* display;
 	HSD_Weight* weight;
+	//1c
+	struct _HSD_AObj* aobj;
 } HSD_PObj;
 
 typedef struct _HSD_PObjDesc {
