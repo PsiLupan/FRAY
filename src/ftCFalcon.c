@@ -5,7 +5,10 @@ void CFalcon_OnLoad(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
     player->x2224_flags = player->x2224_flags & 0xFE | 1;
     u8* char_dat = player->x10C_char_dat;
-    f32* player_afp = player->x2D8_player_article_floats;
+    u8* player_afp = player->x2D8_player_article_floats;
+    char_dat = char_dat - 4;
+    u8* player_afp = player->x2D8_player_article_floats - 8;
+    
     u32 i = 17;
     do {
         f32 data1 = ((f32*)char_dat)[2];
