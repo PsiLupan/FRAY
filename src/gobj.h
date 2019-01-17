@@ -20,7 +20,7 @@ typedef struct _HSD_GObj {
 	u8 p_link;
 	u8 gx_link;
 	u8 unk04;
-	u8 unk05;
+	u8 render_priority;
 	s8 obj_kind;
 	s8 data_kind;
 	struct _HSD_GObj* next;
