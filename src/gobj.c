@@ -3,6 +3,7 @@
 #define GX_LINK_MAX 64
 static HSD_GObj** highestprio_gobjs[GX_LINK_MAX]; //r13_3E7C
 static HSD_GObj** lowestprio_gobjs[GX_LINK_MAX]; //r13_3E80
+static void** hsd_destructors[14]; //r13_3E90 - Length is currently made up, TODO: need to explictly assign the functions to this at some point
 
 //80086960
 bool GObj_IsPlayer(HSD_GObj* gobj){
@@ -54,7 +55,7 @@ void GObj_SetupGXLink(HSD_GObj* gobj, void* render_cb, u32 gx_link, u32 priority
 //80390B0C
 void GObj_CallHSDDestructor(HSD_GObj* gobj){
 	if(gobj->obj_kind != GOBJ_NOREF){
-		void (*destructor)(void*) = /*r13_3E90 +*/ 4 * (gobj->obj_kind);
+		void (*destructor)(void*) = hsd_destructors[gobj->obj_kind];
 		(*destructor)(gobj->hsd_obj);
 		
 		gobj->obj_kind = GOBJ_NOREF;
