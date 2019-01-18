@@ -109,14 +109,14 @@ void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, cha
 	class_info->parent_info = parent_info;
 	class_info->next_info = NULL;
 	class_info->child_info = NULL;
-	class_info->unk20 = NULL;
-	class_info->unk24 = NULL;
+	class_info->active_objs = 0;
+	class_info->total_allocs = 0;
 	
 	if(parent_info != NULL){
 		if(parent_info->initialized == TRUE){
 			assert(class_info->obj_size >= parent_info->obj_size);
 			assert(class_info->info_size >= parent_info->info_size);
-			memcpy(&class_info->unk28, &parent_info->unk28, parent_info->info_size - 0x28);
+			memcpy(&class_info->obj_alloc, &parent_info->obj_alloc, parent_info->info_size - 0x28);
 			class_info->next_info = parent_info->child_info;
 			parent_info->child_info = class_info;
 		}else{

@@ -6,6 +6,8 @@
 #include <gctypes.h>
 #include <ogc/gu.h>
 
+#define TYPE_JOBJ 12
+
 //Frame Object
 typedef struct _HSD_FObj {
 	struct _HSD_FObj* next; //0x00

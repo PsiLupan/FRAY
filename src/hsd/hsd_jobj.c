@@ -6,9 +6,36 @@ HSD_JObjInfo hsdJObj = { JObjInfoInit };
 
 static HSD_JObj *current_jobj = NULL;
 
+//8036F934
+void HSD_JObjReqAnim(HSD_JObj *jobj, f32 frame){
+	if (jobj != NULL){
+		HSD_AObjReqAnim(jobj->aobj, frame);
+		if ( (jobj->flags & 0x4020) == 0 ){
+			HSD_DObjReqAnimAllByFlags(jobj->dobj, 0x7FF, frame);
+		}
+		HSD_RObjReqAnimAllByFlags(jobj->robj, 0x7FF, frame);
+	}
+}
+
+//8036F9B8
+static void JObjSortAnim(HSD_AObj *aobj){
+	if(aobj != NULL && aobj->fobj != NULL){
+		for (HSD_FObj* i = aobj->fobj; ; i = i->next){
+			HSD_FObj* n_fobj = i->next;
+			if(i == NULL)
+				break;
+			if(n_fobj->obj_type == TYPE_JOBJ){ //This is the actual code, even if it's confusing
+				i->next = n_fobj->next;
+				n_fobj->next = aobj->fobj;
+				aobj->fobj = n_fobj;
+			}
+		}
+	}
+}
+
 //80371590
 void HSD_JObjRemoveAll(HSD_JObj *jobj){
-	if(jobj){
+	if(jobj != NULL){
 		if(jobj->parent){
 			HSD_JObj *prev = HSD_JObjGetPrev(jobj);
 			if(prev)
@@ -53,7 +80,7 @@ void HSD_JObjRemoveAll(HSD_JObj *jobj){
 
 //80371750
 void RecalcParentTrspBits(HSD_JObj *jobj){
-	if(jobj){
+	if(jobj != NULL){
 		for(HSD_JObj* i = jobj; i; i->next){
 			u32 v2 = 0x8FFFFFFF;
 			for(HSD_JObj* j = jobj->child; j->next; j = j->next){
@@ -68,7 +95,7 @@ void RecalcParentTrspBits(HSD_JObj *jobj){
 
 //803717A8
 void HSD_JObjAddChild(HSD_JObj *jobj, HSD_JObj *child){
-	if(jobj && child){
+	if(jobj != NULL && child != NULL){
 		if(!child->parent){ //child should be a orphan
 			if(!child->next){ //child should not have siblings
 				if(jobj->child){
@@ -97,7 +124,7 @@ void HSD_JObjAddChild(HSD_JObj *jobj, HSD_JObj *child){
 
 //803718F4
 void HSD_JObjReparent(HSD_JObj *jobj, HSD_JObj *pjobj){
-	if(jobj){
+	if(jobj != NULL){
 		if(jobj->parent){
 			HSD_JObj* prchild = jobj->parent->child;
 			if(prchild == jobj){
@@ -131,7 +158,7 @@ void HSD_JObjReparent(HSD_JObj *jobj, HSD_JObj *pjobj){
 void HSD_JObjAddNext(HSD_JObj *jobj, HSD_JObj *next){
 	HSD_JObj* v18;
 	
-	if(jobj && next){
+	if(jobj != NULL && next != NULL){
 		if(jobj->parent){
 			v18 = jobj->child;
 			jobj->child = NULL;
@@ -185,17 +212,15 @@ void HSD_JObjAddNext(HSD_JObj *jobj, HSD_JObj *next){
 }
 
 //80371B60
-HSD_JObj* HSD_JObjGetPrev(HSD_JObj *jobj){
-	HSD_JObj *i;
-	
-	if(jobj){
+HSD_JObj* HSD_JObjGetPrev(HSD_JObj *jobj){	
+	if(jobj != NULL){
 		if(!jobj->parent)
 			return NULL;
 
 		if(jobj->parent->child == jobj)
 			return NULL;
 		
-		for (i = jobj->parent->child; i; i = i->next){
+		for (HSD_JObj* i = jobj->parent->child; i; i = i->next){
 			if(i->next == jobj){
 				return i;
 			}
@@ -206,7 +231,7 @@ HSD_JObj* HSD_JObjGetPrev(HSD_JObj *jobj){
 
 //80371BEC
 HSD_DObj* HSD_JObjGetDObj(HSD_JObj *jobj){
-	if(jobj && (jobj->flags & 0x4020) == 0){
+	if(jobj != NULL && (jobj->flags & 0x4020) == 0){
 		return jobj->dobj;
 	}
 	return NULL;
@@ -362,4 +387,17 @@ void HSD_JObjSetCurrent(HSD_JObj *jobj){ //INCOMPLETE
 //80372314
 HSD_JObj* HSD_JObjGetCurrent(){
 	return current_jobj;
+}
+
+//803737F4
+static void JObjInfoInit(){
+	hsdInitClassInfo(HSD_CLASS_INFO(&hsdJObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_jobj", sizeof(HSD_JObjInfo), sizeof(HSD_JObj));
+	HSD_CLASS_INFO(&hsdJObj)->init = JObjInit;
+	HSD_CLASS_INFO(&hsdJObj)->release = JObjRelease;
+	HSD_CLASS_INFO(&hsdJObj)->amnesia = JObjAmnesia;
+	HSD_JOBJ_INFO(&hsdJObj)->disp = HSD_JObjDispSub;
+	HSD_JOBJ_INFO(&hsdJObj)->make_pmtx = HSD_JObjMakeMatrix;
+	HSD_JOBJ_INFO(&hsdJObj)->make_rmtx = mkRBillBoardMtx;
+	HSD_JOBJ_INFO(&hsdJObj)->load = JObjLoad;
+	HSD_JOBJ_INFO(&hsdJObj)->release_child = JObjReleaseChild;
 }

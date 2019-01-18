@@ -27,11 +27,11 @@ typedef struct _HSD_ClassInfo {
 	u16 obj_size; //0x10
 	u16 info_size; //0x12
 	struct _HSD_ClassInfo* parent_info; //0x14
-	struct _HSD_ClassInfo* next_info;
-	struct _HSD_ClassInfo* child_info;
-	void* unk20;
-	void* unk24;
-	void* unk28;
+	struct _HSD_ClassInfo* next_info; //0x18
+	struct _HSD_ClassInfo* child_info; //0x1C
+	u32 active_objs; //0x20
+	u32 total_allocs; //0x24
+	void (*obj_alloc)(HSD_Class* o); //0x28
 	void (*init)(HSD_Class* o); //0x2C
 	void (*release)(HSD_Class* o); //0x30
 	void (*destroy)(HSD_Class* o); //0x34
