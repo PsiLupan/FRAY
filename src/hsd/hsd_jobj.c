@@ -10,7 +10,7 @@ static HSD_JObj *current_jobj = NULL;
 void HSD_JObjReqAnim(HSD_JObj *jobj, f32 frame){
 	if (jobj != NULL){
 		HSD_AObjReqAnim(jobj->aobj, frame);
-		if ( (jobj->flags & 0x4020) == 0 ){
+		if ( (jobj->flags & 0x4020) == 0){
 			HSD_DObjReqAnimAllByFlags(jobj->dobj, 0x7FF, frame);
 		}
 		HSD_RObjReqAnimAllByFlags(jobj->robj, 0x7FF, frame);
@@ -30,6 +30,54 @@ static void JObjSortAnim(HSD_AObj *aobj){
 				aobj->fobj = n_fobj;
 			}
 		}
+	}
+}
+
+//80370780
+void HSD_JObjAnim(HSD_JObj* jobj){
+	if (jobj != NULL){
+    	HSD_JObjCheckDepend(jobj);
+    	HSD_AObjInterpretAnim(jobj->aobj, jobj, JObjUpdateFunc);
+    	HSD_RObjAnimAll(jobj->robj);
+    	if ( (jobj->flags & 0x4020) == 0){
+			HSD_DObjAnimAll(jobj->dobj);
+		}
+	}
+}
+
+//803707F8
+static void JObjAnimAll(HSD_JObj* jobj){
+	if(jobj != NULL){
+		HSD_JObjCheckDepend(jobj);
+    	HSD_AObjInterpretAnim(jobj->aobj, jobj, JObjUpdateFunc);
+    	HSD_RObjAnimAll(jobj->robj);
+    	if( (jobj->flags & 0x4020) == 0){
+			HSD_DObjAnimAll(jobj->dobj);
+		}
+		if( (jobj->flags & 0x1000) == 0){
+			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
+				JObjAnimAll(jobj);
+			}
+		}
+	}
+}
+
+//80370928
+void HSD_JObjAnimAll(HSD_JObj* jobj){
+	if (jobj != NULL){
+		HSD_AObjInitEndCallBack();
+    	HSD_JObjCheckDepend(jobj);
+    	HSD_AObjInterpretAnim(jobj->aobj, jobj, JObjUpdateFunc);
+    	HSD_RObjAnimAll(jobj->robj);
+    	if( (jobj->flags & 0x4020) == 0){
+			HSD_DObjAnimAll(jobj->dobj);
+		}
+		if( (jobj->flags & 0x1000) == 0){
+			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
+				JObjAnimAll(jobj);
+			}
+		}
+		HSD_AObjInvokeCallBacks();
 	}
 }
 
@@ -248,7 +296,8 @@ void HSD_JObjAddDObj(HSD_JObj *jobj, HSD_DObj *dobj){
 //80371C68
 void HSD_JObjPrependRObj(HSD_JObj *jobj, HSD_RObj *robj){
 	if(jobj && robj){
-		
+		robj->next = jobj->robj;
+		jobj->robj = robj;
 	}
 }
 
