@@ -1,5 +1,4 @@
 #include "scene.h"
-#include "unknown.h"
 
 GameState gamestate;
 static MinorSceneHandler scene_handlers[45]; //803DA920 - 45 in length
@@ -9,6 +8,10 @@ static MajorScene major_scenes[45]; //803DACA4
 u8 menu_804D6730[6];
 
 u32* unk4F80[3];
+
+s32 preload_cache[0x1000]; //80432078
+
+unk_8046B0F0 dword_8046B0F0;
 
 //8016795C
 u32 Scene_InitStartMeleeData(s8 *a1){
@@ -88,8 +91,23 @@ bool Scene_IsSceneClassicAdvOrAllStar(){
 	return false;
 }
 
+//8001822C
+s32* Scene_GetPreloadCache_04(){
+  return &preload_cache[1];
+}
+
+//80018CF4
+void Scene_ResetPreloadCache(u8 preload){
+  
+}
+
+//80018F58
+void Scene_SetPreloadBool(u8 preload){
+  preload_cache[0x970] = preload;
+}
+
 //801A4014
-void Scene_RunMajor(MajorScene* scene)
+void Scene_ProcessMinor(MajorScene* scene)
 {
   u32 v2; // r4@1
   u32 v4; // ctr@1
@@ -125,7 +143,7 @@ void Scene_RunMajor(MajorScene* scene)
   }
 DO_OUT:
   gamestate.unk03 = minor_scene->idx;
-  sub_801A3F48(minor_scene);
+  Scene_CompareCacheOnChange(minor_scene);
   if ( minor_scene->Prep != NULL ) // str + 0x04
     return (u32 *)minor_scene;
   scene_handler = Scene_GetSceneHandlerByClass(minor_scene->class_id);
@@ -185,6 +203,16 @@ DO_OUT:
   }
 }
 
+//801A427C
+u32 sub_801A427C(u32 a1){
+  return *(u32 *)(a1 + 16);
+}
+
+//801A4284
+u32 sub_801A4284(u32 a1){
+  return *(u32 *)(a1 + 20);
+}
+
 //801A3EF4
 void Scene_RunStartupInit(){  
   for (u32 i = 0; major_scenes[i].idx != 45; i += 1 ){
@@ -192,6 +220,45 @@ void Scene_RunStartupInit(){
       (*major_scenes[i].Init)();
     }
   }
+}
+
+//801A3F48
+void Scene_CompareCacheOnChange(MinorScene* scene){
+  int v1; // r31@1
+  s32 *v3; // r31@9
+
+  v1 = scene;
+  Scene_ResetPreloadCache(scene->preload);
+  u32 class = scene->class_id;
+  if ( class == 8 )
+  {
+    sub_803A6048(9216);
+    goto LABEL_9;
+  }
+  if ( class < 8 )
+  {
+    if ( class != 5 )
+      goto LABEL_8;
+LABEL_6:
+    sub_803A6048(49152);
+    goto LABEL_9;
+  }
+  if ( class == 43 )
+    goto LABEL_6;
+LABEL_8:
+  sub_803A6048(18432);
+LABEL_9:
+  v3 = Scene_GetPreloadCache_04();
+  if ( !sub_80015BB8(2) )
+    *v3 = 1;
+  if ( !sub_80015BB8(3) )
+    v3[1] = 1;
+  sub_80018254();
+  sub_8001C5A4();
+  sub_8001D1F4();
+  sub_8001E27C();
+  sub_803127D4();
+  sub_8031C8B8();
 }
 
 //801A428C
@@ -262,6 +329,45 @@ BOOL Scene_IsSinglePlayer(u8 scene){
 	if ( scene == 15 || (scene < 15 && scene < 6 && scene >= 3) )
 		return true;
 	return false;
+}
+
+//801A43A0
+u8* Scene_ProcessMajor(u8 scene){
+	MajorScene* major_scenes = Scene_GetMajorScenes();
+	MajorScene* scene_ptr;
+	u32* result;
+
+	for (u32 i = 0; ; i += 1 )
+	{
+		if ( major_scenes[i].idx == 45 )
+			break;
+		if ( major_scenes[i].idx == scene )
+		{
+			scene_ptr = &major_scenes[i];
+			goto JMP_NULL;
+		}
+	}
+	scene_ptr = NULL;
+JMP_NULL:
+	gamestate.pending = false;
+	gamestate.unk03 = 0;
+	gamestate.unk04 = 0;
+	gamestate.unk05 = 0;
+	Scene_SetPreloadBool(scene_ptr->preload);
+	if ( !scene_ptr->idx )
+	{
+		result = NULL;
+		while ( !gamestate.pending )
+		{
+			if ( gamestate.unk10 )
+				return (u8*)result;
+			Scene_ProcessMinor(scene_ptr);
+		}
+		result = &dword_8046B0F0;
+		if ( dword_8046B0F0.unk04 || !scene_ptr->flags )
+			result = &gamestate.pending_major;
+	}
+	return result;
 }
 
 //801A4B88

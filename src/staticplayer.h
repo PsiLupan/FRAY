@@ -9,7 +9,7 @@
 
 #define MAX_PLAYERS 6
 
-struct StaticPlayer
+typedef struct _StaticPlayer
 {
 	s32 state;
 	u32 character_id;
@@ -63,9 +63,9 @@ struct StaticPlayer
 	u32 unkEC;
 	
 	u32 unk6A8;
-};
+} StaticPlayer;
 
-extern struct StaticPlayer players[MAX_PLAYERS];
+extern StaticPlayer players[MAX_PLAYERS];
 
 u32 StaticPlayer_GetState(u32);
 u32 StaticPlayer_GetExternalID(u32);

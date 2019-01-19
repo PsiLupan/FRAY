@@ -6,8 +6,6 @@
 #include <gccore.h>
 #include <gctypes.h>
 
-#include "unknown.h"
-
 struct StartMelee {
 	u8 header[0x8];
 	u8 data_main[0x60];

@@ -14,7 +14,7 @@
 
 #define DEFAULT_FIFO_SIZE	(256*1024)
 
+int main(void);
 void Game_Init();
-u8* Game_MainLoop(u8);
 
 #endif

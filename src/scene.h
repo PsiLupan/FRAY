@@ -7,7 +7,6 @@
 #include <gctypes.h>
 
 #include "match.h"
-#include "unknown.h"
 
 //Length: 0x14(20)
 typedef struct _GameState {
@@ -40,7 +39,7 @@ typedef struct _MinorSceneHandler {
 } MinorSceneHandler;
 
 typedef struct _MajorScene {
-	BOOL preload;
+	u8 preload;
 	u8 idx;
 	u16 flags;
 	void (*Load)();
@@ -67,5 +66,12 @@ typedef struct _MinorScene {
 } MinorScene;
 
 extern MajorScene major_scenes[45];
+
+typedef struct _unk_8046B0F0 {
+	u32 unk00;
+	u32 unk04;
+	u32 unk08;
+	u32 unk0C;
+} unk_8046B0F0;
 
 #endif
