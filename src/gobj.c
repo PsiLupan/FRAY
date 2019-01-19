@@ -1,6 +1,9 @@
 #include "gobj.h"
 
+#define P_LINK_MAX 64
 #define GX_LINK_MAX 64
+static HSD_GObj** plinkhigh_gobjs[P_LINK_MAX]; //r13_3E74
+static HSD_GObj** plinklow_gobjs[P_LINK_MAX]; //r13_3E78
 static HSD_GObj** highestprio_gobjs[GX_LINK_MAX]; //r13_3E7C
 static HSD_GObj** lowestprio_gobjs[GX_LINK_MAX]; //r13_3E80
 static void** hsd_destructors[14]; //r13_3E90 - Length is currently made up, TODO: need to explictly assign the functions to this at some point
@@ -35,12 +38,12 @@ void GObj_Free(HSD_GObj* gobj){
 		if(gobj->prev != NULL){
 			gobj->prev->next = gobj->next;
 		}else{
-			r13_3E74[gobj->p_link] = gobj->next;
+			plinkhigh_gobjs[gobj->p_link] = gobj->next;
 		}
 		if(gobj->next != NULL){
 			gobj->next->prev = gobj->prev;
 		}else{
-			r13_3E78[gobj->p_link] = gobj->prev;
+			plinklow_gobjs[gobj->p_link] = gobj->prev;
 		}
 		HSD_ObjFree(&unk_804CE38C, gobj);
 	}else{

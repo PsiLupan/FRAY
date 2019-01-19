@@ -4,7 +4,11 @@ static void JObjInfoInit();
 
 HSD_JObjInfo hsdJObj = { JObjInfoInit };
 
-static HSD_JObj *current_jobj = NULL;
+static HSD_JObjInfo* default_class = NULL;
+
+static HSD_JObj *current_jobj = NULL; //r13_400C
+static void (*callback)() = NULL; //r13_4018
+static HSD_JObj *r13_401C = NULL; //r13_401C
 
 //8036F934
 void HSD_JObjReqAnim(HSD_JObj *jobj, f32 frame){
@@ -436,6 +440,52 @@ void HSD_JObjSetCurrent(HSD_JObj *jobj){ //INCOMPLETE
 //80372314
 HSD_JObj* HSD_JObjGetCurrent(){
 	return current_jobj;
+}
+
+//80373404
+void HSD_JObjSetCallback(void* cb){
+	callback = cb;
+}
+
+//8037340C
+static void JObjInit(HSD_Class* o){
+	HSD_PARENT_INFO(&hsdJObj)->init(o);
+
+	if(o != NULL){
+		HSD_JObj* jobj = HSD_JOBJ(o);
+		jobj->flags = 0x40;
+		jobj->scale.x = 1.0f;
+		jobj->scale.y = 1.0f;
+		jobj->scale.z = 1.0f;
+	}
+}
+
+//803736F8
+static void JObjRelease(HSD_Class* o){
+	HSD_JObj* jobj = HSD_JOBJ(o);
+	(&hsdJObj)->release_child(o); //Technically uses the class_parent from the jobj to get to this, so will probably need to account for that later
+	if(HSD_IDGetDataFromTable(NULL, jobj->desc, NULL) == o){
+		HSD_IDRemoveByIDFromTable(NULL, jobj->desc);
+	}
+	if(jobj->pvec != NULL){
+		HSD_VecFree(jobj->pvec);
+	}
+	if(jobj->vmtx != NULL){
+		HSD_MtxFree(jobj->vmtx);
+	}
+	HSD_PARENT_INFO(&hsdJObj)->release(o);
+}
+
+//80373790
+static void JObjAmnesia(HSD_ClassInfo* info){
+	if(info == HSD_CLASS_INFO(default_class)){
+		default_class = NULL;
+	}
+	if(info == HSD_CLASS_INFO(&hsdJObj)){
+		r13_401C = NULL;
+		current_jobj = NULL;
+	}
+	HSD_PARENT_INFO(&hsdJObj)->amnesia(info);
 }
 
 //803737F4
