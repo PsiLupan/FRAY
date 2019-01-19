@@ -6,7 +6,14 @@ static HSD_GObj** plinkhigh_gobjs[P_LINK_MAX]; //r13_3E74
 static HSD_GObj** plinklow_gobjs[P_LINK_MAX]; //r13_3E78
 static HSD_GObj** highestprio_gobjs[GX_LINK_MAX]; //r13_3E7C
 static HSD_GObj** lowestprio_gobjs[GX_LINK_MAX]; //r13_3E80
+static HSD_GObj* current_gobj = NULL; //r13_3E84 - Really just a guess
+static void* r13_3E88 = NULL;
+static void* r13_3E8C = NULL;
 static void** hsd_destructors[14]; //r13_3E90 - Length is currently made up, TODO: need to explictly assign the functions to this at some point
+
+HSD_ObjDef gobj_def_1; //804CE38C
+HSD_ObjDef gobj_def_2; //804CE3B8
+HSD_ObjDef gobj_def_3; //804CE3E4
 
 //80086960
 bool GObj_IsPlayer(HSD_GObj* gobj){
@@ -23,10 +30,101 @@ void GObj_AnimAll_Callback(HSD_GObj* gobj){
     HSD_JObjAnimAll((HSD_JObj*)gobj->hsd_obj);
 }
 
+//8038FF5C
+void GObj_PReorder(HSD_GObj* gobj, HSD_GObj* hiprio_gobj){
+
+}
+
+//8038FFB8
+static HSD_GObj* CreateGObj(u32 order, u32 class, u32 p_link, u32 p_prio, HSD_GObj* p_gobj){
+	assert(p_link < P_LINK_MAX);
+	HSD_GObj* gobj = (HSD_GObj*)HSD_ObjAlloc(&gobj_def_1);
+	if(gobj != NULL){
+		gobj->classifier = class;
+		gobj->p_link = p_link;
+		gobj->gx_link = GOBJ_NOREF;
+		gobj->p_priority = p_prio;
+		gobj->render_priority = 0;
+		gobj->obj_kind = GOBJ_NOREF;
+		gobj->data_kind = GOBJ_NOREF;
+		gobj->prev_gx = NULL;
+		gobj->next_gx = NULL;
+		gobj->unk_linkedlist = NULL;
+		gobj->render_cb = NULL;
+		gobj->unk24 = NULL;
+		gobj->unk20 = NULL;
+		gobj->hsd_obj = NULL;
+		gobj->data = NULL;
+		gobj->user_data_remove_func = NULL;
+
+		switch(order){
+			case 0:
+			HSD_GObj* g = NULL;
+			for(g = plinklow_gobjs[gobj->p_link]; g != NULL && g->p_priority > gobj->p_priority; g = g->prev){
+				//Works backwards from lowest to highest priority till it finds the highest priority to be it's parent obj
+				//Returns null if nothing is a higher priority than the current object or if there is none of that type
+			}
+			GObj_PReorder(gobj, g);
+			break;
+
+			case 1:
+			HSD_GObj* g = NULL;
+			for(g = plinkhigh_gobjs[gobj->p_link]; g != NULL && g->p_priority < gobj->p_priority; g = g->next){
+			}
+			if(g != NULL){
+				g = g->prev;
+			}else{
+				g = plinklow_gobjs[gobj->p_link];
+			}
+			GObj_PReorder(gobj, g);
+			break;
+
+			case 2:
+			gobj->prev = p_gobj;
+			if(p_gobj != NULL){
+				gobj->next = p_gobj->next;
+				p_gobj->next = gobj;
+			}else{
+				gobj->next = plinkhigh_gobjs[gobj->p_link];
+				plinkhigh_gobjs[gobj->p_link] = gobj;
+			}
+			if(gobj->next != NULL){
+				gobj->next->prev = gobj;
+			}else{
+				plinklow_gobjs[gobj->p_link] = gobj;
+			}
+			break;
+
+			case 3:
+			HSD_GObj* prev = p_gobj->prev;
+			gobj->prev = prev;
+			if(prev != NULL){
+				gobj->next = prev->next;
+				prev->next = gobj;
+			}else{
+				gobj->next = plinkhigh_gobjs[gobj->p_link];
+				plinkhigh_gobjs[gobj->p_link] = gobj;
+			}
+			if(gobj->next != NULL){
+				gobj->next->prev = gobj;
+			}else{
+				plinklow_gobjs[gobj->p_link] = gobj;
+			}
+			break;
+		}
+	}
+	return gobj;
+}
+
+//803901F0
+HSD_GObj* GObj_Create(u32 class, u32 p_link, u32 p_prio){
+	return CreateGObj(0, class, p_link, p_prio, 0);
+}
+
 //80390228
 void GObj_Free(HSD_GObj* gobj){
 	assert(gobj);
-	if( ((unk_804CE3E4 >> 7) & 1) != 0 || gobj != r13_3E84){
+	if( ((gobj_def_3.flags >> 7) & 1) != 0 || gobj != current_gobj){
 		GObj_CallDestructor(gobj);
 		GObj_CallHSDDestructor(gobj);
 		sub_8038FED4(gobj);
@@ -45,9 +143,9 @@ void GObj_Free(HSD_GObj* gobj){
 		}else{
 			plinklow_gobjs[gobj->p_link] = gobj->prev;
 		}
-		HSD_ObjFree(&unk_804CE38C, gobj);
+		HSD_ObjFree(&gobj_def_1, gobj);
 	}else{
-		unk_804CE3E4 = (unk_804CE3E4 & 0xBF) | 0x40;
+		gobj_def_3.flags = (gobj_def_3.flags & 0xBF) | 0x40;
 	}
 }
 
