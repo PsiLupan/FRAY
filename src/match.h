@@ -77,7 +77,7 @@ extern f32 MatchInfo_Get34();
 * Match Controller
 **/
 
-struct MatchController {
+typedef struct _MatchController {
 	u32 timer;
 	u32 unk04;
 	u32 timer2;
@@ -88,11 +88,16 @@ struct MatchController {
 	u8 unk13;
 	u32* unk14;
 	u32* unk18;
-	u32* dev_togglefunc;
+	u32* dev_togglefunc; //0x1C
+	u32 unk20;
+	u32 unk24;
+	u32 unk28;
+	u32 unk2C;
+	u32 unk30;
 	u32 unk34;
-};
+} MatchController;
 
-extern struct MatchController MatchController;
+extern MatchController match_controller;
 
 extern u32 MatchController_LoadTimer();
 

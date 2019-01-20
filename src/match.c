@@ -3,6 +3,8 @@
 struct StartMelee sm_regularvs;
 struct StartMelee sm_train;
 
+MatchController match_controller;
+
 static u32* unk77C0;
 
 u32* sub_8015CE44(u32 offset, u32 unk){
@@ -123,43 +125,55 @@ f32 MatchInfo_Get34(){
 * Match Controller
 **/
 
+//801677C0
+void MatchController_InitData(MatchController* mc){
+	mc->frozen = 0;
+	mc->unk11 = 0;
+	mc->pause = 0;
+	mc->unk13 = 0;
+	mc->unk2C = 0;
+	mc->unk28 = 0;
+	mc->unk24 = 0;
+	mc->unk20 = 0;
+}
+
 //801A4BA8
 u32 MatchController_LoadTimer(){
-	return MatchController.timer;
+	return match_controller.timer;
 }
 
 //801A4BB8
 u32 MatchController_LoadTimer2(){
-	return MatchController.timer2;
+	return match_controller.timer2;
 }
 
 //801A4B60
 void MatchController_ChangeScreen(){
-	MatchController.screen_ctrl = 1;
+	match_controller.screen_ctrl = 1;
 }
 
 //801A4B74
 void MatchController_ChangeScreen2(){
-	MatchController.screen_ctrl = 2;
+	match_controller.screen_ctrl = 2;
 }
 
 //801A4624
 bool MatchController_IsFrozen(){
-	return MatchController.frozen;
+	return match_controller.frozen;
 }
 
 //801A4B08
 void MatchController_Store14_18(u32* ptr, u32* ptr2){
-	MatchController.unk14 = ptr;
-	MatchController.unk18 = ptr2;
+	match_controller.unk14 = ptr;
+	match_controller.unk18 = ptr2;
 }
 
 //801A4B40
 void MatchController_StoreDevFuncPtr(u32* func){
-	MatchController.dev_togglefunc = func;
+	match_controller.dev_togglefunc = func;
 }
 
 //801A4B50
 void MatchController_Store34(u32 val){
-	MatchController.unk34 = val;
+	match_controller.unk34 = val;
 }

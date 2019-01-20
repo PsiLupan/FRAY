@@ -70,25 +70,25 @@ u32 Scene_InitUsableStructs(s8* sm_struct){
 }
 
 //8016B3A0
-bool Scene_IsCurrSceneSuperSuddenDeath(){
+BOOL Scene_IsCurrSceneSuperSuddenDeath(){
 	if(Scene_LoadCurrentMajor() == 16)
-		return true;
-	return false;
+		return TRUE;
+	return FALSE;
 }
 
 //8016B41C
 //8016B498
-bool Scene_IsCurrSceneSinglePlayer(){
+BOOL Scene_IsCurrSceneSinglePlayer(){
 	u8 curr_major = Scene_LoadCurrentMajor();
 	return Scene_IsSinglePlayer(curr_major);
 }
 
 //8016B3D8
-bool Scene_IsSceneClassicAdvOrAllStar(){
+BOOL Scene_IsSceneClassicAdvOrAllStar(){
 	u8 curr_major = Scene_LoadCurrentMajor();
 	if(curr_major < 6 && curr_major >= 3)
-		return true;
-	return false;
+		return TRUE;
+	return FALSE;
 }
 
 //8001822C
@@ -152,7 +152,7 @@ DO_OUT:
   
   if ( scene_handler->OnLoad != NULL )
     scene_handler->OnLoad(minor_scene->unk_struct_0);
-  sub_801A4D34(scene_handler->OnFrame);
+  Scene_PerFrameUpdate(scene_handler->OnFrame);
   
   if ( !dword_8046B0F0.unk04 && scene_handler->OnLeave != NULL )
     scene_handler->OnLeave(minor_scene->unk_struct_1);
@@ -180,18 +180,18 @@ DO_OUT:
     }
   }
 
-  sub_8001CDB4();
-  sub_8001B760(11);
+  //sub_8001CDB4(); Memcard related, likely ignorable for now
+  //sub_8001B760(11); More memcard
   sub_8001F800();
   
   if ( dword_8046B0F0.unk04 ){
     sub_80027DBC();
-    sub_80377D18(); //HSD_PadReset()
+    HSD_PadReset();
     /*do {
       v16 = sub_8001B6F8(); //Save related, so we can ignore for now
     } while ( v16 == 11 );*/
-    if ( !DVD_CheckDisk(v16) )
-      SYS_ResetSystem(1u, 0, 0);
+    if ( !DVD_CheckDisk() )
+      SYS_ResetSystem(1, 0, 0);
     sub_8001F800();
     while (sub_8038EA50(1));
     CheckLanguage();
@@ -199,7 +199,7 @@ DO_OUT:
     Scene_RunStartupInit();
     dword_8046B0F0.unk00 = 1;
     Scene_SetPendingMajor(40);
-    VIDEO_SetBlack(FALSE);
+    HSD_VISetBlack(0);
   }
 }
 
@@ -393,6 +393,18 @@ MinorSceneHandler* Scene_GetSceneHandlerByClass(u8 class_id){
       return &sh[i];
   }
   return NULL;
+}
+
+//801A4D34
+void Scene_PerFrameUpdate(void* onframefunc){
+  MatchController_InitData(&match_controller);
+  match_controller.timer = 0;
+  match_controller.unk04 = 0;
+  match_controller.timer2 = 0;
+  match_controller.screen_ctrl = 0;
+  HSD_PadFlushQueue(2);
+  sub_8001CF18();
+  /*TODO*/
 }
 
 //801A50A0

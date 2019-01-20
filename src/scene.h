@@ -6,6 +6,7 @@
 #include <gccore.h>
 #include <gctypes.h>
 
+#include "hsd/hsd_video.h"
 #include "match.h"
 
 //Length: 0x14(20)
