@@ -32,7 +32,19 @@ void GObj_AnimAll_Callback(HSD_GObj* gobj){
 
 //8038FF5C
 void GObj_PReorder(HSD_GObj* gobj, HSD_GObj* hiprio_gobj){
-
+	gobj->prev = hiprio_gobj;
+	if(hiprio_gobj != NULL){
+		gobj->next = hiprio_gobj->next;
+		hiprio_gobj->next = gobj;
+	}else{
+		gobj->next = plinkhigh_gobjs[gobj->p_link];
+		plinkhigh_gobjs[gobj->p_link] = gobj;
+	}
+	if(gobj->next != NULL){
+		gobj->next->prev = gobj;
+	}else{
+		plinklow_gobjs[gobj->p_link] = gobj;
+	}
 }
 
 //8038FFB8
