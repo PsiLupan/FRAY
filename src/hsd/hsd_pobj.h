@@ -5,8 +5,9 @@
 
 #include "hsd_jobj.h"
 
-#define POBJ_SHAPEANIM 1<<3
 #define POBJ_ANIM 1<<3
+#define POBJ_SHAPEANIM 1<<12
+#define POBJ_ENVELOPE 1<<13
 
 #define SHAPESET_ADDITIVE 1<<1
 
@@ -19,7 +20,10 @@ typedef struct _HSD_PObj {
 	u16 n_display;
 	HSD_Display* display;
 	HSD_Weight* weight;
-	//1c
+	union {
+		HSD_ShapeSet shape_set;
+		HSD_SList* envelope_list;
+	} u;
 	struct _HSD_AObj* aobj;
 } HSD_PObj;
 
@@ -31,6 +35,10 @@ typedef struct _HSD_PObjDesc {
 	u16 n_display;
 	HSD_Display* display;
 	HSD_Weight* weight;
+	union {
+		HSD_ShapeSetDesc* shape_set;
+		EnvelopeDesc** envelope_p;
+	} u;
 } HSD_PObjDesc;
 
 typedef struct _HSD_Display {
@@ -64,5 +72,7 @@ typedef struct _HSD_PObjInfo {
 } HSD_PObjInfo;
 
 extern HSD_PObjInfo hsdPObj;
+
+#define HSD_POBJ(o) ((HSD_PObj*)(o))
 
 #endif

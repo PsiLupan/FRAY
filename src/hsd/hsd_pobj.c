@@ -36,13 +36,19 @@ void HSD_PObjRemoveAnimAll(HSD_PObj* pobj){ //TODO: Function is a bit longer tha
 }
 
 //8036BA6C
-void HSD_PObjReqAnimAllByFlags(HSD_PObj* pobj){
-    
+void HSD_PObjReqAnimAllByFlags(HSD_PObj* pobj, float startframe, u32 flags){
+    if(pobj != NULL){
+        for (HSD_PObj* p = pobj; p != NULL && flags != 0; p = p->next){
+            if(flags & POBJ_ANIM){
+                HSD_AObjReqAnim(p->aobj, startframe);
+            }
+        }
+    }
 }
 
 //8036BAF4
 static void PObjUpdateFunc(void *obj, u32 type, FObjData* val){
-    HSD_PObj *pobj = obj;
+    HSD_PObj *pobj = HSD_POBJ(obj);
     if (pobj == NULL)
         return;
     
@@ -65,7 +71,8 @@ void HSD_PObjAnimAll(HSD_PObj *pobj){
 static HSD_SList* loadEnvelopeDesc(HSD_EnvelopeDesc** edesc_p){
     HSD_SList *list = NULL, **list_p = &list;
     
-    if (!edesc_p) return NULL;
+    if (!edesc_p) 
+        return NULL;
     
     while (*edesc_p) {
         HSD_Envelope *envelope = NULL, **env_p = &envelope;
@@ -109,4 +116,26 @@ static HSD_ShapeSet* loadShapeSetDesc(HSD_ShapeSetDesc* sdesc){
         shape_set->blend.bl = 0.0F;
     }
     return shape_set;
+}
+
+//8036BDA0
+static s32 PObjLoad(HSD_PObj* pobj, HSD_PObjDesc *desc){
+    pobj->next = HSD_PObjLoadDesc(desc->next);
+    pobj->verts = desc->verts;
+    pobj->flags = desc->flags;
+    pobj->n_display = desc->n_display;
+    pobj->display = desc->display;
+    switch(pobj_type(pobj)){
+        case POBJ_SHAPEANIM:
+        pobj->u.shape_set = loadShapeSetDesc(desc->u.shape_set);
+        break;
+        
+        case POBJ_ENVELOPE:
+        pobj->u.envelope_list = loadEnvelopeDesc(desc->u.envelope_p);
+        break;
+
+        default:
+        assert(TRUE);
+    }
+    return 0;
 }
