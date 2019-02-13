@@ -8,17 +8,14 @@ void Mario_OnLoad(HSD_GObj* gobj){
     u32** char_dat = (u32**)player->x10C_char_dat;
     u32* projectile_data = char_dat[17];
     f32* dat_file = (f32*)char_dat[1];
-    dat_file = dat_file - 2;
-    f32* player_afp = player->x2D8_player_article_floats - 2;
+    f32* player_afp = player->x2D8_player_article_floats;
 
     u32 i = 16;
+    u32 index = 0;
     do {
-        f32 data1 = dat_file + 2;
-        dat_file += 2; //Update offset by 8 bytes, so 4 bytes are skipped between each AFP
-        f32 data2 = dat_file + 1;
-        player_afp[2] = data1;
-        player_afp += 2;
-        player_afp[1] = data2;
+        player_afp[index] = dat_file[index];
+        player_afp[index + 1] = dat_file[index + 1];
+        index += 2;
         --i;
     } while(i > 0);
     player_afp[2] = dat_file + 2;
