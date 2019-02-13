@@ -18,7 +18,7 @@ void Mario_OnLoad(HSD_GObj* gobj){
         index += 2;
         --i;
     } while(i > 0);
-    player_afp[2] = dat_file + 2;
+    player_afp[index] = dat_file[index]; //Since index was incremented at the end, we can just get that index as entry 33
     player->x2D4_player_article_floats = player->x2D8_player_article_floats;
     u32 fireball_related = projectile_data[0];
     sub_8026B3F8(fireball_related, 0x30); //Storing something about the fireball
