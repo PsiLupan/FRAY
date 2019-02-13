@@ -3,28 +3,30 @@
 //800E0960
 void Mario_OnLoad(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
-    u8* char_dat = player->x10C_char_dat;
-    u8* char_dat_infile_x48 = &char_dat[0x48];
-    char_dat = char_dat - 4;
-    u8* player_afp = player->x2D8_player_article_floats - 8;
     player->x2224_flags = player->x2224_flags & 0xFE | 1;
+
+    u32** char_dat = (u32**)player->x10C_char_dat;
+    u32* projectile_data = char_dat[17];
+    f32* dat_file = (f32*)char_dat[1];
+    dat_file = dat_file - 2;
+    f32* player_afp = player->x2D8_player_article_floats - 2;
 
     u32 i = 16;
     do {
-        f32 data1 = ((f32*)char_dat)[2];
-        char_dat = char_dat + 8; //Update offset by 8 bytes, so 4 bytes are skipped between each AFP
-        f32 data2 =  ((f32*)char_dat)[1];
+        f32 data1 = dat_file + 2;
+        dat_file += 2; //Update offset by 8 bytes, so 4 bytes are skipped between each AFP
+        f32 data2 = dat_file + 1;
         player_afp[2] = data1;
-        player_afp = player_afp + 8;
+        player_afp += 2;
         player_afp[1] = data2;
         --i;
     } while(i > 0);
-    player_afp[2] = ((f32*)char_dat)[2];
+    player_afp[2] = dat_file + 2;
     player->x2D4_player_article_floats = player->x2D8_player_article_floats;
-    u32 fireball_related = *((u32*)char_dat_infile_x48);
+    u32 fireball_related = projectile_data[0];
     sub_8026B3F8(fireball_related, 0x30); //Storing something about the fireball
 
-    u32 unk = ((u32*)char_dat_infile_x48)[2];
+    u32 unk = projectile_data[2];
     f32 afp_data = player->x2D4_player_article_floats[5];
     sub_8026B3F8(unk, afp_data);
 }
