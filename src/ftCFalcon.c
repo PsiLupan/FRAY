@@ -16,5 +16,6 @@ void CFalcon_OnLoad(HSD_GObj* gobj){
         index += 2;
         --i;
     } while(i > 0);
+    player_afp[index] = dat_file[index];
     player->x2D4_player_article_floats = player->x2D8_player_article_floats;
 }
