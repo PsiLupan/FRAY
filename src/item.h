@@ -12,30 +12,40 @@
 #define ITEM_MARIO_FIREBALL 0x30
 #define ITEM_DRMARIO_PILL 0x31
 
+#define GOBJ_ITEM(s) ((Item*)s->data)
+
 typedef struct _Item
 {
 	struct _HSD_GObj* next;
 	struct _HSD_GObj* parent;
 	u32 x08_flags;
 	u32 x0C_flags;
-	u32 item_type;
-	u32 item_subtype;
-	u32 spawn_ctr;
+	u32 x10_item_type;
+	u32 x14_item_subtype;
+	u32 x1C_spawn_ctr;
 	u32 x20_flags;
 	u32 x24_unk;
-	u32 state_idx;
-	f32 direction;
-	f32 direction_s;
+	u32 x28_state_idx;
+	f32 x2C_direction;
+	f32 x30_direction_s;
 	f32 x34_unk;
-	f32 scale;
-	guVector velocity;
-	guVector position;
-	f32 direction_pos;
+	f32 x38_scale;
+	f32 x40_velocity_x;
+	f32 x44_velocity_y;
+	f32 x48_velocity_z;
+	f32 x4C_position_x;
+	f32 x50_position_y;
+	f32 x54_position_z;
+	f32 xB0_direction_pos;
 	void* xB8_static_data;
 	void* xBC_static_data;
-	void* xC4_static_data;
-	void* proj_attribs;
+	ItemAttributes* xC4_item_attribs;
+	void* xCC_proj_attribs;
 } Item;
+
+typedef struct _ItemAttributes {
+	x4_default_duration;
+} ItemAttributes;
 
 extern u32 Item_GetItemType(struct Item*);
 

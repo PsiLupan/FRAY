@@ -105,6 +105,14 @@ void Mario_Special_Neutral_Air_SetActionState_x158(HSD_GObj* gobj){
     player->x21BC_Projectile_Spawn = Mario_SpawnProjectile;
 }
 
+//800E10EC
+void DocMario_Special_Neutral_Air_IASA(HSD_GObj* gobj){
+    Player* player = GOBJ_PLAYER(gobj);
+    if(player->x2200_iasa_avail == TRUE){
+        Interrupt_Fall(gobj);
+    }
+}
+
 //800E1178
 void Mario_Special_Neutral_SetActionState_x158(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
