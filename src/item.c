@@ -28,5 +28,5 @@ u32 Item_GetItemType(Item *item){
 //8026B560
 f32 Item_GetDefaultDuration(HSD_GObj* gobj){
 	Item* item = GOBJ_ITEM(gobj);
-	return item->xC4_item_attribs->x4_default_duration;
+	return item->xC4_item_attribs[0][1];
 }

@@ -39,13 +39,9 @@ typedef struct _Item
 	f32 xB0_direction_pos;
 	void* xB8_static_data;
 	void* xBC_static_data;
-	ItemAttributes* xC4_item_attribs;
+	f32** xC4_item_attribs;
 	void* xCC_proj_attribs;
 } Item;
-
-typedef struct _ItemAttributes {
-	x4_default_duration;
-} ItemAttributes;
 
 extern u32 Item_GetItemType(struct Item*);
 
