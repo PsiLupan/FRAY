@@ -11,6 +11,16 @@ BOOL Item_PlayerHasHammer(HSD_GObj* gobj){
 	return FALSE;
 }
 
+//8026A8EC
+void Item_DestroyItem(HSD_GObj* gobj){
+	Item* item = GOBJ_ITEM(item);
+	assert(GObj_IsItem(gobj) && item != NULL);
+	
+	sub_802725D4(gobj);
+	sub_802675A8(gobj);
+	//TODO: Complete remainder of function
+}
+
 //8026B294
 void Item_GetPosition(HSD_GObj* gobj, f32* position){
     Item* item = GOBJ_ITEM(gobj);
