@@ -145,9 +145,9 @@ DO_OUT:
   gamestate.unk03 = minor_scene->idx;
   Scene_CompareCacheOnChange(minor_scene);
   if ( minor_scene->Prep != NULL ) // str + 0x04
-    return (u32 *)minor_scene;
+    return (u32*)minor_scene;
   scene_handler = Scene_GetSceneHandlerByClass(minor_scene->class_id);
-  sub_801A4BD4();
+  Scene_PrepCommon();
   Scene_StoreClassIDPtr(&minor_scene->class_id);
   
   if ( scene_handler->OnLoad != NULL )
@@ -182,7 +182,7 @@ DO_OUT:
 
   //sub_8001CDB4(); Memcard related, likely ignorable for now
   //sub_8001B760(11); More memcard
-  sub_8001F800();
+  //sub_8001F800(); Movie_Unload();
   
   if ( dword_8046B0F0.unk04 ){
     sub_80027DBC();
@@ -191,10 +191,10 @@ DO_OUT:
       v16 = sub_8001B6F8(); //Save related, so we can ignore for now
     } while ( v16 == 11 );*/
     if ( !DVD_CheckDisk() )
-      SYS_ResetSystem(1, 0, 0);
-    sub_8001F800();
+      //sub_8001F800(); Movie_Unload();
+    SYS_ResetSystem(1, 0, 0);
     while (sub_8038EA50(1));
-    CheckLanguage();
+    InitializeStaticMemRegions();
     memset(&gamestate, 0, 20);
     Scene_RunStartupInit();
     dword_8046B0F0.unk00 = 1;
@@ -286,7 +286,7 @@ u8 Scene_Get03(){
 
 //801A42D4
 void Scene_SetPendingTrue(){
-	gamestate.pending = true;
+	gamestate.pending = TRUE;
 }
 
 //801A42E8
@@ -297,7 +297,7 @@ void Scene_UpdatePendingMajor(u8 val){
 //801A42F8
 void Scene_SetPendingMajor(u8 val){
 	gamestate.pending_major = val;
-	gamestate.pending = true;
+	gamestate.pending = TRUE;
 }
 
 //801A4310
@@ -319,16 +319,16 @@ u32 Scene_StoreTo10(u32 val){
 //801A4340
 BOOL Scene_IsSinglePlayer(u8 scene){
 	if ( scene == 28 )
-		return true;
+		return TRUE;
 	if ( scene >= 28 )
 	{
 		if ( scene != 43 && (scene >= 43 || scene >= 39 || scene < 32) )
-			return false;
-		return true;
+			return FALSE;
+		return TRUE;
 	}
 	if ( scene == 15 || (scene < 15 && scene < 6 && scene >= 3) )
-		return true;
-	return false;
+		return TRUE;
+	return FALSE;
 }
 
 //801A43A0
@@ -349,7 +349,7 @@ u8* Scene_ProcessMajor(u8 scene){
 	}
 	scene_ptr = NULL;
 JMP_NULL:
-	gamestate.pending = false;
+	gamestate.pending = FALSE;
 	gamestate.unk03 = 0;
 	gamestate.unk04 = 0;
 	gamestate.unk05 = 0;
@@ -383,6 +383,11 @@ u32* Scene_Load4F80_idx2(){
 //801A4B9C
 u32* Scene_Load4F80_idx3(){
 	return unk4F80[2];
+}
+
+//801A4BD4
+void Scene_PrepCommon(){
+  
 }
 
 //801A4CE0

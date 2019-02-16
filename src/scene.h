@@ -19,7 +19,7 @@ typedef struct _GameState {
 	u8 unk05;
 	u16 unk06;
 	u32 unk08;
-	bool pending;
+	BOOL pending;
 	u8 unk0D;
 	u8 unk0E;
 	u8 unk0F;
