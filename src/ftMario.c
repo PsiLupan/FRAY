@@ -28,6 +28,25 @@ void Mario_OnLoad(HSD_GObj* gobj){
     sub_8026B3F8(unk, afp_data);
 }
 
+//800E0BE4
+//80149724 - Doctor Mario's Attributes update, which just calls this function
+void Mario_UpdateAttributes(HSD_GObj* gobj){
+    Player* player = GOBJ_PLAYER(gobj);
+    u32** char_dat = (u32**)player->x10C_char_dat;
+    f32* dat_file = (f32*)char_dat[1];
+    f32* player_afp = player->x2D4_player_article_floats;
+
+    u32 i = 16;
+    u32 index = 0;
+    do {
+        player_afp[index] = dat_file[index];
+        player_afp[index + 1] = dat_file[index + 1];
+        index += 2;
+        --i;
+    } while(i > 0);
+    player_afp[index] = dat_file[index];
+}
+
 //800E0DA8
 void Mario_Special_Neutral_SetActionState_x157(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
