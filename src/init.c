@@ -1,5 +1,6 @@
 #include "init.h"
 
+static u32 arena_size; //-0x5110(r13)
 static u64 sys_time;
 
 //8015FDA0
@@ -13,6 +14,8 @@ int main(void){
 	VIDEO_Init();
 	DVD_Init();
 	PAD_Init();
+
+	arena_size = (u32)SYS_GetArena1Hi() - (u32)SYS_GetArena1Lo();
 
 	HSD_SetInitParameter(1, 2); //Set XFB Max Num
 	HSD_SetInitParameter(4, &TVNtsc480IntDf); //Set RModeObj
@@ -31,13 +34,24 @@ int main(void){
 
 	sys_time = SYS_Time();
 
-	//sub_8002838C();
+	//sub_8002838C(); ZeroAudioCache
 
 	//sub_80019AAC(&8015FDA0);
 
 	HSD_VISetUserPostRetraceCallback(stub);
 	HSD_VISetUserGXDrawDoneCallback(HSD_VIDrawDoneXFB);
 	HSD_VISetBlack(0);
+	//sub_8001564C(); ARAM_Initialize
+	//sub_80018F68();
+	//sub_80014D2C();
+	//sub_8001C5BC();
+	//sub_8001D21C();
+	//sub_8001E290();
+	//sub_8015FCC0();
+	//sub_8001F87C();
+
+	//sub_803A6048(); FirstHeapAlloc
+	//InitializeStaticMemRegions();
 
 	Game_Init();
 	
@@ -46,8 +60,7 @@ int main(void){
 
 //801A4510
 void Game_Init(){
-	u8 curr_major; // r3@11
-	
+	u8 curr_major;	
 	memset(&gamestate, 0, 20);
 	MajorScene* major_scenes = Scene_GetMajorScenes();
 	for (u32 i = 0; i < 45; i += 1 )
