@@ -6,7 +6,6 @@
 #include "hsd/hsd_jobj.h"
 
 #include "gobj.h"
-#include "interrupt.h"
 #include "player.h"
 
 #endif

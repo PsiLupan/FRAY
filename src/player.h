@@ -124,6 +124,16 @@ typedef struct _Attributes {
 	u32 throwSpeedFlags; //0x180		
 } Attributes;
 
+typedef struct _Physics {
+	f32 x6F4_topn_x;
+	f32 x6F8_topn_y;
+	f32 x6FC_topn_z;
+
+	f32 x70C_topn_x_prev;
+	f32 x710_topn_y_prev;
+	f32 x714_topn_z_prev;
+} Physics;
+
 typedef struct _Player {
 	struct _HSD_GObj* parent;
 	u32 x4_internal_id;
@@ -139,20 +149,30 @@ typedef struct _Player {
 	void* move_tbl;
 	void* state_ptr;
 	void* hitboxdata_endptr;
-	f32 facedir;
-	f32 facedir_model;
-	f32 scale;
-	f32 scale_dup;
-	f32 depth_scale;
+	f32 x2C_facedir;
+	f32 x30_facedir_model;
+	f32 x34_scale;
+	f32 x38_scale_dup;
+	f32 x3C_depth_scale;
 	void* unkptr40;
 	void* unkptr44;
 	u32 linklist_len;
-	guVector vel_self;
-	guVector vel_attk;
+	f32 x80_self_vel_x;
+	f32 x84_self_vel_y;
+	f32 x88_self_vel_z;
+	f32 x8C_attk_vel_x;
+	f32 x90_attk_vel_y;
+	f32 x94_attk_vel_z;
 	f32 xA0_unk;
-	guVector xB0_pos;
-	guVector xBC_pos_prevframe;
-	guVector xC8_pos_delta;
+	f32 xB0_pos_x;
+	f32 xB4_pos_y;
+	f32 xB8_pos_z;
+	f32 xBC_pos_prev_x;
+	f32 xC0_pos_prev_y;
+	f32 xC4_pos_prev_z;
+	f32 xC8_pos_delta_x;
+	f32 xCC_pos_delta_y;
+	f32 xD0_pos_delta_z;
 	BOOL xE0_in_air;
 	f32 xE4_vel_queue_x;
 	f32 xE8_unk;
@@ -183,6 +203,11 @@ typedef struct _Player {
 	f32 x63C_cstick_y;
 
 	u32 x668_instant_buttons;
+
+	s8 x670_frames_tilt_x;
+	s8 x671_frames_tilt_y;
+
+	Physics x6F0_physics;
 
 	s32 x72C_floor_id_actionstate;
 
@@ -217,6 +242,7 @@ typedef struct _Player {
 	u8 x2210_flags;
 	u8 x2218_flags;
 	u8 x2219_flags;
+	u8 x221A_flags;
 	u8 x221F_flags;
 
 	u8 x2224_flags;

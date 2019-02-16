@@ -33,7 +33,7 @@ void Mario_Special_Neutral_SetActionState_x157(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
     player->x2200_iasa_avail = FALSE;
     player->x2210_flags = 0;
-    Player_ChangeActionState(gobj, MARIO_ACTIONSTATE_SPECIAL_NEUTRAL_158, 0, NULL, 0.0f, 1.0f, 0.0f);
+    Player_ChangeActionState(gobj, MARIO_ACTIONSTATE_SPECIAL_NEUTRAL_157, 0, NULL, 0.0f, 1.0f, 0.0f);
     sub_8006EBA4(gobj);
     player->x21BC_Projectile_Spawn = Mario_SpawnProjectile;
 }
@@ -49,7 +49,7 @@ void Mario_Special_Neutral_AnimationInterrupt(HSD_GObj* gobj){
 void Mario_Special_Neutral_IASA(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
     if(player->x2200_iasa_avail == TRUE){
-        Interrupt_Wait(gobj);
+        Player_Interrupt_Wait(gobj);
     }
 }
 
@@ -123,7 +123,19 @@ void Mario_Special_Neutral_Air_AnimationInterrupt(HSD_GObj* gobj){
 void Mario_Special_Neutral_Air_IASA(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
     if(player->x2200_iasa_avail == TRUE){
-        Interrupt_Fall(gobj);
+        Player_Interrupt_Fall(gobj);
+    }
+}
+
+//800E111C
+void Mario_Special_Neutral_Air_Physics(HSD_GObj* gobj){
+    return Player_CheckFastFallAndUpdate(gobj);
+}
+
+//800E113C
+void Mario_Special_Neutral_Air_CollInterrupt(HSD_GObj* gobj){
+    if(Player_CollisonCheck_Ground(gobj) == TRUE){
+        Mario_Special_Neutral_Air_SetActionState_x157(gobj);
     }
 }
 
@@ -138,7 +150,7 @@ void Mario_Special_Neutral_SetActionState_x158(HSD_GObj* gobj){
 //800E11E0
 void Mario_Special_Neutral_Air_SetActionState_x157(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
-    sub_8007D7FC(player);
+    Player_8007D7FC(player);
     Player_ChangeActionState(gobj, MARIO_ACTIONSTATE_SPECIAL_NEUTRAL_157, 0x5000, NULL, player->x894_action_state_frames, 1.0f, 0.0f);
     player->x21BC_Projectile_Spawn = Mario_SpawnProjectile;
 }
