@@ -140,8 +140,8 @@ void Scene_ProcessMinor(MajorScene* scene)
 
   gamestate.unk03 = minor_scene->idx;
   Scene_CompareCacheOnChange(minor_scene);
-  if ( minor_scene->Prep != NULL ) // str + 0x04
-    return (u32*)minor_scene;
+  if ( minor_scene->Prep != NULL )
+    minor_scene->Prep();
   scene_handler = Scene_GetSceneHandlerByClass(minor_scene->class_id);
   Scene_PrepCommon();
   Scene_StoreClassIDPtr(&minor_scene->class_id);
