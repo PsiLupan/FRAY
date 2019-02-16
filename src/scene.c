@@ -159,10 +159,10 @@ void Scene_ProcessMinor(MajorScene* scene)
       minor_scene->Decide();
     gamestate.unk04 = gamestate.unk03;
     
-    if (gamestate.unk05 == 0){
+    if (gamestate.unk05 != 0){
       gamestate.unk03 = gamestate.unk05 - 1;
       gamestate.unk05 = 0;
-    }else {
+    } else {
       for(u32 i = 0; i < 255; i++){
         if ( scene->minor_scenes[i].idx > gamestate.unk03 ){
           v15 = scene->minor_scenes[i].idx;

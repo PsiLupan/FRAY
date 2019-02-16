@@ -14,9 +14,9 @@ typedef struct _GameState {
 	u8 curr_major;
 	u8 pending_major;
 	u8 prev_major;
-	u8 unk03;
+	s8 unk03;
 	u8 unk04;
-	u8 unk05;
+	s8 unk05;
 	u16 unk06;
 	u32 unk08;
 	BOOL pending;
