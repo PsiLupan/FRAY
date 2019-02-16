@@ -1,3 +1,4 @@
+
 #include "gobj.h"
 
 #define P_LINK_MAX 64
@@ -16,11 +17,13 @@ HSD_ObjDef gobj_def_2; //804CE3B8
 HSD_ObjDef gobj_def_3; //804CE3E4
 
 //80086960
-bool GObj_IsPlayer(HSD_GObj* gobj){
-	if(gobj->classifier == 0x04){
-		return true;
+BOOL GObj_IsPlayer(HSD_GObj* gobj){
+	if(gobj != NULL){
+		if(gobj->classifier == GOBJ_CLASS_PLAYER){
+			return TRUE;
+		}
 	}
-	return false;
+	return FALSE;
 }
 
 //8001CEC0
@@ -28,6 +31,16 @@ bool GObj_IsPlayer(HSD_GObj* gobj){
 //80176D18
 void GObj_AnimAll_Callback(HSD_GObj* gobj){
     HSD_JObjAnimAll((HSD_JObj*)gobj->hsd_obj);
+}
+
+//80272D1C
+BOOL GObj_IsItem(HSD_GObj* gobj){
+	if(gobj != NULL){
+		if(gobj->classifier == GOBJ_CLASS_ITEM){
+			return TRUE;
+		}
+	}
+	return FALSE;
 }
 
 //8038FF5C

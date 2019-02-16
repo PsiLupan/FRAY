@@ -19,6 +19,9 @@
 #define INTERNAL_CFALCON 0x02
 #define INTERNAL_DKONG 0x03
 #define INTERNAL_KIRBY 0x04
+#define INTERNAL_LINK 0x06
+#define INTERNAL_PEACH 0x09
+#define INTERNAL_YLINK 0x14
 #define INTERNAL_MASTERHAND 0x1B
 #define INTERNAL_CRAZYHAND 0x1C
 
@@ -197,7 +200,7 @@ typedef struct _Player {
 
 	u8 x1968_jumps_used;
 
-	struct _Item* x1974_held_item;
+	HSD_GObj* x1974_held_item;
 
 	u16 x1A64_grabbable_flags;
 

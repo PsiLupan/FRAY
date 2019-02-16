@@ -3,7 +3,7 @@
 //800C5240
 BOOL Item_PlayerHasHammer(HSD_GObj* gobj){
 	Player* ply = GOBJ_PLAYER(gobj);
-	Item* held_item = ply->x1974_held_item;
+	HSD_GObj* held_item = ply->x1974_held_item;
 	if(held_item != NULL){
 		if(Item_GetItemType(held_item) == ITEM_HAMMER)
 			return TRUE;
@@ -19,8 +19,9 @@ void Item_GetPosition(HSD_GObj* gobj, f32* position){
     position[2] = item->x54_position_z;
 }
 
-//8026B3000
-u32 Item_GetItemType(Item *item){
+//8026B300
+u32 Item_GetItemType(HSD_GObj *gobj){
+	Item* item = GOBJ_ITEM(gobj);
 	return item->x10_item_type;
 }
 

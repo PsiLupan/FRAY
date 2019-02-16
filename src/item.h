@@ -11,6 +11,7 @@
 #define ITEM_HAMMER 0x1C
 #define ITEM_MARIO_FIREBALL 0x30
 #define ITEM_DRMARIO_PILL 0x31
+#define ITEM_PEACH_PARASOL 0x67
 
 #define GOBJ_ITEM(s) ((Item*)s->data)
 
@@ -41,8 +42,11 @@ typedef struct _Item
 	void* xBC_static_data;
 	f32** xC4_item_attribs;
 	void* xCC_proj_attribs;
+
+	HSD_GObj* x518_owner;
+
 } Item;
 
-extern u32 Item_GetItemType(struct Item*);
+extern u32 Item_GetItemType(HSD_GObj*);
 
 #endif

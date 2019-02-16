@@ -7,6 +7,9 @@
 
 #include "hsd/hsd_jobj.h"
 
+#define GOBJ_CLASS_PLAYER 0x04
+#define GOBJ_CLASS_ITEM 0x06
+
 #define GOBJ_NOREF 0xFF
 
 //This has 0x20 aligned size - assuming this is actually something related to HSD_Memory and can be scrapped later

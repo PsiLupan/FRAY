@@ -3,9 +3,11 @@
 
 #include <gctypes.h>
 
+#include "ftPeach.h"
 #include "gobj.h"
 #include "player.h"
 
+#define ACTIONSTATE_WAIT 0x0E
 #define ACTIONSTATE_FALL 0x1D
 #define ACTIONSTATE_HAMMERWAIT 0x133
 #define ACTIONSTATE_HAMMERFALL 0x137

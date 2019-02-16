@@ -69,6 +69,72 @@ BOOL ActionState_IsEntry(HSD_GObj* gobj){
 	return FALSE;
 }
 
+//8008A2BC
+void ActionState_Wait_CheckPlayer(HSD_GObj* gobj){
+	if(Player_GetInternalID(gobj) == INTERNAL_MASTERHAND)
+		return sub_80151018(gobj);
+	if(Player_GetInternalID(gobj) == INTERNAL_CRAZYHAND)
+		return sub_8015BC88(gobj);
+
+	return ActionState_Wait(gobj, 0.0f);
+}
+
+//8008A324
+void ActionState_Wait_NoCheck(HSD_GObj* gobj){
+	return ActionState_Wait(gobj, -1.0f);
+}
+
+//8008A348
+void ActionState_Wait(HSD_GObj* gobj, const f32 unk){
+	Player* ply = GOBJ_PLAYER(gobj);
+
+	if((ply->x2224_flags >> 5) & 1){
+		return sub_800C8B74(gobj);
+	}
+	if(Item_PlayerHasHammer(gobj) == TRUE){
+		return ActionState_HammerWait(gobj);
+	}
+	if(ply->xE0_in_air == TRUE){
+		sub_8007D7FC(ply);
+	}
+	if(ply->x4_internal_id == INTERNAL_PEACH){
+		HSD_GObj* held = ply->x1974_held_item;
+		if(held != NULL){
+			if(Item_GetItemType(held) == ITEM_PEACH_PARASOL){
+				Peach_RemoveParasol(held);
+			}
+		}
+	}
+
+	Player_ChangeActionState(gobj, ACTIONSTATE_WAIT, 0, NULL, 0.0f, 1.0f, unk);
+
+	if(sub_8008A6989(ply) != 0){
+		u32* unk_struct = sub_80085FD4(ply, 6);
+		if(unk_struct[2] != 0){
+			sub_8008A6D8(gobj, 6);
+		}
+	}
+
+	sub_8007EFC0(ply, /*(r13 - 0x514C)->x5F0)*/);
+	u32 char_id = ply->x4_internal_id;
+	if(char_id == INTERNAL_YLINK){
+		return sub_8014919C(gobj);
+	}else if(char_id == INTERNAL_LINK){
+		return sub_800EB3BC(gobj);
+	}
+}
+
+//800C4ED8
+void ActionState_HammerWait(HSD_GObj* gobj){
+	Player* ply = GOBJ_PLAYER(gobj);
+	u32 hammer_state = (u32)ActionState_IsHammer(ply);
+	f32 hammer_frames = ActionState_HammerFrameCount(ply);
+	Player_ChangeActionState(gobj, ACTIONSTATE_HAMMERWAIT, hammer_state, NULL, hammer_frames, 1.0f, 0.0f);
+	sub_800C5408(ply); //Changes Player Overlay Color
+	ActionState_Hammer_ActivateHitbox(ply); //Relates to setting hitbox values for Hammer
+	sub_8007EBAC(ply, 1, 0); //Makes the player's controller rumble
+}
+
 //800C548C
 f32 ActionState_HammerFrameCount(Player* ply){
 	u32 state = ply->x10_action_state;
@@ -86,6 +152,12 @@ BOOL ActionState_IsHammer(Player* ply){
 		return TRUE;
 	}
 	return FALSE;
+}
+
+//800C5588
+void ActionState_Hammer_ActivateHitbox(Player* ply){
+	sub_8026C16C(ply->x1974_held_item, 1);
+	ply->x2219_flags = (ply->x2219_flags & 0xF7) | 8;
 }
 
 //800C5D34
