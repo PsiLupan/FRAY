@@ -6,7 +6,7 @@ void ActionState_FallOrWait(HSD_GObj* gobj){
 	if(ply->xE0_in_air == TRUE){
 		return ActionState_Fall(gobj);
 	}
-	return ActionState_Wait(gobj);
+	return ActionState_Wait_CheckPlayer(gobj);
 }
 
 //8008732C
