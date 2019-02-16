@@ -109,39 +109,35 @@ void Scene_SetPreloadBool(u8 preload){
 //801A4014
 void Scene_ProcessMinor(MajorScene* scene)
 {
-  u32 v2; // r4@1
-  u32 v4; // ctr@1
+  u32 v2;
+  u32 ctr;
   MinorScene** minor_scenes;
   MinorScene* minor_scene = NULL;
   MinorSceneHandler *scene_handler;
-  MinorScene *v11; // r7@21
   u8 v15; // r3@23
   s32 v16; // r3@31
   
-  if ( gamestate.unk03 < 255 ){
-    v2 = gamestate.unk03;
-    minor_scenes = scene->minor_scenes;
-    v4 = 255 - gamestate.unk03;
-    MinorScene* curr;
-    do {
-      for (u32 i = 0; i < 255 ; ++i )
-      {
-        curr = minor_scenes[i];
-        if ( curr->idx == 255 )
-          break;
+  v2 = gamestate.unk03;
+  minor_scenes = scene->minor_scenes;
+  ctr = -(gamestate.unk03 - 255);
+  MinorScene* curr;
+  do {
+    for (u32 i = gamestate.unk03; i < 255 ; ++i )
+    {
+      curr = minor_scenes[i];
+      if ( curr->idx == 255 )
+        break;
         
-        if ( v2 == curr->idx )
-        {
-          minor_scene = minor_scenes[i];
-          goto DO_OUT;
-        }
+      if ( v2 == curr->idx )
+      {
+        minor_scene = minor_scenes[i];
+        break;
       }
-      ++v2;
-      --v4;
     }
-    while ( v4 );
+    --ctr;
   }
-DO_OUT:
+  while ( ctr );
+
   gamestate.unk03 = minor_scene->idx;
   Scene_CompareCacheOnChange(minor_scene);
   if ( minor_scene->Prep != NULL ) // str + 0x04
@@ -167,10 +163,9 @@ DO_OUT:
       gamestate.unk03 = gamestate.unk05 - 1;
       gamestate.unk05 = 0;
     }else {
-      v11 = scene->minor_scenes;
       for(u32 i = 0; i < 255; i++){
-        if ( v11[i].idx > gamestate.unk03 ){
-          v15 = v11[i].idx;
+        if ( scene->minor_scenes[i].idx > gamestate.unk03 ){
+          v15 = scene->minor_scenes[i].idx;
           break;
         }
       }
@@ -387,7 +382,7 @@ u32* Scene_Load4F80_idx3(){
 
 //801A4BD4
 void Scene_PrepCommon(){
-  
+
 }
 
 //801A4CE0
