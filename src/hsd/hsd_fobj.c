@@ -178,9 +178,7 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
             }
             fobjdata.fv = fobj->unk28 * fobj->unk1C + fobj->unk20;
         }else if(state == 1){
-            f64 fVal = 0x4330000000000000;
-            f64 val = (fVal + fobj->parse_res) - fVal;
-            if(fobj->unk1C < val){
+            if(fobj->unk1C < (f32)fobj->parse_res){
                 fobjdata.fv = fobj->unk24;
             }else{
                 fobjdata.fv = fobj->unk20;
@@ -192,10 +190,8 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
             fobj->flags &= 0x7Fu;
         }else if(state < 6){
             if(fobj->parse_res != 0){
-                f64 fVal = 0x4330000000000000;
-                f64 fVal2 = 1.0;
-                f64 f0 = (fVal + fobj->parse_res) - fVal;
-                f32 f1 = fVal2 / f0;
+                f32 f0 = (f32)fobj->parse_res;
+                f32 f1 = 1.0f / f0;
                 fobjdata.fv = splGetHelmite(f0, f1, fobj->unk1C, fobj->unk20, fobj->unk24, fobj->unk28, fobj->unk2C);
             }else{
                 fobjdata.fv = fobj->unk24;
@@ -348,11 +344,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
             break;
             }
         }
-        //8036B5F0
-        f64 val = 0x4330000000000000;
-        f64 v56 = 0x4330000000000000;
-        v56 = fobj->parse_res - val;
-        if(v56 > fobj->unk1C)
+        if((f32)fobj->parse_res > fobj->unk1C)
             break;
         
         fobj->unk1C = fobj->unk1C - fobj->parse_res;
