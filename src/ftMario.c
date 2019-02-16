@@ -40,7 +40,7 @@ void Mario_Special_Neutral_SetActionState_x157(HSD_GObj* gobj){
 
 //800E0E18
 void Mario_Special_Neutral_AnimationInterrupt(HSD_GObj* gobj){
-    if(Player_CheckFrameTimer == 0.0f){
+    if(Player_CheckFrameTimer(gobj) == 0.0f){
         ActionState_Wait_CheckPlayer(gobj);
     }
 }
@@ -114,7 +114,7 @@ void Mario_Special_Neutral_Air_SetActionState_x158(HSD_GObj* gobj){
 
 //800E10B0
 void Mario_Special_Neutral_Air_AnimationInterrupt(HSD_GObj* gobj){
-    if(Player_CheckFrameTimer == 0.0f){
+    if(Player_CheckFrameTimer(gobj) == 0.0f){
         ActionState_Fall(gobj);
     }
 }
