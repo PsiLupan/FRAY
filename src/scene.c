@@ -122,7 +122,7 @@ void Scene_ProcessMinor(MajorScene* scene)
   ctr = -(gamestate.unk03 - 255);
   MinorScene* curr;
   do {
-    for (u32 i = gamestate.unk03; i < 255 ; ++i )
+    for (u32 i = 0; i < 255 ; ++i )
     {
       curr = minor_scenes[i];
       if ( curr->idx == 255 )
