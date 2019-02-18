@@ -34,14 +34,15 @@ int main(void){
 
 	sys_time = SYS_Time();
 
-	//sub_8002838C(); ZeroAudioCache
+	//sub_8002838C(); Inits AR, ARQ, and AI - "Audio_Init"
 
-	//sub_80019AAC(&8015FDA0);
+	//sub_80019AAC(&8015FD24); Setups up periodic alarm & callback for Pad queue?
 
 	HSD_VISetUserPostRetraceCallback(stub);
 	HSD_VISetUserGXDrawDoneCallback(HSD_VIDrawDoneXFB);
 	HSD_VISetBlack(0);
-	//sub_8001564C(); ARAM_Initialize
+	//sub_8001564C(); Allocs memory in AR
+	//sub_80015F3C();
 	//sub_80018F68();
 	//sub_80014D2C();
 	//sub_8001C5BC();
@@ -52,9 +53,8 @@ int main(void){
 
 	//sub_803A6048(); FirstHeapAlloc
 	//InitializeStaticMemRegions();
-
-	Game_Init();
 	
+	Game_Init();	
 	return 0;
 }
 

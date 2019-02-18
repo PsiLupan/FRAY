@@ -9,7 +9,7 @@
 
 #define HSD_BASE_CLASS_LIBRARY "sysdolphin_base_library"
 
-#define HSD_OBJ_NOREF 0
+#define HSD_OBJ_NOREF -1
 
 #define HSD_CLASS_INFO(s)	((HSD_ClassInfo*)(s))
 #define HSD_PARENT_INFO(s)  (((HSD_ClassInfo*)(s))->parent_info)

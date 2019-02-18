@@ -10,9 +10,9 @@ static struct {
 } objheap; //80406E48
 
 //8037A94C
-void HSD_ObjSetHeap(u32 size, void* unk){
-	objheap.heap_start = unk;
-	objheap.heap_pos = unk;
+void HSD_ObjSetHeap(u32 size, void* start){
+	objheap.heap_start = start;
+	objheap.heap_pos = start;
 	objheap.size = size;
 	objheap.bytes_remaining = size;
 }

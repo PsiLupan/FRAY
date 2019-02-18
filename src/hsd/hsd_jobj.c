@@ -90,10 +90,11 @@ void HSD_JObjRemoveAll(HSD_JObj *jobj){
 	if(jobj != NULL){
 		if(jobj->parent){
 			HSD_JObj *prev = HSD_JObjGetPrev(jobj);
-			if(prev)
+			if(prev != NULL){
 				prev->next = NULL;
-			else
-				jobj->parent->next = NULL; //TODO: Verify this, probably wrong : *((u32 *)v16[3] + 4) = NULL;
+			}else{
+				jobj->parent->next = NULL;
+			}
 		}
 		HSD_JObj *curr = jobj;
 		HSD_JObj *next = NULL;

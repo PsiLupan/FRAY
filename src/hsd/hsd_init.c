@@ -46,6 +46,9 @@ void HSD_InitComponent(){
 	HSD_IDSetup();
 	VIDEO_WaitVSync();
 	HSD_ObjInit();
+  #ifndef NO_DEBUG
+	  CON_InitEx(rmode, 20, 30, rmode->fbWith - 40, rmode->xfbHeight - 60);
+	#endif
 	init_done = TRUE;
 }
 
@@ -74,7 +77,7 @@ void** HSD_AllocateXFB(u32 nbBuffer, GXRModeObj *rm){
       assert(TRUE);
     }*/
     if ((FrameBuffer[i] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rm)) == NULL) {
-      assert(TRUE);
+      HSD_Halt("Failed to allocate framebuffer\n");
     }
   }
 
@@ -92,7 +95,7 @@ void* HSD_AllocateFIFO(u32 size){
   fifo = SYS_AllocArena1MemLo(size, 32);
   if (!fifo) {
     assert(TRUE);
-    //HSD_Halt("no space remains for gx fifo.\n");
+    HSD_Halt("Failed to allocate GFX FIFO\n");
   }
 
   return fifo;
@@ -187,7 +190,7 @@ BOOL HSD_SetInitParameter(HSD_InitParam param, ...){
 	if (init_done) {
 		shown = FALSE;
 		if (!shown) {
-			//HSD_Report("init parameter should be set before invoking HSD_Init().\n");
+			HSD_Report("init parameter should be set before invoking HSD_Init().\n");
 			shown = TRUE;
 		}
 		return result;

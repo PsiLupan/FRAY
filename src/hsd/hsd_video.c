@@ -177,18 +177,18 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, HSD_RenderPass rpass)
 
   switch (rpass) {
   case HSD_RP_SCREEN:
-	GX_SetCopyClamp((GX_CLAMP_TOP | GX_CLAMP_BOTTOM));
+		GX_SetCopyClamp((GX_CLAMP_TOP | GX_CLAMP_BOTTOM));
     GX_SetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight);
-	n_xfb_lines = GX_SetDispCopyYScale((f32)(rmode->xfbHeight)
+		n_xfb_lines = GX_SetDispCopyYScale((f32)(rmode->xfbHeight)
 				      / (f32)(rmode->efbHeight)); 
-	GX_SetDispCopyDst(rmode->fbWidth, n_xfb_lines);
-	GX_CopyDisp(buffer, GX_TRUE);
+		GX_SetDispCopyDst(rmode->fbWidth, n_xfb_lines);
+		GX_CopyDisp(buffer, GX_TRUE);
     break;
 
   case HSD_RP_TOPHALF:
-	GX_SetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-	n_xfb_lines = GX_SetDispCopyYScale(1.0);
-	GX_SetDispCopyDst(rmode->fbWidth, n_xfb_lines);
+		GX_SetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
+		n_xfb_lines = GX_SetDispCopyYScale(1.0);
+		GX_SetDispCopyDst(rmode->fbWidth, n_xfb_lines);
     GX_SetCopyClamp(GX_CLAMP_TOP);
     lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
     GX_SetDispCopySrc(0, 0, rmode->fbWidth, lines);
@@ -197,10 +197,10 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, HSD_RenderPass rpass)
 
   case HSD_RP_BOTTOMHALF:
     GX_SetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-	GX_SetDispCopyDst(rmode->fbWidth, GX_SetDispCopyYScale(1.0));
+		GX_SetDispCopyDst(rmode->fbWidth, GX_SetDispCopyYScale(1.0));
     GX_SetCopyClamp(GX_CLAMP_BOTTOM);
-	lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
-	GX_SetDispCopySrc(0, HSD_ANTIALIAS_OVERLAP, rmode->fbWidth, lines);
+		lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
+		GX_SetDispCopySrc(0, HSD_ANTIALIAS_OVERLAP, rmode->fbWidth, lines);
     offset = (VIDEO_PadFramebufferWidth(rmode->fbWidth) * lines * (u32) VI_DISPLAY_PIX_SZ);
     GX_CopyDisp((void *)((u32)buffer + offset), GX_TRUE);
     GX_SetDispCopySrc(0, 0, rmode->fbWidth, HSD_ANTIALIAS_OVERLAP);
@@ -209,8 +209,7 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, HSD_RenderPass rpass)
     break;
 
   default:
-	assert(TRUE);
-    //HSD_PANIC("unexpected type of render pass.\n")
+    HSD_Panic("Unexpected type of render pass.\n")
   }
 
   GX_PixModeSync();

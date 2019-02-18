@@ -352,8 +352,10 @@ HSD_TObj* HSD_MObjGetTObj(HSD_MObj *mobj){
 
 //80363C50
 void HSD_MObjRemove(HSD_MObj *mobj){
-	if(mobj)
-		hsdDelete(mobj);
+	if(mobj){
+		HSD_PARENT_INFO(&hsdMObj)->release(mobj);
+		HSD_PARENT_INFO(&hsdMObj)->destroy(mobj);
+	}
 }
 
 //80363CA4
@@ -418,7 +420,7 @@ static void MObjRelease(HSD_Class *o){
 	if (mobj->pe)
 		hsdFreeMemPiece(mobj->pe, sizeof(HSD_PEDesc));
 	
-	HSD_PARENT_INFO(&hsdMObj)->release(o);
+	//HSD_PARENT_INFO(&hsdMObj)->release(o); TODO: Figure out what this is, because it can't be the same obj
 }
 
 //80363EC4

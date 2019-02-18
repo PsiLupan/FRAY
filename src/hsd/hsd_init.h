@@ -8,6 +8,7 @@
 #include <ogc/video_types.h>
 
 #include "hsd_aobj.h"
+#include "hsd_debug.h"
 #include "hsd_fobj.h"
 #include "hsd_lobj.h"
 #include "hsd_memory.h"
