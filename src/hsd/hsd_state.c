@@ -111,6 +111,33 @@ void HSD_SetupRenderMode(u32 rendermode){
     HSD_SetupChannelMode(rendermode);
 }
 
+//80361FC4
+void HSD_StateInvalidate(s32 state){ //The real code uses a struct and a for loop, and I cbf right now
+    if(state == HSD_STATE_ALL){
+        _HSD_StateInvalidatePrimitive();
+        _HSD_StateInvalidateVtxAttr();
+        _HSD_StateInvalidateColorChannel();
+        _HSD_StateInvalidateTevStage();
+        _HSD_StateInvalidateTevRegister();
+        _HSD_StateInvalidateTexCoordGen();
+        _HSD_StateInvalidateRenderMode();
+    }else if(state == 1){
+        _HSD_StateInvalidatePrimitive();
+    }else if(state == 2){
+        _HSD_StateInvalidateVtxAttr();
+    }else if(state == 4){
+        _HSD_StateInvalidateColorChannel();
+    }else if(state == 8){
+        _HSD_StateInvalidateTevStage();
+    }else if(state == 0x10){
+        _HSD_StateInvalidateTevRegister();
+    }else if(state == 0x20){
+        _HSD_StateInvalidateTexCoordGen();
+    }else if(state == 0x40){
+        _HSD_StateInvalidateRenderMode();
+    }
+}
+
 //803623D0
 void HSD_StateSetNumChans(u8 num){
     if(num != state_num_chans){
