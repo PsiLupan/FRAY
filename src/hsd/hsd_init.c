@@ -1,6 +1,6 @@
 #include "hsd_init.h"
 
-static OSHeapHandle hsd_heap = -1; //r13 - 0x58A0
+//static OSHeapHandle hsd_heap = -1; //r13 - 0x58A0
 static void *hsd_heap_arena_lo = NULL;
 static void *hsd_heap_arena_hi = NULL;
 static void *hsd_heap_next_arena_lo = NULL;
@@ -153,7 +153,7 @@ void HSD_SetNextArena(void *start, void *end){
 void HSD_StartRender(HSD_RenderPass pass){
   current_render_pass = pass;
   
-  GXRModeObj *rmode = HSD_VIGetConfigure();
+  //GXRModeObj *rmode = HSD_VIGetConfigure(); - This function isn't present in the final version of Melee
   if (rmode->aa) {
     GX_SetPixelFmt(GX_PF_RGB565_Z16, current_z_fmt);
   } else {
