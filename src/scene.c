@@ -17,7 +17,6 @@ unk_8046B0F0 dword_8046B0F0;
 u32 Scene_InitStartMeleeData(s8 *a1){
   s8 *v1 = a1; // r31@1
   u32 result; // r3@1
-  double v4; // fp0@1
 
   memset(a1, 0, 0x24u);
   *v1 = 33;
@@ -33,15 +32,14 @@ u32 Scene_InitStartMeleeData(s8 *a1){
   v1[10] = 120;
   v1[11] = 0;
   v1[12] &= 0x7Fu;
-  v1[12] = (u8)(v1[12] & 0xBF) | 0x40;;
+  v1[12] = (u8)(v1[12] & 0xBF) | 0x40;
   v1[14] = 4;
   v1[15] = 0;
   *((u16 *)v1 + 9) = 0;
   *((u16 *)v1 + 10) = 0;
-  v4 = 1.0f;
   *((f32 *)v1 + 6) = 1.0f;
-  *((f32 *)v1 + 7) = v4;
-  *((f32 *)v1 + 8) = v4;
+  *((f32 *)v1 + 7) = 1.0f;
+  *((f32 *)v1 + 8) = 1.0f;
   return result;
 }
 

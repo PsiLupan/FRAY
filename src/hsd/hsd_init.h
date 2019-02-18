@@ -3,6 +3,7 @@
 
 #include <stdarg.h>
 #include <gctypes.h>
+#include <ogc/lwp_heap.h>
 #include <ogc/system.h>
 #include <ogc/video_types.h>
 

@@ -24,7 +24,7 @@ static u32 iparam_audio_heap_size = HSD_DEFAULT_AUDIO_SIZE;
 
 //80374F28
 void HSD_InitComponent(){
-	HSD_OSInit();
+	//HSD_OSInit();
 	{
 		HSD_VIStatus vi_status;
 		GXColor black = { 0, 0, 0, 0};
@@ -61,7 +61,7 @@ void HSD_DVDInit(void)
 }
 
 //80374F7C
-void** HSD_AllocateXFB(int nbBuffer, GXRModeObj *rm){
+void** HSD_AllocateXFB(u32 nbBuffer, GXRModeObj *rm){
   u32 fbSize;
 
   if (!rm) 
@@ -70,7 +70,10 @@ void** HSD_AllocateXFB(int nbBuffer, GXRModeObj *rm){
   fbSize = (VIDEO_PadFramebufferWidth(rm->fbWidth) * rm->xfbHeight * (u32)VI_DISPLAY_PIX_SZ);
   
   for (u32 i = 0; i < nbBuffer; i++) {
-    if ((FrameBuffer[i] = (void *) OSAllocFromArenaLo(fbSize, 32)) == NULL) {
+    /*if ((FrameBuffer[i] = (void *) SYS_AllocArena1MemLo(fbSize, 32)) == NULL) {
+      assert(TRUE);
+    }*/
+    if ((FrameBuffer[i] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rm)) == NULL) {
       assert(TRUE);
     }
   }
@@ -86,7 +89,7 @@ void** HSD_AllocateXFB(int nbBuffer, GXRModeObj *rm){
 void* HSD_AllocateFIFO(u32 size){
   void *fifo;
   
-  fifo = OSAllocFromArenaLo(size, 32);
+  fifo = SYS_AllocArena1MemLo(size, 32);
   if (!fifo) {
     assert(TRUE);
     //HSD_Halt("no space remains for gx fifo.\n");
@@ -108,32 +111,33 @@ void HSD_GXInit(void)
     GX_InitLightAttn(&lightobj, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
     GX_InitLightColor(&lightobj, black);
     for (i = 0; i < MAX_GXLIGHT - 1; i++)
-      GX_LoadLightObj(&lightobj, HSD_Index2LightID(i));
+      GX_LoadLightObj(&lightobj, i);
   }
   HSD_StateInvalidate(HSD_STATE_ALL);
 }
 
-//80375304
+//80375304 - TODO: Rewrite custom memory management with lwp_heap
 void HSD_OSInit(){
   hsd_heap_arena_lo = (void*)ROUNDUP32(SYS_GetArenaLo());
   hsd_heap_arena_hi = (void*)ROUNDDOWN32(SYS_GetArenaHi());
 
-  void* arena_start = OSInitAlloc(hsd_heap_arena_lo, hsd_heap_arena_hi, iparam_heap_max_num);
+  /*void* arena_start = OSInitAlloc(hsd_heap_arena_lo, hsd_heap_arena_hi, iparam_heap_max_num);
 	hsd_heap = OSCreateHeap(hsd_heap_arena_lo, hsd_heap_arena_hi);
 	OSSetCurrentHeap(hsd_heap);
+
 	HSD_ObjSetHeap((u32)hsd_heap_arena_hi - (u32)hsd_heap_arena_lo, NULL);
-	SYS_SetArenaLo(hsd_heap_arena_hi);
+	SYS_SetArenaLo(hsd_heap_arena_hi);*/
 }
 
 //80375404
-OSHeapHandle HSD_GetHeap(){
+/*OSHeapHandle HSD_GetHeap(){
   return hsd_heap;
-}
+}*/
 
 //8037540C
-void HSD_SetHeap(OSHeapHandle heap){
+/*void HSD_SetHeap(OSHeapHandle heap){
   hsd_heap = heap;
-}
+}*/
 
 //80375414
 void HSD_SetNextArena(void *start, void *end){

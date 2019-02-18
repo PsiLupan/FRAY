@@ -35,7 +35,8 @@ void* HSD_MemAlloc(u32 size){
 	void* result = NULL;
 	
 	if(size > 0){	
-		result = OSAllocFromHeap(HSD_GetHeap(), size);
+		//result = OSAllocFromHeap(HSD_GetHeap(), size);
+		result = malloc(size);
 		assert(result);
 	}
 	return result;

@@ -177,12 +177,12 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, HSD_RenderPass rpass)
 
   switch (rpass) {
   case HSD_RP_SCREEN:
-    GX_SetCopyClamp((GX_CLAMP_TOP | GX_CLAMP_BOTTOM));
+	GX_SetCopyClamp((GX_CLAMP_TOP | GX_CLAMP_BOTTOM));
     GX_SetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight);
-    n_xfb_lines = GX_SetDispCopyYScale((f32)(rmode->xfbHeight)
+	n_xfb_lines = GX_SetDispCopyYScale((f32)(rmode->xfbHeight)
 				      / (f32)(rmode->efbHeight)); 
-    GX_SetDispCopyDst(rmode->fbWidth, n_xfb_lines);
-    GX_CopyDisp(buffer, GX_TRUE);
+	GX_SetDispCopyDst(rmode->fbWidth, n_xfb_lines);
+	GX_CopyDisp(buffer, GX_TRUE);
     break;
 
   case HSD_RP_TOPHALF:
@@ -209,6 +209,7 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, HSD_RenderPass rpass)
     break;
 
   default:
+	assert(TRUE);
     //HSD_PANIC("unexpected type of render pass.\n")
   }
 
@@ -226,7 +227,7 @@ void HSD_VICopyXFBASync(HSD_RenderPass rpass){
 		HSD_VICopyEFB2XFBPtr(&vi, HSD_VIGetXFBPtr(idx), rpass);
 		
 		u32 intr;
-  		intr = IRQ_Disable();
+  	intr = IRQ_Disable();
 		assert(_p->xfb[idx].status == HSD_VI_XFB_DRAWING);
 		_p->xfb[idx].status = HSD_VI_XFB_WAITDONE;
 		_p->xfb[idx].vi_all = _p->current;
@@ -237,7 +238,7 @@ void HSD_VICopyXFBASync(HSD_RenderPass rpass){
 			GX_WaitDrawDone();
 		_p->drawdone.waiting = 1;
 		_p->drawdone.arg = idx;
-		GXSetDrawDone();
+		GX_SetDrawDone();
 	}
 }
 
