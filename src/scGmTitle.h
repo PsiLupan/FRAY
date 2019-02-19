@@ -3,4 +3,6 @@
 
 #include <gctypes.h>
 
+#include "scene.h"
+
 #endif

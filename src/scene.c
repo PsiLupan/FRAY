@@ -7,7 +7,8 @@ static MajorScene major_scenes[45]; //803DACA4
 
 u8 menu_804D6730[6];
 
-u32* unk4F80[3];
+static u32* r13_4F80[3];
+static u32 r13_6C98 = 0;
 
 s32 preload_cache[0x1000]; //80432078
 
@@ -89,9 +90,31 @@ BOOL Scene_IsSceneClassicAdvOrAllStar(){
 	return FALSE;
 }
 
+//800174BC
+void Scene_800174BC(){
+  Scene_80018C6C();
+  Scene_80018254();
+  Scene_80017700(4);
+}
+
+//80017700
+void Scene_80017700(){
+
+}
+
 //8001822C
 s32* Scene_GetPreloadCache_04(){
   return &preload_cache[1];
+}
+
+//80018254
+void Scene_80018254(){
+
+}
+
+//80018C6C
+void Scene_80018C6C(){
+
 }
 
 //80018CF4
@@ -104,10 +127,50 @@ void Scene_SetPreloadBool(u8 preload){
   preload_cache[0x970] = preload;
 }
 
+//801A1C18
+void Scene_Minor_Class0_Think(){
+    sub_801A36A0(4u);
+    u32* r13_4F8C = Scene_Load4F80_idx3();
+    if(r13_4F8C != NULL){
+        *r13_4F8C -= 1;
+    }else{
+        u32* pVal = Scene_Load4F80_idx2();
+        *pVal += 1;
+        if(*pVal <= 0x258u){
+            if(*pVal & 0x1000){
+                u32 res = sub_80026F2C(28);
+                sub_8002702C(0xC, res, 0);
+                sub_80027168();
+                sub_80027648();
+                SFX_Menu_CommonSound(1);
+                *pVal = Music_DecideRandom();
+                MatchController_ChangeScreen();
+            }else if(r13_6C98 >= 3){
+                if(*pVal & 0x100){
+                    SFX_Menu_CommonSound(1);
+                    *pVal = 0;
+                    MatchController_ChangeScreen();
+                }else if(*pVal & 0x400){
+                    SFX_Menu_CommonSound(1);
+                    *pVal = 0;
+                    MatchController_ChangeScreen();
+                }else if(*pVal & 0x800){
+                    SFX_Menu_CommonSound(1);
+                    *pVal = 0;
+                    MatchController_ChangeScreen();
+                }
+            }
+        }else{
+            *pVal = 0;
+            MatchController_ChangeScreen();
+        }
+    }
+}
+
 //801A4014
 void Scene_ProcessMinor(MajorScene* scene)
 {
-  u32 v2;
+  u32 curr_minor;
   u32 ctr;
   MinorScene** minor_scenes;
   MinorScene* minor_scene = NULL;
@@ -115,9 +178,9 @@ void Scene_ProcessMinor(MajorScene* scene)
   u8 v15; // r3@23
   s32 v16; // r3@31
   
-  v2 = gamestate.unk03;
+  curr_minor = gamestate.curr_minor;
   minor_scenes = scene->minor_scenes;
-  ctr = -(gamestate.unk03 - 255);
+  ctr = -(gamestate.curr_minor - 255);
   MinorScene* curr;
   do {
     for (u32 i = 0; i < 255 ; ++i )
@@ -126,7 +189,7 @@ void Scene_ProcessMinor(MajorScene* scene)
       if ( curr->idx == 255 )
         break;
         
-      if ( v2 == curr->idx )
+      if ( curr->idx == curr_minor )
       {
         minor_scene = minor_scenes[i];
         break;
@@ -136,7 +199,7 @@ void Scene_ProcessMinor(MajorScene* scene)
   }
   while ( ctr );
 
-  gamestate.unk03 = minor_scene->idx;
+  gamestate.curr_minor = minor_scene->idx;
   Scene_CompareCacheOnChange(minor_scene);
   if ( minor_scene->Prep != NULL )
     minor_scene->Prep();
@@ -155,21 +218,21 @@ void Scene_ProcessMinor(MajorScene* scene)
   {
     if ( minor_scene->Decide != NULL )
       minor_scene->Decide();
-    gamestate.unk04 = gamestate.unk03;
+    gamestate.unk04 = gamestate.curr_minor;
     
     if (gamestate.unk05 != 0){
-      gamestate.unk03 = gamestate.unk05 - 1;
+      gamestate.curr_minor = gamestate.unk05 - 1;
       gamestate.unk05 = 0;
     } else {
       for(u32 i = 0; i < 255; i++){
-        if ( scene->minor_scenes[i].idx > gamestate.unk03 ){
+        if ( scene->minor_scenes[i].idx > gamestate.curr_minor ){
           v15 = scene->minor_scenes[i].idx;
           break;
         }
       }
       if ( v15 == 255 )
         v15 = 0;
-      gamestate.unk03 = v15;
+      gamestate.curr_minor = v15;
     }
   }
 
@@ -254,9 +317,14 @@ LABEL_9:
   sub_8031C8B8();
 }
 
+//801A4284
+void* Scene_Get14(){
+  return gamestate.unk14;
+}
+
 //801A428C
 void Scene_Set03And04(u8 val){
-	gamestate.unk03 = val;
+	gamestate.curr_minor = val;
 	gamestate.unk04 = val;
 }
 
@@ -273,8 +341,8 @@ u8 Scene_Get04(){
 }
 
 //801A42C4
-u8 Scene_Get03(){
-	return gamestate.unk03;
+u8 Scene_GetCurrentMinor(){
+	return gamestate.curr_minor;
 }
 
 //801A42D4
@@ -365,17 +433,17 @@ JMP_NULL:
 
 //801A4B88
 void Scene_StoreClassIDPtr(u8* class_id){
-	unk4F80[0] = (u32*)class_id;
+	r13_4F80[0] = (u32*)class_id;
 }
 
 //801A4B90
 u32* Scene_Load4F80_idx2(){
-	return unk4F80[1];
+	return r13_4F80[1];
 }
 
 //801A4B9C
 u32* Scene_Load4F80_idx3(){
-	return unk4F80[2];
+	return r13_4F80[2];
 }
 
 //801A4BD4

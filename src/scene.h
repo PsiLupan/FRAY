@@ -14,7 +14,7 @@ typedef struct _GameState {
 	u8 curr_major;
 	u8 pending_major;
 	u8 prev_major;
-	s8 unk03;
+	u8 curr_minor;
 	u8 unk04;
 	s8 unk05;
 	u16 unk06;
@@ -24,7 +24,7 @@ typedef struct _GameState {
 	u8 unk0E;
 	u8 unk0F;
 	u32 unk10;
-	u32 unk14;
+	void* unk14;
 } GameState;
 
 extern GameState gamestate;
