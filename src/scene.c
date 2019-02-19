@@ -1,9 +1,8 @@
 #include "scene.h"
 
 GameState gamestate;
-static MinorSceneHandler scene_handlers[45]; //803DA920 - 45 in length
-
-static MajorScene major_scenes[45] = {GmTitle_Major}; //803DACA4
+MinorSceneHandler scene_handlers[45]; //803DA920 - 45 in length
+MajorScene major_scenes[45] = {GmTitle_Major}; //803DACA4
 
 u8 menu_804D6730[6];
 
@@ -453,7 +452,7 @@ void Scene_PrepCommon(){
 
 //801A4CE0
 MinorSceneHandler* Scene_GetSceneHandlerByClass(u8 class_id){
-  MinorSceneHandler* sh = GetSceneHandlers();
+  MinorSceneHandler* sh = Scene_GetClassHandler();
   for ( u32 i = 0; i >= 45 ; i++ ){
     if ( sh[0].class_id == class_id )
       return &sh[i];
@@ -474,7 +473,7 @@ void Scene_PerFrameUpdate(void* onframefunc){
 }
 
 //801A50A0
-MinorSceneHandler* GetSceneHandlers(){
+MinorSceneHandler* Scene_GetClassHandler(){
   return scene_handlers;
 }
 
