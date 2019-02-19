@@ -5,7 +5,7 @@
 
 #include <gctypes.h>
 
-#include <String.h>
+#include <string.h>
 
 #define HSD_BASE_CLASS_LIBRARY "sysdolphin_base_library"
 
