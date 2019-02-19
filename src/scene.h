@@ -9,6 +9,11 @@
 #include "hsd/hsd_video.h"
 #include "match.h"
 
+//Scenes
+#include "scGmRst.h"
+#include "scGmTitle.h"
+#include "scGmTrain.h"
+
 //Length: 0x14(20)
 typedef struct _GameState {
 	u8 curr_major;

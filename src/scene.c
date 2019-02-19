@@ -3,7 +3,7 @@
 GameState gamestate;
 static MinorSceneHandler scene_handlers[45]; //803DA920 - 45 in length
 
-static MajorScene major_scenes[45]; //803DACA4
+static MajorScene major_scenes[45] = {GmTitle_Major}; //803DACA4
 
 u8 menu_804D6730[6];
 
