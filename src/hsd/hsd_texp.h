@@ -21,11 +21,18 @@
 #define HSD_TE_ALL 7
 
 typedef struct _HSD_TExpTevDesc {
-
+    
 } HSD_TExpTevDesc;
 
 typedef struct _HSD_TExp {
-
+    u32 flags;
+    struct _HSD_TExp* next;
+    u32 x8_unk;
+    u32 xC_unk;
+    u32 x10_unk;
+    u8 x14_unk;
+    u8 x15_unk;
+    u8 x16_unk;
 } HSD_TExp;
 
 #endif
