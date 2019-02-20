@@ -21,6 +21,8 @@ struct _HSD_MemoryEntry {
     u32 x4_unk;
     u32 free_pieces;
     struct _HSD_MemPiece* data; //0x0C
+    u32 x10_unk;
+    u32 x14_unk;
 } HSD_MemoryEntry;
 
 #endif

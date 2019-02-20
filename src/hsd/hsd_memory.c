@@ -1,6 +1,7 @@
 #include "hsd_memory.h"
 
-static u32 alignment_sz = 0x20;
+static HSD_MemoryEntry** entrybysz;
+static u32 sz_entries = 32;
 
 static u32 hsd_iddata[4][12];
 static u8 hsd_idtable[404]; //804C23EC
@@ -44,118 +45,93 @@ void* HSD_MemAlloc(u32 size){
 
 //80381D58
 HSD_MemoryEntry* GetMemoryEntry(u32 size){
-	int v16; // r13@0
-	int v21; // r13@8
-	int v25; // r13@14
-	void* addr;
-	int v28; // r13@16
-	int v29; // r13@16
-	int v31; // r3@16
-	int v32; // r31@16
-	int v33; // r10@16
-	int v34; // r9@16
-	int v35; // r8@16
-	int v36; // r7@16
-	int v37; // r6@16
-	int v38; // r5@16
-	double v39; // fp8@16
-	double v40; // fp7@16
-	double v41; // fp6@16
-	double v42; // fp5@16
-	double v43; // fp4@16
-	double v44; // fp3@16
-	double v45; // fp2@16
-	double v46; // fp1@16
 	int v47; // r4@16
-	int v48; // r31@17
-	void* entry_addr;
 	int v51; // r5@20
 	BOOL v52; // r6@20
 	int v53; // ctr@20
-	int v54; // r4@20
 	u32 *v55; // r3@20
-	int v56; // r5@22
 	int v58; // r6@25
 	int v59; // r5@25
 	int v60; // ctr@25
 	u32 *v61; // r3@25
 
 	assert(size >= 0);
-	if ( size >= alignment_sz )
+	if ( size >= sz_entries )
 	{
-		if ( alignment_sz > 0 ){
-			u32 i = 2 * alignment_sz;
+		if ( sz_entries > 0 ){ //Basically amounts to resizing the array by doubling the size and copying entries to a new array
+			u32 i = 2 * sz_entries;
 			while(size >= i){
 				i *= 2;
 			}
-			addr = HSD_MemAlloc(4 * i);
-			if ( addr == NULL )
+			HSD_MemoryEntry* entry = (HSD_MemoryEntry*)HSD_MemAlloc(4 * i);
+			if ( entry == NULL ){
 				return NULL;
-			memcpy(addr, *(u32 *)(v25 - 16288), 4 * alignment_sz);
-			memset((u32 *)(addr + 4 * alignment_sz), 0, 4 * (i - alignment_sz));
-			v31 = *(u32 *)(v29 - 16288);
-			alignment_sz = i;
-			v32 = 4 * alignment_sz & 0xFFFFFFE0;
-			*(u32 *)(v29 - 16288) = addr;
-			hsdFreeMemPiece(v31, v32);
-			v47 = *(u32 *)(*(u32 *)(v16 - 16288) + (((u32)(v32 + 31) >> 3) & 0x1FFFFFFC) - 4);
-			++*(u32 *)(v47 + 4);
-		} else {
+			}
+			memcpy(entry, entrybysz, 4 * sz_entries);
+			memset(&entry[sz_entries], 0, 4 * (i - sz_entries)); //You start *after* existing ptrs and make sure memory is zero'd
+			HSD_MemoryEntry** org_entrybysz = entrybysz;
+			u32 tmp = sz_entries;
+			u32 offset = 4 * tmp & 0xFFFFFFE0;
+			sz_entries = i;
+			entrybysz = &entry;
+			hsdFreeMemPiece(org_entrybysz, sz_entries);
+			v47 = *(u32 *)(*entrybysz + (((u32)(offset + 31) >> 3) & 0x1FFFFFFC) - 4);
+			v47->x4_unk += 1;
+		} else { //In this case, it's uninitialized and allocs the array
 			u32 j = 32;
 			while(size >= j){
 				j *= 2;
 			}
-			addr = HSD_MemAlloc(4 * j);
-			*(u32 *)(v21 - 16288) = addr;
-			if ( addr == NULL )
+			entry = (HSD_MemoryEntry*)HSD_MemAlloc(4 * j);
+			entrybysz = &entry;
+			if ( entry == NULL ){
 				return NULL;
-			memset(addr, 0, 4 * j);
-			alignment_sz = j;
+			}
+			memset(entry, 0, 4 * j);
+			sz_entries = j;
 		}
 	}
-	v48 = 4 * size;
-	if ( !*(u32 *)(*(u32 *)(v16 - 16288) + 4 * size) ) {
-		entry_addr = HSD_MemAlloc(0x14u);
-		if ( !entry_addr )
+	if ( entrybysz[size] == NULL ) {
+		HSD_MemoryEntry* entry = (HSD_MemoryEntry*)HSD_MemAlloc(0x14u);
+		if ( entry == NULL ){
 			return NULL;
-		memset(entry_addr, 0, 0x14u);
-		*entry_addr = 32 * (size + 1);
+		}
+		memset(entry, 0, 0x14u);
+		entry->x0_unk = 32 * (size + 1);
 		v51 = size - 1;
 		v52 = FALSE;
-		*(u32 *)(*(u32 *)(v16 - 16288) + v48) = entry_addr;
+		entrybysz[size] = entry;
 		v53 = size;
-		v54 = *(u32 *)(v16 - 16288);
-		v55 = (u32 *)(v54 + 4 * (size - 1));
+		v55 = entrybysz[size - 1];
 		if ( size - 1 >= 0 ){
 			while ( !*v55 ){
 				--v55;
 				--v51;
 				if ( !--v53 )
-					goto LABEL_24;
+					goto JUMP_OUT;
 			}
-			v56 = 4 * v51;
 			v52 = TRUE;
-			entry_addr[4] = *(u32 *)(*(u32 *)(v54 + v56) + 16);
-			*(u32 *)(*(u32 *)(*(u32 *)(v16 - 16288) + v56) + 16) = entry_addr;
+			entry->x10_unk = entrybysz[v51]->x10_unk;
+			entrybysz[v51]->x10_unk = entry;
 		}
-LABEL_24:
+JUMP_OUT:
 		if ( v52 == FALSE ){
 			v58 = size + 1;
 			v59 = *(u32 *)(v16 - 16288);
-			v60 = alignment_sz - (size + 1);
-			v61 = (u32 *)(v59 + 4 * (size + 1));
-			if ( size + 1 < alignment_sz ){
+			v60 = sz_entries - (size + 1);
+			v61 = entrybysz[size + 1];
+			if ( size + 1 < sz_entries ){
 				while ( !*v61 ){
-				++v61;
-				++v58;
-				if ( !--v60 )
-					return *(u32 *)(*(u32 *)(v16 - 16288) + v48);
+					++v61;
+					++v58;
+					if ( !--v60 )
+						return entrybysz[size];
 				}
-				v50[4] = *(u32 *)(v59 + 4 * v58);
+				entry->x10_unk = entrybysz[v58];
 			}
 		}
 	}
-	return *(u32 *)(*(u32 *)(v16 - 16288) + v48);
+	return entrybysz[size];
 }
 
 //80381FA8
@@ -175,5 +151,5 @@ void hsdFreeMemPiece(void* mem, u32 size){
 		entry->data = piece;
 		entry->free_pieces += 1;
 	}
-	return addr;
+	return entry;
 }
