@@ -28,7 +28,8 @@ void _HSD_IDForgetMemory(){
 
 //8037F1B0
 void HSD_Free(void* ptr){
-	OSFreeToHeap(HSD_GetHeap(), ptr);
+	//OSFreeToHeap(HSD_GetHeap(), ptr);
+	free(ptr);
 }
 
 //8037F1E4
