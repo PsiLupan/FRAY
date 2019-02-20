@@ -41,6 +41,11 @@ static int	 zlist_xlu_nb = 0;
 
 #define MTXRowCol(pmtx, row, col) (pmtx[row][col])
 
+//803738A0
+void HSD_ZListInitAllocData(){
+	HSD_ObjAllocInit(&zlist_alloc_data, 0x48, 4);
+}
+
 //80374680
 static HSD_ZList* zlist_sort(HSD_ZList *list, int nb, int offset){
 	HSD_ZList *fore, *hind, **ptr;
