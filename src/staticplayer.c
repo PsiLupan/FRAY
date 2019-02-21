@@ -119,59 +119,6 @@ void StaticPlayer_SetModelScale(u32 slot, f32 scale){
 	players[slot].model_scale = scale;
 }
 
-//80034C04
-u16 StaticPlayer_GetStaminaHP(u32 slot){
-	assert(slot >= 0 && slot < MAX_PLAYERS);
-	u16 hp = players[slot].stamina_hp;
-	if(hp < 0)
-		return 0;
-	return hp;
-}
-
-//80034524
-void StaticPlayer_SetStaminaHP(u32 slot, u16 amt){
-	assert(slot >= 0 && slot < MAX_PLAYERS);
-	players[slot].stamina_hp = amt;
-}
-
-//80034D78
-u32 StaticPlayer_GetFalls(u32 slot){
-	assert(slot >= 0 && slot < MAX_PLAYERS);
-	return players[slot].falls;
-}
-
-//80034E04
-void StaticPlayer_SetFalls(u32 slot, u32 amt){
-	assert(slot >= 0 && slot < MAX_PLAYERS);
-	players[slot].falls = amt;
-}
-
-//80034F24
-u32 StaticPlayer_GetKillCount(u32 slot, u32 tslot){
-	assert(slot >= 0 && slot < MAX_PLAYERS);
-	return players[slot].ko_counter[tslot];
-}
-
-//80035114
-s32 StaticPlayer_GetMatchFrames(u32 slot){
-	assert(slot >= 0 && slot < MAX_PLAYERS);
-	return players[slot].match_frames;
-}
-
-//80035184
-void StaticPlayer_SetMatchFrames(u32 slot, bool r4){
-	s32 result = 0;
-	
-	assert(slot >= 0 && slot < MAX_PLAYERS);
-	if(!r4){
-		result = players[slot].match_frames;
-		if(result == -1){
-			result = MatchInfo_GetFrameCount();
-			players[slot].match_frames = result;
-		}
-	}
-}
-
 //80033BD8
 u8 StaticPlayer_GetStocks(u32 slot){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
@@ -245,15 +192,6 @@ void StaticPlayer_Set9C(u32 slot, u32 amt){
 	players[slot].unk9C = amt;
 }
 
-//8003418C
-HSD_GObj* StaticPlayer_GetCharacterGObj(u32 slot, bool subchar){
-	assert(slot >= 0 && slot < MAX_PLAYERS);
-	if(subchar){
-		return players[slot].subchar;
-	}
-	return players[slot].player;
-}
-
 //80034110
 Player* StaticPlayer_GetPlayerStruct(u32 slot, bool subchar){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
@@ -263,17 +201,85 @@ Player* StaticPlayer_GetPlayerStruct(u32 slot, bool subchar){
 	return (Player*)players[slot].player->data;
 }
 
-//80036244
-//80036324
-u32* StaticPlayer_GetStaleMoveTable(u32 slot){
+//8003418C
+HSD_GObj* StaticPlayer_GetCharacterGObj(u32 slot, bool subchar){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
-	return &players[slot].stale_writeidx;
+	if(subchar){
+		return players[slot].subchar;
+	}
+	return players[slot].player;
+}
+
+//80034524
+void StaticPlayer_SetStaminaHP(u32 slot, u16 amt){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	players[slot].stamina_hp = amt;
+}
+
+//80034C04
+u16 StaticPlayer_GetStaminaHP(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	u16 hp = players[slot].stamina_hp;
+	if(hp < 0)
+		return 0;
+	return hp;
+}
+
+//80034D78
+u32 StaticPlayer_GetFalls(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].falls;
+}
+
+//80034E04
+void StaticPlayer_SetFalls(u32 slot, u32 amt){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	players[slot].falls = amt;
+}
+
+//80034F24
+u32 StaticPlayer_GetKillCount(u32 slot, u32 tslot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].ko_counter[tslot];
+}
+
+//80035114
+s32 StaticPlayer_GetMatchFrames(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].match_frames;
+}
+
+//80035184
+void StaticPlayer_SetMatchFrames(u32 slot, bool r4){
+	s32 result = 0;
+	
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	if(!r4){
+		result = players[slot].match_frames;
+		if(result == -1){
+			result = MatchInfo_GetFrameCount();
+			players[slot].match_frames = result;
+		}
+	}
+}
+
+//8003521C
+u16 StaticPlayer_GetSuicides(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return players[slot].suicides;
 }
 
 //800361D4
 u32* StaticPlayer_GetStatsPtr(u32 slot){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
 	return &players[slot].stats[0];
+}
+
+//80036244
+//80036324
+u32* StaticPlayer_GetStaleMoveTable(u32 slot){
+	assert(slot >= 0 && slot < MAX_PLAYERS);
+	return &players[slot].stale_writeidx;
 }
 
 //800362B4

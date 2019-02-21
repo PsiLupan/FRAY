@@ -97,6 +97,7 @@ void StaticPlayer_SetFalls(u32, u32);
 u32 StaticPlayer_GetKillCount(u32, u32);
 s32 StaticPlayer_GetMatchFrames(u32);
 void StaticPlayer_SetMatchFrames(u32, bool);
+u16 StaticPlayer_GetSuicides(u32);
 
 u8 StaticPlayer_GetStocks(u32);
 u8 StaticPlayer_GetPlayer1Stocks();
