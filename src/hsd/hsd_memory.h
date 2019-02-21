@@ -5,11 +5,10 @@
 
 #include <string.h>
 
-#include "hsd_init.h"
 #include "hsd_object.h"
 
 struct _HSD_MemPiece {
-    struct _HSD_MemPiece* prev;
+    struct _HSD_MemPiece* next;
     u32 x4_unk;
     u32 x8_unk;
     u32 xC_unk;
@@ -17,11 +16,11 @@ struct _HSD_MemPiece {
 } HSD_MemPiece;
 
 struct _HSD_MemoryEntry {
-    u32 x0_unk;
+    u32 total_bits;
     u32 x4_unk;
     u32 free_pieces;
     struct _HSD_MemPiece* data; //0x0C
-    u32 x10_unk;
+    struct _HSD_MemoryEntry* next;
     u32 x14_unk;
 } HSD_MemoryEntry;
 
