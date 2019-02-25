@@ -5,6 +5,7 @@
 
 #include "ftPeach.h"
 #include "gobj.h"
+#include "item.h"
 #include "player.h"
 
 #define ACTIONSTATE_WAIT 0x0E
