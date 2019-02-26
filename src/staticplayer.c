@@ -285,5 +285,66 @@ u32* StaticPlayer_GetStaleMoveTable(u32 slot){
 //800362B4
 u32* StaticPlayer_Get6A8(u32 slot){
 	assert(slot >= 0 && slot < MAX_PLAYERS);
-	return &players[slot].unk6A8;
+	return &players[slot].x6A8_unk;
+}
+
+//800386D8 - This function was some type of micro-optimization to get rid of getter functions, but went mostly unused.
+// As a result - it'll be replaced with functions that get the specific stats.
+u32 StaticPlayer_GetStat(u32* stats_ptr, u32 offset){
+	return *(stats_ptr + 4 * offset + 0x3E8);
+}
+
+//GetStat 0x67
+u32 StaticPlayer_GetDashFwdCount(u32 slot){
+	players[slot].x66C_dash_fwd_count;
+}
+
+//GetStat 0x68
+u32 StaticPlayer_GetUnkStat68(u32 slot){
+	players[slot].x670_unk;
+}
+
+//GetStat 0x69
+u32 StaticPlayer_GetJumpCount(u32 slot){
+	players[slot].x674_jump_count;
+}
+
+//GetStat 0x6B
+u32 StaticPlayer_GetUnkStat6B(u32 slot){
+	players[slot].x67C_unk;
+}
+
+//GetStat 0x6C
+u32 StaticPlayer_GetUnkStat6C(u32 slot){
+	players[slot].x680_unk;
+}
+
+//GetStat 0x6D
+u32 StaticPlayer_GetUnkStat6D(u32 slot){
+	players[slot].x684_unk;
+}
+
+//GetStat 0x6E
+u32 StaticPlayer_GetUnkStat6E(u32 slot){
+	players[slot].x688_unk;
+}
+
+//GetStat 0x6F
+u32 StaticPlayer_GetUnkStat6F(u32 slot){
+	players[slot].x68C_unk;
+}
+
+//GetStat 0x70
+u32 StaticPlayer_GetLedgegrabCount(u32 slot){
+	players[slot].x690_ledgegrab_count;
+}
+
+//GetStat 0x71
+u32 StaticPlayer_GetTauntCount(u32 slot){
+	players[slot].x694_taunt_count;
+}
+
+//GetStat 0x72
+u32 StaticPlayer_GetUnkStat72(u32 slot){
+	players[slot].x698_unk;
 }

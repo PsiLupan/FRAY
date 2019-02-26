@@ -1,4 +1,4 @@
-
+#include "scGmTrain.h"
 
 //801B2298
 u32 Menu_GmTrain_Init(){

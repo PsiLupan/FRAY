@@ -2,6 +2,14 @@
 
 static struct StageInfo StageInfo;
 
+//801E2CE8
+BOOL StageInfo_IsCorneriaOrVenom(){
+	if(StageInfo.internal_id == STG_INTERNAL_CORNERIA || StageInfo.internal_id == STG_INTERNAL_VENOM){
+		return TRUE;
+	}
+	return FALSE;
+}
+
 //80224A54
 f32 StageInfo_GetCamLimitLeft(){
 	return StageInfo.cambounds_left + StageInfo.cam_xoff;

@@ -3,6 +3,6 @@
 
 #include <gctypes.h>
 
-#include "match.h"
+#include "scene.h"
 
 #endif

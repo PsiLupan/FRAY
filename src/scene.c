@@ -55,11 +55,43 @@ u32 __InitStartMeleeData(s8 *a1){
 	return result;
 }
 
+//80167A64
+void Scene_InitStartMeleeStruct(s8 *addr){
+  s8 *v1; // r31@1
+  double v3; // fp0@1
+  int result; // r3@1
+
+  v1 = addr;
+  memset(addr, 0, 0x60u);
+  v1[0] = v1[0] & 0xE3 | 0x10;
+  v1[12] = 0;
+  v1[11] = 2;
+  *((u32 *)v1 + 9) = -1;
+  *((u32 *)v1 + 8) = -1;
+  *((u32 *)v1 + 10) = 0;
+  v1[3] = v1[3] & 0xBF | 0x40;
+  v1[3] = v1[3] & 0xFB | 4;
+  v1[3] = v1[3] & 0xF7 | 8;
+  v1[4] = v1[4] & 0x7F | 0x80;
+  v1[1] &= 0xFDu;
+  v1[2] = v1[2] & 0xFB | 4;
+  v1[2] = v1[2] & 0xFD | 2;
+  v3 = 1.0f;
+  *((f32 *)v1 + 11) = v3;
+  *((f32 *)v1 + 12) = v3;
+  *((f32 *)v1 + 13) = v3;
+  v1[4] = v1[4] & 0xFD | 2;
+  result = (u8)(v1[4] & 0xFE) | 1;
+  v1[4] = result;
+  v1[13] = 110;
+  v1[10] = 0;
+}
+
 //80167B50
 u32 Scene_InitUsableStructs(s8* sm_struct){
   u32 result; // r3@2
 
-  Match_InitStartMeleeStruct(&sm_struct[8]);
+  Scene_InitStartMeleeStruct(&sm_struct[8]);
   result = __InitStartMeleeData(&sm_struct[0x68u]);
   sm_struct[0] = -1;
   sm_struct[1] = -1;

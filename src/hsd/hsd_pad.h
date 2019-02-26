@@ -5,4 +5,13 @@
 #include <ogc/irq.h>
 #include <ogc/pad.h>
 
+typedef struct _HSD_PadRumbleQueue {
+    u8 unk00;
+    u8 unk01;
+    u8 rumble_on;
+    u8 unk03;
+    u32 unk04;
+    u32 unk08;
+} HSD_RumbleQueue
+
 #endif

@@ -59,10 +59,21 @@ typedef struct _StaticPlayer
 	HSD_GObj* subchar;
 	u32 stale_writeidx;
 	u16 stale_moves[20]; //idx 0 move ID, idx 1 # of AS changes in match
-	u32 stats[48];
-	u32 unkEC;
-	
-	u32 unk6A8;
+	u32 stats[48]; //Think this may be scoreboard stats
+	u32 xEC_unk;
+	u32 x4D0_unk; //This starts some type of stats as GetStat's offset 0 is this address, possibly hidden stats
+	u32 x66C_dash_fwd_count;
+	u32 x670_unk;
+	u32 x674_jump_count;
+	u32 x67C_unk;
+	u32 x680_unk;
+	u32 x684_unk;
+	u32 x688_unk;
+	u32 x690_ledgegrab_count;
+	u32 x694_taunt_count;
+	u32 x698_unk;
+	u32 x69C_shield_count;
+	u32 x6A8_unk;
 } StaticPlayer;
 
 extern StaticPlayer players[MAX_PLAYERS];

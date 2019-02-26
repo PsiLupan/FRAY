@@ -139,9 +139,9 @@ typedef struct _Player {
 	u32 x4_internal_id;
 	u32 x8_spawn_ctr;
 	u8 xC_slot;
-	u8 flag1;
-	u8 flag2;
-	u8 flag3;
+	u8 xD_flag;
+	u8 xE_flag;
+	u8 xF_flag;
 	u32 x10_action_state;
 	u32 anim_state;
 	u32 tblconstant;

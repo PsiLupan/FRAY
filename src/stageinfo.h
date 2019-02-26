@@ -5,6 +5,9 @@
 
 #include "gobj.h"
 
+#define STG_INTERNAL_CORNERIA 0xE
+#define STG_INTERNAL_VENOM 0xF
+
 //0x778 bytes
 struct StageInfo
 {

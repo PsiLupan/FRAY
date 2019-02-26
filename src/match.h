@@ -20,8 +20,6 @@ struct StartMelee {
 extern struct StartMelee sm_regularvs;
 extern struct StartMelee sm_train;
 
-extern void Match_InitStartMeleeStruct(s8*);
-
 /**
 * Match Info
 **/

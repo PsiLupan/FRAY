@@ -1,6 +1,7 @@
 #include "hsd_pad.h"
 
 u8 pad_queue[0x400]; //Length is made up
+HSD_PadRumbleQueue rumble_queue[4];
 
 //80376D04
 void HSD_PadFlushQueue(u32 state){
@@ -44,5 +45,19 @@ void HSD_PadReset(){
     HSD_PadFlushQueue(1);
     PAD_Recalibrate(0xF0000000);
     pad_queue[43] = 0;
+    IRQ_Restore(intr);
+}
+
+//80378090
+void HSD_PadRumbleOn(u32 pad){
+    u32 intr = IRQ_Disable();
+    rumble_queue[pad].rumble_on = 1;
+    IRQ_Restore(intr);
+}
+
+//803780DC
+void HSD_PadRumbleOffH(u32 pad){
+    u32 intr = IRQ_Disable();
+    rumble_queue[pad].rumble_on = 0;
     IRQ_Restore(intr);
 }
