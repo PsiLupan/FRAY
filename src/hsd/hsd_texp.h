@@ -1,6 +1,12 @@
 #ifndef _hsd_texp_h_
 #define _hsd_texp_h_
 
+#include <gctypes.h>
+
+#include "hsd_debug.h"
+#include "hsd_memory.h"
+
+#define HSD_TE_TEV 1
 #define HSD_TE_RGB 1
 #define HSD_TE_R 2
 #define HSD_TE_G 3

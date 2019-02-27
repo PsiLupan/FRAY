@@ -13,7 +13,7 @@ void Player_SetInvalidGround(Player* player){
 }
 
 //800693AC
-void Player_ChangeActionState(HSD_GObj* gobj, u32 state, u32 flags, HSD_GObj* gobj_2, f32 frames, f32 unk2, f32 unk3){
+void Player_ChangeActionState(HSD_GObj* gobj, u32 state, u32 flags, HSD_GObj* gobj_2, f32 start_frame, f32 frame_rate, f32 unk3){
 
 }
 
