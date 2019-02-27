@@ -4,6 +4,7 @@
 #include <gctypes.h>
 #include <ogc/gu.h>
 
+#include "hsd_debug.h"
 #include "hsd_dobj.h"
 #include "hsd_object.h"
 

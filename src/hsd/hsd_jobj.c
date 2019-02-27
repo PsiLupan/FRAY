@@ -155,7 +155,7 @@ void HSD_JObjAddChild(HSD_JObj *jobj, HSD_JObj *child){
 					assert(jobj->flags & JOBJ_INSTANCE); //!(jobj->flags & JOBJ_INSTANCE)
 					HSD_JObj* i;
 					for(i = jobj->child; jobj->next; i = jobj->next){
-						assert(i == child); //last != child
+						HSD_Halt("HSD_JObjAddChild: last != child");
 					}
 					i->next = child;
 				}else{
