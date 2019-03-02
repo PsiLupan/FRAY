@@ -21,7 +21,7 @@ s32 preload_cache[0x1000]; //80432078
 unk_8046B0F0 dword_8046B0F0;
 
 //8016795C
-u32 Scene_InitStartMeleeData(s8 *a1){
+static u32 Scene_InitStartMeleeData(s8 *a1){
   s8 *v1 = a1; // r31@1
   u32 result; // r3@1
 
@@ -51,7 +51,7 @@ u32 Scene_InitStartMeleeData(s8 *a1){
 }
 
 //80167A14
-u32 __InitStartMeleeData(s8 *a1){
+static u32 __InitStartMeleeData(s8 *a1){
 	s8 *v2 = a1;
 	u32 result;
 
@@ -63,7 +63,7 @@ u32 __InitStartMeleeData(s8 *a1){
 }
 
 //80167A64
-void Scene_InitStartMeleeStruct(s8 *addr){
+static void Scene_InitStartMeleeStruct(s8 *addr){
   s8 *v1; // r31@1
   double v3; // fp0@1
   int result; // r3@1
@@ -309,23 +309,27 @@ void Scene_ProcessMinor(MajorScene* scene){
 
   gamestate.curr_minor = minor_scene->idx;
   Scene_CompareCacheOnChange(minor_scene);
-  if ( minor_scene->Prep != NULL )
+  if ( minor_scene->Prep != NULL ){
     minor_scene->Prep();
+  }
   scene_handler = Scene_GetSceneHandlerByClass(minor_scene->class_id);
   Scene_PrepCommon();
   Scene_StoreClassIDPtr(&minor_scene->class_id);
   
-  if ( scene_handler->OnLoad != NULL )
+  if ( scene_handler->OnLoad != NULL ){
     scene_handler->OnLoad(minor_scene->unk_struct_0);
+  }
   Scene_PerFrameUpdate(scene_handler->OnFrame);
   
-  if ( !dword_8046B0F0.unk04 && scene_handler->OnLeave != NULL )
+  if ( !dword_8046B0F0.unk04 && scene_handler->OnLeave != NULL ){
     scene_handler->OnLeave(minor_scene->unk_struct_1);
+  }
   
   if ( !dword_8046B0F0.unk04 )
   {
-    if ( minor_scene->Decide != NULL )
+    if ( minor_scene->Decide != NULL ){
       minor_scene->Decide();
+    }
     gamestate.unk04 = gamestate.curr_minor;
     
     if (gamestate.unk05 != 0){
@@ -333,13 +337,14 @@ void Scene_ProcessMinor(MajorScene* scene){
       gamestate.unk05 = 0;
     } else {
       for(u32 i = 0; i < 255; i++){
-        if ( scene->minor_scenes[i].idx > gamestate.curr_minor ){
-          v15 = scene->minor_scenes[i].idx;
+        if ( scene->minor_scenes[i]->idx > gamestate.curr_minor ){
+          v15 = scene->minor_scenes[i]->idx;
           break;
         }
       }
-      if ( v15 == 255 )
+      if ( v15 == 255 ){
         v15 = 0;
+      }
       gamestate.curr_minor = v15;
     }
   }
@@ -519,7 +524,7 @@ u8* Scene_ProcessMajor(u8 scene){
 	scene_ptr = NULL;
 JMP_NULL:
 	gamestate.pending = FALSE;
-	gamestate.unk03 = 0;
+	gamestate.curr_minor = 0;
 	gamestate.unk04 = 0;
 	gamestate.unk05 = 0;
 	Scene_SetPreloadBool(scene_ptr->preload);
