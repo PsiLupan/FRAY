@@ -1,12 +1,12 @@
 
 #include "gobj.h"
 
-#define P_LINK_MAX 64
-#define GX_LINK_MAX 64
-static HSD_GObj** plinkhigh_gobjs[P_LINK_MAX]; //r13_3E74
-static HSD_GObj** plinklow_gobjs[P_LINK_MAX]; //r13_3E78
-static HSD_GObj** highestprio_gobjs[GX_LINK_MAX]; //r13_3E7C
-static HSD_GObj** lowestprio_gobjs[GX_LINK_MAX]; //r13_3E80
+#define P_LINK_MAX 63
+#define GX_LINK_MAX 63
+static HSD_GObj** plinkhigh_gobjs[P_LINK_MAX + 2]; //r13_3E74
+static HSD_GObj** plinklow_gobjs[P_LINK_MAX + 2]; //r13_3E78
+static HSD_GObj** highestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E7C
+static HSD_GObj** lowestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E80
 static HSD_GObj* current_gobj = NULL; //r13_3E84 - Really just a guess
 static void* r13_3E88 = NULL;
 static void* r13_3E8C = NULL;
@@ -200,6 +200,19 @@ void GObj_SetupGXLink(HSD_GObj* gobj, void* render_cb, u32 gx_link, u32 priority
 
 	HSD_GObj* i = NULL;
 	for(i = lowestprio_gobjs[gx_link]; i != NULL && (i->render_priority > gobj->render_priority); i = gobj->prev_gx){ 
+		//Works backwards from lowest to highest priority till it finds the highest priority to be it's parent obj
+		//Returns null if nothing is a higher priority than the current object or if there is none of that type
+	}
+	GObj_GXReorder(gobj, i);
+}
+
+//8039075C
+void GObj_SetupGXLink_Max(HSD_GObj* gobj, void* render_cb, u32 priority){
+	gobj->render_cb = render_cb;
+	gobj->gx_link = GX_LINK_MAX + 1;
+	gobj->render_priority = priority;
+	HSD_GObj* i = NULL;
+	for(i = lowestprio_gobjs[gobj->gx_link]; i != NULL && (i->render_priority > gobj->render_priority); i = gobj->prev_gx){ 
 		//Works backwards from lowest to highest priority till it finds the highest priority to be it's parent obj
 		//Returns null if nothing is a higher priority than the current object or if there is none of that type
 	}

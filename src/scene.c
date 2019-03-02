@@ -232,12 +232,12 @@ void Scene_Minor_Class0_OnLoad(){
   HSD_GObj* menu_gobj = GObj_Create(0x13, 0x14, 0);
   void* menu_text = sub_80013B14(/*r13 - 0x4F98*/);
   GObj_InitKindObj(menu_gobj, /*r13 - 0x3E55*/, menu_text);
-  sub_8039075C(menu_gobj, sub_801A18D4, 0);
+  GObj_SetupGXLink_Max(menu_gobj, sub_801A18D4, 0);
 
   HSD_GObj* menu_gobj_2 = GObj_Create(0x13, 0x14, 0);
   void* menu_text_2 = sub_80013B14(/*r13 - 0x4F98*/);
   GObj_InitKindObj(menu_gobj_2, /*r13 - 0x3E55*/, menu_text_2);
-  sub_8039075C(menu_gobj_2, sub_801A1818, 0xC);
+  GObj_SetupGXLink_Max(menu_gobj_2, sub_801A1818, 0xC);
 
   menu_gobj_2->unk24 = 0x209;
   menu_gobj_2->unk20 = 0;
