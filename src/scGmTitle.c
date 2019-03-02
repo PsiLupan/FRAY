@@ -1,10 +1,9 @@
 #include "scGmTitle.h"
 
-MinorScene GmTitle_Minor = {0, 3, 0, 0, Menu_Title_Prep, Menu_Title_Decide, 0, 0, 0, 0, NULL, /*struct 804D6878*/};
-MinorScene Null_Scene = {0xFF, 0, 0, 0, NULL, NULL, 0, 0, 0, 0, NULL, NULL};
-
-MinorScene GmTitle_Minors[2] = {GmTitle_Minor, Null_Scene};
-MajorScene GmTitle_Major = {1, 0, 0, NULL, NULL, NULL, &GmTitle_Minors};
+MinorScene GmTitle_Minors[2] = {
+    {0, 3, 0, Menu_Title_Prep, Menu_Title_Decide, 0, 0, 0, 0, NULL, NULL/*struct 804D6878*/}, 
+    {0xFF, 0, 0, NULL, NULL, 0, 0, 0, 0, NULL, NULL}
+    };
 
 GmTitle_File title_ptrs; //80479B28
 

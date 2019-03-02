@@ -46,6 +46,8 @@ typedef struct _MinorSceneHandler {
 	void (*unk_func)();
 } MinorSceneHandler; //803DA920
 
+extern MinorSceneHandler scene_handlers[45];
+
 typedef struct _MajorScene {
 	u8 preload;
 	u8 idx;
@@ -81,5 +83,7 @@ typedef struct _unk_8046B0F0 {
 	u32 unk08;
 	u32 unk0C;
 } unk_8046B0F0;
+
+extern unk_8046B0F0 dword_8046B0F0;
 
 #endif

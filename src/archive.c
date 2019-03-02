@@ -4,11 +4,11 @@
 void* Archive_LoadFileByEntryNum(s32 entry){
     void* addr;
     u32 intr = IRQ_Disable();
-    DVDHandle handle;
+    DVDFileInfo handle;
     if(!DVDFastOpen(entry, &handle)){
         HSD_Halt("Archive_LoadFileByEntryNum: Could not open file");
     }
-    //addr = handle.addr;
+    addr = handle.startAddr;
     DVD_Close(&handle);
     IRQ_Restore(intr);
     return addr;
@@ -23,11 +23,11 @@ u32 Archive_GetFileLength(char* filename){
         HSD_Halt("Archive_LoadFile: Could not locate file");
     }
     u32 intr = IRQ_Disable();
-    DVDHandle handle;
+    DVDFileInfo handle;
     if(!DVDFastOpen(entry, &handle)){
         HSD_Halt("Archive_LoadFile: Could not open file");
     }
-    //len = handle.length;
+    len = handle.length;
     DVD_Close(&handle);
     IRQ_Restore(intr);
     return len;
@@ -41,8 +41,8 @@ void Archive_LoadFileSections(char* filename, void* dat_start, u32 sections, ...
 
     va_start(ap, sections);
     while(sections > 0) {
-        char* section_name = va_arg(ap, char*);
-        void* file_ptr = va_arg(ap, void*);
+        char* section_name = va_arg(ap, char *);
+        void* file_ptr = va_arg(ap, void *);
         file_ptr = Archive_GetFileSection(dat_start, section_name);
         sections -= 2;
     }

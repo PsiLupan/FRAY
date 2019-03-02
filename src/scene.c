@@ -4,8 +4,12 @@ GameState gamestate;
 
 MinorSceneHandler class_0 = {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL};
 
-MinorSceneHandler scene_handlers[45] = {class_0}; //803DA920 - 45 in length
-MajorScene major_scenes[45] = {GmTitle_Major}; //803DACA4
+MinorSceneHandler scene_handlers[45] = {
+  {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL}
+}; //803DA920 - 45 in length
+MajorScene major_scenes[45] = {
+  {1, 0, 0, NULL, NULL, NULL, &GmTitle_Minors}
+}; //803DACA4
 
 u8 menu_804D6730[6];
 
