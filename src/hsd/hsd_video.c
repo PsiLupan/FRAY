@@ -226,7 +226,7 @@ void HSD_VICopyXFBASync(HSD_RenderPass rpass){
 		HSD_VICopyEFB2XFBPtr(&vi, HSD_VIGetXFBPtr(idx), rpass);
 		
 		u32 intr;
-  	intr = IRQ_Disable();
+		intr = IRQ_Disable();
 		assert(_p->xfb[idx].status == HSD_VI_XFB_DRAWING);
 		_p->xfb[idx].status = HSD_VI_XFB_WAITDONE;
 		_p->xfb[idx].vi_all = _p->current;
