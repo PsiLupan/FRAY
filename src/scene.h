@@ -6,7 +6,9 @@
 #include <gccore.h>
 #include <gctypes.h>
 
+#include "hsd/hsd_jobj.h"
 #include "hsd/hsd_video.h"
+#include "gobj.h"
 #include "match.h"
 
 //Scenes
@@ -42,7 +44,7 @@ typedef struct _MinorSceneHandler {
 	void (*OnLoad)();
 	void (*OnLeave)();
 	void (*unk_func)();
-} MinorSceneHandler;
+} MinorSceneHandler; //803DA920
 
 typedef struct _MajorScene {
 	u8 preload;

@@ -1,10 +1,15 @@
 #include "scene.h"
 
 GameState gamestate;
-MinorSceneHandler scene_handlers[45]; //803DA920 - 45 in length
+
+MinorSceneHandler class_0 = {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL};
+
+MinorSceneHandler scene_handlers[45] = {class_0}; //803DA920 - 45 in length
 MajorScene major_scenes[45] = {GmTitle_Major}; //803DACA4
 
 u8 menu_804D6730[6];
+
+void* file_pointers[40]; //80479B28
 
 static u32* r13_4F80[3];
 static u32 r13_6C98 = 0;
@@ -159,7 +164,7 @@ void Scene_SetPreloadBool(u8 preload){
 }
 
 //801A1C18
-void Scene_Minor_Class0_Think(){
+void Scene_Minor_Class0_OnFrame(){
     sub_801A36A0(4u);
     u32* r13_4F8C = Scene_Load4F80_idx3();
     if(r13_4F8C != NULL){
@@ -198,9 +203,78 @@ void Scene_Minor_Class0_Think(){
     }
 }
 
+//801A1E20
+void Scene_Minor_Class0_OnLoad(){
+  sub_800236DC();
+  //r13 - 0x4F8C = 0x14;
+  //r13 - 0x4F88 = 0;
+  char* filename;
+  if(sub_8000ADD4() == TRUE){ //CheckLanguage
+    filename = "GmTtAll.usd";
+  }else{
+    filename = "GmTtAll.dat";
+  }
+  Archive_LoadFileSection(filename, &file_pointers[0],"TtlMoji_Top_joint", &file_pointers[1], "TtlMoji_Top_animjoint", &file_pointers[2], "TtlMoji_Top_matanim_joint", &file_pointers[3]);
+  u32 unk = sub_80026F2C(0x12);
+  sub_8002702C(2, unk, 4);
+  sub_80027168();
+  
+  HSD_GObj* fog_gobj = GObj_Create(0xA, 3, 0);
+  HSD_Fog* fog = HSD_FogLoadDesc(/*r13 - 0x4F90*/);
+  GObj_InitKindObj(fog_gobj, /*r13 - 0x3E58*/, (void*)fog);
+  GObj_SetupGXLink(fog_gobj, sub_803910B4, 0, 0);
+  sub_8038FD54(fog_gobj, sub_801A1A18, 0);
+
+  HSD_GObj* gobj = GObj_Create(0xB, 3, 128);
+  void* unk_obj = sub_80011AC4(/*r13 - 0x4F94*/);
+  GObj_InitKindObj(gobj, /*r13 - 0x3E56*/, unk_obj);
+  GObj_SetupGXLink(gobj, sub_80391044, 0, 0);
+  
+  HSD_GObj* menu_gobj = GObj_Create(0x13, 0x14, 0);
+  void* menu_text = sub_80013B14(/*r13 - 0x4F98*/);
+  GObj_InitKindObj(menu_gobj, /*r13 - 0x3E55*/, menu_text);
+  sub_8039075C(menu_gobj, sub_801A18D4, 0);
+
+  HSD_GObj* menu_gobj_2 = GObj_Create(0x13, 0x14, 0);
+  void* menu_text_2 = sub_80013B14(/*r13 - 0x4F98*/);
+  GObj_InitKindObj(menu_gobj_2, /*r13 - 0x3E55*/, menu_text_2);
+  sub_8039075C(menu_gobj_2, sub_801A1818, 0xC);
+
+  menu_gobj_2->unk24 = 0x209;
+  menu_gobj_2->unk20 = 0;
+
+  sub_801A165C();
+  sub_80027648();
+  sub_801BF3F8();
+
+  HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
+  HSD_JObj* jobj = HSD_JObjLoadJoint(/*80479B38*/);
+  GObj_InitKindObj(gobj_2, /*r13 - 0x3E57*/, jobj);
+  GObj_SetupGXLink(gobj_2, sub_80391070, 3, 0); //80391070 = TextureDisplay
+  HSD_JObjAddAnimAll(jobj, /*aobj related struct*/, /**/, /**/);
+  sub_8038FD54(gobj_2, sub_801A146C, 0);
+  
+  u8 major = Scene_LoadCurrentMajor();
+  u8 minor = Scene_GetCurrentMinor();
+  if(major != 0 && major != 24 || minor != 2){
+    HSD_JObjReqAnimAll(jobj, /*0xC of obj = 803DA4FC*/);
+  }else{
+    HSD_JObjReqAnimAll(jobj, /*r13 - 0x5048*/)
+  }
+  HSD_JObjAnimAll(jobj);
+
+  if(/*r13 - 0x6C98*/ >= 1){ //Debug Mode?
+    sub_803A611C(0, 0, 9, 13, 0, 14, 0, 19); //MenuTextDraw  
+    u8* unk_struct = sub_803A6754(0, 0);
+    sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", /*80479B48*/);
+    void* unk = sub_803A6B98(unk_struct, /*r13 - 0x7460*/, 30.0f, 30.0f); //MenuTextDrawSome
+    unk_struct[0x49] = 1;
+    sub_803A7548(unk, unk_struct, 0.7f, 0.55f);
+  }
+}
+
 //801A4014
-void Scene_ProcessMinor(MajorScene* scene)
-{
+void Scene_ProcessMinor(MajorScene* scene){
   u32 curr_minor;
   u32 ctr;
   MinorScene** minor_scenes;

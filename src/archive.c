@@ -34,6 +34,6 @@ void* Archive_LoadFile(char* filename){
 }
 
 //80016C64
-void Archive_LoadFileSection(char* filename, void* unk_stackobj, char* section, void* unk){
+void Archive_LoadFileSections(char* filename, void** file_ptr, char* section_1, void** section_1_ptr, char* section_2, void** section_2_ptr, char* section_3, void** section_3_ptr){
     void* file_addr = Archive_LoadFile(filename);
 }

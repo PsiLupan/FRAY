@@ -34,8 +34,8 @@ typedef struct _HSD_GObj {
 	struct _HSD_GObj* prev_gx;
 	GObj_LinkedList* unk_linkedlist;
 	void (*render_cb)(struct _HSD_GObj *gobj, int code);
-	void* unk20;
-	void* unk24;
+	u32 unk20;
+	u32 unk24;
 	void* data;
 	void* hsd_obj; //JObj or CObj known
 	void (*user_data_remove_func)(void* data);
