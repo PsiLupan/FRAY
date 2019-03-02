@@ -7,13 +7,15 @@
 
 #include "hsd/hsd_jobj.h"
 
-#define GOBJ_KIND_TEXT 1
+#define GOBJ_KIND_MENU_COBJ 1
 #define GOBJ_KIND_JOBJ 3
 #define GOBJ_KIND_FOG 4
 
 #define GOBJ_CLASS_PLAYER 0x4
 #define GOBJ_CLASS_ITEM 0x6
+#define GOBJ_CLASS_TEXT 0x9
 #define GOBJ_CLASS_HSD_FOG 0xA
+#define GOBJ_CLASS_HSD_LOBJ 0xB
 
 #define GOBJ_NOREF 0xFF
 

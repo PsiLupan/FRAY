@@ -228,19 +228,19 @@ void Scene_Minor_Class0_OnLoad(){
   GObj_SetupGXLink(fog_gobj, Fog_Set_Callback, 0, 0);
   sub_8038FD54(fog_gobj, Fog_InterpretAnim_Callback, 0);
 
-  HSD_GObj* gobj = GObj_Create(0xB, 3, 128);
-  void* unk_obj = sub_80011AC4(/*r13 - 0x4F94*/);
-  GObj_InitKindObj(gobj, 2, unk_obj);
-  GObj_SetupGXLink(gobj, sub_80391044, 0, 0);
+  HSD_GObj* lobj_gobj = GObj_Create(GOBJ_CLASS_HSD_LOBJ, 3, 128);
+  HSD_LObj* lobj = sub_80011AC4(/*r13 - 0x4F94*/);
+  GObj_InitKindObj(lobj_gobj, 2, lobj);
+  GObj_SetupGXLink(lobj_gobj, LObj_Setup_Callback, 0, 0);
   
   HSD_GObj* menu_gobj = GObj_Create(0x13, 0x14, 0);
-  void* menu_text = sub_80013B14(/*r13 - 0x4F98*/);
-  GObj_InitKindObj(menu_gobj, GOBJ_KIND_TEXT, menu_text);
-  GObj_SetupGXLink_Max(menu_gobj, sub_801A18D4, 0);
+  HSD_CObj* menu_cobj = CObj_Create(/*r13 - 0x4F98*/);
+  GObj_InitKindObj(menu_gobj, GOBJ_KIND_MENU_COBJ, menu_cobj);
+  GObj_SetupGXLink_Max(menu_gobj, CObj_SetErase_Callback, 0);
 
   HSD_GObj* menu_gobj_2 = GObj_Create(0x13, 0x14, 0);
-  void* menu_text_2 = sub_80013B14(/*r13 - 0x4F98*/);
-  GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_TEXT, menu_text_2);
+  HSD_CObj* menu_cobj_2 = CObj_Create(/*r13 - 0x4F98*/);
+  GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_MENU_COBJ, menu_cobj_2);
   GObj_SetupGXLink_Max(menu_gobj_2, sub_801A1818, 0xC);
 
   menu_gobj_2->unk24 = 0x209;
@@ -262,12 +262,12 @@ void Scene_Minor_Class0_OnLoad(){
   if(major != 0 && major != 24 || minor != 2){
     HSD_JObjReqAnimAll(jobj, /*0xC of obj = 803DA4FC*/);
   }else{
-    HSD_JObjReqAnimAll(jobj, /*r13 - 0x5048*/);
+    HSD_JObjReqAnimAll(jobj, 130.0f);
   }
   HSD_JObjAnimAll(jobj);
 
   if(r13_6C98 >= 1){ //Debug Level?
-    sub_803A611C(0, 0, 9, 13, 0, 14, 0, 19); //MenuTextDraw  
+    Menu_CreateTextObj(0, NULL, GOBJ_CLASS_TEXT, 13, 0, 14, 0, 19);
     u8* unk_struct = sub_803A6754(0, 0);
     sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", /*80479B48*/);
     void* unk = sub_803A6B98(unk_struct, "%s", 30.0f, 30.0f); //MenuTextDrawSome

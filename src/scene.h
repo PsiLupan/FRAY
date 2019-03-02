@@ -10,10 +10,13 @@
 #include "hsd/hsd_jobj.h"
 #include "hsd/hsd_video.h"
 
+#include "hsd_cobj_ext.h"
 #include "hsd_fog_ext.h"
+#include "hsd_lobj_ext.h"
 
 #include "gobj.h"
 #include "match.h"
+#include "menu.h"
 
 //Scenes
 #include "scGmRst.h"
