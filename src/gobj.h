@@ -7,8 +7,13 @@
 
 #include "hsd/hsd_jobj.h"
 
-#define GOBJ_CLASS_PLAYER 0x04
-#define GOBJ_CLASS_ITEM 0x06
+#define GOBJ_KIND_TEXT 1
+#define GOBJ_KIND_JOBJ 3
+#define GOBJ_KIND_FOG 4
+
+#define GOBJ_CLASS_PLAYER 0x4
+#define GOBJ_CLASS_ITEM 0x6
+#define GOBJ_CLASS_HSD_FOG 0xA
 
 #define GOBJ_NOREF 0xFF
 
@@ -43,9 +48,19 @@ typedef struct _HSD_GObj {
 	GObj_LinkedList* unk_linkedlist3;
 } HSD_GObj;
 
-void GObj_Free(HSD_GObj* gobj);
-void GObj_CallHSDDestructor(HSD_GObj* gobj);
-void GObj_CallDestructor(HSD_GObj *gobj);
-bool GObj_IsPlayer(HSD_GObj* gobj);
+BOOL GObj_IsPlayer(HSD_GObj *);
+void GObj_AnimAll_Callback(HSD_GObj *);
+BOOL GObj_IsItem(HSD_GObj *);
+
+
+HSD_GObj* GObj_Create(u32, u32, u32);
+void GObj_Free(HSD_GObj *);
+void GObj_SetupGXLink(HSD_GObj *, void *, u32, u32);
+void GObj_SetupGXLink_Max(HSD_GObj *, void *, u32);
+void GObj_GXLinkDestructor(HSD_GObj *);
+void GObj_InitKindObj(HSD_GObj *, s8, void *);
+void GObj_CallHSDDestructor(HSD_GObj *);
+void GObj_InitKindData(HSD_GObj *, s8, void *, void *);
+void GObj_CallDestructor(HSD_GObj *);
 
 #endif

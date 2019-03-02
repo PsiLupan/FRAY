@@ -1,4 +1,4 @@
-#include "jobj_ext.h"
+#include "hsd_jobj_ext.h"
 
 //8000C1C0
 void JObj_AttachJoint_CopyPos(HSD_JObj* jobj_attach, HSD_JObj* jobj_bone){

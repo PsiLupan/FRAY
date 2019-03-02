@@ -222,25 +222,25 @@ void Scene_Minor_Class0_OnLoad(){
   sub_8002702C(2, unk, 4);
   sub_80027168();
   
-  HSD_GObj* fog_gobj = GObj_Create(0xA, 3, 0);
+  HSD_GObj* fog_gobj = GObj_Create(GOBJ_CLASS_HSD_FOG, 3, 0);
   HSD_Fog* fog = HSD_FogLoadDesc(/*r13 - 0x4F90*/);
-  GObj_InitKindObj(fog_gobj, /*r13 - 0x3E58*/, (void*)fog);
-  GObj_SetupGXLink(fog_gobj, sub_803910B4, 0, 0);
-  sub_8038FD54(fog_gobj, sub_801A1A18, 0);
+  GObj_InitKindObj(fog_gobj, GOBJ_KIND_FOG, (void*)fog);
+  GObj_SetupGXLink(fog_gobj, Fog_Set_Callback, 0, 0);
+  sub_8038FD54(fog_gobj, Fog_InterpretAnim_Callback, 0);
 
   HSD_GObj* gobj = GObj_Create(0xB, 3, 128);
   void* unk_obj = sub_80011AC4(/*r13 - 0x4F94*/);
-  GObj_InitKindObj(gobj, /*r13 - 0x3E56*/, unk_obj);
+  GObj_InitKindObj(gobj, 2, unk_obj);
   GObj_SetupGXLink(gobj, sub_80391044, 0, 0);
   
   HSD_GObj* menu_gobj = GObj_Create(0x13, 0x14, 0);
   void* menu_text = sub_80013B14(/*r13 - 0x4F98*/);
-  GObj_InitKindObj(menu_gobj, /*r13 - 0x3E55*/, menu_text);
+  GObj_InitKindObj(menu_gobj, GOBJ_KIND_TEXT, menu_text);
   GObj_SetupGXLink_Max(menu_gobj, sub_801A18D4, 0);
 
   HSD_GObj* menu_gobj_2 = GObj_Create(0x13, 0x14, 0);
   void* menu_text_2 = sub_80013B14(/*r13 - 0x4F98*/);
-  GObj_InitKindObj(menu_gobj_2, /*r13 - 0x3E55*/, menu_text_2);
+  GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_TEXT, menu_text_2);
   GObj_SetupGXLink_Max(menu_gobj_2, sub_801A1818, 0xC);
 
   menu_gobj_2->unk24 = 0x209;
@@ -252,7 +252,7 @@ void Scene_Minor_Class0_OnLoad(){
 
   HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
   HSD_JObj* jobj = HSD_JObjLoadJoint(/*80479B38*/);
-  GObj_InitKindObj(gobj_2, /*r13 - 0x3E57*/, jobj);
+  GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
   GObj_SetupGXLink(gobj_2, sub_80391070, 3, 0); //80391070 = TextureDisplay
   HSD_JObjAddAnimAll(jobj, /*aobj related struct*/, /**/, /**/);
   sub_8038FD54(gobj_2, sub_801A146C, 0);
@@ -262,15 +262,15 @@ void Scene_Minor_Class0_OnLoad(){
   if(major != 0 && major != 24 || minor != 2){
     HSD_JObjReqAnimAll(jobj, /*0xC of obj = 803DA4FC*/);
   }else{
-    HSD_JObjReqAnimAll(jobj, /*r13 - 0x5048*/)
+    HSD_JObjReqAnimAll(jobj, /*r13 - 0x5048*/);
   }
   HSD_JObjAnimAll(jobj);
 
-  if(/*r13 - 0x6C98*/ >= 1){ //Debug Mode?
+  if(r13_6C98 >= 1){ //Debug Level?
     sub_803A611C(0, 0, 9, 13, 0, 14, 0, 19); //MenuTextDraw  
     u8* unk_struct = sub_803A6754(0, 0);
     sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", /*80479B48*/);
-    void* unk = sub_803A6B98(unk_struct, /*r13 - 0x7460*/, 30.0f, 30.0f); //MenuTextDrawSome
+    void* unk = sub_803A6B98(unk_struct, "%s", 30.0f, 30.0f); //MenuTextDrawSome
     unk_struct[0x49] = 1;
     sub_803A7548(unk, unk_struct, 0.7f, 0.55f);
   }

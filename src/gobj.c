@@ -1,4 +1,3 @@
-
 #include "gobj.h"
 
 #define P_LINK_MAX 63

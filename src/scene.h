@@ -6,8 +6,12 @@
 #include <gccore.h>
 #include <gctypes.h>
 
+#include "hsd/hsd_fog.h"
 #include "hsd/hsd_jobj.h"
 #include "hsd/hsd_video.h"
+
+#include "hsd_fog_ext.h"
+
 #include "gobj.h"
 #include "match.h"
 
@@ -85,5 +89,7 @@ typedef struct _unk_8046B0F0 {
 } unk_8046B0F0;
 
 extern unk_8046B0F0 dword_8046B0F0;
+
+
 
 #endif
