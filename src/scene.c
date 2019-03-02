@@ -9,8 +9,6 @@ MajorScene major_scenes[45] = {GmTitle_Major}; //803DACA4
 
 u8 menu_804D6730[6];
 
-void* file_pointers[40]; //80479B28
-
 static u32* r13_4F80[3];
 static u32 r13_6C98 = 0;
 
@@ -214,7 +212,8 @@ void Scene_Minor_Class0_OnLoad(){
   }else{
     filename = "GmTtAll.dat";
   }
-  Archive_LoadFileSection(filename, &file_pointers[0],"TtlMoji_Top_joint", &file_pointers[1], "TtlMoji_Top_animjoint", &file_pointers[2], "TtlMoji_Top_matanim_joint", &file_pointers[3]);
+  Archive_LoadFileSection(filename, &title_ptrs.dat_start, 6, "TtlMoji_Top_joint", &title_ptrs.top_joint, 
+    "TtlMoji_Top_animjoint", &title_ptrs.top_animjoint, "TtlMoji_Top_matanim_joint", &title_ptrs.top_matanim_joint);
   u32 unk = sub_80026F2C(0x12);
   sub_8002702C(2, unk, 4);
   sub_80027168();
