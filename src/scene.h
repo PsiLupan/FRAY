@@ -12,6 +12,7 @@
 
 #include "hsd_cobj_ext.h"
 #include "hsd_fog_ext.h"
+#include "hsd_jobj_ext.h"
 #include "hsd_lobj_ext.h"
 
 #include "gobj.h"

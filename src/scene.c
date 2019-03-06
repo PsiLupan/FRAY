@@ -130,14 +130,40 @@ BOOL Scene_IsSceneClassicAdvOrAllStar(){
 
 //800174BC
 void Scene_800174BC(){
-  Scene_80018C6C();
+  Scene_CopyDataToCache();
   Scene_80018254();
   Scene_80017700(4);
 }
 
-//80017700
-void Scene_80017700(){
+BOOL Scene_80017644(s32 val){
+  BOOL isEqual = FALSE;
+  u32 unk = sub_80347364();
+  u8* cache = (u8*)&preload_cache[0];
 
+  if(preload_cache[603] == val){
+    isEqual = TRUE;
+  }else{
+    u32 i = 0;
+    do {
+      if(((cache[0xAC] == 3 || cache[0xAC] == 4) && (s32)cache[0xAE] == val) 
+        && ((*(u16*)(cache + 0xB4) < 0 && cache[0xAF] == 2))){
+        sub_800174E8(i);
+      }
+      i += 1;
+      cache = cache + 0x1C;
+    } while(i < 80);
+  }
+  sub_8034738C(unk);
+  return isEqual;
+}
+
+//80017700
+void Scene_80017700(s32 val){
+  BOOL i = TRUE;
+  while(i != FALSE){
+    i = Scene_80017644(val);
+    Scene_800195D0();
+  }
 }
 
 //8001822C
@@ -151,8 +177,30 @@ void Scene_80018254(){
 }
 
 //80018C6C
-void Scene_80018C6C(){
-
+void Scene_CopyDataToCache(){
+  if(preload_cache[0] == 2){
+    preload_cache[1] = 0;
+    preload_cache[2] = 0;
+    return;
+  }else if(preload_cache[0] == 3){
+    preload_cache[1] = 1;
+    preload_cache[2] = 1;
+    s32* cache = &preload_cache[1];
+    s32* data_ptr = &803ba638;
+    
+    u32 i = 9;
+    do {
+      cache[2] = data_ptr[2];
+      cache[3] = data_ptr[3];
+      i -= 1;
+      cache = cache + 2;
+      data_ptr = data_ptr + 2;
+    } while(i != 0);
+    return;
+  }else if(preload_cache[0] <= 0){
+    return;
+  }
+  preload_cache[1] = 1;
 }
 
 //80018CF4
@@ -162,7 +210,33 @@ void Scene_ResetPreloadCache(u8 preload){
 
 //80018F58
 void Scene_SetPreloadBool(u8 preload){
-  preload_cache[0x970] = preload;
+  preload_cache[604] = preload;
+}
+
+//8001955C
+void Scene_8001955C(){
+  BOOL boolie = sub_803769D8();
+  if(boolie == TRUE){
+    sub_80027DBC();
+    u32 i = 0;
+    do {
+      i = sub_8001B6F8();
+    } while(i == 11);
+    sub_8034EBD0(0);
+    sub_8034EB8C(0);
+    sub_80350100(1);
+    sub_8034FF78();
+    sub_8034F314();
+    sub_8034844C(0, 0, 0);
+  }
+  sub_8001B6F8();
+  sub_8001CC84();
+}
+
+//800195D0
+void Scene_800195D0(){
+  sub_800192A8(Scene_8001955C);
+  sub_8001CC84();
 }
 
 //801A1C18
@@ -253,7 +327,7 @@ void Scene_Minor_Class0_OnLoad(){
   HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
   HSD_JObj* jobj = HSD_JObjLoadJoint(/*80479B38*/);
   GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
-  GObj_SetupGXLink(gobj_2, sub_80391070, 3, 0); //80391070 = TextureDisplay
+  GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
   HSD_JObjAddAnimAll(jobj, /*aobj related struct*/, /**/, /**/);
   sub_8038FD54(gobj_2, sub_801A146C, 0);
   

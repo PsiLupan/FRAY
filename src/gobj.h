@@ -64,5 +64,6 @@ void GObj_InitKindObj(HSD_GObj *, s8, void *);
 void GObj_CallHSDDestructor(HSD_GObj *);
 void GObj_InitKindData(HSD_GObj *, s8, void *, void *);
 void GObj_CallDestructor(HSD_GObj *);
+u32 GObj_GetFlagFromArray(u32);
 
 #endif
