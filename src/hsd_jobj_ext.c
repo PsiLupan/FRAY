@@ -1,4 +1,4 @@
-#include "jobj_ext.h"
+#include "hsd_jobj_ext.h"
 
 //8000C1C0
 void JObj_AttachJoint_CopyPos(HSD_JObj* jobj_attach, HSD_JObj* jobj_bone){
@@ -34,4 +34,11 @@ void JObj_AttachJoint_CopyPosRot(HSD_JObj* jobj_attach, HSD_JObj* jobj_bone){
     HSD_RObjSetFlags(robj_2, 0x90000004);
     HSD_RObjSetConstraintObj(robj_2, jobj_bone);
     HSD_JObjPrependRObj(jobj_attach, robj_2);
+}
+
+//80391070
+void JObj_SetupInstanceMtx_Callback(HSD_GObj* gobj, u32 offset){
+    HSD_JObj* jobj = GOBJ_HSD_JOBJ(gobj);
+    u32 flags = GObj_GetArrayFlag(offset);
+    setupInstanceMtx(jobj, 0, flags, 0);
 }

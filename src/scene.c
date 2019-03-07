@@ -4,8 +4,12 @@ GameState gamestate;
 
 MinorSceneHandler class_0 = {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL};
 
-MinorSceneHandler scene_handlers[45] = {class_0}; //803DA920 - 45 in length
-MajorScene major_scenes[45] = {GmTitle_Major}; //803DACA4
+MinorSceneHandler scene_handlers[45] = {
+  {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL}
+}; //803DA920 - 45 in length
+MajorScene major_scenes[45] = {
+  {1, 0, 0, NULL, NULL, NULL, &GmTitle_Minors}
+}; //803DACA4
 
 u8 menu_804D6730[6];
 
@@ -17,7 +21,7 @@ s32 preload_cache[0x1000]; //80432078
 unk_8046B0F0 dword_8046B0F0;
 
 //8016795C
-u32 Scene_InitStartMeleeData(s8 *a1){
+static u32 Scene_InitStartMeleeData(s8 *a1){
   s8 *v1 = a1; // r31@1
   u32 result; // r3@1
 
@@ -47,7 +51,7 @@ u32 Scene_InitStartMeleeData(s8 *a1){
 }
 
 //80167A14
-u32 __InitStartMeleeData(s8 *a1){
+static u32 __InitStartMeleeData(s8 *a1){
 	s8 *v2 = a1;
 	u32 result;
 
@@ -59,7 +63,7 @@ u32 __InitStartMeleeData(s8 *a1){
 }
 
 //80167A64
-void Scene_InitStartMeleeStruct(s8 *addr){
+static void Scene_InitStartMeleeStruct(s8 *addr){
   s8 *v1; // r31@1
   double v3; // fp0@1
   int result; // r3@1
@@ -126,14 +130,40 @@ BOOL Scene_IsSceneClassicAdvOrAllStar(){
 
 //800174BC
 void Scene_800174BC(){
-  Scene_80018C6C();
+  Scene_CopyDataToCache();
   Scene_80018254();
   Scene_80017700(4);
 }
 
-//80017700
-void Scene_80017700(){
+BOOL Scene_80017644(s32 val){
+  BOOL isEqual = FALSE;
+  u32 unk = sub_80347364();
+  u8* cache = (u8*)&preload_cache[0];
 
+  if(preload_cache[603] == val){
+    isEqual = TRUE;
+  }else{
+    u32 i = 0;
+    do {
+      if(((cache[0xAC] == 3 || cache[0xAC] == 4) && (s32)cache[0xAE] == val) 
+        && ((*(u16*)(cache + 0xB4) < 0 && cache[0xAF] == 2))){
+        sub_800174E8(i);
+      }
+      i += 1;
+      cache = cache + 0x1C;
+    } while(i < 80);
+  }
+  sub_8034738C(unk);
+  return isEqual;
+}
+
+//80017700
+void Scene_80017700(s32 val){
+  BOOL i = TRUE;
+  while(i != FALSE){
+    i = Scene_80017644(val);
+    Scene_800195D0();
+  }
 }
 
 //8001822C
@@ -147,8 +177,30 @@ void Scene_80018254(){
 }
 
 //80018C6C
-void Scene_80018C6C(){
-
+void Scene_CopyDataToCache(){
+  if(preload_cache[0] == 2){
+    preload_cache[1] = 0;
+    preload_cache[2] = 0;
+    return;
+  }else if(preload_cache[0] == 3){
+    preload_cache[1] = 1;
+    preload_cache[2] = 1;
+    s32* cache = &preload_cache[1];
+    s32* data_ptr = &803ba638;
+    
+    u32 i = 9;
+    do {
+      cache[2] = data_ptr[2];
+      cache[3] = data_ptr[3];
+      i -= 1;
+      cache = cache + 2;
+      data_ptr = data_ptr + 2;
+    } while(i != 0);
+    return;
+  }else if(preload_cache[0] <= 0){
+    return;
+  }
+  preload_cache[1] = 1;
 }
 
 //80018CF4
@@ -158,7 +210,33 @@ void Scene_ResetPreloadCache(u8 preload){
 
 //80018F58
 void Scene_SetPreloadBool(u8 preload){
-  preload_cache[0x970] = preload;
+  preload_cache[604] = preload;
+}
+
+//8001955C
+void Scene_8001955C(){
+  BOOL boolie = sub_803769D8();
+  if(boolie == TRUE){
+    sub_80027DBC();
+    u32 i = 0;
+    do {
+      i = sub_8001B6F8();
+    } while(i == 11);
+    sub_8034EBD0(0);
+    sub_8034EB8C(0);
+    sub_80350100(1);
+    sub_8034FF78();
+    sub_8034F314();
+    sub_8034844C(0, 0, 0);
+  }
+  sub_8001B6F8();
+  sub_8001CC84();
+}
+
+//800195D0
+void Scene_800195D0(){
+  sub_800192A8(Scene_8001955C);
+  sub_8001CC84();
 }
 
 //801A1C18
@@ -218,25 +296,25 @@ void Scene_Minor_Class0_OnLoad(){
   sub_8002702C(2, unk, 4);
   sub_80027168();
   
-  HSD_GObj* fog_gobj = GObj_Create(0xA, 3, 0);
+  HSD_GObj* fog_gobj = GObj_Create(GOBJ_CLASS_HSD_FOG, 3, 0);
   HSD_Fog* fog = HSD_FogLoadDesc(/*r13 - 0x4F90*/);
-  GObj_InitKindObj(fog_gobj, /*r13 - 0x3E58*/, (void*)fog);
-  GObj_SetupGXLink(fog_gobj, sub_803910B4, 0, 0);
-  sub_8038FD54(fog_gobj, sub_801A1A18, 0);
+  GObj_InitKindObj(fog_gobj, GOBJ_KIND_FOG, (void*)fog);
+  GObj_SetupGXLink(fog_gobj, Fog_Set_Callback, 0, 0);
+  sub_8038FD54(fog_gobj, Fog_InterpretAnim_Callback, 0);
 
-  HSD_GObj* gobj = GObj_Create(0xB, 3, 128);
-  void* unk_obj = sub_80011AC4(/*r13 - 0x4F94*/);
-  GObj_InitKindObj(gobj, /*r13 - 0x3E56*/, unk_obj);
-  GObj_SetupGXLink(gobj, sub_80391044, 0, 0);
+  HSD_GObj* lobj_gobj = GObj_Create(GOBJ_CLASS_HSD_LOBJ, 3, 128);
+  HSD_LObj* lobj = sub_80011AC4(/*r13 - 0x4F94*/);
+  GObj_InitKindObj(lobj_gobj, 2, lobj);
+  GObj_SetupGXLink(lobj_gobj, LObj_Setup_Callback, 0, 0);
   
   HSD_GObj* menu_gobj = GObj_Create(0x13, 0x14, 0);
-  void* menu_text = sub_80013B14(/*r13 - 0x4F98*/);
-  GObj_InitKindObj(menu_gobj, /*r13 - 0x3E55*/, menu_text);
-  GObj_SetupGXLink_Max(menu_gobj, sub_801A18D4, 0);
+  HSD_CObj* menu_cobj = CObj_Create(/*r13 - 0x4F98*/);
+  GObj_InitKindObj(menu_gobj, GOBJ_KIND_MENU_COBJ, menu_cobj);
+  GObj_SetupGXLink_Max(menu_gobj, CObj_SetErase_Callback, 0);
 
   HSD_GObj* menu_gobj_2 = GObj_Create(0x13, 0x14, 0);
-  void* menu_text_2 = sub_80013B14(/*r13 - 0x4F98*/);
-  GObj_InitKindObj(menu_gobj_2, /*r13 - 0x3E55*/, menu_text_2);
+  HSD_CObj* menu_cobj_2 = CObj_Create(/*r13 - 0x4F98*/);
+  GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_MENU_COBJ, menu_cobj_2);
   GObj_SetupGXLink_Max(menu_gobj_2, sub_801A1818, 0xC);
 
   menu_gobj_2->unk24 = 0x209;
@@ -248,8 +326,8 @@ void Scene_Minor_Class0_OnLoad(){
 
   HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
   HSD_JObj* jobj = HSD_JObjLoadJoint(/*80479B38*/);
-  GObj_InitKindObj(gobj_2, /*r13 - 0x3E57*/, jobj);
-  GObj_SetupGXLink(gobj_2, sub_80391070, 3, 0); //80391070 = TextureDisplay
+  GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
+  GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
   HSD_JObjAddAnimAll(jobj, /*aobj related struct*/, /**/, /**/);
   sub_8038FD54(gobj_2, sub_801A146C, 0);
   
@@ -258,15 +336,15 @@ void Scene_Minor_Class0_OnLoad(){
   if(major != 0 && major != 24 || minor != 2){
     HSD_JObjReqAnimAll(jobj, /*0xC of obj = 803DA4FC*/);
   }else{
-    HSD_JObjReqAnimAll(jobj, /*r13 - 0x5048*/)
+    HSD_JObjReqAnimAll(jobj, 130.0f);
   }
   HSD_JObjAnimAll(jobj);
 
-  if(/*r13 - 0x6C98*/ >= 1){ //Debug Mode?
-    sub_803A611C(0, 0, 9, 13, 0, 14, 0, 19); //MenuTextDraw  
+  if(r13_6C98 >= 1){ //Debug Level?
+    Menu_CreateTextObj(0, NULL, GOBJ_CLASS_TEXT, 13, 0, 14, 0, 19);
     u8* unk_struct = sub_803A6754(0, 0);
     sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", /*80479B48*/);
-    void* unk = sub_803A6B98(unk_struct, /*r13 - 0x7460*/, 30.0f, 30.0f); //MenuTextDrawSome
+    void* unk = sub_803A6B98(unk_struct, "%s", 30.0f, 30.0f); //MenuTextDrawSome
     unk_struct[0x49] = 1;
     sub_803A7548(unk, unk_struct, 0.7f, 0.55f);
   }
@@ -305,23 +383,27 @@ void Scene_ProcessMinor(MajorScene* scene){
 
   gamestate.curr_minor = minor_scene->idx;
   Scene_CompareCacheOnChange(minor_scene);
-  if ( minor_scene->Prep != NULL )
+  if ( minor_scene->Prep != NULL ){
     minor_scene->Prep();
+  }
   scene_handler = Scene_GetSceneHandlerByClass(minor_scene->class_id);
   Scene_PrepCommon();
   Scene_StoreClassIDPtr(&minor_scene->class_id);
   
-  if ( scene_handler->OnLoad != NULL )
+  if ( scene_handler->OnLoad != NULL ){
     scene_handler->OnLoad(minor_scene->unk_struct_0);
+  }
   Scene_PerFrameUpdate(scene_handler->OnFrame);
   
-  if ( !dword_8046B0F0.unk04 && scene_handler->OnLeave != NULL )
+  if ( !dword_8046B0F0.unk04 && scene_handler->OnLeave != NULL ){
     scene_handler->OnLeave(minor_scene->unk_struct_1);
+  }
   
   if ( !dword_8046B0F0.unk04 )
   {
-    if ( minor_scene->Decide != NULL )
+    if ( minor_scene->Decide != NULL ){
       minor_scene->Decide();
+    }
     gamestate.unk04 = gamestate.curr_minor;
     
     if (gamestate.unk05 != 0){
@@ -329,13 +411,14 @@ void Scene_ProcessMinor(MajorScene* scene){
       gamestate.unk05 = 0;
     } else {
       for(u32 i = 0; i < 255; i++){
-        if ( scene->minor_scenes[i].idx > gamestate.curr_minor ){
-          v15 = scene->minor_scenes[i].idx;
+        if ( scene->minor_scenes[i]->idx > gamestate.curr_minor ){
+          v15 = scene->minor_scenes[i]->idx;
           break;
         }
       }
-      if ( v15 == 255 )
+      if ( v15 == 255 ){
         v15 = 0;
+      }
       gamestate.curr_minor = v15;
     }
   }
@@ -515,7 +598,7 @@ u8* Scene_ProcessMajor(u8 scene){
 	scene_ptr = NULL;
 JMP_NULL:
 	gamestate.pending = FALSE;
-	gamestate.unk03 = 0;
+	gamestate.curr_minor = 0;
 	gamestate.unk04 = 0;
 	gamestate.unk05 = 0;
 	Scene_SetPreloadBool(scene_ptr->preload);

@@ -235,6 +235,8 @@ typedef struct _Player {
 	u32 x20A4_unk;
 
 	void (*x21BC_Projectile_Spawn)(HSD_GObj* gobj);
+	void (*x21E8_func)(HSD_GObj* gobj);
+	void (*x21DC_Player_OnHit)(HSD_GObj* gobj);
 
 	u8 x21FC_collbubble_flags;
 	BOOL x2200_iasa_avail;
@@ -248,6 +250,8 @@ typedef struct _Player {
 	u8 x2224_flags;
 	u32 x222C_flags;
 	u32 x2230_flags;
+	u32 x2238_flags;
+	HSD_GObj* x223C_pend_item;
 
 	u32 x2340_flags;
 	f32 x2344_flags;

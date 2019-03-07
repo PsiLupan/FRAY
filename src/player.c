@@ -288,6 +288,23 @@ BOOL Player_IsDPadUpInstantPressed(HSD_GObj* gobj){
     return (player->x668_instant_buttons & 8) != 0;
 }
 
+//8011D518
+BOOL Player_SwapItem(HSD_GObj* gobj){
+	Player* player = GOBJ_PLAYER(gobj);
+	player->x2238_flags = 0;
+	player->x21E8_func = NULL;
+	player->x21DC_Player_OnHit = NULL;
+	HSD_GObj* item = player->x223C_pend_item;
+	if(item != NULL){
+		player->x1974_held_item = item;
+		player->x223C_pend_item = NULL;
+		sub_8026BB20(player->x1974_held_item);
+		sub_8026B73C(player->x1974_held_item);
+		sub_80094818(gobj, 1);
+	}
+	return item != NULL;
+}
+
 //8022697C
 u8 Player_GetCollisionBubbleFlags(HSD_GObj* gobj){
 	if(GObj_IsPlayer(gobj)){

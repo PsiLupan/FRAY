@@ -48,6 +48,10 @@ typedef struct _HSD_CObj {
     MtxP proj_mtx; //0x88
 } HSD_CObj;
 
+typedef struct _HSD_CObjDesc {
+
+} HSD_CObjDesc;
+
 typedef struct _HSD_CObjInfo {
     HSD_ClassInfo parent;
     int	(*load) (HSD_CObj *cobj, HSD_CObjDesc *desc);

@@ -1,4 +1,3 @@
-
 #include "gobj.h"
 
 #define P_LINK_MAX 63
@@ -11,6 +10,8 @@ static HSD_GObj* current_gobj = NULL; //r13_3E84 - Really just a guess
 static void* r13_3E88 = NULL;
 static void* r13_3E8C = NULL;
 static void** hsd_destructors[14]; //r13_3E90 - Length is currently made up, TODO: need to explictly assign the functions to this at some point
+
+u32 flag_array[4] = {1, 4, 2, 0}; //804085F0
 
 HSD_ObjDef gobj_def_1; //804CE38C
 HSD_ObjDef gobj_def_2; //804CE3B8
@@ -284,4 +285,9 @@ void GObj_CallDestructor(HSD_GObj* gobj){
 		gobj->data_kind = GOBJ_NOREF;
 		gobj->data = NULL;
 	}
+}
+
+//80390EB8
+u32 GObj_GetFlagFromArray(u32 offset){
+	return flag_array[offset];
 }

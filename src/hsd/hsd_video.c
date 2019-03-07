@@ -209,7 +209,7 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, HSD_RenderPass rpass)
     break;
 
   default:
-    HSD_Panic("Unexpected type of render pass.\n")
+    HSD_Panic("Unexpected type of render pass.\n");
   }
 
   GX_PixModeSync();
@@ -268,8 +268,7 @@ void HSD_VISetXFBDrawDone(){
 }
 
 //807364A8
-s32 HSD_VIGetXFBLastDrawDone()
-{
+s32 HSD_VIGetXFBLastDrawDone(){
 	s32 idx = -1;
 	u32 intr = IRQ_Disable();
 	if ((idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_WAITDONE)) == -1)
@@ -282,7 +281,7 @@ s32 HSD_VIGetXFBLastDrawDone()
 }
 
 //803765A8
-void HSD_VISetEFBDrawDone(void){
+void HSD_VISetEFBDrawDone(){
 	u32 intr;
 	
 	if (HSD_VIGetNbXFB() > 1) 
