@@ -14,7 +14,7 @@ MajorScene major_scenes[45] = {
 u8 menu_804D6730[6];
 
 static u32* r13_4F80[3];
-static u32 r13_6C98 = 0;
+static u32 debug_level = 0; //-0x6C98(r13)
 
 const s32 cache_base[24] = { //803BA638
   0x00000000, 0x00000000, 0x2d000000, 0x00000148,
@@ -248,7 +248,7 @@ void Scene_Minor_Class0_OnFrame(){
                 SFX_Menu_CommonSound(1);
                 *pVal = Music_DecideRandom();
                 MatchController_ChangeScreen();
-            }else if(r13_6C98 >= 3){
+            }else if(debug_level >= 3){
                 if(*pVal & 0x100){
                     SFX_Menu_CommonSound(1);
                     *pVal = 0;
@@ -331,7 +331,7 @@ void Scene_Minor_Class0_OnLoad(){
   }
   HSD_JObjAnimAll(jobj);
 
-  if(r13_6C98 >= 1){ //Debug Level?
+  if(debug_level >= 1){
     Menu_CreateTextObj(0, NULL, GOBJ_CLASS_TEXT, 13, 0, 14, 0, 19);
     u8* unk_struct = sub_803A6754(0, 0);
     sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", /*80479B48*/);
