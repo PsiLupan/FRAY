@@ -16,94 +16,84 @@ u8 menu_804D6730[6];
 static u32* r13_4F80[3];
 static u32 r13_6C98 = 0;
 
+const s32 cache_base[24] = { //803BA638
+  0x00000000, 0x00000000, 0x2d000000, 0x00000148,
+  0x00000021, 0x00010000, 0x00000021, 0x00010000,
+  0x00000021, 0x00010000, 0x00000021, 0x00010000,
+  0x00000021, 0x00010000, 0x00000021, 0x00010000,
+  0x00000021, 0x00010000, 0x00000021, 0x00010000,
+  0x00000000, 0x00000000, 0xff00ffff, 0x00000000
+};
 s32 preload_cache[0x1000]; //80432078
 
 unk_8046B0F0 dword_8046B0F0;
 
 //8016795C
-static u32 Scene_InitStartMeleeData(s8 *a1){
-  s8 *v1 = a1; // r31@1
-  u32 result; // r3@1
-
-  memset(a1, 0, 0x24u);
-  *v1 = 33;
-  v1[1] = 3;
-  v1[2] = 0;
-  v1[3] = 0;
-  v1[4] = 0;
-  v1[5] = -1;
-  v1[6] = 0;
-  v1[7] = 0;
-  v1[8] = 9;
-  v1[9] = 0;
-  v1[10] = 120;
-  v1[11] = 0;
-  v1[12] &= 0x7Fu;
-  v1[12] = (u8)(v1[12] & 0xBF) | 0x40;
-  v1[14] = 4;
-  v1[15] = 0;
-  *((u16 *)v1 + 9) = 0;
-  *((u16 *)v1 + 10) = 0;
-  *((f32 *)v1 + 6) = 1.0f;
-  *((f32 *)v1 + 7) = 1.0f;
-  *((f32 *)v1 + 8) = 1.0f;
-  return result;
+static void Scene_InitStartMeleeData(s8 *addr){
+  memset(addr, 0, 0x24u);
+  addr[0] = 33;
+  addr[1] = 3;
+  addr[2] = 0;
+  addr[3] = 0;
+  addr[4] = 0;
+  addr[5] = -1;
+  addr[6] = 0;
+  addr[7] = 0;
+  addr[8] = 9;
+  addr[9] = 0;
+  addr[10] = 120;
+  addr[11] = 0;
+  addr[12] &= 0x7Fu;
+  addr[12] = (u8)(addr[12] & 0xBF) | 0x40;
+  addr[14] = 4;
+  addr[15] = 0;
+  *((u16 *)addr + 9) = 0;
+  *((u16 *)addr + 10) = 0;
+  *((f32 *)addr + 6) = 1.0f;
+  *((f32 *)addr + 7) = 1.0f;
+  *((f32 *)addr + 8) = 1.0f;
 }
 
 //80167A14
-static u32 __InitStartMeleeData(s8 *a1){
-	s8 *v2 = a1;
-	u32 result;
-
+static void __InitStartMeleeData(s8 *addr){
 	for(u32 i = 0; i < 6; ++i){
-		result = Scene_InitStartMeleeData(v2);
-		v2 += 36;
+    Scene_InitStartMeleeData(addr);
+		addr += 36;
 	}
-	return result;
 }
 
 //80167A64
 static void Scene_InitStartMeleeStruct(s8 *addr){
-  s8 *v1; // r31@1
-  double v3; // fp0@1
-  int result; // r3@1
-
-  v1 = addr;
   memset(addr, 0, 0x60u);
-  v1[0] = v1[0] & 0xE3 | 0x10;
-  v1[12] = 0;
-  v1[11] = 2;
-  *((u32 *)v1 + 9) = -1;
-  *((u32 *)v1 + 8) = -1;
-  *((u32 *)v1 + 10) = 0;
-  v1[3] = v1[3] & 0xBF | 0x40;
-  v1[3] = v1[3] & 0xFB | 4;
-  v1[3] = v1[3] & 0xF7 | 8;
-  v1[4] = v1[4] & 0x7F | 0x80;
-  v1[1] &= 0xFDu;
-  v1[2] = v1[2] & 0xFB | 4;
-  v1[2] = v1[2] & 0xFD | 2;
-  v3 = 1.0f;
-  *((f32 *)v1 + 11) = v3;
-  *((f32 *)v1 + 12) = v3;
-  *((f32 *)v1 + 13) = v3;
-  v1[4] = v1[4] & 0xFD | 2;
-  result = (u8)(v1[4] & 0xFE) | 1;
-  v1[4] = result;
-  v1[13] = 110;
-  v1[10] = 0;
+  addr[0] = addr[0] & 0xE3 | 0x10;
+  addr[12] = 0;
+  addr[11] = 2;
+  *((u32 *)addr + 9) = -1;
+  *((u32 *)addr + 8) = -1;
+  *((u32 *)addr + 10) = 0;
+  addr[3] = addr[3] & 0xBF | 0x40;
+  addr[3] = addr[3] & 0xFB | 4;
+  addr[3] = addr[3] & 0xF7 | 8;
+  addr[4] = addr[4] & 0x7F | 0x80;
+  addr[1] &= 0xFDu;
+  addr[2] = addr[2] & 0xFB | 4;
+  addr[2] = addr[2] & 0xFD | 2;
+  *((f32 *)addr + 11) = 1.0f;
+  *((f32 *)addr + 12) = 1.0f;
+  *((f32 *)addr + 13) = 1.0f;
+  addr[4] = addr[4] & 0xFD | 2;
+  addr[4] = (u8)(addr[4] & 0xFE) | 1;
+  addr[13] = 110;
+  addr[10] = 0;
 }
 
 //80167B50
-u32 Scene_InitUsableStructs(s8* sm_struct){
-  u32 result; // r3@2
-
+void Scene_InitUsableStructs(s8* sm_struct){
   Scene_InitStartMeleeStruct(&sm_struct[8]);
-  result = __InitStartMeleeData(&sm_struct[0x68u]);
+  __InitStartMeleeData(&sm_struct[0x68u]);
   sm_struct[0] = -1;
   sm_struct[1] = -1;
   sm_struct[2] = -1;
-  return result;
 }
 
 //8016B3A0
@@ -123,8 +113,9 @@ BOOL Scene_IsCurrSceneSinglePlayer(){
 //8016B3D8
 BOOL Scene_IsSceneClassicAdvOrAllStar(){
 	u8 curr_major = Scene_LoadCurrentMajor();
-	if(curr_major < 6 && curr_major >= 3)
+	if(curr_major < 6 && curr_major >= 3){
 		return TRUE;
+  }
 	return FALSE;
 }
 
@@ -186,15 +177,15 @@ void Scene_CopyDataToCache(){
     preload_cache[1] = 1;
     preload_cache[2] = 1;
     s32* cache = &preload_cache[1];
-    s32* data_ptr = &803ba638;
+    s32* base = &cache_base[0];
     
     u32 i = 9;
     do {
-      cache[2] = data_ptr[2];
-      cache[3] = data_ptr[3];
+      cache[2] = base[2];
+      cache[3] = base[3];
       i -= 1;
       cache = cache + 2;
-      data_ptr = data_ptr + 2;
+      base = base + 2;
     } while(i != 0);
     return;
   }else if(preload_cache[0] <= 0){
@@ -204,12 +195,12 @@ void Scene_CopyDataToCache(){
 }
 
 //80018CF4
-void Scene_ResetPreloadCache(u8 preload){
+void Scene_ResetPreloadCache(BOOL preload){
   
 }
 
 //80018F58
-void Scene_SetPreloadBool(u8 preload){
+void Scene_SetPreloadBool(BOOL preload){
   preload_cache[604] = preload;
 }
 
