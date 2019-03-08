@@ -103,7 +103,7 @@ void HSD_JObjRemoveAll(HSD_JObj *jobj){
 			curr->parent = NULL;
 			curr->next = NULL;
 			
-			if(curr){			
+			if(curr != NULL){
 				BOOL norefs = HSD_OBJ_NOREF == curr->class_parent.ref_count;
 				if(norefs == FALSE){
 					curr->class_parent.ref_count -= 1;
@@ -209,57 +209,52 @@ void HSD_JObjReparent(HSD_JObj *jobj, HSD_JObj *pjobj){
 
 //80371A04
 void HSD_JObjAddNext(HSD_JObj *jobj, HSD_JObj *next){
-	HSD_JObj* v18;
+	HSD_JObj* curr;
 	
 	if(jobj != NULL && next != NULL){
-		if(jobj->parent){
-			v18 = jobj->child;
-			jobj->child = NULL;
+		curr = jobj;
+		if(jobj->parent != NULL){
+			curr = jobj->parent->child;
+			jobj->parent->child = NULL;
 			jobj->flags = jobj->flags & 0x8FFFFFFF;
-		}else{
-			v18 = jobj;
 		}
 		
-		HSD_JObj* v19 = jobj->parent;
-		HSD_JObj* v20 = next->parent;
-		HSD_JObj* v21 = next->next;
-		if(v20){
-			HSD_JObj* v22 = v20->child;
-			if(v22 == next){
-				v22 = v21;
-			}else{
-				HSD_JObj* prev = HSD_JObjGetPrev(next);
-				assert(prev);
-				prev->next = v21;
+		HSD_JObj* parent = jobj->parent;
+		if(next != NULL){
+			HSD_JObj* next_next = next->next;
+			if(next->parent != NULL){
+				HSD_JObj* next_p_c = next->parent->child;
+				if(next_p_c == next){
+					next->parent->child = next_next;
+				}else{
+					HSD_JObj* prev = HSD_JObjGetPrev(next);
+					assert(prev != NULL);
+					prev->next = next_next;
+				}
+				RecalcParentTrspBits(next->parent);
+				next->parent = NULL;
 			}
-			RecalcParentTrspBits(next->parent);
-			next->parent = NULL;
+			next->next = NULL;
+			HSD_JObjAddChild(parent, next);
 		}
-		next->next = NULL;
-		HSD_JObjAddChild(next->parent, next);
 
-		if(next->child){
-			for(HSD_JObj* i = next->child; i->next; i = i->next)
-				i->next = v18;
+		if(next->child != NULL){
+			for(HSD_JObj* i = next->child; i != NULL; i = i->next){
+				i->next = curr;
+			}
 		}else{
-			next->child = v18;
+			next->child = curr;
 		}
 		
-		while(v18){
-			/**((u32 *)v18 + 3) = next;
-			v38 = next;
-			result = (char **)*((u32 *)v18 + 5);
-			v39 = ((unsigned int)result | ((u32)result << 10)) & 0x70000000;
-			while ( v38 )
-			{
-				result = (char **)v38[5];
-				if ( !(v39 & ~(unsigned int)result) )
-					break;
-				v38[5] = (unsigned int)result | v39;
-				v38 = (u32 *)v38[3];
+		while(curr != NULL){
+			curr->parent = next;
+			u32 flags = (curr->flags | curr->flags << 10) & 0x70000000;
+			HSD_JObj* i = next;
+			while(i != NULL && (flags & ~i->flags) != 0){
+				i->flags = i->flags | flags;
+				i = i->parent;
 			}
-			v18 = (char *)*((u32 *)v18 + 2);
-			*/
+			curr = curr->next;
 		}
 	}
 }

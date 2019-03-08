@@ -13,10 +13,10 @@
 //Joint Object
 typedef struct _HSD_JObj {
 	HSD_Class class_parent;
-	struct _HSD_JObj* next;
-	struct _HSD_JObj* parent;
-	struct _HSD_JObj* child;
-	u32 flags;
+	struct _HSD_JObj* next; //0x08
+	struct _HSD_JObj* parent; //0x0C
+	struct _HSD_JObj* child; //0x10
+	u32 flags; //0x14
 	struct _HSD_DObj* dobj;
 	guQuaternion rotation;
 	guVector scale;
