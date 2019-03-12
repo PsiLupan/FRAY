@@ -439,13 +439,14 @@ HSD_JObj* HSD_JObjGetCurrent(){
 }
 
 //803732E8
-void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj){
+BOOL HSD_JObjSetMtxDirtySub(HSD_JObj* jobj){
+	BOOL isDirty = FALSE;
 	jobj->flags = jobj->flags | 0x40;
 	if((jobj->flags & 0x1000) == 0){
 		HSD_JObj* child = jobj->child;
 		while(child != NULL){
 			if((child->flags & 0x1000000) == 0){
-				BOOL isDirty = FALSE;
+				isDirty = FALSE;
 				if((child->flags & 0x800000) == 0 && (child->flags & 0x40) != 0){
 					isDirty = TRUE;
 				}
@@ -470,6 +471,7 @@ void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj){
 			child = child->next;
 		}
 	}
+	return isDirty;
 }
 
 //80373404
