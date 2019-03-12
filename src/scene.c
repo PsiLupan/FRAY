@@ -98,7 +98,7 @@ void Scene_InitUsableStructs(s8* sm_struct){
 
 //8016B3A0
 BOOL Scene_IsCurrSceneSuperSuddenDeath(){
-	if(Scene_LoadCurrentMajor() == 16)
+	if(Scene_GetCurrentMajor() == 16)
 		return TRUE;
 	return FALSE;
 }
@@ -106,13 +106,13 @@ BOOL Scene_IsCurrSceneSuperSuddenDeath(){
 //8016B41C
 //8016B498
 BOOL Scene_IsCurrSceneSinglePlayer(){
-	u8 curr_major = Scene_LoadCurrentMajor();
+	u8 curr_major = Scene_GetCurrentMajor();
 	return Scene_IsSinglePlayer(curr_major);
 }
 
 //8016B3D8
 BOOL Scene_IsSceneClassicAdvOrAllStar(){
-	u8 curr_major = Scene_LoadCurrentMajor();
+	u8 curr_major = Scene_GetCurrentMajor();
 	if(curr_major < 6 && curr_major >= 3){
 		return TRUE;
   }
@@ -322,7 +322,7 @@ void Scene_Minor_Class0_OnLoad(){
   HSD_JObjAddAnimAll(jobj, /*aobj related struct*/, /**/, /**/);
   sub_8038FD54(gobj_2, sub_801A146C, 0);
   
-  u8 major = Scene_LoadCurrentMajor();
+  u8 major = Scene_GetCurrentMajor();
   u8 minor = Scene_GetCurrentMinor();
   if(major != 0 && major != 24 || minor != 2){
     HSD_JObjReqAnimAll(jobj, /*0xC of obj = 803DA4FC*/);
@@ -540,7 +540,7 @@ void Scene_SetPendingMajor(u8 val){
 }
 
 //801A4310
-u8 Scene_LoadCurrentMajor(){
+u8 Scene_GetCurrentMajor(){
 	return gamestate.curr_major;
 }
 

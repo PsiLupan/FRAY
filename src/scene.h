@@ -95,6 +95,6 @@ typedef struct _unk_8046B0F0 {
 
 extern unk_8046B0F0 dword_8046B0F0;
 
-
+u8* Scene_ProcessMajor(u8);
 
 #endif
