@@ -54,6 +54,8 @@ typedef struct _HSD_JObjInfo {
 
 extern HSD_JObjInfo hsdJObj;
 
+#define HSD_TrspMask u32
+
 #define HSD_JOBJ(o)		((HSD_JObj *)(o))
 #define HSD_JOBJ_INFO(i)	((HSD_JObjInfo *)(i))
 #define HSD_JOBJ_METHOD(o)	HSD_JOBJ_INFO(HSD_CLASS_METHOD(o))

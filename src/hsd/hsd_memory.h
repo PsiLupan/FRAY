@@ -7,7 +7,7 @@
 
 #include "hsd_object.h"
 
-struct _HSD_MemPiece {
+typedef struct _HSD_MemPiece {
     struct _HSD_MemPiece* next;
     u32 x4_unk;
     u32 x8_unk;
@@ -15,7 +15,7 @@ struct _HSD_MemPiece {
     u32 x10_unk;
 } HSD_MemPiece;
 
-struct _HSD_MemoryEntry {
+typedef struct _HSD_MemoryEntry {
     u32 total_bits;
     u32 x4_unk;
     u32 free_pieces;

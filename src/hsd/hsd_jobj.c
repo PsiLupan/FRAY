@@ -438,6 +438,40 @@ HSD_JObj* HSD_JObjGetCurrent(){
 	return current_jobj;
 }
 
+//803732E8
+void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj){
+	jobj->flags = jobj->flags | 0x40;
+	if((jobj->flags & 0x1000) == 0){
+		HSD_JObj* child = jobj->child;
+		while(child != NULL){
+			if((child->flags & 0x1000000) == 0){
+				BOOL isDirty = FALSE;
+				if((child->flags & 0x800000) == 0 && (child->flags & 0x40) != 0){
+					isDirty = TRUE;
+				}
+				if(isDirty == FALSE && child->flags & 0x1000 == 0){
+					child->flags = child->flags | 0x40;
+
+					HSD_JObj* child_child = child->child;
+					while(child_child != NULL){
+						if((child_child->flags & 0x1000000) == 0){
+							isDirty = FALSE;
+							if((child_child->flags & 0x800000) == 0 && (child_child->flags & 0x40) != 0){
+								isDirty = TRUE;
+							}
+							if(isDirty == FALSE){
+								HSD_JObjSetMtxDirtySub(child_child);
+							}
+						}
+						child_child = child_child->next;
+					}
+				}
+			}
+			child = child->next;
+		}
+	}
+}
+
 //80373404
 void HSD_JObjSetCallback(void* cb){
 	callback = cb;
@@ -445,7 +479,7 @@ void HSD_JObjSetCallback(void* cb){
 
 //8037340C
 static void JObjInit(HSD_Class* o){
-	HSD_PARENT_INFO(&hsdJObj)->init(o);
+	HSD_PARENT_INFO(&hsdJObj)->make_pmtx(o);
 
 	if(o != NULL){
 		HSD_JObj* jobj = HSD_JOBJ(o);
@@ -495,4 +529,23 @@ static void JObjInfoInit(){
 	HSD_JOBJ_INFO(&hsdJObj)->make_rmtx = mkRBillBoardMtx;
 	HSD_JOBJ_INFO(&hsdJObj)->load = JObjLoad;
 	HSD_JOBJ_INFO(&hsdJObj)->release_child = JObjReleaseChild;
+}
+
+//803743B8
+static void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, Mtx pmtx, HSD_TrspMask trsp_mask, u32 rendermode){
+	HSD_JObjSetCurrent(jobj);
+	if ((rendermode & 0x4000000) == 0 && (jobj->flags & 0x10000) != 0){
+		HSD_LobjSetupSpecularInit(pmtx);
+	}
+	HSD_PObjClearMtxMark(0, 0);
+	HSD_DObj* dobj = jobj->dobj;
+	while(dobj != NULL){
+		if((dobj->flags & 1) == 0 && (dobj->flags & trsp_mask << 1) != 0){
+			HSD_DObjSetCurrent(dobj);
+			//HSD_DOBJ_INFO(&dobj)->unk(dobj, vmtx, pmtx, rendermode);
+		}
+		dobj = dobj->next;
+	}
+	HSD_DObjSetCurrent(NULL);
+	HSD_JObjSetCurrent(NULL);
 }
