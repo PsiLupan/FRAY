@@ -10,4 +10,6 @@
 
 #include "hsd/hsd_debug.h"
 
+void Archive_LoadFileSections(char *, void *, u32, ...);
+
 #endif

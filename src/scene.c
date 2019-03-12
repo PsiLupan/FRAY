@@ -281,7 +281,7 @@ void Scene_Minor_Class0_OnLoad(){
   }else{
     filename = "GmTtAll.dat";
   }
-  Archive_LoadFileSection(filename, &title_ptrs.dat_start, 6, "TtlMoji_Top_joint", &title_ptrs.top_joint, 
+  Archive_LoadFileSections(filename, &title_ptrs.dat_start, 6, "TtlMoji_Top_joint", &title_ptrs.top_joint, 
     "TtlMoji_Top_animjoint", &title_ptrs.top_animjoint, "TtlMoji_Top_matanim_joint", &title_ptrs.top_matanim_joint);
   u32 unk = sub_80026F2C(0x12);
   sub_8002702C(2, unk, 4);

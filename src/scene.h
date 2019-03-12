@@ -15,6 +15,7 @@
 #include "hsd_jobj_ext.h"
 #include "hsd_lobj_ext.h"
 
+#include "archive.h"
 #include "gobj.h"
 #include "match.h"
 #include "menu.h"
