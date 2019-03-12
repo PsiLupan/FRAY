@@ -22,12 +22,13 @@ void HSD_WObjReqAnim(HSD_WObj* wobj, f32 frame){
 }
 
 //8037D0E4
-void HSD_WObjAddAnim(HSD_WObj* wobj, HSD_AObjDesc* aobjdesc){ //TODO: Probably not an AObjDesc. Did show that the desc has issues.
+void HSD_WObjAddAnim(HSD_WObj* wobj, HSD_AObjDesc* aobjdesc){
     if(wobj && aobjdesc){
-        if(wobj->aobj)
+        if(wobj->aobj != NULL){
             HSD_AObjRemove(wobj->aobj);
+        }
         wobj->aobj = HSD_AObjLoadDesc(aobjdesc);
-        HSD_RObjAddAnimAll(wobj->robj, /*aobjdesc->unk04*/);
+        HSD_RObjAddAnimAll(wobj->robj, aobjdesc->x4_aobjdesc);
     }
 }
 

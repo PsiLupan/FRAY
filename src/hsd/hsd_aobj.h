@@ -19,6 +19,8 @@ typedef struct _HSD_AObj {
 
 typedef struct _HSD_AObjDesc {
 	u32 flags;
+	HSD_AObjDesc* x4_aobjdesc;
+	HSD_AObjDesc* x8_aobjdesc;
 	f32 end_frame;
 	struct _HSD_FObjDesc* fobjdesc;
 	u32 obj_id;

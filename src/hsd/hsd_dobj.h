@@ -13,8 +13,8 @@ typedef struct _HSD_DObj {
 	struct _HSD_DObj* next;
 	struct _HSD_MObj* mobj;
 	struct _HSD_PObj* pobj;
+	u32 flags; //0x14
 	u32 unk;
-	u32 flags;
 } HSD_DObj;
 
 typedef struct _HSD_DObjDesc {
