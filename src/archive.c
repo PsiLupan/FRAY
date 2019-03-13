@@ -20,12 +20,12 @@ u32 Archive_GetFileLength(char* filename){
     char* file_path = sub_80016204(filename);
     s32 entry = DVDConvertPathToEntryNum(file_path);
     if(entry == -1){
-        HSD_Halt("Archive_LoadFile: Could not locate file");
+        HSD_Halt("Archive_GetFileLength: Could not locate file");
     }
     u32 intr = IRQ_Disable();
     DVDFileInfo handle;
     if(!DVDFastOpen(entry, &handle)){
-        HSD_Halt("Archive_LoadFile: Could not open file");
+        HSD_Halt("Archive_GetFileLength: Could not open file");
     }
     len = handle.length;
     DVD_Close(&handle);
