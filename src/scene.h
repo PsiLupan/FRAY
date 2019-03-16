@@ -19,6 +19,7 @@
 #include "gobj.h"
 #include "match.h"
 #include "menu.h"
+#include "util.h"
 
 //Scenes
 #include "scGmRst.h"

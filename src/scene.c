@@ -11,8 +11,6 @@ MajorScene major_scenes[45] = {
   {1, 0, 0, NULL, NULL, NULL, &GmTitle_Minors}
 }; //803DACA4
 
-u8 menu_804D6730[6];
-
 static u32* r13_4F80[3];
 static u32 debug_level = 0; //-0x6C98(r13)
 
@@ -24,9 +22,14 @@ const s32 cache_base[24] = { //803BA638
   0x00000021, 0x00010000, 0x00000021, 0x00010000,
   0x00000000, 0x00000000, 0xff00ffff, 0x00000000
 };
+
 s32 preload_cache[0x1000]; //80432078
 
+s32 scene_804337C4[55];
+
 unk_8046B0F0 dword_8046B0F0;
+
+u8 menu_804D6730[6];
 
 //8016795C
 static void Scene_InitStartMeleeData(s8 *addr){
@@ -230,6 +233,48 @@ void Scene_800195D0(){
   sub_8001CC84();
 }
 
+//80026F2C
+void Scene_80026F2C(u32 flags){
+  u32* puVar3;
+  bool bVar4;
+  u64 uVar5;
+  
+  u32 uVar2 = 0;
+  u32 flag_out = 0;
+  if ((flags & 1) != 0) {
+    uVar2 = 3;
+    flag_out = 0x480000;
+  }
+  if ((flags & 2) != 0) {
+    bVar4 = 0xffffffc3 < uVar2;
+    uVar2 = uVar2 + 0x3c;
+    flag_out = flag_out + (u32)bVar4;
+  }
+  if ((flags & 4) != 0) {
+    bVar4 = 0x3f < uVar2;
+    uVar2 = uVar2 - 0x40;
+    flag_out = flag_out + (u32)bVar4 + 0x800003;
+  }
+  if ((flags & 8) != 0) {
+    flag_out = flag_out + 0x23fffc;
+  }
+  if ((flags & 0x10) != 0) {
+    flag_out = flag_out + 0x140000;
+  }
+  
+  uVar5 = concat_to_64(flag_out, uVar2);
+  puVar3 = &scene_804337C4;
+  flag_out = 0;
+  do {
+    if ((uVar5 & 1) != 0) {
+      *puVar3 = 0xffffffff;
+    }
+    uVar5 = __shr2u((uVar5 >> 32), uVar5, 1);
+    flag_out = flag_out + 1;
+    puVar3 = puVar3 + 1;
+  } while (flag_out < 55);
+}
+
 //801A1C18
 void Scene_Minor_Class0_OnFrame(){
     sub_801A36A0(4u);
@@ -275,16 +320,22 @@ void Scene_Minor_Class0_OnLoad(){
   sub_800236DC();
   //r13 - 0x4F8C = 0x14;
   //r13 - 0x4F88 = 0;
-  char* filename;
-  if(sub_8000ADD4() == TRUE){ //CheckLanguage
+  char* filename = "GmTtAll.usd";
+  /*if(sub_8000ADD4() == TRUE){ //CheckLanguage
     filename = "GmTtAll.usd";
   }else{
     filename = "GmTtAll.dat";
-  }
-  Archive_LoadFileSections(filename, &title_ptrs.dat_start, 6, "TtlMoji_Top_joint", &title_ptrs.top_joint, 
-    "TtlMoji_Top_animjoint", &title_ptrs.top_animjoint, "TtlMoji_Top_matanim_joint", &title_ptrs.top_matanim_joint);
-  u32 unk = sub_80026F2C(0x12);
-  sub_8002702C(2, unk, 4);
+  }*/
+
+  HSD_CObjDesc* sobjdesc = NULL;
+
+  Archive_LoadFileSections(filename, title_ptrs.dat_start, 24, "TtlMoji_Top_joint", title_ptrs.top_joint, 
+    "TtlMoji_Top_animjoint", title_ptrs.top_animjoint, "TtlMoji_Top_matanim_joint", title_ptrs.top_matanim_joint,
+    "TtlMoji_Top_shapeanim_joint", r13_4F98, "ScTitle_cam_int1_camera", r13_4F94, "ScTitle_scene_lights", r13_4F90,
+    "ScTitle_fog", title_ptrs.fog, "TtlBg_Top_joint", title_ptrs.bg_top_joint, "TtlBg_Top_animjoint", title_ptrs.bg_top_animjoint,
+    "TtlBg_Top_matanim_joint", title_ptrs.bg_top_matanim_joint, "TtlBg_Top_shapeanim_joint", r13_4EB0, "TitleMark_sobjdesc", sobjdesc);
+  Scene_80026F2C(0x12);
+  sub_8002702C(2, 0, 0, 4); //r4 is immediately set to 3 start of the function, so it doesn't actually matter what it is.
   sub_80027168();
   
   HSD_GObj* fog_gobj = GObj_Create(GOBJ_CLASS_HSD_FOG, 3, 0);
@@ -334,7 +385,7 @@ void Scene_Minor_Class0_OnLoad(){
   if(debug_level >= 1){
     Menu_CreateTextObj(0, NULL, GOBJ_CLASS_TEXT, 13, 0, 14, 0, 19);
     u8* unk_struct = sub_803A6754(0, 0);
-    sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", /*80479B48*/);
+    sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", title_ptrs.debug_text);
     void* unk = sub_803A6B98(unk_struct, "%s", 30.0f, 30.0f); //MenuTextDrawSome
     unk_struct[0x49] = 1;
     sub_803A7548(unk, unk_struct, 0.7f, 0.55f);

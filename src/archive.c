@@ -28,7 +28,7 @@ u32 Archive_GetFileLength(char* filename){
         HSD_Halt("Archive_LoadFile: Could not open file");
     }
     len = handle.length;
-    DVD_Close(&handle);
+    DVDClose(&handle);
     IRQ_Restore(intr);
     return len;
 }
@@ -47,4 +47,24 @@ void Archive_LoadFileSections(char* filename, void* dat_start, u32 sections, ...
         sections -= 2;
     }
     va_end(ap);
+}
+
+//80380358
+void* Archive_GetFileSection(void* dat_start, char* section_name){
+    u32 iters;
+    u32 offset;
+    
+    iters = 0;
+    offset = 0;
+    while( true ) {
+        if (*(u32 *)((u32)dat_start + 0xc) <= iters) { //Number of root nodes < iterations
+            return NULL;
+        }
+        s32 cmp_result = strcmp((char *)(*(s32 *)((u32)dat_start + 0x30) + *(u32 *)(*(u32 *)((u32)dat_start + 0x28) + offset + 4)), section_name);
+        if (cmp_result == 0) //If both strings are equal, we've found the node
+            break;
+        offset = offset + 8;
+        iters += 1;
+    }
+    return (void *)(*(u32 *)((u32)dat_start + 0x20) + *(u32 *)(*(u32 *)((u32)dat_start + 0x28) + iters * 8));
 }

@@ -10,6 +10,11 @@ typedef struct _GmTitle_File {
     void* top_joint;
     void* top_animjoint;
     void* top_matanim_joint;
+    void* fog;
+    void* bg_top_joint;
+    void* bg_top_animjoint;
+    void* bg_top_matanim_joint;
+    void* debug_text;
 } GmTitle_File;
 
 extern GmTitle_File title_ptrs;
