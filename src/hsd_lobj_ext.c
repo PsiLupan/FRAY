@@ -1,7 +1,7 @@
 #include "hsd_lobj_ext.h"
 
 //80011AC4
-HSD_LObj* LObj_LoadDesc(HSD_LightDesc** lightdescs){
+HSD_LObj* LObj_LoadLightDescs(HSD_LightDesc** lightdescs){
     HSD_LObj* lobj = NULL;
     HSD_LObj* lobj_prev = NULL;
     u32 n = 0;

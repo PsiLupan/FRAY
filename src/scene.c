@@ -347,7 +347,7 @@ void Scene_Minor_Class0_OnLoad(){
   GObj_CreateWithAnimCallback(fog_gobj, Fog_InterpretAnim_Callback, 0);
 
   HSD_GObj* lobj_gobj = GObj_Create(GOBJ_CLASS_HSD_LOBJ, 3, 128);
-  HSD_LObj* lobj = LObj_LoadDesc(scene_lights_desc);
+  HSD_LObj* lobj = LObj_LoadLightDescs(scene_lights_desc);
   GObj_InitKindObj(lobj_gobj, 2, lobj);
   GObj_SetupGXLink(lobj_gobj, LObj_Setup_Callback, 0, 0);
   
@@ -369,10 +369,10 @@ void Scene_Minor_Class0_OnLoad(){
   sub_801BF3F8();
 
   HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
-  HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObj*)title_ptrs.bg_top_joint);
+  HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.bg_top_joint);
   GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
   GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
-  HSD_JObjAddAnimAll(jobj, /*aobj related struct*/, /**/, /**/);
+  HSD_JObjAddAnimAll(jobj, title_ptrs.bg_top_animjoint, title_ptrs.bg_top_matanim_joint, title_ptrs.bg_top_shapeanim_joint);
   GObj_CreateWithAnimCallback(gobj_2, sub_801A146C, 0);
   
   u8 major = Scene_GetCurrentMajor();
