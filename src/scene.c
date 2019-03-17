@@ -27,6 +27,8 @@ const s32 cache_base[24] = { //803BA638
   0x00000000, 0x00000000, 0xff00ffff, 0x00000000
 };
 
+f32 title_frames[3] = {0, 1330, 130}; //803DA4FC
+
 s32 preload_cache[0x1000]; //80432078
 
 s32 scene_804337C4[55];
@@ -373,25 +375,25 @@ void Scene_Minor_Class0_OnLoad(){
   GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
   GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
   HSD_JObjAddAnimAll(jobj, title_ptrs.bg_top_animjoint, title_ptrs.bg_top_matanim_joint, title_ptrs.bg_top_shapeanim_joint);
-  GObj_CreateWithAnimCallback(gobj_2, sub_801A146C, 0);
+  GObj_CreateWithAnimCallback(gobj_2, Scene_ReqAnimAll_Callback, 0);
   
   u8 major = Scene_GetCurrentMajor();
   u8 minor = Scene_GetCurrentMinor();
-  if(major != 0 && major != 24 || minor != 2){
-    HSD_JObjReqAnimAll(jobj, /*0xC of obj = 803DA4FC*/);
+  if(major != 0 && major != 24 || minor != 2){ //Even forcing this condition, I couldn't see a visible difference
+    HSD_JObjReqAnimAll(jobj, title_frames[0]);
   }else{
     HSD_JObjReqAnimAll(jobj, 130.0f);
   }
   HSD_JObjAnimAll(jobj);
 
-  if(debug_level >= 1){
+  /*if(debug_level >= 1){
     Menu_CreateTextObj(0, NULL, GOBJ_CLASS_TEXT, 13, 0, 14, 0, 19);
     u8* unk_struct = sub_803A6754(0, 0);
     sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", title_ptrs.debug_text);
     void* unk = sub_803A6B98(unk_struct, "%s", 30.0f, 30.0f); //MenuTextDrawSome
     unk_struct[0x49] = 1;
     sub_803A7548(unk, unk_struct, 0.7f, 0.55f);
-  }
+  }*/
 }
 
 //801A4014
@@ -488,6 +490,12 @@ void Scene_ProcessMinor(MajorScene* scene){
     Scene_SetPendingMajor(40);
     HSD_VISetBlack(0);
   }
+}
+
+//801A146C
+void Scene_ReqAnimAll_Callback(HSD_GObj* gobj){
+  HSD_JObj* jobj = GOBJ_HSD_JOBJ(gobj);
+  Scene_ReqAnimAll(jobj, title_frames);
 }
 
 //801A427C
@@ -800,4 +808,38 @@ s32 sub_8022C010(s32 result, s32 a2){
       break;
   }
   return result;
+}
+
+//8022ED6C
+void Scene_ReqAnimAll(HSD_JObj* jobj, f32* frames){
+  f32 dVar1;
+  f32 frame;
+  
+  frame = JObj_GetFrame(jobj);
+  if ((frame < frames[0]) || (frames[1] < frame)) {
+    HSD_JObjReqAnimAll(jobj, frames[0]);
+  }
+  if (-0.1f == frames[2]) {
+    frame = JObj_GetFrame(jobj);
+    if (frame < frames[1]) {
+      HSD_JObjAnimAll(jobj);
+      frame = JObj_GetFrame(jobj);
+      dVar1 = frames[1];
+      if (dVar1 < frame) {
+        HSD_JObjReqAnimAll(jobj, dVar1);
+        HSD_JObjAnimAll(jobj);
+        frame = dVar1;
+      }
+    }
+  }
+  else {
+    HSD_JObjAnimAll(jobj);
+    frame = JObj_GetFrame(jobj);
+    if (frames[1] <= frame) {
+      frame = (frames[2] + (frame - frames[1]));
+      HSD_JObjReqAnimAll(jobj, frame);
+      HSD_JObjAnimAll(jobj);
+    }
+  }
+  return frame;
 }
