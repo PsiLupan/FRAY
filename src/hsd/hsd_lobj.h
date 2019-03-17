@@ -84,6 +84,7 @@ typedef struct _HSD_LObj {
 
 typedef struct _HSD_LightDesc {
 	char* class_name; //0x00
+	struct _HSD_LightAnim* anim; //0x04
 	u16 flags; //0x08
 	GXColor color; //0x0C
 	struct _HSD_LightDesc* next;

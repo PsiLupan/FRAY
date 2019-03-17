@@ -21,6 +21,11 @@ HSD_CObj* CObj_Create(HSD_CObjDesc* cdesc){
     return cobj;
 }
 
+//801A1814
+void CObj_SetCurrent_Callback(HSD_GObj* gobj){
+    
+}
+
 //801A18D4
 void CObj_SetErase_Callback(HSD_GObj* gobj){
     HSD_CObj* cobj = GOBJ_HSD_COBJ(gobj);

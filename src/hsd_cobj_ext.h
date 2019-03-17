@@ -10,6 +10,7 @@
 #define GOBJ_HSD_COBJ(s) ((HSD_CObj*)s->data)
 
 HSD_CObj* CObj_Create(HSD_CObjDesc *);
+void CObj_SetCurrent_Callback(HSD_GObj *);
 void CObj_SetErase_Callback(HSD_GObj *);
 
 #endif

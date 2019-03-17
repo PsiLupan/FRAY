@@ -14,7 +14,7 @@ MajorScene major_scenes[45] = {
 static void* scene_sobj_desc; //0x4EB0(r13)
 static u32* r13_4F80[3];
 static HSD_FogDesc* scene_fog_desc; // 0x4F90(r13)
-static HSD_FObjDesc* scene_lights_desc; // -0x4F94(r13)
+static HSD_LightDesc** scene_lights_desc; // -0x4F94(r13)
 static HSD_CObjDesc* scene_cobj_desc; //-0x4F98(r13)
 static u32 debug_level = 0; //-0x6C98(r13)
 
@@ -347,7 +347,7 @@ void Scene_Minor_Class0_OnLoad(){
   GObj_CreateWithAnimCallback(fog_gobj, Fog_InterpretAnim_Callback, 0);
 
   HSD_GObj* lobj_gobj = GObj_Create(GOBJ_CLASS_HSD_LOBJ, 3, 128);
-  HSD_LObj* lobj = sub_80011AC4(scene_lights_desc);
+  HSD_LObj* lobj = LObj_LoadDesc(scene_lights_desc);
   GObj_InitKindObj(lobj_gobj, 2, lobj);
   GObj_SetupGXLink(lobj_gobj, LObj_Setup_Callback, 0, 0);
   
@@ -359,7 +359,7 @@ void Scene_Minor_Class0_OnLoad(){
   HSD_GObj* menu_gobj_2 = GObj_Create(0x13, 0x14, 0);
   HSD_CObj* menu_cobj_2 = CObj_Create(scene_cobj_desc);
   GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_MENU_COBJ, menu_cobj_2);
-  GObj_SetupGXLink_Max(menu_gobj_2, sub_801A1818, 0xC);
+  GObj_SetupGXLink_Max(menu_gobj_2, CObj_SetCurrent_Callback, 0xC);
 
   menu_gobj_2->unk24 = 0x209;
   menu_gobj_2->unk20 = 0;
@@ -373,7 +373,7 @@ void Scene_Minor_Class0_OnLoad(){
   GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
   GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
   HSD_JObjAddAnimAll(jobj, /*aobj related struct*/, /**/, /**/);
-  sub_8038FD54(gobj_2, sub_801A146C, 0);
+  GObj_CreateWithAnimCallback(gobj_2, sub_801A146C, 0);
   
   u8 major = Scene_GetCurrentMajor();
   u8 minor = Scene_GetCurrentMinor();
