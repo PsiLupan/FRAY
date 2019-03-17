@@ -13,9 +13,9 @@ MajorScene major_scenes[45] = {
 
 static void* scene_sobj_desc; //0x4EB0(r13)
 static u32* r13_4F80[3];
-static HSD_FogDesc scene_fog_desc; // 0x4F90(r13)
-static HSD_FObjDesc scene_lights_desc; // -0x4F94(r13)
-static HSD_CObjDesc scene_cobj_desc; //-0x4F98(r13)
+static HSD_FogDesc* scene_fog_desc; // 0x4F90(r13)
+static HSD_FObjDesc* scene_lights_desc; // -0x4F94(r13)
+static HSD_CObjDesc* scene_cobj_desc; //-0x4F98(r13)
 static u32 debug_level = 0; //-0x6C98(r13)
 
 const s32 cache_base[24] = { //803BA638
@@ -341,23 +341,23 @@ void Scene_Minor_Class0_OnLoad(){
   sub_80027168();
   
   HSD_GObj* fog_gobj = GObj_Create(GOBJ_CLASS_HSD_FOG, 3, 0);
-  HSD_Fog* fog = HSD_FogLoadDesc(/*r13 - 0x4F90*/);
+  HSD_Fog* fog = HSD_FogLoadDesc(scene_fog_desc);
   GObj_InitKindObj(fog_gobj, GOBJ_KIND_FOG, (void*)fog);
   GObj_SetupGXLink(fog_gobj, Fog_Set_Callback, 0, 0);
   GObj_CreateWithAnimCallback(fog_gobj, Fog_InterpretAnim_Callback, 0);
 
   HSD_GObj* lobj_gobj = GObj_Create(GOBJ_CLASS_HSD_LOBJ, 3, 128);
-  HSD_LObj* lobj = sub_80011AC4(/*r13 - 0x4F94*/);
+  HSD_LObj* lobj = sub_80011AC4(scene_lights_desc);
   GObj_InitKindObj(lobj_gobj, 2, lobj);
   GObj_SetupGXLink(lobj_gobj, LObj_Setup_Callback, 0, 0);
   
   HSD_GObj* menu_gobj = GObj_Create(0x13, 0x14, 0);
-  HSD_CObj* menu_cobj = CObj_Create(/*r13 - 0x4F98*/);
+  HSD_CObj* menu_cobj = CObj_Create(scene_cobj_desc);
   GObj_InitKindObj(menu_gobj, GOBJ_KIND_MENU_COBJ, menu_cobj);
   GObj_SetupGXLink_Max(menu_gobj, CObj_SetErase_Callback, 0);
 
   HSD_GObj* menu_gobj_2 = GObj_Create(0x13, 0x14, 0);
-  HSD_CObj* menu_cobj_2 = CObj_Create(/*r13 - 0x4F98*/);
+  HSD_CObj* menu_cobj_2 = CObj_Create(scene_cobj_desc);
   GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_MENU_COBJ, menu_cobj_2);
   GObj_SetupGXLink_Max(menu_gobj_2, sub_801A1818, 0xC);
 
@@ -369,7 +369,7 @@ void Scene_Minor_Class0_OnLoad(){
   sub_801BF3F8();
 
   HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
-  HSD_JObj* jobj = HSD_JObjLoadJoint(/*80479B38*/);
+  HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObj*)title_ptrs.bg_top_joint);
   GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
   GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
   HSD_JObjAddAnimAll(jobj, /*aobj related struct*/, /**/, /**/);
