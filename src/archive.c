@@ -41,8 +41,8 @@ void Archive_LoadFileSections(char* filename, void* dat_start, u32 sections, ...
 
     va_start(ap, sections);
     while(sections > 0) {
-        char* section_name = va_arg(ap, char *);
         void* file_ptr = va_arg(ap, void *);
+        char* section_name = va_arg(ap, char *);
         file_ptr = Archive_GetFileSection(dat_start, section_name);
         sections -= 2;
     }

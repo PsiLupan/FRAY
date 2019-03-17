@@ -9,4 +9,8 @@ typedef struct _HSD_Fog {
     HSD_AObj* aobj; //0x1C
 } HSD_Fog;
 
+typedef struct _HSD_FogDesc {
+    u32 flags;
+} HSD_FogDesc;
+
 #endif

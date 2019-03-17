@@ -44,6 +44,24 @@ BOOL GObj_IsItem(HSD_GObj* gobj){
 	return FALSE;
 }
 
+//8038FD54
+s32 GObj_CreateWithAnimCallback(HSD_GObj* gobj, void* animcb, u8 gx_link){
+  s32 iVar1;
+  int in_r13;
+  
+  iVar1 = HSD_ObjAlloc(&gobj_def_2);
+  assert(iVar1 != NULL);
+  assert(gx_link <= GX_LINK_MAX);
+  *(u8 *)(iVar1 + 0xc) = gx_link;
+  *(u8 *)(iVar1 + 0xd) = *(u8 *)(iVar1 + 0xd) & 0xbf;
+  *(u8 *)(iVar1 + 0xd) = *(u8 *)(iVar1 + 0xd) & 0x7f;
+  *(u8 *)(iVar1 + 0xd) = *(u8 *)(iVar1 + 0xd) & 0xcf | 0x30;
+  *(u32 *)(iVar1 + 0x10) = gobj;
+  *(u32 *)(iVar1 + 0x14) = animcb;
+  FUN_8038faa8(iVar1);
+  return iVar1;
+}
+
 //8038FF5C
 void GObj_PReorder(HSD_GObj* gobj, HSD_GObj* hiprio_gobj){
 	gobj->prev = hiprio_gobj;

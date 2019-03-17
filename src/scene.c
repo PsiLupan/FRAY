@@ -11,7 +11,11 @@ MajorScene major_scenes[45] = {
   {1, 0, 0, NULL, NULL, NULL, &GmTitle_Minors}
 }; //803DACA4
 
+static void* scene_sobj_desc; //0x4EB0(r13)
 static u32* r13_4F80[3];
+static HSD_FogDesc scene_fog_desc; // 0x4F90(r13)
+static HSD_FObjDesc scene_lights_desc; // -0x4F94(r13)
+static HSD_CObjDesc scene_cobj_desc; //-0x4F98(r13)
 static u32 debug_level = 0; //-0x6C98(r13)
 
 const s32 cache_base[24] = { //803BA638
@@ -327,13 +331,11 @@ void Scene_Minor_Class0_OnLoad(){
     filename = "GmTtAll.dat";
   }*/
 
-  HSD_CObjDesc* sobjdesc = NULL;
-
-  Archive_LoadFileSections(filename, title_ptrs.dat_start, 24, "TtlMoji_Top_joint", title_ptrs.top_joint, 
-    "TtlMoji_Top_animjoint", title_ptrs.top_animjoint, "TtlMoji_Top_matanim_joint", title_ptrs.top_matanim_joint,
-    "TtlMoji_Top_shapeanim_joint", r13_4F98, "ScTitle_cam_int1_camera", r13_4F94, "ScTitle_scene_lights", r13_4F90,
-    "ScTitle_fog", title_ptrs.fog, "TtlBg_Top_joint", title_ptrs.bg_top_joint, "TtlBg_Top_animjoint", title_ptrs.bg_top_animjoint,
-    "TtlBg_Top_matanim_joint", title_ptrs.bg_top_matanim_joint, "TtlBg_Top_shapeanim_joint", r13_4EB0, "TitleMark_sobjdesc", sobjdesc);
+  Archive_LoadFileSections(filename, title_ptrs.dat_start, 24,  title_ptrs.top_joint, "TtlMoji_Top_joint",
+    title_ptrs.top_animjoint, "TtlMoji_Top_animjoint", title_ptrs.top_matanim_joint, "TtlMoji_Top_matanim_joint",
+    title_ptrs.top_shapeanim_joint, "TtlMoji_Top_shapeanim_joint", scene_cobj_desc, "ScTitle_cam_int1_camera", scene_lights_desc, "ScTitle_scene_lights",
+    scene_fog_desc, "ScTitle_fog", title_ptrs.bg_top_joint, "TtlBg_Top_joint", title_ptrs.bg_top_animjoint, "TtlBg_Top_animjoint",
+    title_ptrs.bg_top_matanim_joint, "TtlBg_Top_matanim_joint", title_ptrs.bg_top_shapeanim_joint, "TtlBg_Top_shapeanim_joint", scene_sobj_desc, "TitleMark_sobjdesc");
   Scene_80026F2C(0x12);
   sub_8002702C(2, 0, 0, 4); //r4 is immediately set to 3 start of the function, so it doesn't actually matter what it is.
   sub_80027168();
@@ -342,7 +344,7 @@ void Scene_Minor_Class0_OnLoad(){
   HSD_Fog* fog = HSD_FogLoadDesc(/*r13 - 0x4F90*/);
   GObj_InitKindObj(fog_gobj, GOBJ_KIND_FOG, (void*)fog);
   GObj_SetupGXLink(fog_gobj, Fog_Set_Callback, 0, 0);
-  sub_8038FD54(fog_gobj, Fog_InterpretAnim_Callback, 0);
+  GObj_CreateWithAnimCallback(fog_gobj, Fog_InterpretAnim_Callback, 0);
 
   HSD_GObj* lobj_gobj = GObj_Create(GOBJ_CLASS_HSD_LOBJ, 3, 128);
   HSD_LObj* lobj = sub_80011AC4(/*r13 - 0x4F94*/);
@@ -400,7 +402,6 @@ void Scene_ProcessMinor(MajorScene* scene){
   MinorScene* minor_scene = NULL;
   MinorSceneHandler *scene_handler;
   u8 v15; // r3@23
-  s32 v16; // r3@31
   
   curr_minor = gamestate.curr_minor;
   minor_scenes = scene->minor_scenes;
@@ -472,10 +473,11 @@ void Scene_ProcessMinor(MajorScene* scene){
   if ( dword_8046B0F0.unk04 ){
     sub_80027DBC();
     HSD_PadReset();
-    /*do {
+    /*s32 v16 = 0;
+    do {
       v16 = sub_8001B6F8(); //Save related, so we can ignore for now
     } while ( v16 == 11 );*/
-    if ( !DVD_CheckDisk() )
+    //if ( !DVD_CheckDisk() )
       //sub_8001F800(); Movie_Unload();
     SYS_ResetSystem(1, 0, 0);
     while (sub_8038EA50(1));
