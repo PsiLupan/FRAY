@@ -7,7 +7,7 @@
 #include "hsd_jobj.h"
 #include "hsd_state.h"
 
-typedef void (*HSD_PtclCallback)();
+typedef void (*HSD_PtclCallback)(u32, u32, u32, HSD_JObj*);
 
 typedef struct _HSD_ZList {
 	Mtx pmtx;

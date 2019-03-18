@@ -39,6 +39,8 @@ void Archive_LoadFileSections(char* filename, void* dat_start, u32 sections, ...
 
     u32 file_length = Archive_GetFileLength(filename);
 
+    //Still TODO here w/ Mallocs, etc..
+
     va_start(ap, sections);
     while(sections > 0) {
         void* file_ptr = va_arg(ap, void *);
