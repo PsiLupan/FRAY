@@ -5,10 +5,11 @@
 
 #include "hsd/hsd_aobj.h"
 
-#include "ftPeach.h"
 #include "gobj.h"
 #include "item.h"
 #include "player.h"
+
+#include "ftPeach.h"
 
 #define ACTIONSTATE_WAIT 0x0E
 #define ACTIONSTATE_FALL 0x1D

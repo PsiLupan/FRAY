@@ -13,7 +13,7 @@ BOOL Item_PlayerHasHammer(HSD_GObj* gobj){
 
 //8026A8EC
 void Item_DestroyItem(HSD_GObj* gobj){
-	Item* item = GOBJ_ITEM(item);
+	Item* item = GOBJ_ITEM(gobj);
 	assert(GObj_IsItem(gobj) && item != NULL);
 	
 	sub_802725D4(gobj);

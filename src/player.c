@@ -193,7 +193,7 @@ BOOL Player_CollisonCheck_Ground(HSD_GObj* gobj){
 	ply->x6F0_physics.x6F4_topn_x = ply->xB0_pos_x;
 	ply->x6F0_physics.x6F8_topn_y = ply->xB4_pos_y;
 	ply->x6F0_physics.x6FC_topn_z = ply->xB8_pos_z;
-	BOOL collided = sub_800471F8(&ply->physics); //Physics_CollisionCheck_Ground(Physics* physics);
+	BOOL collided = sub_800471F8(&ply->x6F0_physics); //Physics_CollisionCheck_Ground(Physics* physics);
 
 	ply->xB0_pos_x = ply->x6F0_physics.x6F4_topn_x;
 	ply->xB4_pos_y = ply->x6F0_physics.x6F8_topn_y;
