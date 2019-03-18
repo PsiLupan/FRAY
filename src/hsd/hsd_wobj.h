@@ -6,6 +6,8 @@
 
 #include "hsd_object.h"
 
+#include "hsd_aobj.h"
+
 typedef struct _HSD_WObj {
     struct _HSD_Class class_parent;
     u32 flags; //0x08

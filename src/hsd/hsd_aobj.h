@@ -6,6 +6,7 @@
 #include "hsd_object.h"
 
 #include "hsd_fobj.h"
+#include "hsd_jobj.h"
 
 //Animation Object
 typedef struct _HSD_AObj {
@@ -19,13 +20,20 @@ typedef struct _HSD_AObj {
 } HSD_AObj;
 
 typedef struct _HSD_AObjDesc {
-	u32 flags;
-	struct _HSD_AObjDesc* x4_aobjdesc;
-	struct _HSD_AObjDesc* x8_aobjdesc;
-	f32 end_frame;
-	struct _HSD_FObjDesc* fobjdesc;
-	u32 obj_id;
+	u32 flags; //0x00
+	f32 end_frame; //0x04
+	struct _HSD_FObjDesc* fobjdesc; //0x08
+	u32 obj_id; //0x0C
 } HSD_AObjDesc;
+
+typedef struct _HSD_AnimJoint {
+	struct _HSD_AnimJoint *child;
+	struct _HSD_AnimJoint *next;
+	struct _HSD_AObjDesc *anim;
+	u32 unk;
+	u32 unk2;
+	u32 unk3;
+} HSD_AnimJoint;
 
 #define HSD_AOBJ(o)		((HSD_AObj *)(o))
 
