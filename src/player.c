@@ -107,19 +107,19 @@ void Player_UpdateAscendingVelocity(Player* player, f32 vel, f32 term_vel){
 
 //8007D528
 BOOL Player_Interrupt_Fastfall(Player* player){
-	if((ply->x221A_flags >> 3) & 1){
+	if((player->x221A_flags >> 3) & 1){
 		return FALSE;
 	}
-	if(ply->x84_self_vel_y >= 0.0f){
+	if(player->x84_self_vel_y >= 0.0f){
 		return FALSE;
 	}
 	f32* unk = r13_514C;
-	if(ply->x624_joystick_y > -(unk->x88) || >= unk->x8C){
+	if(player->x624_joystick_y > -(unk->x88) || >= unk->x8C){
 		return FALSE;
 	}
-	ply->x221A_flags = (ply->x221A_flags & 0xF7) | 8;
-	ply->x671_frames_tilt_y = -2;
-	Player_PlaySFX(ply, 0x96, 0x7F, 0x40);
+	player->x221A_flags = (player->x221A_flags & 0xF7) | 8;
+	player->x671_frames_tilt_y = -2;
+	Player_PlaySFX(player, 0x96, 0x7F, 0x40);
 	return TRUE;
 }
 
@@ -134,7 +134,7 @@ void Player_LoseGroundJump_ECBDisable(Player* player){
 	player->xE0_in_air = TRUE;
 	player->xEC_vel_ground_self_x = 0;
 	player->xA0_unk = 0;
-	player->xB0_pos.z = 0;
+	player->xB8_pos_z = 0;
 	player->x1968_jumps_used = 1;
 	player->x88C_ecb_inactive_frames = 10;
 	player->x820_unk |= 0x10u;
@@ -184,6 +184,11 @@ void Player_SetGrabbableFlags(Player* player, u16 flags){
 	player->x1A64_grabbable_flags = flags;
 }
 
+//8007EFC0
+void Player_8007EFC0(Player* player, u16 flags){
+	player->x209A_flags = flags;
+}
+
 //80081D0C
 BOOL Player_CollisonCheck_Ground(HSD_GObj* gobj){
 	Player* ply = GOBJ_PLAYER(gobj);
@@ -214,6 +219,20 @@ void Player_CheckFastFallAndUpdate(HSD_GObj* gobj){
 		Player_UpdateFallingVelocity(ply, ply->attribs.gravity, ply->attribs.termVel);
 	}
 	return Player_UpdateHorzVelocity(ply);
+}
+
+//80085FD4
+u32* Player_80085FD4(Player* player, u32 index){
+	return NULL;
+	/*if(player->x4_internal_id == INTERNAL_NANA){
+		u32 type = StaticPlayer_GetSlotType(player->xC_slot);
+		if(type != 2){
+			if(*(u32*)(player->x24_state_ptr + index * 0x18 + 0x14) == 0){
+				return *((u32*)((*(u32**)(0x804598B8 + 0x2C)) + 0xC) + index * 0x18);
+			}
+		}
+	}
+	return *(u32*)(player->x24_state_ptr + index * 0x18);*/
 }
 
 //800865C0
