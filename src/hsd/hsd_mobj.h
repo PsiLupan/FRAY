@@ -87,7 +87,7 @@ typedef struct _HSD_MatAnim {
 	struct _HSD_MatAnim *next;
 	HSD_AObjDesc *aobjdesc;
 	HSD_TexAnim *texanim;
-	struct _HSD_RenderAnim *renderanim;
+	void* renderanim; //struct _HSD_RenderAnim *renderanim; - Commented out until I actually run into an instance of it to test w/
 } HSD_MatAnim;
 
 typedef struct _HSD_MatAnimJoint {

@@ -45,7 +45,7 @@ typedef struct _HSD_JObj {
 	Mtx mtx;
 	guVector* pvec;
 	MtxP vmtx;
-	HSD_AObj* aobj;
+	struct _HSD_AObj* aobj;
 	HSD_RObj* robj;
 	struct _HSD_JObjDesc* desc;
 } HSD_JObj;
