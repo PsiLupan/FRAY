@@ -1,5 +1,7 @@
 #include "hsd_init.h"
 
+#include "hsd_lobj.h"
+
 //static OSHeapHandle hsd_heap = -1; //r13 - 0x58A0
 static void *hsd_heap_arena_lo = NULL;
 static void *hsd_heap_arena_hi = NULL;

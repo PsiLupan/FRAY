@@ -3,6 +3,8 @@
 
 #include <gctypes.h>
 
+#include "hsd/hsd_aobj.h"
+
 #include "ftPeach.h"
 #include "gobj.h"
 #include "item.h"
@@ -16,12 +18,17 @@
 #define ACTIONSTATE_ENTRY 0x142
 #define ACTIONSTATE_ENTRYEND 0x144
 
-extern BOOL ActionState_IsDead(HSD_GObj *gobj);
-extern BOOL ActionState_IsDeadUp(HSD_GObj *gobj);
-extern BOOL ActionState_IsDeadStarUp(HSD_GObj *gobj);
-extern BOOL ActionState_IsDeadUpFall(HSD_GObj *gobj);
+BOOL ActionState_IsDead(HSD_GObj *);
+BOOL ActionState_IsDeadUp(HSD_GObj *);
+BOOL ActionState_IsDeadStarUp(HSD_GObj *);
+BOOL ActionState_IsDeadUpFall(HSD_GObj *);
 
-extern BOOL ActionState_IsRebirth(HSD_GObj *gobj);
-extern BOOL ActionState_IsEntry(HSD_GObj *gobj);
+BOOL ActionState_IsRebirth(HSD_GObj *);
+BOOL ActionState_IsEntry(HSD_GObj *);
+
+f32 ActionState_HammerFrameCount(Player *);
+BOOL ActionState_IsHammer(Player *);
+
+void ActionState_Fall(HSD_GObj *);
 
 #endif

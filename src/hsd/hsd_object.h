@@ -15,7 +15,7 @@
 #define HSD_PARENT_INFO(s)  (((HSD_ClassInfo*)(s))->parent_info)
 
 typedef struct _HSD_Class {
-	HSD_ClassInfo* class_init;
+	struct _HSD_ClassInfo* class_init;
 	u16 ref_count;
 } HSD_Class;
 
@@ -31,11 +31,11 @@ typedef struct _HSD_ClassInfo {
 	struct _HSD_ClassInfo* child_info; //0x1C
 	u32 active_objs; //0x20
 	u32 total_allocs; //0x24
-	void (*obj_alloc)(HSD_Class* o); //0x28
-	void (*init)(HSD_Class* o); //0x2C
-	void (*release)(HSD_Class* o); //0x30
-	void (*destroy)(HSD_Class* o); //0x34
-	void (*amnesia)(HSD_ClassInfo* info); //0x38
+	void (*obj_alloc)(struct _HSD_Class* o); //0x28
+	void (*init)(struct _HSD_Class* o); //0x2C
+	void (*release)(struct _HSD_Class* o); //0x30
+	void (*destroy)(struct _HSD_Class* o); //0x34
+	void (*amnesia)(struct _HSD_ClassInfo* info); //0x38
 } HSD_ClassInfo;
 
 typedef struct _HSD_ObjDef {

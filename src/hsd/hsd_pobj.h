@@ -3,7 +3,8 @@
 
 #include <gctypes.h>
 
-#include "hsd_jobj.h"
+#include "hsd_object.h"
+#include "hsd_util.h"
 
 #define POBJ_ANIM 1<<3
 #define POBJ_SHAPEANIM 1<<12
@@ -15,11 +16,11 @@
 typedef struct _HSD_PObj {
 	HSD_Class parent;
 	struct _HSD_PObj* next;
-	HSD_VertAttr* verts;
+	struct _HSD_VertAttr* verts;
 	u16 flags;
 	u16 n_display;
-	HSD_Display* display;
-	HSD_Weight* weight;
+	struct _HSD_Display* display;
+	struct _HSD_Weight* weight;
 	union {
 		HSD_ShapeSet shape_set;
 		HSD_SList* envelope_list;
@@ -68,7 +69,7 @@ typedef struct _Vertex {
 } Vertex;
 
 typedef struct _HSD_PObjInfo {
-	
+	HSD_ClassInfo class_info;
 } HSD_PObjInfo;
 
 extern HSD_PObjInfo hsdPObj;

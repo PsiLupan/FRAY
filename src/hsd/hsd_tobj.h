@@ -5,9 +5,9 @@
 #include <ogc/gu.h>
 #include <ogc/gx.h>
 
-#include "hsd_aobj.h"
-#include "hsd_lobj.h"
 #include "hsd_object.h"
+
+#include "hsd_fobj.h"
 
 #define TOBJ_ANIM 0x10
 
@@ -127,13 +127,6 @@
 #define tobj_bump(T) ((T)->flags & TEX_BUMP)
 #define TEX_MTX_DIRTY (1<<31)
 
-/*typedef enum _GXTlutFmt {
-	GX_TL_IA8,
-    GX_TL_RGB565,
-    GX_TL_RGB5A3,
-    GX_MAX_TLUTFMT
-} GXTlutFmt;*/
-
 //Texture Object
 typedef struct _HSD_TObj {
 	HSD_Class class_parent;
@@ -153,16 +146,16 @@ typedef struct _HSD_TObj {
 	u32 flags;
 	f32 blending;
 	u8 magFilt; //GXTexFilter
-	HSD_ImageDesc* imagedesc;
-	HSD_Tlut* tlut;
-	HSD_TexLODDesc* lod;
-	struct _HSD_AObj* aobj;
-	HSD_ImageDesc **imagetbl;
-	HSD_Tlut **tluttbl;
+	struct _HSD_ImageDesc* imagedesc;
+	struct _HSD_Tlut* tlut;
+	struct _HSD_TexLODDesc* lod;
+	HSD_AObj* aobj;
+	struct _HSD_ImageDesc **imagetbl;
+	struct _HSD_Tlut **tluttbl;
 	u8 tlut_no;
 	Mtx mtx;
 	u16 coord; //GXTexCoordID
-	HSD_TObjTev *tev;
+	struct _HSD_TObjTev *tev;
 } HSD_TObj;
 
 typedef struct _HSD_TObjDesc {
@@ -180,10 +173,10 @@ typedef struct _HSD_TObjDesc {
 	u32 flags;
 	f32 blending;
 	u8 magFilt; //GXTexFilter
-	HSD_ImageDesc* imagedesc;
-	HSD_TlutDesc* tlutdesc;
-	HSD_TexLODDesc* lod;
-	HSD_TObjTevDesc* tev;
+	struct _HSD_ImageDesc* imagedesc;
+	struct _HSD_TlutDesc* tlutdesc;
+	struct _HSD_TexLODDesc* lod;
+	struct _HSD_TObjTevDesc* tev;
 } HSD_TObjDesc;
 
 typedef struct _HSD_Tlut {
@@ -218,7 +211,7 @@ typedef struct _HSD_ImageDesc {
 	f32 maxLOD;
 } HSD_ImageDesc;
 
-typedef struct {
+typedef struct _HSD_TObjTev {
 	u8 color_op;
 	u8 alpha_op;
 	u8 color_bias;
@@ -233,7 +226,7 @@ typedef struct {
 	u32 active;
 } HSD_TObjTev;
 
-typedef struct {
+typedef struct _HSD_TObjTevDesc {
 	u8 color_op;
 	u8 alpha_op;
 	u8 color_bias;
@@ -259,9 +252,9 @@ typedef struct _HSD_TObjInfo {
 typedef struct _HSD_TexAnim {
 	struct _HSD_TexAnim *next;
 	u8 id; //GXTexMapID
-	struct _HSD_AObjDesc *aobjdesc;
-	HSD_ImageDesc **imagetbl;
-	HSD_TlutDesc **tluttbl;
+	HSD_AObjDesc *aobjdesc;
+	struct _HSD_ImageDesc **imagetbl;
+	struct _HSD_TlutDesc **tluttbl;
 	u16 n_imagetbl;
 	u16 n_tluttbl;
 } HSD_TexAnim;

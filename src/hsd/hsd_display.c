@@ -1,25 +1,9 @@
-#include <ogc/gx.h>
-
-#include "hsd_cobj.h"
-#include "hsd_jobj.h"
-#include "hsd_state.h"
-
-typedef struct _HSD_ZList {
-	Mtx pmtx;
-	MtxP vmtx;
-	HSD_JObj *jobj;
-	u32 rendermode;
-	
-	struct {
-		HSD_ZList *texedge;
-		HSD_ZList *xlu;
-	} sort;
-	HSD_ZList *next;
-} HSD_ZList;
+#include "hsd_display.h"
 
 static HSD_PtclCallback sptcl_callback = NULL;
 
 static GXColor hsd_background_color = {0, 0, 0, 0};
+static GXColor erase_color = {0x26, 0x26, 0x26, 0xFF}; //-0x58C8(r13)
 
 static HSD_ObjAllocData zlist_alloc_data;
 
@@ -95,7 +79,7 @@ static HSD_ZList* zlist_sort(HSD_ZList *list, int nb, int offset){
 #define OFFSET(stru, member)	((int)(&((stru *) 0)->member))
 
 //803747F8
-void _HSD_ZListSort(void){
+void _HSD_ZListSort(){
 	if (zsort_sorting) {
 		zlist_texedge_top = zlist_sort(zlist_texedge_top, zlist_texedge_nb, OFFSET(HSD_ZList, sort.texedge));
 		zlist_xlu_top = zlist_sort(zlist_xlu_top, zlist_xlu_nb, OFFSET(HSD_ZList, sort.xlu));
@@ -127,7 +111,7 @@ void _HSD_ZListDisp(){
 }
 
 //80374910
-void _HSD_ZListClear(void){
+void _HSD_ZListClear(){
 	HSD_ZList *list;
 
 	for(list = zlist_top; list; list = list->next){
@@ -153,17 +137,15 @@ void HSD_JObjDisp(HSD_JObj *jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 renderm
 	if (jobj){
 		if (union_type_dobj(jobj)) {
 			HSD_JObjDispDObj(jobj, vmtx, trsp_mask, rendermode);
-		} else if (union_type_ptcl(jobj)) {
+		} else if (union_type_ptcl(jobj) && sptcl_callback != NULL) {
 			HSD_SList *sp;
-			if (sptcl_callback) {
-				for (sp = jobj->u.ptcl; sp; sp = sp->next) {
-					if (((u32)sp->data) & JOBJ_PTCL_ACTIVE) {
-						u32 bank = JOBJ_PTCL_BANK_MASK & ((u32)sp->data);
-						u32 offset = (JOBJ_PTCL_OFFSET_MASK & ((u32)sp->data)) >> JOBJ_PTCL_OFFSET_SHIFT;
-						(*sptcl_callback)(0, bank, offset, jobj);
-					}
-					sp->data = (void *)((u32)sp->data & ~JOBJ_PTCL_ACTIVE);
+			for (sp = jobj->u.ptcl; sp != NULL; sp = sp->next) {
+				if ((((u32)sp->data) & 0x80000000) != 0) {
+					u32 bank = JOBJ_PTCL_BANK_MASK & ((u32)sp->data);
+					u32 offset = (JOBJ_PTCL_OFFSET_MASK & ((u32)sp->data)) >> JOBJ_PTCL_OFFSET_SHIFT;
+					(*sptcl_callback)(0, bank, offset, jobj);
 				}
+				sp->data = (void *)((u32)sp->data & ~JOBJ_PTCL_ACTIVE);
 			}
 		}
 	}
@@ -246,7 +228,7 @@ void HSD_EraseRect(float top, float bottom, float left, float right, float z, in
 	GX_SetVtxDesc(GX_VA_CLR0, GX_DIRECT);
 	GX_SetVtxDesc(GX_VA_TEX0, GX_DIRECT);
 	
-	color = HSD_GetEraseColor();
+	color = erase_color;
 	GX_Begin(GX_QUADS, GX_VTXFMT0, 4);
 	GX_Position3f32(left, top, z);
 	GX_Color4u8(color.r, color.g, color.b, color.a);

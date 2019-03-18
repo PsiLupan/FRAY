@@ -4,7 +4,8 @@
 #include <gctypes.h>
 #include <ogc/gx.h>
 
-#include "hsd_aobj.h"
+#include "hsd_object.h"
+
 #include "hsd_texp.h"
 #include "hsd_tobj.h"
 #include "hsd_util.h"
@@ -35,18 +36,18 @@
 typedef struct _HSD_MObj {
 	HSD_Class class_parent;
 	u32 rendermode;
-	struct _HSD_TObj* tobj;
-	HSD_Material *mat;
-	HSD_PEDesc* pe;
-	struct _HSD_AObj* aobj;
-	struct _HSD_TObj* ambient_tobj;
-	struct _HSD_TObj* specular_tobj;
-	struct _HSD_TExpTevDesc *tevdesc;
-	struct _HSD_TExp *texp;
+	HSD_TObj* tobj;
+	struct _HSD_Material *mat;
+	struct _HSD_PEDesc* pe;
+	HSD_AObj* aobj;
+	HSD_TObj* ambient_tobj;
+	HSD_TObj* specular_tobj;
+	HSD_TExpTevDesc *tevdesc;
+	HSD_TExp *texp;
 
-	struct _HSD_TObj* tobj_toon;
-	struct _HSD_TObj* tobj_gradation;
-	struct _HSD_TObj* tobj_backlight;
+	HSD_TObj* tobj_toon;
+	HSD_TObj* tobj_gradation;
+	HSD_TObj* tobj_backlight;
 	f32 z_offset;
 } HSD_MObj;
 
@@ -76,16 +77,16 @@ typedef struct _HSD_PEDesc {
 typedef struct _HSD_MObjDesc {
 	char* class_name;
 	u32 rendermode;
-	struct _HSD_TObjDesc* texdesc;
-	HSD_Material* mat;
+	HSD_TObjDesc* texdesc;
+	struct _HSD_Material* mat;
 	void* renderdesc;
-	HSD_PEDesc* pedesc;
+	struct _HSD_PEDesc* pedesc;
 } HSD_MObjDesc;
 
 typedef struct _HSD_MatAnim {
 	struct _HSD_MatAnim *next;
-	struct _HSD_AObjDesc *aobjdesc;
-	struct _HSD_TexAnim *texanim;
+	HSD_AObjDesc *aobjdesc;
+	HSD_TexAnim *texanim;
 	struct _HSD_RenderAnim *renderanim;
 } HSD_MatAnim;
 

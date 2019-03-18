@@ -3,10 +3,12 @@
 
 #include <ogc/gx.h>
 
+#include "hsd_object.h"
+
 #include "hsd_aobj.h"
 #include "hsd_cobj.h"
+#include "hsd_fobj.h"
 #include "hsd_jobj.h"
-#include "hsd_object.h"
 #include "hsd_util.h"
 #include "hsd_wobj.h"
 
@@ -101,8 +103,8 @@ typedef struct _HSD_LightDesc {
 typedef struct _HSD_LightAnim {
 	struct _HSD_LightAnim *next;
 	struct _HSD_AObjDesc *aobjdesc;
-	struct _HSD_AObj position_anim;
-	struct _HSD_AObj interest_anim;
+	HSD_AObj* position_anim;
+	HSD_AObj* interest_anim;
 } HSD_LightAnim;
 
 typedef struct _HSD_LObjInfo {

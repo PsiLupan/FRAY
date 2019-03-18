@@ -3,9 +3,7 @@
 
 #include <gctypes.h>
 
-#include "hsd_jobj.h"
-#include "hsd_mobj.h"
-#include "hsd_pobj.h"
+#include "hsd_object.h"
 
 //Display Object
 typedef struct _HSD_DObj {
