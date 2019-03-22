@@ -3,6 +3,29 @@
 static u32 arena_size; //-0x5110(r13)
 static u64 sys_time;
 
+u8* pad_raw_queue[PAD_QUEUE_SIZE * 0x44]; //
+
+//80019AAC
+void Init_PadReader(void* init_func(void)){
+	(*init_func)();
+	//TODO
+}
+
+//8015FD24
+void Pad_InitCallback(){
+	PAD_SetSpec(5);
+	HSD_PadInit(PAD_QUEUE_SIZE, pad_raw_queue, 0xc, NULL); //Technically the last param isn't NULL, but K7 does it, so it's probably nbd
+	pad_queue[0x1C] = 0;
+	pad_queue[0x1D] = 1;
+	pad_queue[0x1E] = 0x50;
+	pad_queue[0x1F] = 0;
+	pad_queue[0x20] = 1;
+	pad_queue[0x21] = 0x8C;
+	pad_queue[0x22] = 0;
+	pad_queue[0x26] = 0x50;
+	pad_queue[0x27] = 0x8C;
+}
+
 //8015FDA0
 static void stub(){
 }
@@ -25,8 +48,7 @@ int main(void){
 
 	HSD_AllocateXFB(2, &TVNtsc480IntDf);
 	void* fifo = HSD_AllocateFIFO(0x40000);
-	GXFifoObj* fifoobj = GX_Init(fifo, 0x40000);
-	HSD_GXSetFifoObj(fifoobj);
+	HSD_GXSetFifoObj(GX_Init(fifo, 0x40000));
 
 	HSD_InitComponent();
 
@@ -36,7 +58,7 @@ int main(void){
 
 	//sub_8002838C(); Inits AR, ARQ, and AI - "Audio_Init"
 
-	//sub_80019AAC(&8015FD24); Setups up periodic alarm & callback for Pad queue?
+	Init_PadReader(Pad_InitCallback);
 
 	HSD_VISetUserPostRetraceCallback(stub);
 	HSD_VISetUserGXDrawDoneCallback(HSD_VIDrawDoneXFB);
@@ -54,12 +76,12 @@ int main(void){
 	//sub_803A6048(); FirstHeapAlloc
 	//InitializeStaticMemRegions();
 	
-	Game_Init();	
+	Init_Game();	
 	return 0;
 }
 
 //801A4510
-void Game_Init(){
+void Init_Game(){
 	u8 curr_major;	
 	memset(&gamestate, 0, 20);
 	MajorScene* major_scenes = Scene_GetMajorScenes();

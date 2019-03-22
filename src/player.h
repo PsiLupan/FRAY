@@ -21,6 +21,8 @@
 #define INTERNAL_KIRBY 0x04
 #define INTERNAL_LINK 0x06
 #define INTERNAL_PEACH 0x09
+#define INTERNAL_POPO 0x0A
+#define INTERNAL_NANA 0x0B
 #define INTERNAL_YLINK 0x14
 #define INTERNAL_MASTERHAND 0x1B
 #define INTERNAL_CRAZYHAND 0x1C
@@ -143,12 +145,12 @@ typedef struct _Player {
 	u8 xE_flag;
 	u8 xF_flag;
 	u32 x10_action_state;
-	u32 anim_state;
-	u32 tblconstant;
-	void* shrdaction_tbl;
-	void* move_tbl;
-	void* state_ptr;
-	void* hitboxdata_endptr;
+	u32 x14_anim_state;
+	u32 x18_tblconstant;
+	void* x1C_shrdaction_tbl;
+	void* x20_move_tbl;
+	u32* x24_state_ptr;
+	void* x28_hitboxdata_endptr;
 	f32 x2C_facedir;
 	f32 x30_facedir_model;
 	f32 x34_scale;
@@ -231,6 +233,8 @@ typedef struct _Player {
 
 	u32 x1A94_cpu_flags;
 	u32 x1A98_cpu_level;
+
+	u16 x209A_flags;
 	
 	u32 x20A4_unk;
 

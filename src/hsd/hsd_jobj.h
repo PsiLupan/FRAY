@@ -5,10 +5,28 @@
 #include <ogc/gu.h>
 
 #include "hsd_debug.h"
-#include "hsd_dobj.h"
 #include "hsd_object.h"
+#include "hsd_util.h"
+
+#include "hsd_aobj.h"
+#include "hsd_fobj.h"
+#include "hsd_dobj.h"
+#include "hsd_robj.h"
 
 #define JOBJ_INSTANCE 0x1000
+
+#define JOBJ_PTCL_ACTIVE 0x7FFFFFFF
+#define JOBJ_PTCL_OFFSET_MASK 0xFFFFFF
+#define JOBJ_PTCL_OFFSET_SHIFT 6
+#define JOBJ_PTCL_BANK_MASK 0x3F
+
+#define union_type_dobj(o) ((o->flags & 0x4020) == 0)
+#define union_type_ptcl(o) ((o->flags & 0x20) != 0)
+
+typedef enum _HSD_TrspMask {
+	HSD_TRSP_XLU = 2,
+	HSD_TRSP_TEXEDGE = 4
+} HSD_TrspMask;
 
 //Joint Object
 typedef struct _HSD_JObj {
@@ -17,7 +35,10 @@ typedef struct _HSD_JObj {
 	struct _HSD_JObj* parent; //0x0C
 	struct _HSD_JObj* child; //0x10
 	u32 flags; //0x14
-	struct _HSD_DObj* dobj;
+	union {
+		HSD_SList* ptcl;
+		HSD_DObj* dobj;
+	} u;
 	guQuaternion rotation;
 	guVector scale;
 	guVector position;
@@ -25,21 +46,21 @@ typedef struct _HSD_JObj {
 	guVector* pvec;
 	MtxP vmtx;
 	struct _HSD_AObj* aobj;
-	struct _HSD_RObj* robj;
-	HSD_JObjDesc* desc;
+	HSD_RObj* robj;
+	struct _HSD_JObjDesc* desc;
 } HSD_JObj;
 
 typedef struct _HSD_JObjDesc {
 	char* class_name;
 	u32 flags;
-	struct _HSD_JObjDesc child;
-	struct _HSD_JObjDesc next;
+	struct _HSD_JObjDesc* child;
+	struct _HSD_JObjDesc* next;
 	struct _HSD_DObjDesc* dobj;
 	guVector rotation;
 	guVector scale;
 	guVector position;
 	Mtx mtx;
-	struct _HSD_RObjDesc* robj;
+	HSD_RObjDesc* robj;
 } HSD_JObjDesc;
 
 typedef struct _HSD_JObjInfo {

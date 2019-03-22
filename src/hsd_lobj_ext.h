@@ -10,6 +10,7 @@
 
 #define GOBJ_HSD_LOBJ(s) ((HSD_LObj*)s->data)
 
+HSD_LObj* LObj_LoadLightDescs(HSD_LightDesc**);
 void LObj_Setup_Callback(HSD_GObj *);
 
 #endif

@@ -15,7 +15,6 @@
 #define HSD_ANTIALIAS_GARBAGE_SIZE	(640 * HSD_ANTIALIAS_OVERLAP * VI_DISPLAY_PIX_SZ)
 
 typedef void (*HSD_VIGXDrawDoneCallback)();
-typedef void (*VIRetraceCallback)();
 
 typedef enum _HSD_VIXFBDrawDispStatus {
 	HSD_VI_XFB_NONE, 

@@ -14,8 +14,8 @@ static HSD_JObj *r13_401C = NULL; //r13_401C
 void HSD_JObjReqAnim(HSD_JObj *jobj, f32 frame){
 	if (jobj != NULL){
 		HSD_AObjReqAnim(jobj->aobj, frame);
-		if ( (jobj->flags & 0x4020) == 0){
-			HSD_DObjReqAnimAllByFlags(jobj->dobj, 0x7FF, frame);
+		if (union_type_dobj(jobj)){
+			HSD_DObjReqAnimAllByFlags(jobj->u.dobj, 0x7FF, frame);
 		}
 		HSD_RObjReqAnimAllByFlags(jobj->robj, 0x7FF, frame);
 	}
@@ -43,8 +43,8 @@ void HSD_JObjAnim(HSD_JObj* jobj){
     	HSD_JObjCheckDepend(jobj);
     	HSD_AObjInterpretAnim(jobj->aobj, jobj, JObjUpdateFunc);
     	HSD_RObjAnimAll(jobj->robj);
-    	if ( (jobj->flags & 0x4020) == 0){
-			HSD_DObjAnimAll(jobj->dobj);
+    	if (union_type_dobj(jobj)){
+			HSD_DObjAnimAll(jobj->u.dobj);
 		}
 	}
 }
@@ -55,8 +55,8 @@ static void JObjAnimAll(HSD_JObj* jobj){
 		HSD_JObjCheckDepend(jobj);
     	HSD_AObjInterpretAnim(jobj->aobj, jobj, JObjUpdateFunc);
     	HSD_RObjAnimAll(jobj->robj);
-    	if( (jobj->flags & 0x4020) == 0){
-			HSD_DObjAnimAll(jobj->dobj);
+    	if(union_type_dobj(jobj)){
+			HSD_DObjAnimAll(jobj->u.dobj);
 		}
 		if( (jobj->flags & 0x1000) == 0){
 			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
@@ -73,8 +73,8 @@ void HSD_JObjAnimAll(HSD_JObj* jobj){
     	HSD_JObjCheckDepend(jobj);
     	HSD_AObjInterpretAnim(jobj->aobj, jobj, JObjUpdateFunc);
     	HSD_RObjAnimAll(jobj->robj);
-    	if( (jobj->flags & 0x4020) == 0){
-			HSD_DObjAnimAll(jobj->dobj);
+    	if(union_type_dobj(jobj)){
+			HSD_DObjAnimAll(jobj->u.dobj);
 		}
 		if( (jobj->flags & 0x1000) == 0){
 			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
@@ -279,17 +279,17 @@ HSD_JObj* HSD_JObjGetPrev(HSD_JObj *jobj){
 
 //80371BEC
 HSD_DObj* HSD_JObjGetDObj(HSD_JObj *jobj){
-	if(jobj != NULL && (jobj->flags & 0x4020) == 0){
-		return jobj->dobj;
+	if(jobj != NULL && union_type_dobj(jobj)){
+		return jobj->u.dobj;
 	}
 	return NULL;
 }
 
 //80371C24
 void HSD_JObjAddDObj(HSD_JObj *jobj, HSD_DObj *dobj){
-	if(jobj && dobj && (jobj->flags & 0x4020) == 0){
-		dobj->next = jobj->dobj;
-		jobj->dobj = dobj;
+	if(jobj && dobj && union_type_dobj(jobj)){
+		dobj->next = jobj->u.dobj;
+		jobj->u.dobj = dobj;
 	}
 }
 
@@ -540,7 +540,7 @@ static void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, Mtx pmtx, HSD_TrspMask tr
 		HSD_LobjSetupSpecularInit(pmtx);
 	}
 	HSD_PObjClearMtxMark(0, 0);
-	HSD_DObj* dobj = jobj->dobj;
+	HSD_DObj* dobj = jobj->u.dobj;
 	while(dobj != NULL){
 		if((dobj->flags & 1) == 0 && (dobj->flags & trsp_mask << 1) != 0){
 			HSD_DObjSetCurrent(dobj);

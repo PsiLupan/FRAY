@@ -47,6 +47,7 @@ typedef struct _Item
 
 } Item;
 
-extern u32 Item_GetItemType(HSD_GObj*);
+BOOL Item_PlayerHasHammer(HSD_GObj *);
+u32 Item_GetItemType(HSD_GObj *);
 
 #endif

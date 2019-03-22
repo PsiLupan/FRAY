@@ -97,8 +97,8 @@ void Mario_SpawnProjectile(HSD_GObj* gobj, guVector pos){
         HSD_JObj* spawn_bone = (HSD_JObj*)(*(player->x5E8_bone_lookup_table) + (index * BONE_LOOKUP_STRUCT_SIZE));
         HSD_JObj* jobj = JObj_Spawn(spawn_bone, NULL, pos);
         if(player->x4_internal_id == INTERNAL_MARIO){
-            sub_8039B6F8(gobj, pos, ITEM_MARIO_FIREBALL, player->facedir);
-            sub_8005FDDC(0x47A, gobj, spawn_bone, &player->facedir);
+            sub_8039B6F8(gobj, pos, ITEM_MARIO_FIREBALL, player->x2C_facedir);
+            sub_8005FDDC(0x47A, gobj, spawn_bone, &player->x2C_facedir);
         }else{ //IF DR. MARIO
             u32 values[9];            
             u32 iterations = 9;
@@ -116,7 +116,7 @@ void Mario_SpawnProjectile(HSD_GObj* gobj, guVector pos){
             player->x2230_flags = player->x222C_flags;
             u32 pill_color = values[HSD_Randi(num_values)];
             player->x222C_flags = pill_color;
-            sub_802C0510(gobj, pos, pill_color, ITEM_DRMARIO_PILL, player->facedir);
+            sub_802C0510(gobj, pos, pill_color, ITEM_DRMARIO_PILL, player->x2C_facedir);
         }
     }
 }

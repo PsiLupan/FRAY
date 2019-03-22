@@ -11,9 +11,11 @@ MajorScene major_scenes[45] = {
   {1, 0, 0, NULL, NULL, NULL, &GmTitle_Minors}
 }; //803DACA4
 
-u8 menu_804D6730[6];
-
+static void* scene_sobj_desc; //0x4EB0(r13)
 static u32* r13_4F80[3];
+static HSD_FogDesc* scene_fog_desc; // 0x4F90(r13)
+static HSD_LightDesc** scene_lights_desc; // -0x4F94(r13)
+static HSD_CObjDesc* scene_cobj_desc; //-0x4F98(r13)
 static u32 debug_level = 0; //-0x6C98(r13)
 
 const s32 cache_base[24] = { //803BA638
@@ -24,9 +26,16 @@ const s32 cache_base[24] = { //803BA638
   0x00000021, 0x00010000, 0x00000021, 0x00010000,
   0x00000000, 0x00000000, 0xff00ffff, 0x00000000
 };
+
+f32 title_frames[3] = {0, 1330, 130}; //803DA4FC
+
 s32 preload_cache[0x1000]; //80432078
 
+s32 scene_804337C4[55];
+
 unk_8046B0F0 dword_8046B0F0;
+
+u8 menu_804D6730[6];
 
 //8016795C
 static void Scene_InitStartMeleeData(s8 *addr){
@@ -230,6 +239,48 @@ void Scene_800195D0(){
   sub_8001CC84();
 }
 
+//80026F2C
+void Scene_80026F2C(u32 flags){
+  u32* puVar3;
+  bool bVar4;
+  u64 uVar5;
+  
+  u32 uVar2 = 0;
+  u32 flag_out = 0;
+  if ((flags & 1) != 0) {
+    uVar2 = 3;
+    flag_out = 0x480000;
+  }
+  if ((flags & 2) != 0) {
+    bVar4 = 0xffffffc3 < uVar2;
+    uVar2 = uVar2 + 0x3c;
+    flag_out = flag_out + (u32)bVar4;
+  }
+  if ((flags & 4) != 0) {
+    bVar4 = 0x3f < uVar2;
+    uVar2 = uVar2 - 0x40;
+    flag_out = flag_out + (u32)bVar4 + 0x800003;
+  }
+  if ((flags & 8) != 0) {
+    flag_out = flag_out + 0x23fffc;
+  }
+  if ((flags & 0x10) != 0) {
+    flag_out = flag_out + 0x140000;
+  }
+  
+  uVar5 = concat_to_64(flag_out, uVar2);
+  puVar3 = &scene_804337C4;
+  flag_out = 0;
+  do {
+    if ((uVar5 & 1) != 0) {
+      *puVar3 = 0xffffffff;
+    }
+    uVar5 = __shr2u((uVar5 >> 32), uVar5, 1);
+    flag_out = flag_out + 1;
+    puVar3 = puVar3 + 1;
+  } while (flag_out < 55);
+}
+
 //801A1C18
 void Scene_Minor_Class0_OnFrame(){
     sub_801A36A0(4u);
@@ -275,38 +326,42 @@ void Scene_Minor_Class0_OnLoad(){
   sub_800236DC();
   //r13 - 0x4F8C = 0x14;
   //r13 - 0x4F88 = 0;
-  char* filename;
-  if(sub_8000ADD4() == TRUE){ //CheckLanguage
+  char* filename = "GmTtAll.usd";
+  /*if(sub_8000ADD4() == TRUE){ //CheckLanguage
     filename = "GmTtAll.usd";
   }else{
     filename = "GmTtAll.dat";
-  }
-  Archive_LoadFileSections(filename, &title_ptrs.dat_start, 6, "TtlMoji_Top_joint", &title_ptrs.top_joint, 
-    "TtlMoji_Top_animjoint", &title_ptrs.top_animjoint, "TtlMoji_Top_matanim_joint", &title_ptrs.top_matanim_joint);
-  u32 unk = sub_80026F2C(0x12);
-  sub_8002702C(2, unk, 4);
+  }*/
+
+  Archive_LoadFileSections(filename, title_ptrs.dat_start, 24,  title_ptrs.top_joint, "TtlMoji_Top_joint",
+    title_ptrs.top_animjoint, "TtlMoji_Top_animjoint", title_ptrs.top_matanim_joint, "TtlMoji_Top_matanim_joint",
+    title_ptrs.top_shapeanim_joint, "TtlMoji_Top_shapeanim_joint", scene_cobj_desc, "ScTitle_cam_int1_camera", scene_lights_desc, "ScTitle_scene_lights",
+    scene_fog_desc, "ScTitle_fog", title_ptrs.bg_top_joint, "TtlBg_Top_joint", title_ptrs.bg_top_animjoint, "TtlBg_Top_animjoint",
+    title_ptrs.bg_top_matanim_joint, "TtlBg_Top_matanim_joint", title_ptrs.bg_top_shapeanim_joint, "TtlBg_Top_shapeanim_joint", scene_sobj_desc, "TitleMark_sobjdesc");
+  Scene_80026F2C(0x12);
+  sub_8002702C(2, 0, 0, 4); //r4 is immediately set to 3 start of the function, so it doesn't actually matter what it is.
   sub_80027168();
   
   HSD_GObj* fog_gobj = GObj_Create(GOBJ_CLASS_HSD_FOG, 3, 0);
-  HSD_Fog* fog = HSD_FogLoadDesc(/*r13 - 0x4F90*/);
+  HSD_Fog* fog = HSD_FogLoadDesc(scene_fog_desc);
   GObj_InitKindObj(fog_gobj, GOBJ_KIND_FOG, (void*)fog);
   GObj_SetupGXLink(fog_gobj, Fog_Set_Callback, 0, 0);
-  sub_8038FD54(fog_gobj, Fog_InterpretAnim_Callback, 0);
+  GObj_CreateWithAnimCallback(fog_gobj, Fog_InterpretAnim_Callback, 0);
 
   HSD_GObj* lobj_gobj = GObj_Create(GOBJ_CLASS_HSD_LOBJ, 3, 128);
-  HSD_LObj* lobj = sub_80011AC4(/*r13 - 0x4F94*/);
+  HSD_LObj* lobj = LObj_LoadLightDescs(scene_lights_desc);
   GObj_InitKindObj(lobj_gobj, 2, lobj);
   GObj_SetupGXLink(lobj_gobj, LObj_Setup_Callback, 0, 0);
   
   HSD_GObj* menu_gobj = GObj_Create(0x13, 0x14, 0);
-  HSD_CObj* menu_cobj = CObj_Create(/*r13 - 0x4F98*/);
+  HSD_CObj* menu_cobj = CObj_Create(scene_cobj_desc);
   GObj_InitKindObj(menu_gobj, GOBJ_KIND_MENU_COBJ, menu_cobj);
   GObj_SetupGXLink_Max(menu_gobj, CObj_SetErase_Callback, 0);
 
   HSD_GObj* menu_gobj_2 = GObj_Create(0x13, 0x14, 0);
-  HSD_CObj* menu_cobj_2 = CObj_Create(/*r13 - 0x4F98*/);
+  HSD_CObj* menu_cobj_2 = CObj_Create(scene_cobj_desc);
   GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_MENU_COBJ, menu_cobj_2);
-  GObj_SetupGXLink_Max(menu_gobj_2, sub_801A1818, 0xC);
+  GObj_SetupGXLink_Max(menu_gobj_2, CObj_SetCurrent_Callback, 0xC);
 
   menu_gobj_2->unk24 = 0x209;
   menu_gobj_2->unk20 = 0;
@@ -316,29 +371,29 @@ void Scene_Minor_Class0_OnLoad(){
   sub_801BF3F8();
 
   HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
-  HSD_JObj* jobj = HSD_JObjLoadJoint(/*80479B38*/);
+  HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.bg_top_joint);
   GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
   GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
-  HSD_JObjAddAnimAll(jobj, /*aobj related struct*/, /**/, /**/);
-  sub_8038FD54(gobj_2, sub_801A146C, 0);
+  HSD_JObjAddAnimAll(jobj, title_ptrs.bg_top_animjoint, title_ptrs.bg_top_matanim_joint, title_ptrs.bg_top_shapeanim_joint);
+  GObj_CreateWithAnimCallback(gobj_2, Scene_ReqAnimAll_Callback, 0);
   
   u8 major = Scene_GetCurrentMajor();
   u8 minor = Scene_GetCurrentMinor();
-  if(major != 0 && major != 24 || minor != 2){
-    HSD_JObjReqAnimAll(jobj, /*0xC of obj = 803DA4FC*/);
+  if(major != 0 && major != 24 || minor != 2){ //Even forcing this condition, I couldn't see a visible difference
+    HSD_JObjReqAnimAll(jobj, title_frames[0]);
   }else{
     HSD_JObjReqAnimAll(jobj, 130.0f);
   }
   HSD_JObjAnimAll(jobj);
 
-  if(debug_level >= 1){
+  /*if(debug_level >= 1){
     Menu_CreateTextObj(0, NULL, GOBJ_CLASS_TEXT, 13, 0, 14, 0, 19);
     u8* unk_struct = sub_803A6754(0, 0);
-    sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", /*80479B48*/);
+    sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", title_ptrs.debug_text);
     void* unk = sub_803A6B98(unk_struct, "%s", 30.0f, 30.0f); //MenuTextDrawSome
     unk_struct[0x49] = 1;
     sub_803A7548(unk, unk_struct, 0.7f, 0.55f);
-  }
+  }*/
 }
 
 //801A4014
@@ -349,7 +404,6 @@ void Scene_ProcessMinor(MajorScene* scene){
   MinorScene* minor_scene = NULL;
   MinorSceneHandler *scene_handler;
   u8 v15; // r3@23
-  s32 v16; // r3@31
   
   curr_minor = gamestate.curr_minor;
   minor_scenes = scene->minor_scenes;
@@ -421,10 +475,11 @@ void Scene_ProcessMinor(MajorScene* scene){
   if ( dword_8046B0F0.unk04 ){
     sub_80027DBC();
     HSD_PadReset();
-    /*do {
+    /*s32 v16 = 0;
+    do {
       v16 = sub_8001B6F8(); //Save related, so we can ignore for now
     } while ( v16 == 11 );*/
-    if ( !DVD_CheckDisk() )
+    //if ( !DVD_CheckDisk() )
       //sub_8001F800(); Movie_Unload();
     SYS_ResetSystem(1, 0, 0);
     while (sub_8038EA50(1));
@@ -435,6 +490,12 @@ void Scene_ProcessMinor(MajorScene* scene){
     Scene_SetPendingMajor(40);
     HSD_VISetBlack(0);
   }
+}
+
+//801A146C
+void Scene_ReqAnimAll_Callback(HSD_GObj* gobj){
+  HSD_JObj* jobj = GOBJ_HSD_JOBJ(gobj);
+  Scene_ReqAnimAll(jobj, title_frames);
 }
 
 //801A427C
@@ -747,4 +808,38 @@ s32 sub_8022C010(s32 result, s32 a2){
       break;
   }
   return result;
+}
+
+//8022ED6C
+void Scene_ReqAnimAll(HSD_JObj* jobj, f32* frames){
+  f32 dVar1;
+  f32 frame;
+  
+  frame = JObj_GetFrame(jobj);
+  if ((frame < frames[0]) || (frames[1] < frame)) {
+    HSD_JObjReqAnimAll(jobj, frames[0]);
+  }
+  if (-0.1f == frames[2]) {
+    frame = JObj_GetFrame(jobj);
+    if (frame < frames[1]) {
+      HSD_JObjAnimAll(jobj);
+      frame = JObj_GetFrame(jobj);
+      dVar1 = frames[1];
+      if (dVar1 < frame) {
+        HSD_JObjReqAnimAll(jobj, dVar1);
+        HSD_JObjAnimAll(jobj);
+        frame = dVar1;
+      }
+    }
+  }
+  else {
+    HSD_JObjAnimAll(jobj);
+    frame = JObj_GetFrame(jobj);
+    if (frames[1] <= frame) {
+      frame = (frames[2] + (frame - frames[1]));
+      HSD_JObjReqAnimAll(jobj, frame);
+      HSD_JObjAnimAll(jobj);
+    }
+  }
+  return frame;
 }

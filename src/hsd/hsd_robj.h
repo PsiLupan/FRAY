@@ -3,9 +3,6 @@
 
 #include <gctypes.h>
 
-#include "hsd_jobj.h"
-#include "hsd_object.h"
-
 typedef struct _HSD_RObj {
     struct _HSD_RObj* next; //0x00
     u32 flags; //0x04
@@ -14,5 +11,9 @@ typedef struct _HSD_RObj {
     } u;
     struct _HSD_AObj* aobj; //0x18
 } HSD_RObj;
+
+typedef struct _HSD_RObjDesc {
+
+} HSD_RObjDesc;
 
 #endif

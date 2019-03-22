@@ -8,7 +8,6 @@
 
 #include "hsd_aobj.h"
 #include "hsd_display.c"
-#include "hsd_object.h"
 #include "hsd_wobj.h"
 
 
@@ -27,8 +26,8 @@ typedef struct _HSD_CObj {
     u16 scissor_right; //0x1E
     u16 scissor_top; //0x20
     u16 scissor_bottom; //0x22
-    struct _HSD_WObj* eye_position; //0x24
-    struct _HSD_WObj* interest; //0x28
+    HSD_WObj* eye_position; //0x24
+    HSD_WObj* interest; //0x28
     f32 roll; //0x2C
     f32 pitch; //0x30
     f32 yaw; //0x34
@@ -44,7 +43,7 @@ typedef struct _HSD_CObj {
     u8 unk53;
     u8 unk54;
 
-    struct _HSD_AObj* aobj; //0x84
+    HSD_AObj* aobj; //0x84
     MtxP proj_mtx; //0x88
 } HSD_CObj;
 

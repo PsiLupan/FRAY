@@ -3,16 +3,11 @@
 
 #include <stdarg.h>
 #include <gctypes.h>
-#include <ogc/lwp_heap.h>
 #include <ogc/system.h>
 #include <ogc/video_types.h>
 
-#include "hsd_aobj.h"
 #include "hsd_debug.h"
-#include "hsd_fobj.h"
-#include "hsd_lobj.h"
 #include "hsd_memory.h"
-#include "hsd_robj.h"
 #include "hsd_video.h"
 
 #define HSD_DEFAULT_FIFO_SIZE 0x40000

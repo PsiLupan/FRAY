@@ -4,6 +4,8 @@
 #include <gctypes.h>
 #include <ogc/gx.h>
 
+#include "hsd_mobj.h"
+
 #define HSD_STATE_ALL -1
 
 #define ENABLE_COLOR_UPDATE 1
@@ -34,21 +36,6 @@ typedef struct _HSD_Chan {
     u8 diffuse;
     u8 attn;
 } HSD_Chan;
-
-typedef struct _HSD_PEDesc {
-    u8 flags;
-    u8 ref0;
-    u8 ref1;
-    u8 dst_alpha;
-    u8 type;
-    u8 src_factor;
-    u8 dst_factor;
-    u8 logic_op;
-    u8 z_comp;
-    u8 alpha_comp0;
-    u8 alpha_op;
-    u8 alpha_comp1;
-} HSD_PEDesc;
 
 typedef struct _HSD_TevDesc {
     u32 flags;

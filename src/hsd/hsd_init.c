@@ -1,5 +1,7 @@
 #include "hsd_init.h"
 
+#include "hsd_lobj.h"
+
 //static OSHeapHandle hsd_heap = -1; //r13 - 0x58A0
 static void *hsd_heap_arena_lo = NULL;
 static void *hsd_heap_arena_hi = NULL;
@@ -47,7 +49,7 @@ void HSD_InitComponent(){
 	VIDEO_WaitVSync();
 	HSD_ObjInit();
   #ifndef NO_DEBUG
-	  CON_InitEx(rmode, 20, 30, rmode->fbWith - 40, rmode->xfbHeight - 60);
+	  CON_InitEx(rmode, 20, 30, rmode->fbWidth - 40, rmode->xfbHeight - 60);
 	#endif
 	init_done = TRUE;
 }
@@ -76,7 +78,7 @@ void** HSD_AllocateXFB(u32 nbBuffer, GXRModeObj *rm){
     /*if ((FrameBuffer[i] = (void *) SYS_AllocArena1MemLo(fbSize, 32)) == NULL) {
       assert(TRUE);
     }*/
-    if ((FrameBuffer[i] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rm)) == NULL) {
+    if ((FrameBuffer[i] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rm)) == NULL)) {
       HSD_Halt("Failed to allocate framebuffer\n");
     }
   }

@@ -28,7 +28,7 @@ void HSD_WObjAddAnim(HSD_WObj* wobj, HSD_AObjDesc* aobjdesc){
             HSD_AObjRemove(wobj->aobj);
         }
         wobj->aobj = HSD_AObjLoadDesc(aobjdesc);
-        HSD_RObjAddAnimAll(wobj->robj, aobjdesc->x4_aobjdesc);
+        HSD_RObjAddAnimAll(wobj->robj, aobjdesc->end_frame);
     }
 }
 

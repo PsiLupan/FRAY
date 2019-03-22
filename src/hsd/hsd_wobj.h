@@ -4,9 +4,9 @@
 #include <gctypes.h>
 #include <ogc/gu.h>
 
-#include "hsd_aobj.h"
 #include "hsd_object.h"
-#include "hsd_robj.h"
+
+#include "hsd_aobj.h"
 
 typedef struct _HSD_WObj {
     struct _HSD_Class class_parent;
