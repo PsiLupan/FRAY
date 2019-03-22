@@ -33,11 +33,31 @@ u32 Archive_GetFileLength(char* filename){
     return len;
 }
 
+//80016A54
+void Archive_InitializeDAT(void* mem_1, void* mem_2, u32 file_length){
+    assert(sub_803801E4(mem_1, mem_2, file_length) != -1);
+    u32 counter = 0;
+    void* val = NULL;
+    void* temp;
+    do
+    {
+        val = (unsigned __int8 *)sub_803803FC(mem_1, counter++);
+        temp = val;
+        if ( val != NULL )
+            val = (unsigned __int8 *)sub_80380434(mem_1, val, 0);
+    }
+    while ( temp );
+}
+
 //80016C64
 void Archive_LoadFileSections(char* filename, void* dat_start, u32 sections, ...){
     va_list ap;
 
     u32 file_length = Archive_GetFileLength(filename);
+    void* mem_1 = sub_80015BD0(0, (file_length + 31) & 0xFFFFFFE0);
+    void* mem_2 = sub_80015BD0(0, 68);
+    sub_8001688C(filename, mem_2, unk_stack_obj);
+    sub_80016A54(mem_2, mem_1, file_length);
 
     va_start(ap, sections);
     while(sections > 0) {
