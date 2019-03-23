@@ -185,7 +185,7 @@ void Player_SetGrabbableFlags(Player* player, u16 flags){
 }
 
 //8007EFC0
-void Player_8007EFC0(Player* player, u16 flags){
+void Player_SetIndicatorDisplay(Player* player, u16 flags){
 	player->x209A_flags = flags;
 }
 

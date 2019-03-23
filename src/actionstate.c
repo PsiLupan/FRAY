@@ -115,7 +115,7 @@ void ActionState_Wait(HSD_GObj* gobj, const f32 unk){
 		}
 	}
 
-	Player_8007EFC0(ply, /*(r13 - 0x514C)->x5F0)*/);
+	Player_SetIndicatorDisplay(ply, 32); //(r13 - 0x514C)->x5F0, but we'll hardcode the value till we understand it better
 	u32 char_id = ply->x4_internal_id;
 	if(char_id == INTERNAL_YLINK){
 		return sub_8014919C(gobj);
