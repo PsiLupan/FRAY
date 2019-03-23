@@ -9,6 +9,7 @@ typedef struct _HSD_RObj {
     union {
         struct _HSD_JObj* jobj; //0x08
     } u;
+    f32 unk; //0xC
     struct _HSD_AObj* aobj; //0x18
 } HSD_RObj;
 

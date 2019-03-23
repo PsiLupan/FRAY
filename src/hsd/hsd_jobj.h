@@ -13,13 +13,12 @@
 #include "hsd_dobj.h"
 #include "hsd_robj.h"
 
-#define JOBJ_INSTANCE 0x1000
-
 #define JOBJ_PTCL_ACTIVE 0x7FFFFFFF
 #define JOBJ_PTCL_OFFSET_MASK 0xFFFFFF
 #define JOBJ_PTCL_OFFSET_SHIFT 6
 #define JOBJ_PTCL_BANK_MASK 0x3F
 
+#define JOBJ_INSTANCE(o) ((o->flags & 0x1000) == 0)
 #define union_type_dobj(o) ((o->flags & 0x4020) == 0)
 #define union_type_ptcl(o) ((o->flags & 0x20) != 0)
 
@@ -38,6 +37,7 @@ typedef struct _HSD_JObj {
 	union {
 		HSD_SList* ptcl;
 		HSD_DObj* dobj;
+		f32* spline;
 	} u;
 	guQuaternion rotation;
 	guVector scale;
@@ -45,7 +45,7 @@ typedef struct _HSD_JObj {
 	Mtx mtx;
 	guVector* pvec;
 	MtxP vmtx;
-	struct _HSD_AObj* aobj;
+	struct _HSD_AObj* aobj; //0x7C
 	HSD_RObj* robj;
 	struct _HSD_JObjDesc* desc;
 } HSD_JObj;
