@@ -775,8 +775,7 @@ static int LObjLoad(HSD_LObj *lobj, HSD_LightDesc *ldesc){
 		break;
 		
 		default:
-		//HSD_Report("unexpected lightdesc flags (%x)\n", ldesc->flags);
-		//HSD_Halt("");
+		HSD_Halt("Unexpected lightdesc flags\n");
 	}
 	return 0;
 }

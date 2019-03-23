@@ -420,7 +420,7 @@ static void MObjRelease(HSD_Class *o){
 	if (mobj->pe)
 		hsdFreeMemPiece(mobj->pe, sizeof(HSD_PEDesc));
 	
-	//HSD_PARENT_INFO(&hsdMObj)->release(o); TODO: Figure out what this is, because it can't be the same obj
+	HSD_PARENT_INFO(&hsdMObj)->release(o);
 }
 
 //80363EC4

@@ -1,6 +1,9 @@
 #include "hsd_object.h"
 
-HSD_ClassInfo hsdClass = { ObjInfoInit };
+HSD_ClassInfo hsdClass = { 
+	_hsdInfoInit, true, "HSD_BASE_CLASS_LIBRARY", "hsd_class", 4, sizeof(HSD_ClassInfo), NULL, NULL, NULL, 0, 0,
+	_hsdClassAlloc, _hsdClassInit, _hsdClassRelease, _hsdClassDestroy, _hsdClassAmnesia
+};
 
 static struct {
 	void* heap_start;
@@ -123,4 +126,42 @@ void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, cha
 			parent_info->ObjInfoInit();
 		}
 	}
+}
+
+//803821C4
+static void _hsdClassAlloc(HSD_ClassInfo* info){
+
+}
+
+//8038221C
+static void _hsdClassInit(HSD_ClassInfo* info){
+
+}
+
+//80382224
+static void _hsdClassRelease(HSD_ClassInfo* info){
+	return;
+}
+
+//80382228
+static void _hsdClassDestroy(HSD_ClassInfo* info){
+
+}
+
+//80382294
+static void _hsdClassAmnesia(HSD_ClassInfo* info){
+	info->active_objs = 0;
+	info->total_allocs = 0;
+	if(info == &hsdClass){
+		/*
+		-0x3F98(r13) = 0;
+		-0x3F9C(r13) = 0;
+		-0x3FA0(r13) = 0;
+		*/
+	}
+}
+
+//803822C0
+static void _hsdInfoInit(){
+
 }

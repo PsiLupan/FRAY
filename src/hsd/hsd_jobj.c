@@ -748,7 +748,7 @@ void HSD_JObjSetCallback(void* cb){
 
 //8037340C
 static void JObjInit(HSD_Class* o){
-	(&hsdJObj)->make_pmtx(o);
+	HSD_PARENT_INFO(&hsdJObj)->init(o);
 
 	if(o != NULL){
 		HSD_JObj* jobj = HSD_JOBJ(o);
@@ -762,7 +762,7 @@ static void JObjInit(HSD_Class* o){
 //803736F8
 static void JObjRelease(HSD_Class* o){
 	HSD_JObj* jobj = HSD_JOBJ(o);
-	(&hsdJObj)->release_child(o); //Technically uses the class_parent from the jobj to get to this, so will probably need to account for that later
+	HSD_JOBJ_INFO(jobj->class_parent.class_init)->release_child(o); //Technically uses the class_parent from the jobj to get to this, so will probably need to account for that later
 	if(HSD_IDGetDataFromTable(NULL, jobj->desc, NULL) == o){
 		HSD_IDRemoveByIDFromTable(NULL, jobj->desc);
 	}
