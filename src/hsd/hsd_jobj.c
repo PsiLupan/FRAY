@@ -4,16 +4,213 @@ static void JObjInfoInit();
 
 HSD_JObjInfo hsdJObj = { JObjInfoInit };
 
-static HSD_JObjInfo* default_class = NULL;
-
 static HSD_JObj *current_jobj = NULL; //r13_400C
 static void (*callback_4010)(HSD_JObj*, f32); //r13_4010
 static void (*callback_4014)(f32); //r13_4014
 static void (*callback_4018)() = NULL; //r13_4018
 static HSD_JObj *r13_401C = NULL; //r13_401C
 
+static HSD_JObjInfo* default_class = NULL; //r13_4020
+
+//8036EC10
+void HSD_JObjCheckDepend(HSD_JObj* jobj){
+
+}
+
+//8036ED3C
+void HSD_JObjMtxIsDirty(HSD_JObj* jobj){
+
+}
+
+//8036EE10
+void HSD_JObjSetMtxDirty(HSD_JObj* jobj, void* unk){
+
+}
+
+//8036EFAC
+void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb), u32 unk){
+	if(jobj != NULL){
+		assert(jobj->parent != NULL);
+		u32 type = 0;
+		if(jobj->parent->child == i){
+			type = 1;
+		}else{
+			type = 2;
+		}
+		if(cb != NULL){
+			(*cb)(jobj, unk, type);
+		}
+		if(JOBJ_INSTANCE(jobj)){
+			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
+				assert(i->parent != NULL);
+				u32 type = 0;
+				if(i->parent->child == i){
+					type = 1;
+				}else{
+					type = 2;
+				}
+				if(cb != NULL){
+					(*cb)(i, unk, type);
+				}
+				if(JOBJ_INSTANCE(i)){
+					for(HSD_JObj* n = i->child; n != NULL; n = n->next){
+						HSD_JObjWalkTree0(n, cb, unk);
+					}
+				}
+			}
+		}
+	}
+}
+
+//8036F0F0
+void HSD_JObjWalkTree(HSD_JObj* jobj, void (*cb), u32 unk){
+	if(jobj != NULL){
+		if(cb != NULL){
+			(*cb)(jobj, unk, 0);
+		}
+		if(JOBJ_INSTANCE(jobj)){
+			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
+				assert(i->parent != NULL);
+				u32 type = 0;
+				if(i->parent->child == i){
+					type = 1;
+				}else{
+					type = 2;
+				}
+				if(cb != NULL){
+					(*cb)(i, unk, type);
+				}
+				if(JOBJ_INSTANCE(i)){
+					for(HSD_JObj* n = i->child; n != NULL; n = n->next){
+						HSD_JObjWalkTree0(n, cb, unk);
+					}
+				}
+			}
+		}
+	}
+}
+
+//8036F1F8
+void HSD_JObjMakeMatrix(HSD_JObj* jobj){
+
+}
+
+//8036F4C8
+void HSD_JObjRemoveAnimByFlags(HSD_JObj* jobj, u32 flags){
+	if(jobj != NULL){
+		if((flags & 1) != 0){
+			HSD_AObjRemove(jobj->aobj);
+		}
+		if(union_type_dobj(jobj)){
+			HSD_DObjRemoveAnimAllByFlags(jobj->u.dobj, flags);
+		}
+		HSD_RObjRemoveAnimAllByFlags(jobj->robj, flags);
+	}
+}
+
+//8036F550
+void HSD_JObjRemoveAnimAllByFlags(HSD_JObj* jobj, u32 flags){
+	if(jobj != NULL){
+		if((flags & 1) != 0){
+			HSD_AObjRemove(jobj->aobj);
+		}
+		if(union_type_dobj(jobj)){
+			HSD_DObjRemoveAnimAllByFlags(jobj->u.dobj, flags);
+		}
+		HSD_RObjRemoveAnimAllByFlags(jobj->robj, flags);
+
+		if(JOBJ_INSTANCE(jobj)){
+			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
+				if(i != NULL){
+					HSD_JObjRemoveAnimByFlags(i, flags);
+					if(JOBJ_INSTANCE(i)){
+						for(HSD_JObj* n = i->child; n != NULL; n = n->next){
+							HSD_JObjRemoveAnimAllByFlags(n, flags);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+//8036F644
+void HSD_JObjRemoveAnim(HSD_JObj* jobj){
+	if(jobj != NULL){
+		HSD_AObjRemove(jobj->aobj);
+		jobj->aobj = NULL;
+		if(union_type_dobj(jobj)){
+			HSD_DObjRemoveAnimAllByFlags(jobj->u.dobj, 0x7FF);
+		}
+		HSD_RObjRemoveAnimAllByFlags(jobj->robj, 0x7FF);
+	}
+}
+
+//8036F6B4
+void HSD_JObjRemoveAnimAll(HSD_JObj* jobj){
+	if(jobj != NULL){
+		HSD_JObjRemoveAnimByFlags(jobj, 0x7FF);
+		if(JOBJ_INSTANCE(jobj)){
+			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
+				HSD_JObjRemoveAnimAllByFlags(jobj, 0x7FF);
+			}
+		}
+	}
+}
+
+//8036F718
+void HSD_JObjReqAnimByFlags(HSD_JObj* jobj, u32 flags, f32 frame){
+	if(jobj != NULL){
+		if((flags & 1) != 0){
+			HSD_AObjReqAnim(jobj->aobj, frame);
+		}
+		if(union_type_dobj(jobj)){
+			HSD_DObjReqAnimAllByFlags(jobj->u.dobj, flags, frame);
+		}
+		HSD_RObjReqAnimAllByFlags(jobj->robj, flags, frame);
+	}
+}
+
+//8036F7B0
+void HSD_JObjReqAnimAllByFlags(HSD_JObj* jobj, u32 flags, f32 frame){
+	if(jobj != NULL){
+		if((flags & 1) != 0){
+			HSD_AObjReqAnim(jobj->aobj, frame);
+		}
+		if(union_type_dobj(jobj)){
+			HSD_DObjReqAnimAllByFlags(jobj->u.dobj, flags, frame);
+		}
+		HSD_RObjReqAnimAllByFlags(jobj->robj, flags, frame);
+
+		if(JOBJ_INSTANCE(jobj)){
+			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
+				if(i != NULL){
+					HSD_JObjReqAnimByFlags(i, flags, frame);
+					if(JOBJ_INSTANCE(i)){
+						for(HSD_JObj* n = i->child; n != NULL; n = n->next){
+							HSD_JObjReqAnimAllByFlags(n, flags, frame);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+//8036F8BC
+void HSD_JObjReqAnimAll(HSD_JObj* jobj, f32 frame){
+	if(jobj != NULL){
+		HSD_JObjReqAnimByFlags(jobj, 0x7FF, frame);
+		if(JOBJ_INSTANCE(jobj)){
+			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
+				HSD_JObjReqAnimAllByFlags(i, 0x7FF, frame);
+			}
+		}
+	}
+}
+
 //8036F934
-void HSD_JObjReqAnim(HSD_JObj *jobj, f32 frame){
+void HSD_JObjReqAnim(HSD_JObj* jobj, f32 frame){
 	if (jobj != NULL){
 		HSD_AObjReqAnim(jobj->aobj, frame);
 		if (union_type_dobj(jobj)){
@@ -24,7 +221,7 @@ void HSD_JObjReqAnim(HSD_JObj *jobj, f32 frame){
 }
 
 //8036F9B8
-static void JObjSortAnim(HSD_AObj *aobj){
+static void JObjSortAnim(HSD_AObj* aobj){
 	if(aobj != NULL && aobj->fobj != NULL){
 		for (HSD_FObj* i = aobj->fobj; ; i = i->next){
 			HSD_FObj* n_fobj = i->next;
@@ -37,6 +234,16 @@ static void JObjSortAnim(HSD_AObj *aobj){
 			}
 		}
 	}
+}
+
+//8036FA10
+void HSD_JObjAddAnim(HSD_JObj* jobj, HSD_AObj* aobj){
+
+}
+
+//8036FB5C
+void HSD_JObjAddAnimAll(HSD_JObj* jobj, HSD_AObj* aobj){
+
 }
 
 //8036FDC0
@@ -352,6 +559,21 @@ void HSD_JObjAnimAll(HSD_JObj* jobj){
 	}
 }
 
+//80370B90
+void HSD_JObjSetDefaultClass(HSD_JObjInfo* info){
+	default_class = info;
+}
+
+//80370BEC
+void JObjLoad(){
+
+}
+
+//80370E44
+void HSD_JObjLoadJoint(){
+
+}
+
 //80371590
 void HSD_JObjRemoveAll(HSD_JObj *jobj){
 	if(jobj != NULL){
@@ -554,7 +776,7 @@ HSD_DObj* HSD_JObjGetDObj(HSD_JObj *jobj){
 
 //80371C24
 void HSD_JObjAddDObj(HSD_JObj *jobj, HSD_DObj *dobj){
-	if(jobj && dobj && union_type_dobj(jobj)){
+	if(jobj != NULL && dobj != NULL && union_type_dobj(jobj)){
 		dobj->next = jobj->u.dobj;
 		jobj->u.dobj = dobj;
 	}
@@ -562,7 +784,7 @@ void HSD_JObjAddDObj(HSD_JObj *jobj, HSD_DObj *dobj){
 
 //80371C68
 void HSD_JObjPrependRObj(HSD_JObj *jobj, HSD_RObj *robj){
-	if(jobj && robj){
+	if(jobj != NULL && robj != NULL){
 		robj->next = jobj->robj;
 		jobj->robj = robj;
 	}
@@ -571,7 +793,7 @@ void HSD_JObjPrependRObj(HSD_JObj *jobj, HSD_RObj *robj){
 //80371C98
 void HSD_JObjDeleteRObj(HSD_JObj *jobj, HSD_RObj *robj){
 	HSD_RObj **rp;
-	if(jobj && robj){
+	if(jobj != NULL && robj != NULL){
 		for(rp = &jobj->robj; *rp; &(*rp)->next){
 			if(*rp == robj){
 				*rp = robj->next;
@@ -588,47 +810,53 @@ u32 HSD_JObjGetFlags(HSD_JObj *jobj){
 }
 
 //80371D00
-bool HSD_JObjSetFlags(HSD_JObj *jobj, u32 flags){
-	bool result = false;
-	if(jobj){
+void HSD_JObjSetFlags(HSD_JObj *jobj, u32 flags){
+	if(jobj != NULL){
 		if((jobj->flags ^ flags) & 8){
-			if(!(jobj->flags & 0x800000) && (jobj->flags & 0x40))
-				result = true;
-			if(!result)
-				result = HSD_JObjSetMtxDirtySub(jobj);
+			bool alreadyDirty = false;
+			if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
+				alreadyDirty = true;
+			}
+			if(alreadyDirty == false){
+				HSD_JObjSetMtxDirtySub(jobj);
+			}
 		}
 		jobj->flags |= flags;
 	}
-	return result;
 }
 
 //80371D9C
-bool HSD_JObjSetFlagsAll(HSD_JObj *jobj, u32 flags){
-	bool result = false;
-	if(jobj){
+void HSD_JObjSetFlagsAll(HSD_JObj* jobj, u32 flags){
+	if(jobj != NULL){
 		if((jobj->flags ^ flags) & 8){
-			if(!(jobj->flags & 0x800000) && (jobj->flags & 0x40))
-				result = true;
-			if(!result)
-				result = HSD_JObjSetMtxDirtySub(jobj);
+			bool alreadyDirty = false;
+			if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
+				alreadyDirty = true;
+			}
+			if(alreadyDirty == false){
+				HSD_JObjSetMtxDirtySub(jobj);
+			}
 		}
 		jobj->flags |= flags;
 		
-		if(!(JOBJ_INSTANCE(jobj))){
+		if(JOBJ_INSTANCE(jobj)){
 			for(HSD_JObj* i = jobj->child; i; i = i->child){
-				if(i){
+				if(i != NULL){
 					if((i->flags ^ flags) & 8){
-						result = false;
-						if(!(i->flags & 0x800000) && (i->flags & 0x40))
-							result = true;
-						if(!result)
-							result = HSD_JObjSetMtxDirtySub(i);
+						bool alreadyDirty = false;
+						if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
+							alreadyDirty = true;
+						}
+						if(alreadyDirty == false){
+							HSD_JObjSetMtxDirtySub(i);
+						}
 					}
 					i->flags |= flags;
 					
-					if(!(JOBJ_INSTANCE(i))){
-						for (HSD_JObj* j = i->child; j; j = j->child )
-							result = HSD_JObjSetFlagsAll(j, flags);
+					if(JOBJ_INSTANCE(i)){
+						for (HSD_JObj* j = i->child; j; j = j->child ){
+							HSD_JObjSetFlagsAll(j, flags);
+						}
 					}
 				}
 			}
@@ -637,54 +865,59 @@ bool HSD_JObjSetFlagsAll(HSD_JObj *jobj, u32 flags){
 }
 
 //80371F00
-bool HSD_JObjClearFlags(HSD_JObj *jobj, u32 flags){
-	bool result = false;
-	if(jobj){
+void HSD_JObjClearFlags(HSD_JObj *jobj, u32 flags){
+	if(jobj != NULL){
 		if((jobj->flags ^ flags) & 8){
-			if(!(jobj->flags & 0x800000) && (jobj->flags & 0x40))
-				result = true;
-			if(!result)
-				result = HSD_JObjSetMtxDirtySub(jobj);
+			bool alreadyDirty = false;
+			if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
+				alreadyDirty = true;
+			}
+			if(alreadyDirty == false){
+				HSD_JObjSetMtxDirtySub(jobj);
+			}
 		}
 		jobj->flags &= ~flags;
 	}
-	return result;
 }
 
 //80371F9C
-bool HSD_JObjClearFlagsAll(HSD_JObj *jobj, u32 flags){
-	bool result = false;
-	if(jobj){
+void HSD_JObjClearFlagsAll(HSD_JObj *jobj, u32 flags){
+	if(jobj != NULL){
 		if((jobj->flags ^ flags) & 8){
-			if(!(jobj->flags & 0x800000) && (jobj->flags & 0x40))
-				result = true;
-			if(!result)
-				result = HSD_JObjSetMtxDirtySub(jobj);
+			bool alreadyDirty = false;
+			if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
+				alreadyDirty = true;
+			}
+			if(alreadyDirty == false){
+				HSD_JObjSetMtxDirtySub(jobj);
+			}
 		}
 		jobj->flags &= ~flags;
 		
-		if(!(JOBJ_INSTANCE(jobj))){
+		if(JOBJ_INSTANCE(jobj)){
 			HSD_JObj *i;
 			for(i = jobj->child; i; i = i->child){
-				if(i){
+				if(i != NULL){
 					if((i->flags ^ flags) & 8){
-						result = false;
-						if(!(i->flags & 0x800000) && (i->flags & 0x40))
-							result = true;
-						if(!result)
-							result = HSD_JObjSetMtxDirtySub(i);
+						bool alreadyDirty = false;
+						if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
+							alreadyDirty = true;
+						}
+						if(alreadyDirty == false){
+							HSD_JObjSetMtxDirtySub(i);
+						}
 					}
 					i->flags &= ~flags;
 					
-					if(!(JOBJ_INSTANCE(i))){
-						for (HSD_JObj* j = i->child; j; j = j->child )
-							result = HSD_JObjClearFlagsAll(j, flags);
+					if(JOBJ_INSTANCE(i)){
+						for (HSD_JObj* j = i->child; j; j = j->child ){
+							HSD_JObjClearFlagsAll(j, flags);
+						}
 					}
 				}
 			}
 		}
 	}
-	return result;
 }
 
 //8037210C
@@ -696,7 +929,7 @@ HSD_JObj* HSD_JObjAlloc(){
 
 //80372168
 void HSD_JObjSetCurrent(HSD_JObj *jobj){ //INCOMPLETE
-	if(jobj)
+	if(jobj != NULL)
 		current_jobj = jobj;
 }
 
@@ -706,10 +939,10 @@ HSD_JObj* HSD_JObjGetCurrent(){
 }
 
 //803732E8
-BOOL HSD_JObjSetMtxDirtySub(HSD_JObj* jobj){
+void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj){
 	BOOL isDirty = FALSE;
 	jobj->flags = jobj->flags | 0x40;
-	if((jobj->flags & 0x1000) == 0){
+	if(JOBJ_INSTANCE(jobj)){
 		HSD_JObj* child = jobj->child;
 		while(child != NULL){
 			if((child->flags & 0x1000000) == 0){
@@ -717,7 +950,7 @@ BOOL HSD_JObjSetMtxDirtySub(HSD_JObj* jobj){
 				if((child->flags & 0x800000) == 0 && (child->flags & 0x40) != 0){
 					isDirty = TRUE;
 				}
-				if(isDirty == FALSE && child->flags & 0x1000 == 0){
+				if(isDirty == FALSE && JOBJ_INSTANCE(child)){
 					child->flags = child->flags | 0x40;
 
 					HSD_JObj* child_child = child->child;
@@ -738,7 +971,6 @@ BOOL HSD_JObjSetMtxDirtySub(HSD_JObj* jobj){
 			child = child->next;
 		}
 	}
-	return isDirty;
 }
 
 //80373404
