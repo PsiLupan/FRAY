@@ -8,9 +8,10 @@
 //Display Object
 typedef struct _HSD_DObj {
 	HSD_Class class_parent;
-	struct _HSD_DObj* next;
-	struct _HSD_MObj* mobj;
-	struct _HSD_PObj* pobj;
+	struct _HSD_DObj* next; //0x04
+	struct _HSD_MObj* mobj; //0x08
+	struct _HSD_PObj* pobj; //0x0C
+	struct _HSD_AObj* aobj; //0x10
 	u32 flags; //0x14
 	u32 unk;
 } HSD_DObj;
