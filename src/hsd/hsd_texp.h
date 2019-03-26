@@ -39,6 +39,29 @@ typedef struct _HSD_TExp {
     u8 x14_unk;
     u8 x15_unk;
     u8 x16_unk;
+    u8 x17_unk;
+    u32 x18_unk;
+    u32 x1C_unk;
+    u32 x20_unk;
+    u32 x24_unk;
+    u32 x28_unk;
+    u32 x2C_unk;
+    u32 x30_unk;
+    u32 x34_unk;
+    u32 x38_unk;
+    u32 x3C_unk;
+    u32 x40_unk;
+    u32 x44_unk;
+    u32 x48_unk;
+    u32 x4C_unk;
+    u32 x50_unk;
+    u32 x54_unk;
+    u32 x58_unk;
+    u32 x5C_unk;
+    u32 x60_unk;
+    u32 x64_unk;
+    u32 x68_unk;
+    u32 x6C_unk;
 } HSD_TExp;
 
 #endif
