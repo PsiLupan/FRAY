@@ -21,6 +21,8 @@ typedef struct _HSD_DObjDesc {
 	struct _HSD_DObjDesc* next;
 	struct _HSD_MObjDesc* mobjdesc;
 	struct _HSD_PObjDesc* pobjdesc;
+	struct _HSD_AObjDesc* aobjdesc;
+	u32 flags;
 } HSD_DObjDesc;
 
 typedef struct _HSD_DObjInfo {
