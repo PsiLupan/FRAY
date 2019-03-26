@@ -1,8 +1,7 @@
 #include "hsd_object.h"
 
 HSD_ClassInfo hsdClass = { 
-	_hsdInfoInit, true, "HSD_BASE_CLASS_LIBRARY", "hsd_class", 4, sizeof(HSD_ClassInfo), NULL, NULL, NULL, 0, 0,
-	_hsdClassAlloc, _hsdClassInit, _hsdClassRelease, _hsdClassDestroy, _hsdClassAmnesia
+	_hsdInfoInit
 };
 
 static struct {
@@ -130,12 +129,18 @@ void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, cha
 
 //803821C4
 static void _hsdClassAlloc(HSD_ClassInfo* info){
-
+	HSD_MemPiece* mem_piece = hsdAllocMemPiece(info->obj_size);
+	if(mem_piece != NULL){
+		info->active_objs += 1;
+		if(info->total_allocs < info->active_objs){
+			info->total_allocs = info->active_objs;
+		}
+	}
 }
 
 //8038221C
 static void _hsdClassInit(HSD_ClassInfo* info){
-
+	return;
 }
 
 //80382224
@@ -145,7 +150,14 @@ static void _hsdClassRelease(HSD_ClassInfo* info){
 
 //80382228
 static void _hsdClassDestroy(HSD_ClassInfo* info){
-
+	if(info != NULL){
+		info->active_objs -= 1;
+		u32 size = info->obj_size + 0x1F;
+		HSD_MemoryEntry* entry = GetMemoryEntry((size >> 5) + (u32)((s32)size < 0 && (size & 0x1F) != 0) + -1);
+		((HSD_MemPiece*)info)->next = entry->data;
+		entry->data = (HSD_MemPiece*)info;
+		entry->free_pieces += 1;
+	}
 }
 
 //80382294
@@ -163,5 +175,10 @@ static void _hsdClassAmnesia(HSD_ClassInfo* info){
 
 //803822C0
 static void _hsdInfoInit(){
-
+	hsdInitClassInfo(&hsdClass, NULL, HSD_BASE_CLASS_LIBRARY, "hsd_class", sizeof(HSD_ClassInfo), 4);
+	hsdClass.obj_alloc = _hsdClassAlloc; 
+	hsdClass.init = _hsdClassInit; 
+	hsdClass.release = _hsdClassRelease; 
+	hsdClass.destroy = _hsdClassDestroy; 
+	hsdClass.amnesia = _hsdClassAmnesia;
 }
