@@ -48,7 +48,25 @@ typedef struct _HSD_CObj {
 } HSD_CObj;
 
 typedef struct _HSD_CObjDesc {
-
+    char* class_name; //0x00
+    u16 flags; //0x04
+    u16 projection_type; //0x06
+    u16 viewport_left; //0x08
+    u16 viewport_right; //0x0A
+    u16 viewport_top; //0x0C
+    u16 viewport_bottom; //0x0E
+    u32 scissor_lr; //0x10
+    u32 scissor_tb; //0x14
+    struct _HSD_WObjDesc* eye_desc; //0x18
+    struct _HSD_WObjDesc* interest_desc; //0x1C
+    f32 roll; //0x20
+    f32* vector; //0x24
+    f32 near; //0x28
+    f32 far; //0x2C
+    f32 fov_top; //0x30
+    f32 aspect_bottom; //0x34
+    f32 proj_left; //0x38
+    f32 proj_right; //0x3C
 } HSD_CObjDesc;
 
 typedef struct _HSD_CObjInfo {

@@ -530,7 +530,7 @@ HSD_CObj* HSD_CObjAlloc(){
 }
 
 //8036A2EC
-static int HSD_CObjLoad(){
+static int CObjLoad(HSD_CObj* cobj, HSD_CObjDesc* desc){
     //TODO
 }
 
@@ -592,5 +592,5 @@ static void CObjInfoInit(){
     HSD_CLASS_INFO(&hsdCObj)->init = CObjInit;
     HSD_CLASS_INFO(&hsdCObj)->release = CObjRelease;
     HSD_CLASS_INFO(&hsdCObj)->amnesia = CObjAmnesia;
-    HSD_COBJ_INFO(&hsdCObj)->load = HSD_CObjLoad;
+    HSD_COBJ_INFO(&hsdCObj)->load = CObjLoad;
 }
