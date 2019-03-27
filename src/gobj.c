@@ -160,10 +160,10 @@ static HSD_GObj* CreateGObj(u32 order, u32 class, u32 p_link, u32 p_prio, HSD_GO
 		gobj->data_kind = GOBJ_NOREF;
 		gobj->prev_gx = NULL;
 		gobj->next_gx = NULL;
-		gobj->unk_linkedlist = NULL;
+		gobj->proc = NULL;
 		gobj->render_cb = NULL;
-		gobj->unk24 = NULL;
-		gobj->unk20 = NULL;
+		gobj->x24_unk = NULL;
+		gobj->x20_unk = NULL;
 		gobj->hsd_obj = NULL;
 		gobj->data = NULL;
 		gobj->user_data_remove_func = NULL;

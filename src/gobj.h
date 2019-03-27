@@ -41,13 +41,16 @@ typedef struct _HSD_GObj {
 	struct _HSD_GObj* prev_gx;
 	struct _HSD_GObjProc* proc;
 	void (*render_cb)(struct _HSD_GObj *gobj, int code);
-	u32 unk20;
-	u32 unk24;
+	u32 x20_unk;
+	u32 x24_unk;
 	void* data;
 	void* hsd_obj; //JObj or CObj known
 	void (*user_data_remove_func)(void* data);
-	GObj_LinkedList* linkedlist2;
-	GObj_LinkedList* linkedlist3;
+	void* x34_unk;
+	u32 x38_unk;
+	u32 flags;
+	void* x40_unk;
+	void* x44_unk;
 } HSD_GObj;
 
 typedef struct _HSD_GObjProc {
