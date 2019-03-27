@@ -2,6 +2,13 @@
 
 #define P_LINK_MAX 63
 #define GX_LINK_MAX 63
+#define S_LINK_MAX 63
+
+static HSD_GObjProc** slinklow_procs[S_LINK_MAX * S_LINK_MAX]; //r13_3E5C
+static HSD_GObjProc** slinkhigh_procs[S_LINK_MAX * S_LINK_MAX]; //r13_3E60
+static HSD_GObjProc* first_gobjproc; //r13_3E68
+static u32 last_s_link = 0; //r13_3E6C
+static HSD_GObjProc* last_gobjproc; //r13_3E70
 static HSD_GObj** plinkhigh_gobjs[P_LINK_MAX + 2]; //r13_3E74
 static HSD_GObj** plinklow_gobjs[P_LINK_MAX + 2]; //r13_3E78
 static HSD_GObj** highestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E7C
@@ -9,12 +16,12 @@ static HSD_GObj** lowestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E80
 static HSD_GObj* current_gobj = NULL; //r13_3E84 - Really just a guess
 static void* r13_3E88 = NULL;
 static void* r13_3E8C = NULL;
-static void** hsd_destructors[14]; //r13_3E90 - Length is currently made up, TODO: need to explictly assign the functions to this at some point
+static void* hsd_destructors[14]; //r13_3E90 - Length is currently made up, TODO: need to explictly assign the functions to this at some point
 
 u32 flag_array[4] = {1, 4, 2, 0}; //804085F0
 
-HSD_ObjDef gobj_def_1; //804CE38C
-HSD_ObjDef gobj_def_2; //804CE3B8
+HSD_ObjDef gobj_def; //804CE38C
+HSD_ObjDef gobj_proc_def; //804CE3B8
 HSD_ObjDef gobj_def_3; //804CE3E4
 
 //80086960
@@ -44,22 +51,82 @@ BOOL GObj_IsItem(HSD_GObj* gobj){
 	return FALSE;
 }
 
+//8038FAA8
+void GObj_LinkProc(HSD_GObjProc* proc){
+	HSD_GObj* gobj = proc->gobj;
+	u32 p_link = gobj->p_link;
+	u32 offset = (proc->s_link * (S_LINK_MAX + 1) + p_link);
+	GObjProc* prev = NULL;
+
+	if(slinklow_procs[offset] == NULL){
+		slinklow_procs[offset] = proc;
+	}else{
+		for(HSD_GObj* i = proc->gobj; i != NULL; i->prev){
+			for(prev = i->proc; prev != NULL; prev->child){
+				if(prev->s_link == proc->s_link){
+					HSD_GObjProc* p = slinklow_procs[offset];
+					if(p->child == prev){
+						p->child = proc;
+					}
+					goto JMPLABEL_1;
+				}
+			}
+		}
+	}
+
+	offset = (proc->s_link * (S_LINK_MAX + 1) + p_link);
+	BOOL no_entries = FALSE;
+	do {
+		offset -= 1;
+		p_link -= 1;
+		if(p_link == 0){
+			proc->next = slinkhigh_procs[s_link];
+			slinkhigh_procs[s_link] = proc;
+			proc->prev = NULL;
+			goto JMPLABEL_2;
+		}
+		prev = slinklow_procs[offset];
+		while(prev == NULL);
+	}
+
+	JMPLABEL_1:
+	proc->next = prev->next;
+	prev->next = proc;
+	proc->prev = prev;
+	JMPLABEL_2:
+	if(proc->next != NULL){
+		proc->next->prev = proc;
+	}
+	proc->child = gobj->proc;
+	gobj->proc = proc;
+	if(gobj_def_3.flags >> 7 == 0){
+		return;
+	}
+	if(proc->prev != first_gobjproc){
+		return;
+	}
+	if(proc->next == last_gobjproc){
+		if(proc->s_link == last_s_link){
+			last_gobjproc = proc;
+		}
+	}
+}
+
 //8038FD54
-s32 GObj_CreateWithAnimCallback(HSD_GObj* gobj, void* animcb, u8 gx_link){
-  s32 iVar1;
-  int in_r13;
+HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj* gobj, void* cb, u8 s_prio){
+  HSD_GObjProc* proc;
   
-  iVar1 = HSD_ObjAlloc(&gobj_def_2);
-  assert(iVar1 != NULL);
-  assert(gx_link <= GX_LINK_MAX);
-  *(u8 *)(iVar1 + 0xc) = gx_link;
-  *(u8 *)(iVar1 + 0xd) = *(u8 *)(iVar1 + 0xd) & 0xbf;
-  *(u8 *)(iVar1 + 0xd) = *(u8 *)(iVar1 + 0xd) & 0x7f;
-  *(u8 *)(iVar1 + 0xd) = *(u8 *)(iVar1 + 0xd) & 0xcf | 0x30;
-  *(u32 *)(iVar1 + 0x10) = gobj;
-  *(u32 *)(iVar1 + 0x14) = animcb;
-  FUN_8038faa8(iVar1);
-  return iVar1;
+  proc = (HSD_GObjProc*)HSD_ObjAlloc(&gobj_proc_def);
+  assert(proc != NULL);
+  assert(s_prio <= S_LINK_MAX);
+  proc->s_link = s_prio;
+  proc->flags = proc->flags & 0xbf;
+  proc->flags = proc->flags & 0x7f;
+  proc->flags = proc->flags & 0xcf | 0x30;
+  proc->gobj = gobj;
+  proc->callback = cb;
+  GObj_LinkProc(proc);
+  return proc;
 }
 
 //8038FF5C
@@ -82,7 +149,7 @@ void GObj_PReorder(HSD_GObj* gobj, HSD_GObj* hiprio_gobj){
 //8038FFB8
 static HSD_GObj* CreateGObj(u32 order, u32 class, u32 p_link, u32 p_prio, HSD_GObj* p_gobj){
 	assert(p_link < P_LINK_MAX);
-	HSD_GObj* gobj = (HSD_GObj*)HSD_ObjAlloc(&gobj_def_1);
+	HSD_GObj* gobj = (HSD_GObj*)HSD_ObjAlloc(&gobj_def);
 	if(gobj != NULL){
 		gobj->classifier = class;
 		gobj->p_link = p_link;
@@ -187,7 +254,7 @@ void GObj_Free(HSD_GObj* gobj){
 		}else{
 			plinklow_gobjs[gobj->p_link] = gobj->prev;
 		}
-		HSD_ObjFree(&gobj_def_1, gobj);
+		HSD_ObjFree(&gobj_def, gobj);
 	}else{
 		gobj_def_3.flags = (gobj_def_3.flags & 0xBF) | 0x40;
 	}

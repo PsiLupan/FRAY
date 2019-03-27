@@ -39,16 +39,26 @@ typedef struct _HSD_GObj {
 	struct _HSD_GObj* prev;
 	struct _HSD_GObj* next_gx;
 	struct _HSD_GObj* prev_gx;
-	GObj_LinkedList* unk_linkedlist;
+	struct _HSD_GObjProc* proc;
 	void (*render_cb)(struct _HSD_GObj *gobj, int code);
 	u32 unk20;
 	u32 unk24;
 	void* data;
 	void* hsd_obj; //JObj or CObj known
 	void (*user_data_remove_func)(void* data);
-	GObj_LinkedList* unk_linkedlist2;
-	GObj_LinkedList* unk_linkedlist3;
+	GObj_LinkedList* linkedlist2;
+	GObj_LinkedList* linkedlist3;
 } HSD_GObj;
+
+typedef struct _HSD_GObjProc {
+	struct _HSD_GObjProc* child; //0x0
+	struct _HSD_GObjProc* next; //0x4
+	struct _HSD_GObjProc* prev; //0x8
+	u8 s_link; //0xC
+	u16 flags; //0xD
+	struct _HSD_GObj gobj; //0x10
+	void (*callback)(); //0x14
+} HSD_GObjProc;
 
 BOOL GObj_IsPlayer(HSD_GObj *);
 void GObj_AnimAll_Callback(HSD_GObj *);

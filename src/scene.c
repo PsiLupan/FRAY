@@ -346,7 +346,7 @@ void Scene_Minor_Class0_OnLoad(){
   HSD_Fog* fog = HSD_FogLoadDesc(scene_fog_desc);
   GObj_InitKindObj(fog_gobj, GOBJ_KIND_FOG, (void*)fog);
   GObj_SetupGXLink(fog_gobj, Fog_Set_Callback, 0, 0);
-  GObj_CreateWithAnimCallback(fog_gobj, Fog_InterpretAnim_Callback, 0);
+  GObj_CreateProcWithCallback(fog_gobj, Fog_InterpretAnim_Callback, 0);
 
   HSD_GObj* lobj_gobj = GObj_Create(GOBJ_CLASS_HSD_LOBJ, 3, 128);
   HSD_LObj* lobj = LObj_LoadLightDescs(scene_lights_desc);
@@ -375,7 +375,7 @@ void Scene_Minor_Class0_OnLoad(){
   GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
   GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
   HSD_JObjAddAnimAll(jobj, title_ptrs.bg_top_animjoint, title_ptrs.bg_top_matanim_joint, title_ptrs.bg_top_shapeanim_joint);
-  GObj_CreateWithAnimCallback(gobj_2, Scene_ReqAnimAll_Callback, 0);
+  GObj_CreateProcWithCallback(gobj_2, Scene_ReqAnimAll_Callback, 0);
   
   u8 major = Scene_GetCurrentMajor();
   u8 minor = Scene_GetCurrentMinor();
