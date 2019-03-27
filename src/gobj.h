@@ -19,14 +19,6 @@
 
 #define GOBJ_NOREF 0xFF
 
-//This has 0x20 aligned size - assuming this is actually something related to HSD_Memory and can be scrapped later
-typedef struct _GObj_LinkedList {
-	struct _GObj_LinkedList* prev;
-	struct _GObj_LinkedList* next;
-	int size;
-	int data[5];
-} GObj_LinkedList;
-
 typedef struct _HSD_GObj {
 	u16 classifier;
 	u8 p_link;
