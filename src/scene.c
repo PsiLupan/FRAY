@@ -27,7 +27,7 @@ const s32 cache_base[24] = { //803BA638
   0x00000000, 0x00000000, 0xff00ffff, 0x00000000
 };
 
-f32 title_frames[3] = {0, 1330, 130}; //803DA4FC
+f32 title_frames[3] = {0.f, 1330.f, 130.f}; //803DA4FC
 
 s32 preload_cache[0x1000]; //80432078
 
@@ -363,8 +363,8 @@ void Scene_Minor_Class0_OnLoad(){
   GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_MENU_COBJ, menu_cobj_2);
   GObj_SetupGXLink_Max(menu_gobj_2, CObj_SetCurrent_Callback, 0xC);
 
-  menu_gobj_2->unk24 = 0x209;
-  menu_gobj_2->unk20 = 0;
+  menu_gobj_2->x24_unk = 0x209;
+  menu_gobj_2->x20_unk = 0;
 
   Menu_Title_SetupLogos();
   sub_80027648();

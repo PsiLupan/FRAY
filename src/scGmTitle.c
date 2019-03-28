@@ -6,17 +6,18 @@ MinorScene GmTitle_Minors[2] = {
     };
 
 GmTitle_File title_ptrs; //80479B28
+f32 title_anim_speed = 0.0f; //803DA4F0
 
 //801A1630
 static void Menu_Title_JObjAnimCallback(HSD_GObj* gobj){
-    sub_8022ED6C(gobj->data, &803DA4F0);
+    sub_8022ED6C(gobj->data, &(title_anim_speed));
 }
 
 //801A165C
 void Menu_Title_SetupLogos(){
 	HSD_GObj* gobj = GObj_Create(0xE, 0xF, 0);
 	HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.top_joint);
-    GObj_InitKindObj(gobj, 3, jobj);
+    GObj_InitKindObj(gobj, GOBJ_KIND_JOBJ, jobj);
     GObj_SetupGXLink(gobj, JObj_SetupInstanceMtx_Callback, 9, 0);
     HSD_JObjAddAnimAll(jobj, (HSD_AnimJoint*)title_ptrs.top_animjoint, 
         (HSD_MatAnimJoint*)title_ptrs.top_matanim_joint, (HSD_ShapeAnimJoint*)title_ptrs.top_shapeanim_joint);
@@ -68,9 +69,9 @@ void Menu_Title_Prep(){
 //801B089C
 void Menu_Title_Decide(GameState* state){
     u32* scene_ptr = (u32*)Scene_Get14(state); //scene_ptr = 804D6878 from the Minors, so something there
-    u32 flags = scene_ptr[0];
+    u32 inputs = scene_ptr[0];
     if(debug_level < 3){
-        if((flags & 0x1000) == 0){
+        if((inputs & 0x1000) == 0){
             sub_801BF708(1);
             Scene_UpdatePendingMajor(0x18);
         }else{
@@ -82,10 +83,10 @@ void Menu_Title_Decide(GameState* state){
             }
         }
     }else{
-        if((flags & 0x100) == 0){
-            if((flags & 0x1000) == 0){
-                if((flags & 0x400) == 0){
-                    if((flags & 0x800) == 0){
+        if((inputs & 0x100) == 0){
+            if((inputs & 0x1000) == 0){
+                if((inputs & 0x400) == 0){
+                    if((inputs & 0x800) == 0){
                         sub_801BF708(1);
                         Scene_UpdatePendingMajor(0x18);
                     }else{
