@@ -7,12 +7,17 @@ MinorScene GmTitle_Minors[2] = {
 
 GmTitle_File title_ptrs; //80479B28
 
+//801A1630
+static void Menu_Title_JObjAnimCallback(HSD_GObj* gobj){
+    sub_8022ED6C(gobj->data, &803DA4F0);
+}
+
 //801A165C
 void Menu_Title_SetupLogos(){
 	HSD_GObj* gobj = GObj_Create(0xE, 0xF, 0);
 	HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.top_joint);
     GObj_InitKindObj(gobj, 3, jobj);
-    GObj_SetupGXLink(gobj, , 9, 0);
+    GObj_SetupGXLink(gobj, JObj_SetupInstanceMtx_Callback, 9, 0);
     HSD_JObjAddAnimAll(jobj, (HSD_AnimJoint*)title_ptrs.top_animjoint, 
         (HSD_MatAnimJoint*)title_ptrs.top_matanim_joint, (HSD_ShapeAnimJoint*)title_ptrs.top_shapeanim_joint);
     u8 major = Scene_GetCurrentMajor();
@@ -29,7 +34,7 @@ void Menu_Title_SetupLogos(){
         GObj_CreateProcWithCallback(gobj, /*801A1498*/, 0);
     }else{
         HSD_JObjReqAnimAll(jobj, 400.f);
-        GObj_CreateProcWithCallback(gobj, /*801A1630*/, 0);
+        GObj_CreateProcWithCallback(gobj, Menu_Title_JObjAnimCallback, 0);
     }
     HSD_JObjAnimAll(jobj);
     //BOOL unlock = CheckCharUnlockStatus(EXTERNAL_MARTH);
@@ -57,10 +62,49 @@ void Menu_Title_SetupLogos(){
 
 //801B087C
 void Menu_Title_Prep(){
-    Scene_800174BC();
+    Scene_PrepCache();
 }
 
 //801B089C
-void Menu_Title_Decide(void* unk_struct){
-
+void Menu_Title_Decide(GameState* state){
+    u32* scene_ptr = (u32*)Scene_Get14(state); //scene_ptr = 804D6878 from the Minors, so something there
+    u32 flags = scene_ptr[0];
+    if(debug_level < 3){
+        if((flags & 0x1000) == 0){
+            sub_801BF708(1);
+            Scene_UpdatePendingMajor(0x18);
+        }else{
+            sub_80173EEC();
+            sub_80172898(0x100);
+            u32 res = sub_80173754(1, 0);
+            if(res == 0){
+                Scene_UpdatePendingMajor(0x1);
+            }
+        }
+    }else{
+        if((flags & 0x100) == 0){
+            if((flags & 0x1000) == 0){
+                if((flags & 0x400) == 0){
+                    if((flags & 0x800) == 0){
+                        sub_801BF708(1);
+                        Scene_UpdatePendingMajor(0x18);
+                    }else{
+                        Scene_UpdatePendingMajor(0x6);
+                    }
+                }else{
+                    Scene_UpdatePendingMajor(0x7);
+                }
+            }else{
+                sub_80173EEC();
+                sub_80172898(0x100);
+                u32 res = sub_80173754(1, 0);
+                if(res == 0){
+                    Scene_UpdatePendingMajor(0x1);
+                }
+            }
+        }else{
+            Scene_UpdatePendingMajor(0xE);
+        }
+    }
+    Scene_SetPendingTrue();
 }

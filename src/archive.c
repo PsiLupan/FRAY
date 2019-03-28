@@ -91,7 +91,7 @@ void* Archive_GetFileSection(void* dat_start, char* section_name){
 }
 
 //803803FC
-s32 Archive_Check(u32* src, u32 counter){
+s32 Archive_Check(s32* src, u32 counter){
     if((counter > -1) && (counter < src[4])){
         return src[12] + *(s32*)(src[11] + counter * 8 + 4);
     }

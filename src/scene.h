@@ -94,6 +94,8 @@ typedef struct _unk_8046B0F0 {
 	u32 unk0C;
 } unk_8046B0F0;
 
+extern u32 debug_level;
+
 extern unk_8046B0F0 dword_8046B0F0;
 
 u8* Scene_ProcessMajor(u8);

@@ -16,7 +16,7 @@ static u32* r13_4F80[3];
 static HSD_FogDesc* scene_fog_desc; // 0x4F90(r13)
 static HSD_LightDesc** scene_lights_desc; // -0x4F94(r13)
 static HSD_CObjDesc* scene_cobj_desc; //-0x4F98(r13)
-static u32 debug_level = 0; //-0x6C98(r13)
+u32 debug_level = 0; //-0x6C98(r13)
 
 const s32 cache_base[24] = { //803BA638
   0x00000000, 0x00000000, 0x2d000000, 0x00000148,
@@ -129,7 +129,7 @@ BOOL Scene_IsSceneClassicAdvOrAllStar(){
 }
 
 //800174BC
-void Scene_800174BC(){
+void Scene_PrepCache(){
   Scene_CopyDataToCache();
   Scene_80018254();
   Scene_80017700(4);
@@ -448,7 +448,7 @@ void Scene_ProcessMinor(MajorScene* scene){
   if ( !dword_8046B0F0.unk04 )
   {
     if ( minor_scene->Decide != NULL ){
-      minor_scene->Decide();
+      minor_scene->Decide(&gamestate);
     }
     gamestate.unk04 = gamestate.curr_minor;
     
@@ -499,16 +499,6 @@ void Scene_ReqAnimAll_Callback(HSD_GObj* gobj){
   Scene_ReqAnimAll(jobj, title_frames);
 }
 
-//801A427C
-u32 sub_801A427C(u32 a1){
-  return *(u32 *)(a1 + 16);
-}
-
-//801A4284
-u32 sub_801A4284(u32 a1){
-  return *(u32 *)(a1 + 20);
-}
-
 //801A3EF4
 void Scene_RunStartupInit(){  
   for (u32 i = 0; major_scenes[i].idx != 45; i += 1 ){
@@ -557,9 +547,14 @@ LABEL_9:
   sub_8031C8B8();
 }
 
+//801A427C
+u32 sub_801A427C(u32 a1){
+  return *(u32 *)(a1 + 16);
+}
+
 //801A4284
-void* Scene_Get14(){
-  return gamestate.unk14;
+void* Scene_Get14(GameState* state){
+  return state->unk14;
 }
 
 //801A428C
