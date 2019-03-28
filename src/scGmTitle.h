@@ -21,7 +21,7 @@ typedef struct _GmTitle_File {
 extern GmTitle_File title_ptrs;
 extern MinorScene GmTitle_Minors[2];
 
-
+void Menu_Title_SetupLogos();
 void Menu_Title_Prep();
 void Menu_Title_Decide(void*);
 

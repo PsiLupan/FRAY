@@ -237,12 +237,12 @@ static void JObjSortAnim(HSD_AObj* aobj){
 }
 
 //8036FA10
-void HSD_JObjAddAnim(HSD_JObj* jobj, HSD_AObj* aobj){
+void HSD_JObjAddAnim(HSD_JObj* jobj, HSD_AObjDesc* aobjdesc){
 
 }
 
 //8036FB5C
-void HSD_JObjAddAnimAll(HSD_JObj* jobj, HSD_AObj* aobj){
+void HSD_JObjAddAnimAll(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoint* mat_joint, HSD_ShapeAnimJoint* sh_joint){
 
 }
 
@@ -570,8 +570,8 @@ void JObjLoad(){
 }
 
 //80370E44
-void HSD_JObjLoadJoint(){
-
+void HSD_JObjLoadJoint(HSD_JObjDesc* jdesc){
+	
 }
 
 //80371590

@@ -366,7 +366,7 @@ void Scene_Minor_Class0_OnLoad(){
   menu_gobj_2->unk24 = 0x209;
   menu_gobj_2->unk20 = 0;
 
-  sub_801A165C();
+  Menu_Title_SetupLogos();
   sub_80027648();
   sub_801BF3F8();
 
@@ -374,7 +374,8 @@ void Scene_Minor_Class0_OnLoad(){
   HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.bg_top_joint);
   GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
   GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
-  HSD_JObjAddAnimAll(jobj, title_ptrs.bg_top_animjoint, title_ptrs.bg_top_matanim_joint, title_ptrs.bg_top_shapeanim_joint);
+  HSD_JObjAddAnimAll(jobj, (HSD_AnimJoint*)title_ptrs.bg_top_animjoint, 
+    (HSD_MatAnimJoint*)title_ptrs.bg_top_matanim_joint, (HSD_ShapeAnimJoint*)title_ptrs.bg_top_shapeanim_joint);
   GObj_CreateProcWithCallback(gobj_2, Scene_ReqAnimAll_Callback, 0);
   
   u8 major = Scene_GetCurrentMajor();
