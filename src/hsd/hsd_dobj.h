@@ -25,6 +25,19 @@ typedef struct _HSD_DObjDesc {
 	u32 flags;
 } HSD_DObjDesc;
 
+
+typedef struct _HSD_ShapeAnim {
+	
+} HSD_ShapeAnim;
+
+typedef struct _HSD_ShapeAnimJoint {
+	struct _HSD_ShapeAnimJoint* child;
+	struct _HSD_ShapeAnimJoint* next;
+	struct _HSD_ShapeAnim* shapeanim;
+	u32 unk;
+	u32 unk2;
+} HSD_ShapeAnimJoint;
+
 typedef struct _HSD_DObjInfo {
 	HSD_ClassInfo parent;
 } HSD_DObjInfo;

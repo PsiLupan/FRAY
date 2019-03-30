@@ -28,11 +28,11 @@ void HSD_JObjSetMtxDirty(HSD_JObj* jobj, void* unk){
 }
 
 //8036EFAC
-void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb), u32 unk){
+void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb)(), u32 unk){
 	if(jobj != NULL){
 		assert(jobj->parent != NULL);
 		u32 type = 0;
-		if(jobj->parent->child == i){
+		if(jobj->parent->child == jobj){
 			type = 1;
 		}else{
 			type = 2;
@@ -63,7 +63,7 @@ void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb), u32 unk){
 }
 
 //8036F0F0
-void HSD_JObjWalkTree(HSD_JObj* jobj, void (*cb), u32 unk){
+void HSD_JObjWalkTree(HSD_JObj* jobj, void (*cb)(), u32 unk){
 	if(jobj != NULL){
 		if(cb != NULL){
 			(*cb)(jobj, unk, 0);
@@ -237,13 +237,89 @@ static void JObjSortAnim(HSD_AObj* aobj){
 }
 
 //8036FA10
-void HSD_JObjAddAnim(HSD_JObj* jobj, HSD_AObjDesc* aobjdesc){
+void HSD_JObjAddAnim(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoint* mat_joint, HSD_ShapeAnimJoint* sh_joint){
 
 }
 
 //8036FB5C
 void HSD_JObjAddAnimAll(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoint* mat_joint, HSD_ShapeAnimJoint* sh_joint){
+	if(jobj != NULL){
+		if(an_joint != NULL){
+			if(jobj->aobj != NULL){
+				HSD_AObjRemove(jobj->aobj);
+			}
+			HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->anim);
+			jobj->aobj = aobj;
+			JObjSortAnim(jobj->aobj);
+			HSD_RObjAddAnimAll(jobj->robj, an_joint->unk);
+			if((an_joint->unk2 & 1) == 0){
+				HSD_JObjClearFlags(jobj, 0x8);
+			}else{
+				HSD_JObjSetFlags(jobj, 0x8);
+			}
+		}
+		if(union_type_dobj(jobj)){
+			HSD_ShapeAnim* sh_anim = NULL;
+			HSD_MatAnim* mat_anim = NULL;
+			if(sh_joint != NULL){
+				sh_anim = sh_joint->shapeanim;
+			}
+			if(mat_joint != NULL){
+				mat_anim = mat_joint->matanim;
+			}
+			HSD_DObjAddAnimAll(jobj->u.dobj, mat_anim, sh_anim);
+		}
+		if(JOBJ_INSTANCE(jobj)){
+			if(an_joint != NULL){
+				an_joint = an_joint->child;
+			}
+			if(mat_joint != NULL){
+				mat_joint = mat_joint->child;
+			}
+			if(sh_joint != NULL){
+				sh_joint = sh_joint->child;
+			}
+			for(HSD_JObj* i = jobj->child; i != NULL; i->next){
+				HSD_AnimJoint* c_an_joint = NULL;
+				HSD_MatAnimJoint* c_mat_joint = NULL;
+				HSD_ShapeAnimJoint* c_sh_joint = NULL;
 
+				HSD_JObjAddAnim(jobj, an_joint, mat_joint, sh_joint);
+				if(an_joint != NULL){
+					c_an_joint = an_joint->child;
+				}
+				if(mat_joint != NULL){
+					c_mat_joint = mat_joint->child;
+				}
+				if(sh_joint != NULL){
+					c_sh_joint = sh_joint->child;
+				}
+				if(JOBJ_INSTANCE(i)){
+					for(HSD_JObj* j = i->child; i != NULL; j->next){
+						HSD_JObjAddAnimAll(jobj, c_an_joint, c_mat_joint, c_sh_joint);
+						if(c_an_joint != NULL){
+							c_an_joint = an_joint->next;
+						}
+						if(c_mat_joint != NULL){
+							c_mat_joint = mat_joint->next;
+						}
+						if(c_sh_joint != NULL){
+							c_sh_joint = sh_joint->next;
+						}
+					}
+				}
+				if(an_joint != NULL){
+					an_joint = an_joint->next;
+				}
+				if(mat_joint != NULL){
+					mat_joint = mat_joint->next;
+				}
+				if(sh_joint != NULL){
+					sh_joint = sh_joint->next;
+				}
+			}
+		}
+	}
 }
 
 //8036FDC0
