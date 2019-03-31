@@ -43,10 +43,6 @@ typedef struct _HSD_ShapeAnimJoint {
 	u32 unk2;
 } HSD_ShapeAnimJoint;
 
-typedef struct _HSD_DObjInfo {
-	HSD_ClassInfo parent;
-} HSD_DObjInfo;
-
 #define HSD_DOBJ(o)		((HSD_DObj *)(o))
 #define HSD_DOBJ_INFO(i)	((HSD_DObjInfo *)(i))
 #define HSD_DOBJ_METHOD(o)	HSD_DOBJ_INFO(HSD_CLASS_METHOD(o))
