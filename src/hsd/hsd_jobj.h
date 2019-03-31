@@ -18,18 +18,6 @@
 #include "hsd_mobj.h"
 #include "hsd_robj.h"
 
-#define JOBJ_PTCL_ACTIVE 0x7FFFFFFF
-#define JOBJ_PTCL_OFFSET_MASK 0xFFFFFF
-#define JOBJ_PTCL_OFFSET_SHIFT 6
-#define JOBJ_PTCL_BANK_MASK 0x3F
-
-#define JOBJ_BILLBOARD_FIELD 0xE00
-#define JOBJ_BILLBOARD 0x200
-#define JOBJ_VBILLBOARD 0x400
-#define JOBJ_HBILLBOARD 0x600
-#define JOBJ_RBILLBOARD 0x800
-#define JOBJ_PBILLBOARD 0x2000
-
 #define JOBJ_INSTANCE(o) ((o->flags & 0x1000) == 0)
 #define JOBJ_USE_QUATERNION(o) ((o->flags & 0x20000) == 0)
 #define union_type_dobj(o) ((o->flags & 0x4020) == 0)
