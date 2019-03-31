@@ -76,4 +76,8 @@ extern HSD_JObjInfo hsdJObj;
 #define HSD_JOBJ_INFO(i)	((HSD_JObjInfo *)(i))
 #define HSD_JOBJ_METHOD(o)	HSD_JOBJ_INFO(HSD_CLASS_METHOD(o))
 
+void HSD_JObjAnimAll(HSD_JObj*);
+
+HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc*);
+
 #endif

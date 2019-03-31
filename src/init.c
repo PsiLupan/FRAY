@@ -15,15 +15,15 @@ void Init_PadReader(void (*init_func)(void)){
 void Pad_InitCallback(){
 	PAD_SetSpec(5);
 	HSD_PadInit(PAD_QUEUE_SIZE, pad_raw_queue, 0xc, NULL); //Technically the last param isn't NULL, but K7 does it, so it's probably nbd
-	pad_queue[0x1C] = 0;
-	pad_queue[0x1D] = 1;
-	pad_queue[0x1E] = 0x50;
-	pad_queue[0x1F] = 0;
-	pad_queue[0x20] = 1;
-	pad_queue[0x21] = 0x8C;
-	pad_queue[0x22] = 0;
-	pad_queue[0x26] = 0x50;
-	pad_queue[0x27] = 0x8C;
+	pad_raw_queue[0x1C] = 0;
+	pad_raw_queue[0x1D] = 1;
+	pad_raw_queue[0x1E] = 0x50;
+	pad_raw_queue[0x1F] = 0;
+	pad_raw_queue[0x20] = 1;
+	pad_raw_queue[0x21] = 0x8C;
+	pad_raw_queue[0x22] = 0;
+	pad_raw_queue[0x26] = 0x50;
+	pad_raw_queue[0x27] = 0x8C;
 }
 
 //8015FDA0

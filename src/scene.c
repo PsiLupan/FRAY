@@ -3,7 +3,7 @@
 GameState gamestate;
 
 
-struct _MinorScene GmTitle_Minors[2] = {
+MinorScene GmTitle_Minors[2] = {
   {0, 3, 0, Menu_Title_Prep, Menu_Title_Decide, 0, 0, 0, 0, NULL, NULL/*struct 804D6878*/}, 
   {0xFF, 0, 0, NULL, NULL, 0, 0, 0, 0, NULL, NULL}
 };
@@ -13,6 +13,7 @@ MinorSceneHandler class_0 = {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Cl
 MinorSceneHandler scene_handlers[45] = {
   {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL}
 }; //803DA920 - 45 in length
+
 MajorScene major_scenes[45] = {
   {1, 0, 0, NULL, NULL, NULL, &GmTitle_Minors}
 }; //803DACA4
@@ -24,7 +25,7 @@ static HSD_LightDesc** scene_lights_desc; // -0x4F94(r13)
 static HSD_CObjDesc* scene_cobj_desc; //-0x4F98(r13)
 u32 debug_level = 0; //-0x6C98(r13)
 
-const s32 cache_base[24] = { //803BA638
+s32 cache_base[24] = { //803BA638
   0x00000000, 0x00000000, 0x2d000000, 0x00000148,
   0x00000021, 0x00010000, 0x00000021, 0x00010000,
   0x00000021, 0x00010000, 0x00000021, 0x00010000,
@@ -506,7 +507,7 @@ static void Scene_ReqAnimAll_Callback(HSD_GObj* gobj){
 }
 
 //801A3EF4
-void Scene_RunStartupInit(){  
+static void Scene_RunStartupInit(){  
   for (u32 i = 0; major_scenes[i].idx != 45; i += 1 ){
     if(major_scenes[i].Init){
       (*major_scenes[i].Init)();
@@ -703,7 +704,7 @@ MinorSceneHandler* Scene_GetSceneHandlerByClass(u8 class_id){
 }
 
 //801A4D34
-void Scene_PerFrameUpdate(void* onframefunc){
+void Scene_PerFrameUpdate(void (*onframefunc)()){
   MatchController_InitData(&match_controller);
   match_controller.timer = 0;
   match_controller.unk04 = 0;
@@ -843,5 +844,4 @@ void Scene_ReqAnimAll(HSD_JObj* jobj, f32* frames){
       HSD_JObjAnimAll(jobj);
     }
   }
-  return frame;
 }

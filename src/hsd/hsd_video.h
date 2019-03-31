@@ -107,4 +107,6 @@ void HSD_VISetConfigure(GXRModeObj *);
 void HSD_VISetBlack(u8);
 void HSD_VIInit(HSD_VIStatus *, void *, void *, void *);
 
+static u32 HSD_VIGetNbXFB();
+
 #endif

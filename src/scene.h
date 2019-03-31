@@ -98,27 +98,36 @@ extern u32 debug_level;
 
 extern unk_8046B0F0 dword_8046B0F0;
 
+void Scene_CopyDataToCache();
+
 static void Scene_Minor_Class0_OnFrame();
 static void Scene_Minor_Class0_OnLoad();
 
 static void Scene_ReqAnimAll_Callback(HSD_GObj *);
+static void Scene_RunStartupInit();
+void Scene_CompareCacheOnChange(MinorScene *);
 
+void Scene_Set05(u8);
 u8 Scene_Get04();
 u8 Scene_GetCurrentMinor();
-
+void Scene_SetPendingTrue();
+void Scene_UpdatePendingMajor(u8);
+void Scene_SetPendingMajor(u8);
 u8 Scene_GetCurrentMajor();
 u8 Scene_LoadPrevMajor();
 
 BOOL Scene_IsSinglePlayer(u8);
 u8* Scene_ProcessMajor(u8);
-void Scene_StoreClassIDPtr(u8*);
+void Scene_StoreClassIDPtr(u8 *);
 u32* Scene_Load4F80_idx2();
 u32* Scene_Load4F80_idx3();
-
+void Scene_PrepCommon();
 MinorSceneHandler* Scene_GetSceneHandlerByClass(u8);
-
+void Scene_PerFrameUpdate(void (*onframefunc)());
 MinorSceneHandler* Scene_GetClassHandler();
 
 MajorScene* Scene_GetMajorScenes();
+
+void Scene_ReqAnimAll(HSD_JObj *, f32 *);
 
 #endif

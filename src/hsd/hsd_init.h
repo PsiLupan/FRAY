@@ -27,7 +27,13 @@ typedef enum _HSD_InitParam {
 
 extern GXRModeObj* rmode;
 
+void HSD_InitComponent();
+void HSD_GXSetFifoObj(GXFifoObj *);
+void HSD_DVDInit();
 void** HSD_AllocateXFB(u32 nbBuffer, GXRModeObj *rm);
 void* HSD_AllocateFIFO(u32);
+void HSD_GXInit();
+
+BOOL HSD_SetInitParameter(HSD_InitParam param, ...);
 
 #endif

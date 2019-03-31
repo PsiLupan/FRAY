@@ -672,7 +672,7 @@ void JObjLoad(){
 }
 
 //80370E44
-void HSD_JObjLoadJoint(HSD_JObjDesc* jdesc){
+HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc* jdesc){
 	
 }
 

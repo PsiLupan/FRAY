@@ -1,6 +1,7 @@
 #include "hsd_init.h"
 
 #include "hsd_lobj.h"
+#include "hsd_state.h"
 
 //static OSHeapHandle hsd_heap = -1; //r13 - 0x58A0
 static void *hsd_heap_arena_lo = NULL;
@@ -61,8 +62,7 @@ void HSD_GXSetFifoObj(GXFifoObj* fifo){
 }
 
 //80374F78
-void HSD_DVDInit(void)
-{
+void HSD_DVDInit(){
 }
 
 //80374F7C
@@ -104,8 +104,7 @@ void* HSD_AllocateFIFO(u32 size){
 }
 
 //80375258
-void HSD_GXInit(void)
-{
+void HSD_GXInit(){
   {
     GXLightObj lightobj;
     static GXColor black = {0, 0, 0, 0};

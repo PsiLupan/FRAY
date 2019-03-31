@@ -1,5 +1,7 @@
 #include "hsd_mobj.h"
 
+#include "hsd_aobj.h"
+
 static void MObjInfoInit();
 
 HSD_MObjInfo hsdMObj = { MObjInfoInit };
