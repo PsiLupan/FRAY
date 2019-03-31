@@ -39,7 +39,7 @@ typedef struct _HSD_MObj {
 	HSD_TObj* tobj;
 	struct _HSD_Material *mat;
 	struct _HSD_PEDesc* pe;
-	HSD_AObj* aobj;
+	struct _HSD_AObj* aobj;
 	HSD_TObj* ambient_tobj;
 	HSD_TObj* specular_tobj;
 	HSD_TExpTevDesc *tevdesc;
@@ -85,7 +85,7 @@ typedef struct _HSD_MObjDesc {
 
 typedef struct _HSD_MatAnim {
 	struct _HSD_MatAnim *next;
-	HSD_AObjDesc *aobjdesc;
+	struct _HSD_AObjDesc *aobjdesc;
 	HSD_TexAnim *texanim;
 	void* renderanim; //struct _HSD_RenderAnim *renderanim; - Commented out until I actually run into an instance of it to test w/
 } HSD_MatAnim;

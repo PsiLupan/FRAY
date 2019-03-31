@@ -12,7 +12,6 @@
 #include "hsd_util.h"
 
 #include "hsd_aobj.h"
-#include "hsd_cobj.h"
 #include "hsd_fobj.h"
 #include "hsd_dobj.h"
 #include "hsd_mobj.h"
@@ -23,10 +22,7 @@
 #define union_type_dobj(o) ((o->flags & 0x4020) == 0)
 #define union_type_ptcl(o) ((o->flags & 0x20) != 0)
 
-typedef enum _HSD_TrspMask {
-	HSD_TRSP_XLU = 2,
-	HSD_TRSP_TEXEDGE = 4
-} HSD_TrspMask;
+#define HSD_TrspMask u32
 
 //Joint Object
 typedef struct _HSD_JObj {
@@ -75,8 +71,6 @@ typedef struct _HSD_JObjInfo {
 } HSD_JObjInfo;
 
 extern HSD_JObjInfo hsdJObj;
-
-#define HSD_TrspMask u32
 
 #define HSD_JOBJ(o)		((HSD_JObj *)(o))
 #define HSD_JOBJ_INFO(i)	((HSD_JObjInfo *)(i))

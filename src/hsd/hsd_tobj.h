@@ -5,6 +5,8 @@
 #include <ogc/gu.h>
 #include <ogc/gx.h>
 
+#include "hsd_util.h"
+
 #include "hsd_object.h"
 
 #include "hsd_fobj.h"
@@ -143,13 +145,13 @@ typedef struct _HSD_TObj {
 	u8 repeat_s;
 	u8 repeat_t;
 	u16 anim_id;
-	u32 flags;
+	u32 blend_flags;
 	f32 blending;
 	u8 magFilt; //GXTexFilter
 	struct _HSD_ImageDesc* imagedesc;
 	struct _HSD_Tlut* tlut;
 	struct _HSD_TexLODDesc* lod;
-	HSD_AObj* aobj;
+	struct _HSD_AObj* aobj;
 	struct _HSD_ImageDesc **imagetbl;
 	struct _HSD_Tlut **tluttbl;
 	u8 tlut_no;
@@ -170,7 +172,7 @@ typedef struct _HSD_TObjDesc {
 	u8 wrap_t; //GXTexWrapMode
 	u8 repeat_s;
 	u8 repeat_t;
-	u32 flags;
+	u32 blend_flags;
 	f32 blending;
 	u8 magFilt; //GXTexFilter
 	struct _HSD_ImageDesc* imagedesc;
@@ -252,7 +254,7 @@ typedef struct _HSD_TObjInfo {
 typedef struct _HSD_TexAnim {
 	struct _HSD_TexAnim *next;
 	u8 id; //GXTexMapID
-	HSD_AObjDesc *aobjdesc;
+	struct _HSD_AObjDesc *aobjdesc;
 	struct _HSD_ImageDesc **imagetbl;
 	struct _HSD_TlutDesc **tluttbl;
 	u16 n_imagetbl;

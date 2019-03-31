@@ -37,12 +37,6 @@
 #define HSD_TRSP_XLU 0x2
 #define HSD_TRSP_TEXEDGE 0x4
 
-#define HSD_JOBJ_INFO(i)	((HSD_JObjInfo *)(i))
-#define HSD_JOBJ_METHOD(o)	HSD_JOBJ_INFO(HSD_CLASS_METHOD(o))
-
-#define HSD_DOBJ_INFO(i)	((HSD_DObjInfo *)(i))
-#define HSD_DOBJ_METHOD(o)	HSD_DOBJ_INFO(HSD_CLASS_METHOD(o))
-
 typedef void (*HSD_PtclCallback)(u32, u32, u32, HSD_JObj*);
 
 typedef struct _HSD_ZList {

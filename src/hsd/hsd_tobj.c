@@ -266,7 +266,7 @@ static int TObjLoad(HSD_TObj *tobj, HSD_TObjDesc *td){
 	tobj->wrap_t = td->wrap_t;
 	tobj->repeat_s = td->repeat_s;
 	tobj->repeat_t = td->repeat_t;
-	tobj->flags = td->flags;
+	tobj->blend_flags = td->blend_flags;
 	tobj->blending = td->blending;
 	tobj->magFilt = td->magFilt;
 	tobj->imagedesc = td->imagedesc;
