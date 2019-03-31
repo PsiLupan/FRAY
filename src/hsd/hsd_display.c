@@ -5,7 +5,7 @@ static HSD_PtclCallback sptcl_callback = NULL;
 static GXColor hsd_background_color = {0, 0, 0, 0};
 static GXColor erase_color = {0x26, 0x26, 0x26, 0xFF}; //-0x58C8(r13)
 
-static HSD_ObjAllocData zlist_alloc_data;
+static HSD_ObjDef zlist_alloc_data;
 
 static int	 zsort_listing = 0;
 static int	 zsort_sorting = 0;
@@ -88,9 +88,9 @@ void _HSD_ZListSort(){
 
 //80374848
 void _HSD_ZListDisp(){
-	HSD_ZList *list;
+	HSD_ZList* list;
 	MtxP vmtx;
-	HSD_CObj *cobj;
+	HSD_CObj* cobj;
 	
 	cobj = HSD_CObjGetCurrent();
 	vmtx = HSD_CObjGetViewingMtxPtrDirect(cobj);

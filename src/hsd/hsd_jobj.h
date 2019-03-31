@@ -8,9 +8,11 @@
 
 #include "hsd_debug.h"
 #include "hsd_object.h"
+#include "hsd_memory.h"
 #include "hsd_util.h"
 
 #include "hsd_aobj.h"
+#include "hsd_cobj.h"
 #include "hsd_fobj.h"
 #include "hsd_dobj.h"
 #include "hsd_mobj.h"
@@ -71,8 +73,8 @@ typedef struct _HSD_JObjInfo {
 	HSD_ClassInfo parent;
 	int (*load)(HSD_JObj *jobj, HSD_JObjDesc *desc);
 	void (*make_pmtx)(HSD_JObj *jobj, MtxP vmtx, Mtx pmtx);
-	void (*make_rmtx)(HSD_JObj* jobj, Mtx mtx, MtxP pmtx);
-	void (*disp)(HSD_JObj *jobj, MtxP vmtx, Mtx pmtx, HSD_TrspMask trsp_mask, u32 rendermode);
+	void (*make_rmtx)(HSD_JObj* jobj, Mtx mtx, MtxP rmtx);
+	void (*disp)(HSD_JObj *jobj, MtxP vmtx, MtxP pmtx, HSD_TrspMask trsp_mask, u32 rendermode);
 	void (*release_child)(HSD_JObj* jobj);
 	void (*setup)(HSD_JObj *jobj, u32 rendermode);
 } HSD_JObjInfo;

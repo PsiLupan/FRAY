@@ -4,6 +4,7 @@ static void JObjInfoInit();
 
 HSD_JObjInfo hsdJObj = { JObjInfoInit };
 
+static u32* r13_4004 = NULL;
 static HSD_JObj *current_jobj = NULL; //r13_400C
 static void (*callback_4010)(HSD_JObj*, f32); //r13_4010
 static void (*callback_4014)(f32); //r13_4014
@@ -1096,7 +1097,7 @@ static void JObjInit(HSD_Class* o){
 //803736F8
 static void JObjRelease(HSD_Class* o){
 	HSD_JObj* jobj = HSD_JOBJ(o);
-	HSD_JOBJ_INFO(jobj->class_parent.class_init)->release_child(o); //Technically uses the class_parent from the jobj to get to this, so will probably need to account for that later
+	HSD_JOBJ_METHOD(jobj)->release_child(o); //Technically uses the class_parent from the jobj to get to this, so will probably need to account for that later
 	if(HSD_IDGetDataFromTable(NULL, jobj->desc, NULL) == o){
 		HSD_IDRemoveByIDFromTable(NULL, jobj->desc);
 	}
@@ -1182,22 +1183,22 @@ static void mkBillBoardMtx(HSD_JObj* jobj, Mtx mtx, MtxP pmtx){
 }
 
 //803740E8
-static void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, MtxP pmtx){
+static void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, MtxP rmtx){
 	if((jobj->flags & 0xE00) == 0){
-		guMtxConcat(mtx, jobj->mtx, *pmtx);
+		guMtxConcat(mtx, jobj->mtx, *rmtx);
 	}else{
 		Mtx tmtx;
 		guMtxConcat(mtx, jobj->mtx, tmtx);
 		u32 flags = jobj->flags & 0xE00;
 		if(flags == 0x600){
-			mkHBillBoardMtx(jobj, tmtx, pmtx);
+			mkHBillBoardMtx(jobj, tmtx, rmtx);
 		}else{
 			if(flags < 0x600){
 				if(flags == 0x400){
-					mkVBillBoardKMtx(jobj, tmtx, pmtx);
+					mkVBillBoardKMtx(jobj, tmtx, rmtx);
 					return;
 				}else if(flags < 0x400 && flags == 0x200){
-					mkBillBoardMtx(jobj, tmtx, pmtx);
+					mkBillBoardMtx(jobj, tmtx, rmtx);
 					return;
 				}
 			}else{
@@ -1207,7 +1208,7 @@ static void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, MtxP pmtx){
 					f32 z = 1.f; //FUN_8000d5bc((double)(local_24 * local_24 + local_34 * local_34 + local_44 * local_44));
 					guMtxScale(tmtx, x, y, z);
 					guMtxRotRad(tmtx, 'z', jobj->rotation.z);
-					//guMtxConcat(, pmtx);
+					//guMtxConcat(, rmtx);
 					return;
 				}
 			}
@@ -1217,7 +1218,7 @@ static void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, MtxP pmtx){
 }
 
 //803743B8
-static void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, Mtx pmtx, HSD_TrspMask trsp_mask, u32 rendermode){
+static void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, MtxP pmtx, HSD_TrspMask trsp_mask, u32 rendermode){
 	HSD_JObjSetCurrent(jobj);
 	if ((rendermode & 0x4000000) == 0 && (jobj->flags & 0x10000) != 0){
 		HSD_LobjSetupSpecularInit(pmtx);
@@ -1236,3 +1237,62 @@ static void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, Mtx pmtx, HSD_TrspMask tr
 }
 
 //80374480
+void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 rendermode){
+	if(jobj != NULL){
+		if((jobj->flags & 0x10) == 0){
+			u32 m_flags = jobj->flags & trsp_mask << 18;
+			if(m_flags != 0){
+				BOOL need_matrix = FALSE;
+				if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
+					need_matrix = TRUE;
+				}
+				if(need_matrix == TRUE){
+					HSD_JObjSetupMatrixSub(jobj);
+				}
+
+				if(vmtx == NULL){
+					HSD_CObj* cobj = HSD_CObjGetCurrent();
+					vmtx = &cobj->view_mtx;
+				}
+				Mtx mtx;
+				HSD_JOBJ_METHOD(jobj)->make_rmtx(jobj, vmtx, &mtx);
+				if((m_flags & 0x40000) != 0){
+					HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, 0x1, rendermode);
+				}
+				if(r13_4004 == NULL){
+					if((m_flags & 0x100000) != 0){
+						HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, 0x4, rendermode);
+					}
+					if ((m_flags & 0x80000) != 0) {
+						HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, 0x2, rendermode);
+					}
+				}else{
+					if ((m_flags & 0x180000) != 0) {
+						HSD_ZList* zlist = (HSD_ZList*)HSD_ObjAlloc(&zlist_alloc_data);
+						memset(&zlist->vmtx, 0, 0x18);
+						guMtxCopy(mtx, zlist->pmtx);
+						if(vmtx != NULL){
+							MtxP vmatrix = (MtxP)HSD_MemAlloc(sizeof(Mtx)); //HSD_MtxAlloc();
+							zlist->vmtx = vmatrix;
+							guMtxCopy(vmtx, zlist->vmtx);
+						}
+						zlist->jobj = jobj;
+						zlist->rendermode = rendermode;
+						zlist_top = zlist;
+						zlist_bottom = &zlist->next;
+						if ((m_flags & 0x100000) != 0) {
+							zlist_texedge_top = zlist;
+							zlist_texedge_bottom = &zlist->sort.texedge;
+							zlist_texedge_nb += 1;
+						}
+						if ((m_flags & 0x80000) != 0) {
+							zlist_xlu_top = zlist;
+							zlist_xlu_bottom = &zlist->sort.xlu;
+							zlist_xlu_nb += 1;
+						}
+					}
+				}
+			}
+		}
+	}
+}

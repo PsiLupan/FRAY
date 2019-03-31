@@ -59,8 +59,8 @@ void HSD_CObjAddAnim(HSD_CObj* cobj, HSD_AObjDesc* aobjdesc){
             HSD_AObjRemove(cobj->aobj);
         
         cobj->aobj = HSD_AObjLoadDesc(aobjdesc);
-        HSD_WObjAddAnim(HSD_CObjGetEyePositionWObj(cobj), aobjdesc->x4_aobjdesc);
-        HSD_WObjAddAnim(HSD_CObjGetInterestWObj(cobj), aobjdesc->x8_aobjdesc);
+        HSD_WObjAddAnim(HSD_CObjGetEyePositionWObj(cobj), aobjdesc->end_frame);
+        HSD_WObjAddAnim(HSD_CObjGetInterestWObj(cobj), aobjdesc->fobjdesc);
     }
 }
 

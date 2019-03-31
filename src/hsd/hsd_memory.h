@@ -24,4 +24,6 @@ typedef struct _HSD_MemoryEntry {
     u32 x14_unk;
 } HSD_MemoryEntry;
 
+void* HSD_MemAlloc(u32);
+
 #endif
