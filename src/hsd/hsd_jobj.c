@@ -1,5 +1,12 @@
 #include "hsd_jobj.h"
 
+#include <math.h>
+
+#include "hsd_debug.h"
+#include "hsd_display.h"
+#include "hsd_memory.h"
+#include "hsd_util.h"
+
 static void JObjInfoInit();
 
 HSD_JObjInfo hsdJObj = { JObjInfoInit };
@@ -246,7 +253,7 @@ void HSD_JObjAddAnim(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoint* 
 			HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->anim);
 			jobj->aobj = aobj;
 			JObjSortAnim(jobj->aobj);
-			HSD_RObjAddAnimAll(jobj->robj, an_joint->unk);
+			HSD_RObjAddAnimAll(jobj->robj, an_joint->matanim);
 			if((an_joint->unk2 & 1) == 0){
 				HSD_JObjClearFlags(jobj, 0x8);
 			}else{
@@ -277,7 +284,7 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoin
 			HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->anim);
 			jobj->aobj = aobj;
 			JObjSortAnim(jobj->aobj);
-			HSD_RObjAddAnimAll(jobj->robj, an_joint->unk);
+			HSD_RObjAddAnimAll(jobj->robj, an_joint->matanim);
 			if((an_joint->unk2 & 1) == 0){
 				HSD_JObjClearFlags(jobj, 0x8);
 			}else{

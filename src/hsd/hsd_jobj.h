@@ -1,15 +1,10 @@
 #ifndef _hsd_jobj_h_
 #define _hsd_jobj_h_
 
-#include <math.h>
-
 #include <gctypes.h>
 #include <ogc/gu.h>
 
-#include "hsd_debug.h"
 #include "hsd_object.h"
-#include "hsd_memory.h"
-#include "hsd_util.h"
 
 #include "hsd_aobj.h"
 #include "hsd_fobj.h"

@@ -6,6 +6,7 @@
 #include <gctypes.h>
 #include <ogc/gu.h>
 
+#define TYPE_ROBJ 1
 #define TYPE_JOBJ 12
 
 //Frame Object

@@ -16,6 +16,7 @@
 #define GOBJ_CLASS_TEXT 0x9
 #define GOBJ_CLASS_HSD_FOG 0xA
 #define GOBJ_CLASS_HSD_LOBJ 0xB
+#define GOBJ_CLASS_HSD_COBJ 0x13
 
 #define GOBJ_NOREF 0xFF
 
@@ -58,14 +59,17 @@ typedef struct _HSD_GObjProc {
 BOOL GObj_IsPlayer(HSD_GObj *);
 void GObj_AnimAll_Callback(HSD_GObj *);
 BOOL GObj_IsItem(HSD_GObj *);
-
-
+void GObj_LinkProc(HSD_GObjProc *);
+HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj*, void *, u8);
+void GObj_PReorder(HSD_GObj *, HSD_GObj *);
 HSD_GObj* GObj_Create(u32, u32, u32);
 void GObj_Free(HSD_GObj *);
+void GObj_GXReorder(HSD_GObj *, HSD_GObj *);
 void GObj_SetupGXLink(HSD_GObj *, void *, u32, u32);
 void GObj_SetupGXLink_Max(HSD_GObj *, void *, u32);
 void GObj_GXLinkDestructor(HSD_GObj *);
 void GObj_InitKindObj(HSD_GObj *, s8, void *);
+void* GObj_NullObj_ReturnPtr(HSD_GObj *);
 void GObj_CallHSDDestructor(HSD_GObj *);
 void GObj_InitKindData(HSD_GObj *, s8, void *, void *);
 void GObj_CallDestructor(HSD_GObj *);

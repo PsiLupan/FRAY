@@ -37,7 +37,7 @@ void* HSD_ObjAlloc(HSD_ObjDef* obj_def){
 			if(objheap.heap_start){
 				bytes_avail = objheap.bytes_remaining;
 			}else{
-				bytes_avail = OSCheckHeap(HSD_GetHeap());
+				bytes_avail = SYS_GetArena1Size();
 			}
 			if(bytes_avail <= obj_def->obj_size){
 				obj_def->unk_1C = obj_def->unk_ctr + obj_def->unk_ctr2;
@@ -47,7 +47,7 @@ void* HSD_ObjAlloc(HSD_ObjDef* obj_def){
 			if(objheap.heap_start){
 				bytes_avail = objheap.bytes_remaining;
 			}else{
-				bytes_avail = OSCheckHeap(HSD_GetHeap());
+				bytes_avail = SYS_GetArena1Size();
 			}
 			if(bytes_avail > obj_def->obj_size){
 				obj_def->unk_1C = -1;
@@ -79,26 +79,23 @@ void HSD_ObjFree(HSD_ObjDef* init_obj, u32* obj){
 }
 
 //8037AD48
-void HSD_ObjAllocInit(s32* init_obj, u32 size, u32 count){
+void HSD_ObjAllocInit(HSD_ObjDef* init_obj, u32 size, u32 count){
 	assert(init_obj != NULL);
-	while(true){
-		s32* obj = *current_obj;
-		if(!*current_obj){
-			break;
-		}
+	HSD_ObjDef* obj = *current_obj;
+	while(obj != NULL){
 		if(obj == init_obj){
-			*current_obj = (void*)obj[10];
+			*current_obj = obj->next;
 		}else{
-			current_obj = (void**)(obj + 0x28);
+			current_obj = &obj->next;
 		}
 	}
 	memset(init_obj, 0, 0x2Cu);
-	init_obj[5] = -1;
-	init_obj[6] = 0;
-	init_obj[7] = -1;
-	init_obj[9] = count - 1;
-	init_obj[8] = (size + init_obj[9]) & ~init_obj[9];
-	init_obj[10] = *current_obj;
+	init_obj->unk_14 = -1;
+	init_obj->obj_size = 0;
+	init_obj->unk_1C = -1;
+	init_obj->unk_24 = count - 1;
+	init_obj->unk_20 = (size + init_obj->unk_24) & ~init_obj->unk_24;
+	init_obj->next = *current_obj;
 	*current_obj = init_obj;
 }
 

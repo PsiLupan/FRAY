@@ -1,12 +1,12 @@
 #include "hsd_debug.h"
 
 void HSD_Halt(char error[]){
-    printf("HALT: %s", error);
+    printf("HALT: %s\n", error);
     assert(TRUE);
 }
 
 void HSD_Panic(char error[]){
-    printf("PANIC: %s", error);
+    printf("PANIC: %s\n", error);
 }
 
 void HSD_Report(char error[]){

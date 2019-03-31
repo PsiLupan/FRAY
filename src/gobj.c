@@ -112,7 +112,7 @@ JMPLABEL_1:
 }
 
 //8038FD54
-HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj* gobj, void* cb, u8 s_prio){
+HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj* gobj, void (*cb)(), u8 s_prio){
   HSD_GObjProc* proc;
   
   proc = (HSD_GObjProc*)HSD_ObjAlloc(&gobj_proc_def);

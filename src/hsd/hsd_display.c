@@ -201,7 +201,7 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
 				}
 
 				Mtx mtx;
-				HSD_JOBJ_METHOD(jobj)->make_rmtx(jobj, vmtx, &mtx);
+				HSD_JOBJ_METHOD(jobj)->make_rmtx(jobj, vmtx, &mtx); //Later libraries call make_pmtx and have a define to essentially call our equivalent mkRBillboardMtx directly, so possible gotcha later on
 				if((m_flags & JOBJ_OPA) != 0){
 					HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, HSD_TRSP_OPA, rendermode);
 				}
@@ -245,7 +245,7 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
 
 //803738A0
 void HSD_ZListInitAllocData(){
-	HSD_ObjAllocInit(&zlist_alloc_data, 0x48, 4);
+	HSD_ObjAllocInit(&zlist_alloc_data, sizeof(HSD_ZList), 4);
 }
 
 //80374680

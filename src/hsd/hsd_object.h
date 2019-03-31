@@ -46,9 +46,12 @@ typedef struct _HSD_ObjDef {
 	u32 unk_ctr;
 	u32 unk_ctr2;
 	u32 unk_ctr3;
-	u32 unk_14;
+	s32 unk_14;
 	u32 obj_size;
 	s32 unk_1C;
+	s32 unk_20;
+	s32 unk_24;
+	struct _HSD_ObjDef next; //0x28
 } HSD_ObjDef;
 
 struct unk_80406E48 {
@@ -59,5 +62,7 @@ struct unk_80406E48 {
 extern HSD_ClassInfo hsdClass;
 
 void* HSD_ObjAlloc(HSD_ObjDef *);
+
+void HSD_ObjAllocInit(HSD_ObjDef *, u32, u32);
 
 #endif

@@ -52,7 +52,7 @@ void Menu_Title_SetupLogos(){
     }*/
     if(showAddCopyright == FALSE){
         //TObj_ToggleActiveTexture(jobj, title_ptrs.bg_top_animjoint, 7, -1); //80011E24
-        HSD_JObjSetFlagsAll(jobj, 0x10);
+        HSD_JObjSetFlagsAll(jobj, 0x10); //JOBJ_HIDDEN
     }
     /* u32 unk = sub_8000AFBC();
     sub_801692E8(unk, local); //GetTimeAndDate( );
