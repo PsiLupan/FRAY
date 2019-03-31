@@ -1135,14 +1135,66 @@ static void JObjInfoInit(){
 	HSD_JOBJ_INFO(&hsdJObj)->release_child = JObjReleaseChild;
 }
 
+//80373B90
+static void mkHBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx){	
+	guVector pos = {mtx[0][3], mtx[1][3], mtx[2][3]};
+	guVector ax = {mtx[0][0], mtx[1][0], mtx[2][0]};
+	f32 ax_mag = sqrtf(ax.x * ax.x + ax.y * ax.y + ax.z * ax.z);
+	guVector ux;
+	guVecScale(&ax, &ux, 1.0f/(ax_mag + FLT_EPSILON));
+	
+	guVector ay = {mtx[0][1], mtx[1][1], mtx[2][1]};
+	f32 sy = sqrtf(ay.x * ay.x + ay.y * ay.y + ay.z * ay.z);
+	f32 sz = sqrtf(mtx[2][2] * mtx[2][2] + mtx[1][2] * mtx[1][2] + mtx[0][2] * mtx[0][2]);
+	
+	if (jobj->flags & JOBJ_PBILLBOARD) {
+		ay.y = sqrtf(pos.x * pos.x + pos.z * pos.z) + FLT_EPSILON;
+		ay.x = -pos.y / ay.y * pos.x;
+		ay.z = -pos.y / ay.y * pos.z;
+		guVecNormalize(&ay, &ay);
+	} else {
+		ay.x = 0.f;
+		ay.y = 1.f;
+		ay.z = 0.f;
+	}
+	
+	guVector az;
+	guVecCross(&ux, &ay, &az);
+	f32 mag = sqrtf(az.x * az.x + az.z * az.z);
+	if (mag < FLT_EPSILON) {
+		goto PASS;
+	}
+	sz /= mag;
+	guVecCross(&az, &ux, &ay);
+	f32 ay_mag = sqrt(ay.x * ay.x + ay.y * ay.y + ay.z * ay.z);
+	sy /= ay_mag + FLT_EPSILON;
+
+	guMtxRowCol(pmtx, 0, 0) = ax.x;
+	guMtxRowCol(pmtx, 1, 0) = ax.y;
+	guMtxRowCol(pmtx, 2, 0) = ax.z;
+	guMtxRowCol(pmtx, 0, 1) = sy * ay.x;
+	guMtxRowCol(pmtx, 1, 1) = sy * ay.y;
+	guMtxRowCol(pmtx, 2, 1) = sy * ay.z;
+	guMtxRowCol(pmtx, 0, 2) = sz * az.x;
+	guMtxRowCol(pmtx, 1, 2) = sz * az.y;
+	guMtxRowCol(pmtx, 2, 2) = sz * az.z;
+	guMtxRowCol(pmtx, 0, 3) = pos.x;
+	guMtxRowCol(pmtx, 1, 3) = pos.y;
+	guMtxRowCol(pmtx, 2, 3) = pos.z;
+	return;
+	
+	PASS:
+		guMtxCopy(mtx, pmtx);
+}
+
 //80373E44
 static void mkBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx){
-	f32 sx = (mtx[2][0] * mtx[2][0]) + (mtx[1][0] * mtx[1][0]) + (mtx[0][0] * mtx[0][0]);
-	f32 sz = (mtx[2][2] * mtx[2][2]) + (mtx[1][2] * mtx[1][2]) + (mtx[0][2] * mtx[0][2]);
+	f32 sx = sqrtf(mtx[2][0] * mtx[2][0] + mtx[1][0] * mtx[1][0] + mtx[0][0] * mtx[0][0]);
+	f32 sz = sqrtf(mtx[2][2] * mtx[2][2] + mtx[1][2] * mtx[1][2] + mtx[0][2] * mtx[0][2]);
 	guVector ay = {mtx[0][1], mtx[1][1], mtx[2][1]};
-	f32 sy = sqrt(ay.x * ay.x + ay.y * ay.y + ay.z * ay.z);
+	f32 sy = sqrtf(ay.x * ay.x + ay.y * ay.y + ay.z * ay.z);
 	guVector pos = {mtx[0][3], mtx[1][3], mtx[2][3]};
-	f32 pos_mag = sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+	f32 pos_mag = sqrtf(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
 
 	guVector az;
 	if((jobj->flags & JOBJ_PBILLBOARD) != 0){
@@ -1156,18 +1208,18 @@ static void mkBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx){
 
 	guVector ax;
 	guVecCross(&ay, &az, &ax);
-	f32 ax_mag = sqrt(ax.x * ax.x + ax.y * ax.y + ax.z * ax.z);
+	f32 ax_mag = sqrtf(ax.x * ax.x + ax.y * ax.y + ax.z * ax.z);
 	if (ax_mag >= FLT_EPSILON) {
     	sx /= ax_mag;
 		guVecCross(&az, &ax, &ay);
-		f32 y_mag = sqrt(ay.x * ay.x + ay.y * ay.y + ay.z * ay.z);
+		f32 y_mag = sqrtf(ay.x * ay.x + ay.y * ay.y + ay.z * ay.z);
 		sy /= y_mag + FLT_EPSILON;
 	} else {
 		ay.y = sqrtf(az.x * az.x + az.z * az.z) + FLT_EPSILON;
 		ay.x = -az.y / ay.y * az.x;
 		ay.z = -az.y / ay.y * az.z;
 		guVecCross(&ay, &az, &ax);
-		f32 x_mag = sqrt(ax.x * ax.x + ax.y * ax.y + ax.z * ax.z);
+		f32 x_mag = sqrtf(ax.x * ax.x + ax.y * ax.y + ax.z * ax.z);
 		sx /= x_mag + FLT_EPSILON;
 	}
 
@@ -1180,9 +1232,9 @@ static void mkBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx){
 	guMtxRowCol(pmtx, 0, 2) = sz * az.x;
 	guMtxRowCol(pmtx, 1, 2) = sz * az.y;
 	guMtxRowCol(pmtx, 2, 2) = sz * az.z;
-	guMtxRowCol(pmtx, 0, 3) = guMtxRowCol(mtx, 0, 3);
-	guMtxRowCol(pmtx, 1, 3) = guMtxRowCol(mtx, 1, 3);
-	guMtxRowCol(pmtx, 2, 3) = guMtxRowCol(mtx, 2, 3);
+	guMtxRowCol(pmtx, 0, 3) = pos.x;
+	guMtxRowCol(pmtx, 1, 3) = pos.y;
+	guMtxRowCol(pmtx, 2, 3) = pos.z;
 }
 
 //803740E8
@@ -1205,9 +1257,9 @@ static void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
 				break;
 			case JOBJ_RBILLBOARD:
 				Mtx rot, scl;
-				f32 x = sqrt(mtx[0][0] * mtx[0][0] + mtx[1][0] * mtx[1][0] + mtx[2][0] * mtx[2][0]);
-				f32 y = sqrt(mtx[0][1] * mtx[0][1] + mtx[1][1] * mtx[1][1] + mtx[2][1] * mtx[2][1]);
-				f32 z = sqrt(mtx[0][2] * mtx[0][2] + mtx[1][2] * mtx[1][2] + mtx[2][2] * mtx[2][2]);
+				f32 x = sqrtf(mtx[0][0] * mtx[0][0] + mtx[1][0] * mtx[1][0] + mtx[2][0] * mtx[2][0]);
+				f32 y = sqrtf(mtx[0][1] * mtx[0][1] + mtx[1][1] * mtx[1][1] + mtx[2][1] * mtx[2][1]);
+				f32 z = sqrtf(mtx[0][2] * mtx[0][2] + mtx[1][2] * mtx[1][2] + mtx[2][2] * mtx[2][2]);
 				guMtxScale(scl, x, y, z);
 				guMtxRotRad(rot, 'z', jobj->rotation.z);
 				guMtxConcat(rot, scl, rmtx);
