@@ -224,7 +224,7 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
 						}
 						zlist->jobj = jobj;
 						zlist->rendermode = rendermode;
-						zlist_top = zlist;
+						*zlist_bottom = zlist;
 						zlist_bottom = &zlist->next;
 						if ((m_flags & JOBJ_TEXEDGE) != 0) {
 							*zlist_texedge_bottom = zlist;
