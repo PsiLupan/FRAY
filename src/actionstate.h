@@ -27,6 +27,10 @@ BOOL ActionState_IsDeadUpFall(HSD_GObj *);
 BOOL ActionState_IsRebirth(HSD_GObj *);
 BOOL ActionState_IsEntry(HSD_GObj *);
 
+void ActionState_Wait_CheckPlayer(HSD_GObj *);
+void ActionState_Wait_NoCheck(HSD_GObj *);
+void ActionState_Wait(HSD_GObj *, const f32);
+
 f32 ActionState_HammerFrameCount(Player *);
 BOOL ActionState_IsHammer(Player *);
 

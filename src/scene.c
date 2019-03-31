@@ -2,6 +2,12 @@
 
 GameState gamestate;
 
+
+struct _MinorScene GmTitle_Minors[2] = {
+  {0, 3, 0, Menu_Title_Prep, Menu_Title_Decide, 0, 0, 0, 0, NULL, NULL/*struct 804D6878*/}, 
+  {0xFF, 0, 0, NULL, NULL, 0, 0, 0, 0, NULL, NULL}
+};
+
 MinorSceneHandler class_0 = {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL};
 
 MinorSceneHandler scene_handlers[45] = {
@@ -282,7 +288,7 @@ void Scene_80026F2C(u32 flags){
 }
 
 //801A1C18
-void Scene_Minor_Class0_OnFrame(){
+static void Scene_Minor_Class0_OnFrame(){
     sub_801A36A0(4u);
     u32* r13_4F8C = Scene_Load4F80_idx3();
     if(r13_4F8C != NULL){
@@ -322,7 +328,7 @@ void Scene_Minor_Class0_OnFrame(){
 }
 
 //801A1E20
-void Scene_Minor_Class0_OnLoad(){
+static void Scene_Minor_Class0_OnLoad(){
   sub_800236DC();
   //r13 - 0x4F8C = 0x14;
   //r13 - 0x4F88 = 0;
@@ -494,7 +500,7 @@ void Scene_ProcessMinor(MajorScene* scene){
 }
 
 //801A146C
-void Scene_ReqAnimAll_Callback(HSD_GObj* gobj){
+static void Scene_ReqAnimAll_Callback(HSD_GObj* gobj){
   HSD_JObj* jobj = GOBJ_HSD_JOBJ(gobj);
   Scene_ReqAnimAll(jobj, title_frames);
 }

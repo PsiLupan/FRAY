@@ -69,6 +69,7 @@ typedef struct _StaticPlayer
 	u32 x680_unk;
 	u32 x684_unk;
 	u32 x688_unk;
+	u32 x68C_unk;
 	u32 x690_ledgegrab_count;
 	u32 x694_taunt_count;
 	u32 x698_unk;

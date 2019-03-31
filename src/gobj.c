@@ -4,15 +4,15 @@
 #define GX_LINK_MAX 63
 #define S_LINK_MAX 63
 
-static HSD_GObjProc** slinklow_procs[S_LINK_MAX * S_LINK_MAX]; //r13_3E5C
-static HSD_GObjProc** slinkhigh_procs[S_LINK_MAX * S_LINK_MAX]; //r13_3E60
+static HSD_GObjProc* slinklow_procs[S_LINK_MAX * S_LINK_MAX]; //r13_3E5C
+static HSD_GObjProc* slinkhigh_procs[S_LINK_MAX * S_LINK_MAX]; //r13_3E60
 static HSD_GObjProc* first_gobjproc; //r13_3E68
 static u32 last_s_link = 0; //r13_3E6C
 static HSD_GObjProc* last_gobjproc; //r13_3E70
-static HSD_GObj** plinkhigh_gobjs[P_LINK_MAX + 2]; //r13_3E74
-static HSD_GObj** plinklow_gobjs[P_LINK_MAX + 2]; //r13_3E78
-static HSD_GObj** highestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E7C
-static HSD_GObj** lowestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E80
+static HSD_GObj* plinkhigh_gobjs[P_LINK_MAX + 2]; //r13_3E74
+static HSD_GObj* plinklow_gobjs[P_LINK_MAX + 2]; //r13_3E78
+static HSD_GObj* highestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E7C
+static HSD_GObj* lowestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E80
 static HSD_GObj* current_gobj = NULL; //r13_3E84 - Really just a guess
 static void* r13_3E88 = NULL;
 static void* r13_3E8C = NULL;
@@ -56,7 +56,7 @@ void GObj_LinkProc(HSD_GObjProc* proc){
 	HSD_GObj* gobj = proc->gobj;
 	u32 p_link = gobj->p_link;
 	u32 offset = (proc->s_link * (S_LINK_MAX + 1) + p_link);
-	GObjProc* prev = NULL;
+	HSD_GObjProc* prev = NULL;
 
 	if(slinklow_procs[offset] == NULL){
 		slinklow_procs[offset] = proc;
@@ -80,16 +80,15 @@ void GObj_LinkProc(HSD_GObjProc* proc){
 		offset -= 1;
 		p_link -= 1;
 		if(p_link == 0){
-			proc->next = slinkhigh_procs[s_link];
-			slinkhigh_procs[s_link] = proc;
+			proc->next = slinkhigh_procs[offset];
+			slinkhigh_procs[offset] = proc;
 			proc->prev = NULL;
 			goto JMPLABEL_2;
 		}
 		prev = slinklow_procs[offset];
-		while(prev == NULL);
-	}
+	} while(prev == NULL);
 
-	JMPLABEL_1:
+JMPLABEL_1:
 	proc->next = prev->next;
 	prev->next = proc;
 	proc->prev = prev;
@@ -168,9 +167,10 @@ static HSD_GObj* CreateGObj(u32 order, u32 class, u32 p_link, u32 p_prio, HSD_GO
 		gobj->data = NULL;
 		gobj->user_data_remove_func = NULL;
 
+		HSD_GObj* g = NULL;
+		HSD_GObj* prev = p_gobj;
 		switch(order){
 			case 0:
-			HSD_GObj* g = NULL;
 			for(g = plinklow_gobjs[gobj->p_link]; g != NULL && g->p_priority > gobj->p_priority; g = g->prev){
 				//Works backwards from lowest to highest priority till it finds the highest priority to be it's parent obj
 				//Returns null if nothing is a higher priority than the current object or if there is none of that type
@@ -179,7 +179,6 @@ static HSD_GObj* CreateGObj(u32 order, u32 class, u32 p_link, u32 p_prio, HSD_GO
 			break;
 
 			case 1:
-			HSD_GObj* g = NULL;
 			for(g = plinkhigh_gobjs[gobj->p_link]; g != NULL && g->p_priority < gobj->p_priority; g = g->next){
 			}
 			if(g != NULL){
@@ -191,7 +190,7 @@ static HSD_GObj* CreateGObj(u32 order, u32 class, u32 p_link, u32 p_prio, HSD_GO
 			break;
 
 			case 2:
-			gobj->prev = p_gobj;
+			gobj->prev = prev;
 			if(p_gobj != NULL){
 				gobj->next = p_gobj->next;
 				p_gobj->next = gobj;
@@ -207,7 +206,7 @@ static HSD_GObj* CreateGObj(u32 order, u32 class, u32 p_link, u32 p_prio, HSD_GO
 			break;
 
 			case 3:
-			HSD_GObj* prev = p_gobj->prev;
+			prev = p_gobj->prev;
 			gobj->prev = prev;
 			if(prev != NULL){
 				gobj->next = prev->next;

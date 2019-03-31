@@ -17,5 +17,6 @@
 #define PAD_QUEUE_SIZE 5
 
 int main(void);
+void Init_Game();
 
 #endif

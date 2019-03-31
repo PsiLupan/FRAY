@@ -6,7 +6,7 @@ static u64 sys_time;
 u8* pad_raw_queue[PAD_QUEUE_SIZE * 0x44]; //
 
 //80019AAC
-void Init_PadReader(void* init_func(void)){
+void Init_PadReader(void (*init_func)(void)){
 	(*init_func)();
 	//TODO
 }

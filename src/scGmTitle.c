@@ -1,12 +1,16 @@
 #include "scGmTitle.h"
-
-MinorScene GmTitle_Minors[2] = {
-    {0, 3, 0, Menu_Title_Prep, Menu_Title_Decide, 0, 0, 0, 0, NULL, NULL/*struct 804D6878*/}, 
-    {0xFF, 0, 0, NULL, NULL, 0, 0, 0, 0, NULL, NULL}
-    };
+#include "scene.h"
+#include "gobj.h"
+#include "hsd_jobj_ext.h"
 
 GmTitle_File title_ptrs; //80479B28
 f32 title_anim_speed = 0.0f; //803DA4F0
+
+//801A1498
+static void Menu_Title_801A1498(HSD_GObj* gobj){
+
+}
+
 
 //801A1630
 static void Menu_Title_JObjAnimCallback(HSD_GObj* gobj){
@@ -32,7 +36,7 @@ void Menu_Title_SetupLogos(){
     if(notScene == TRUE){
         /*r13 - 0x4F84 = 0;*/
         HSD_JObjReqAnimAll(jobj, 0.f);
-        GObj_CreateProcWithCallback(gobj, /*801A1498*/, 0);
+        GObj_CreateProcWithCallback(gobj, Menu_Title_801A1498, 0);
     }else{
         HSD_JObjReqAnimAll(jobj, 400.f);
         GObj_CreateProcWithCallback(gobj, Menu_Title_JObjAnimCallback, 0);
@@ -67,8 +71,8 @@ void Menu_Title_Prep(){
 }
 
 //801B089C
-void Menu_Title_Decide(GameState* state){
-    u32* scene_ptr = (u32*)Scene_Get14(state); //scene_ptr = 804D6878 from the Minors, so something there
+void Menu_Title_Decide(void* state){
+    u32* scene_ptr = (u32*)Scene_Get14((GameState*)state); //scene_ptr = 804D6878 from the Minors, so something there
     u32 inputs = scene_ptr[0];
     if(debug_level < 3){
         if((inputs & 0x1000) == 0){

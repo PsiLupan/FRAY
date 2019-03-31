@@ -41,7 +41,7 @@ f32 JObj_GetFrame(HSD_JObj* jobj){
     if(jobj->aobj != NULL){
         return jobj->aobj->curr_frame;
     }
-    HSD_DObj* dobj = jobj->dobj;
+    HSD_DObj* dobj = jobj->u.dobj;
     if(dobj != NULL){
         HSD_MObj* mobj = dobj->mobj;
         if(mobj != NULL){

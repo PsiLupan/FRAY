@@ -30,7 +30,7 @@ VIRetraceCallback HSD_VISetUserPreRetraceCallback(VIRetraceCallback cb){
 }
 
 //80375934
-VIRetraceCallback HSD_VISetUserGXDrawDoneCallback(VIRetraceCallback cb){
+VIRetraceCallback HSD_VISetUserPostRetraceCallback(VIRetraceCallback cb){
 	u32 intr;
 	
 	VIRetraceCallback old = _p->post_cb;

@@ -9,6 +9,7 @@ void Marth_OnLoad(HSD_GObj* gobj){
     f32* player_afp = player->x2D8_player_article_floats;
     
     u32 i = 19;
+    u32 index = 0;
     do {
         player_afp[index] = dat_file[index];
         player_afp[index + 1] = dat_file[index + 1];

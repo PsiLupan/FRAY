@@ -65,7 +65,7 @@ typedef struct _MajorScene {
 	void (*Load)();
 	void (*Unload)();
 	void (*Init)();
-	MinorScene** minor_scenes;
+	struct _MinorScene** minor_scenes;
 } MajorScene; //803DACA4
 
 typedef struct _MinorScene {
@@ -98,6 +98,27 @@ extern u32 debug_level;
 
 extern unk_8046B0F0 dword_8046B0F0;
 
+static void Scene_Minor_Class0_OnFrame();
+static void Scene_Minor_Class0_OnLoad();
+
+static void Scene_ReqAnimAll_Callback(HSD_GObj *);
+
+u8 Scene_Get04();
+u8 Scene_GetCurrentMinor();
+
+u8 Scene_GetCurrentMajor();
+u8 Scene_LoadPrevMajor();
+
+BOOL Scene_IsSinglePlayer(u8);
 u8* Scene_ProcessMajor(u8);
+void Scene_StoreClassIDPtr(u8*);
+u32* Scene_Load4F80_idx2();
+u32* Scene_Load4F80_idx3();
+
+MinorSceneHandler* Scene_GetSceneHandlerByClass(u8);
+
+MinorSceneHandler* Scene_GetClassHandler();
+
+MajorScene* Scene_GetMajorScenes();
 
 #endif

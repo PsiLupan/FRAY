@@ -3,7 +3,7 @@
 
 #include <gctypes.h>
 
-#include "hsd/hsd_aobj.h"
+#include "hsd_aobj.h"
 
 typedef struct _HSD_Fog {
     HSD_AObj* aobj; //0x1C

@@ -7,7 +7,6 @@
 #include <math.h>
 
 #include "hsd_aobj.h"
-#include "hsd_display.c"
 #include "hsd_wobj.h"
 
 
@@ -77,5 +76,7 @@ typedef struct _HSD_CObjInfo {
 #define HSD_COBJ(o)		((HSD_CObj *)(o))
 #define HSD_COBJ_INFO(i)	((HSD_CObjInfo *)(i))
 #define HSD_COBJ_METHOD(o)	HSD_COBJ_INFO(HSD_CLASS_METHOD(o))
+
+HSD_CObj* HSD_CObjGetCurrent();
 
 #endif

@@ -7,7 +7,6 @@
 #include <math.h>
 
 #include "gobj.h"
-#include "hitbox.h"
 #include "subaction.h"
 
 #define GOBJ_PLAYER(s) ((Player*)s->data)
@@ -26,6 +25,20 @@
 #define INTERNAL_YLINK 0x14
 #define INTERNAL_MASTERHAND 0x1B
 #define INTERNAL_CRAZYHAND 0x1C
+
+typedef struct _Hitbox {
+	BOOL x4_active;
+} Hitbox;
+
+typedef struct _SubactionInfo {
+	u32 timer;
+	f32 frame_count;
+	u32* data_position;
+	u32 loop_count;
+	void (*EventReturn);
+	u32 loop_count_dup;
+	u32 unk;
+} SubactionInfo;
 
 typedef struct _Attributes {
 	f32 walkInitVel; //0x00
@@ -206,8 +219,8 @@ typedef struct _Player {
 
 	u32 x668_instant_buttons;
 
-	s8 x670_frames_tilt_x;
-	s8 x671_frames_tilt_y;
+	u8 x670_frames_tilt_x;
+	u8 x671_frames_tilt_y;
 
 	Physics x6F0_physics;
 
@@ -260,5 +273,14 @@ typedef struct _Player {
 	u32 x2340_flags;
 	f32 x2344_flags;
 } Player;
+
+void Player_CalculateHorzMobility(Player *, f32);
+
+u32 Player_GetSpawnCount(HSD_GObj *);
+
+void Player_PlaySFX(Player *, u32, u32, u32);
+
+BOOL Player_IsCPU(Player *);
+BOOL Player_IsDPadUpInstantPressed(HSD_GObj *);
 
 #endif 
