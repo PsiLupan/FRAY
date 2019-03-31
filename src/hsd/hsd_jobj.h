@@ -23,6 +23,8 @@
 #define JOBJ_PTCL_OFFSET_SHIFT 6
 #define JOBJ_PTCL_BANK_MASK 0x3F
 
+#define JOBJ_PBILLBOARD 0x2000
+
 #define JOBJ_INSTANCE(o) ((o->flags & 0x1000) == 0)
 #define JOBJ_USE_QUATERNION(o) ((o->flags & 0x20000) == 0)
 #define union_type_dobj(o) ((o->flags & 0x4020) == 0)

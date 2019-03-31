@@ -1136,50 +1136,53 @@ static void JObjInfoInit(){
 }
 
 //80373E44
-static void mkBillBoardMtx(HSD_JObj* jobj, Mtx mtx, MtxP pmtx){
-	f64 xval = (mtx[2][0] * mtx[2][0]) + (mtx[1][0] * mtx[1][0]) + (mtx[0][0] * mtx[0][0]);
-	f64 res;
-	if (xval > 0){
-		f64 sqrd = 1.0f / sqrt(xval);
-		res = 0.5 * sqrd -(xval * sqrd * sqrd - 3.0);
-		xval = xval * 0.5 * res -(xval * sqrd * sqrd - 3.0);
+static void mkBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx){
+	f32 sx = (mtx[2][0] * mtx[2][0]) + (mtx[1][0] * mtx[1][0]) + (mtx[0][0] * mtx[0][0]);
+	f32 sz = (mtx[2][2] * mtx[2][2]) + (mtx[1][2] * mtx[1][2]) + (mtx[0][2] * mtx[0][2]);
+	guVector ay = {mtx[0][1], mtx[1][1], mtx[2][1]};
+	f32 sy = sqrt(ay.x * ay.x + ay.y * ay.y + ay.z * ay.z);
+	guVector pos = {mtx[0][3], mtx[1][3], mtx[2][3]};
+	f32 pos_mag = sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+
+	guVector az;
+	if((jobj->flags & JOBJ_PBILLBOARD) != 0){
+		guVecScale(&pos, &az, -1.0f/(pos_mag + FLT_EPSILON));
+	}else{
+		az.x = 0.f;
+		az.y = 0.f;
+		az.z = 1.f;
 	}
-	f64 zval = (mtx[2][2] * mtx[2][2]) + (mtx[1][2] * mtx[1][2]) + (mtx[0][2] * mtx[0][2]);
-	if (zval > 0){
-		f64 sqrd = 1.0f / sqrt(zval);
-		res = 0.5 * sqrd -(zval * sqrd * sqrd - 3.0);
-		zval = zval * 0.5 * res -(zval * sqrd * sqrd - 3.0);
+	guVecScale(&ay, &ay, 1.0f/(sy + FLT_EPSILON));
+
+	guVector ax;
+	guVecCross(&ay, &az, &ax);
+	f32 ax_mag = sqrt(ax.x * ax.x + ax.y * ax.y + ax.z * ax.z);
+	if (ax_mag >= FLT_EPSILON) {
+    	sx /= ax_mag;
+		guVecCross(&az, &ax, &ay);
+		f32 y_mag = sqrt(ay.x * ay.x + ay.y * ay.y + ay.z * ay.z);
+		sy /= y_mag + FLT_EPSILON;
+	} else {
+		ay.y = sqrtf(az.x * az.x + az.z * az.z) + FLT_EPSILON;
+		ay.x = -az.y / ay.y * az.x;
+		ay.z = -az.y / ay.y * az.z;
+		guVecCross(&ay, &az, &ax);
+		f32 x_mag = sqrt(ax.x * ax.x + ax.y * ax.y + ax.z * ax.z);
+		sx /= x_mag + FLT_EPSILON;
 	}
 
-	guVector rvec;
-	if((jobj->flags & 0x2000) == 0){
-		guVector v = {0.f, 0.f, 1.f};
-		guVecCross(&mtx[0][1], &v, &rvec);
-		guVecCross(&v, &rvec, &mtx[0][1]);
-		f64 mag_result = sqrt((double)(v.x * v.x + v.y * v.y + v.z * v.z));
-		zval = zval / mag_result;
-	}else{
-		guVecCross(&mtx[0][3], &mtx[0][1], &rvec);
-		guVecCross(&rvec, &mtx[0][3], &mtx[0][1]);
-		f64 mag_result = sqrt((double)(mtx[0][3] * mtx[0][3] * mtx[1][0] * mtx[1][0] + mtx[1][1] * mtx[1][1]));
-		zval = zval / -(mag_result);
-	}
-  	f64 rvec_mag = sqrt((double)(rvec.x * rvec.x + rvec.y * rvec.y + rvec.z * rvec.z));
-	f64 mtx_mag = sqrt((double)(mtx[0][1] * mtx[0][1] + mtx[0][2] * mtx[0][2] + mtx[0][3] * mtx[0][3]));
-	f64 x_res = (xval / rvec_mag);
-	f32 y_res = (float)(res / mtx_mag);
-	pmtx[0][0] = (float)(x_res * (double)rvec.x);
-	pmtx[1][0] = (float)(x_res * (double)rvec.y);
-	pmtx[2][0] = (float)(x_res * (double)rvec.z);
-	pmtx[0][1] = y_res * mtx[0][1];
-	pmtx[1][1] = y_res * mtx[1][1];
-	pmtx[2][1] = y_res * mtx[2][1];
-	pmtx[0][2] = (float)(zval * (double)mtx[0][3]);
-	pmtx[1][2] = (float)(zval * (double)mtx[1][0]);
-	pmtx[2][2] = (float)(zval * (double)mtx[1][1]);
-	pmtx[0][3] = mtx[0][3];
-	pmtx[1][3] = mtx[1][3];
-	pmtx[2][3] = mtx[2][3];
+	guMtxRowCol(pmtx, 0, 0) = sx * ax.x;
+	guMtxRowCol(pmtx, 1, 0) = sx * ax.y;
+	guMtxRowCol(pmtx, 2, 0) = sx * ax.z;
+	guMtxRowCol(pmtx, 0, 1) = sy * ay.x;
+	guMtxRowCol(pmtx, 1, 1) = sy * ay.y;
+	guMtxRowCol(pmtx, 2, 1) = sy * ay.z;
+	guMtxRowCol(pmtx, 0, 2) = sz * az.x;
+	guMtxRowCol(pmtx, 1, 2) = sz * az.y;
+	guMtxRowCol(pmtx, 2, 2) = sz * az.z;
+	guMtxRowCol(pmtx, 0, 3) = guMtxRowCol(mtx, 0, 3);
+	guMtxRowCol(pmtx, 1, 3) = guMtxRowCol(mtx, 1, 3);
+	guMtxRowCol(pmtx, 2, 3) = guMtxRowCol(mtx, 2, 3);
 }
 
 //803740E8
@@ -1191,14 +1194,14 @@ static void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, MtxP rmtx){
 		guMtxConcat(mtx, jobj->mtx, tmtx);
 		u32 flags = jobj->flags & 0xE00;
 		if(flags == 0x600){
-			mkHBillBoardMtx(jobj, tmtx, rmtx);
+			mkHBillBoardMtx(jobj, &tmtx, rmtx);
 		}else{
 			if(flags < 0x600){
 				if(flags == 0x400){
-					mkVBillBoardKMtx(jobj, tmtx, rmtx);
+					mkVBillBoardKMtx(jobj, &tmtx, rmtx);
 					return;
 				}else if(flags < 0x400 && flags == 0x200){
-					mkBillBoardMtx(jobj, tmtx, rmtx);
+					mkBillBoardMtx(jobj, &tmtx, rmtx);
 					return;
 				}
 			}else{
