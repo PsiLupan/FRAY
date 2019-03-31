@@ -1186,37 +1186,36 @@ static void mkBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx){
 }
 
 //803740E8
-static void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, MtxP rmtx){
-	if((jobj->flags & 0xE00) == 0){
-		guMtxConcat(mtx, jobj->mtx, *rmtx);
+static void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
+	if((jobj->flags & JOBJ_BILLBOARD_FIELD) == 0){
+		guMtxConcat(mtx, jobj->mtx, rmtx);
 	}else{
 		Mtx tmtx;
 		guMtxConcat(mtx, jobj->mtx, tmtx);
 		u32 flags = jobj->flags & 0xE00;
-		if(flags == 0x600){
-			mkHBillBoardMtx(jobj, &tmtx, rmtx);
-		}else{
-			if(flags < 0x600){
-				if(flags == 0x400){
-					mkVBillBoardKMtx(jobj, &tmtx, rmtx);
-					return;
-				}else if(flags < 0x400 && flags == 0x200){
-					mkBillBoardMtx(jobj, &tmtx, rmtx);
-					return;
-				}
-			}else{
-				if(flags == 0x800){
-					f32 x = 1.f; //FUN_8000d5bc((double)(local_2c * local_2c + local_3c * local_3c + local_4c * local_4c));
-					f32 y = 1.f; //FUN_8000d5bc((double)(local_28 * local_28 + local_38 * local_38 + local_48 * local_48));
-					f32 z = 1.f; //FUN_8000d5bc((double)(local_24 * local_24 + local_34 * local_34 + local_44 * local_44));
-					guMtxScale(tmtx, x, y, z);
-					guMtxRotRad(tmtx, 'z', jobj->rotation.z);
-					//guMtxConcat(, rmtx);
-					return;
-				}
-			}
+		switch (jobj->flags & JOBJ_BILLBOARD_FIELD){
+			case JOBJ_BILLBOARD:
+				mkBillBoardMtx(jobj, tmtx, rmtx);
+				break;
+			case JOBJ_VBILLBOARD:
+				mkVBillBoardKMtx(jobj, tmtx, rmtx);
+				break;
+			case JOBJ_HBILLBOARD:
+				mkHBillBoardMtx(jobj, tmtx, rmtx);
+				break;
+			case JOBJ_RBILLBOARD:
+				Mtx rot, scl;
+				f32 x = sqrt(mtx[0][0] * mtx[0][0] + mtx[1][0] * mtx[1][0] + mtx[2][0] * mtx[2][0]);
+				f32 y = sqrt(mtx[0][1] * mtx[0][1] + mtx[1][1] * mtx[1][1] + mtx[2][1] * mtx[2][1]);
+				f32 z = sqrt(mtx[0][2] * mtx[0][2] + mtx[1][2] * mtx[1][2] + mtx[2][2] * mtx[2][2]);
+				guMtxScale(scl, x, y, z);
+				guMtxRotRad(rot, 'z', jobj->rotation.z);
+				guMtxConcat(rot, scl, rmtx);
+				break;
+			default:
+				HSD_Panic("Unknown type of billboard");
+				break;
 		}
-		HSD_Panic("Unknown type of billboard");
 	}
 }
 
