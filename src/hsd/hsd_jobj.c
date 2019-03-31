@@ -1129,7 +1129,7 @@ static void JObjInfoInit(){
 	HSD_CLASS_INFO(&hsdJObj)->amnesia = JObjAmnesia;
 	HSD_JOBJ_INFO(&hsdJObj)->disp = HSD_JObjDispSub;
 	HSD_JOBJ_INFO(&hsdJObj)->make_pmtx = HSD_JObjMakeMatrix;
-	HSD_JOBJ_INFO(&hsdJObj)->make_pmtx = mkRBillBoardMtx;
+	HSD_JOBJ_INFO(&hsdJObj)->make_rmtx = mkRBillBoardMtx;
 	HSD_JOBJ_INFO(&hsdJObj)->load = JObjLoad;
 	HSD_JOBJ_INFO(&hsdJObj)->release_child = JObjReleaseChild;
 }

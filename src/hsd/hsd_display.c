@@ -8,7 +8,7 @@ static GXColor erase_color = {0x26, 0x26, 0x26, 0xFF}; //-0x58C8(r13)
 static HSD_ObjDef zlist_alloc_data;
 
 static int	 zsort_listing = 0;
-static int	 zsort_sorting = 0;
+static int	 zsort_sorting = 0; //-0x4004(r13)
 
 static HSD_ZList *zlist_top = NULL;
 static HSD_ZList **zlist_bottom = &zlist_top;
@@ -24,8 +24,6 @@ static int	 zlist_xlu_nb = 0;
 #define ZLIST_NEXT(list,offset) (*(HSD_ZList **)(((u8 *)(list)) + (offset)))
 
 #define MTXRowCol(pmtx, row, col) (pmtx[row][col])
-
-static u32* r13_4004 = NULL;
 
 //80373B90
 static void mkHBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx){	
@@ -166,15 +164,16 @@ void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
 //803743B8
 void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, MtxP pmtx, HSD_TrspMask trsp_mask, u32 rendermode){
 	HSD_JObjSetCurrent(jobj);
-	if ((rendermode & 0x4000000) == 0 && (jobj->flags & 0x10000) != 0){
+	if ((rendermode & RENDER_SHADOW) == 0 && (jobj->flags & JOBJ_SPECULAR) != 0){
 		HSD_LobjSetupSpecularInit(pmtx);
 	}
-	HSD_PObjCleapmtxMark(0, 0);
-	HSD_DObj* dobj = jobj->u.dobj;
-	while(dobj != NULL){
-		if((dobj->flags & 1) == 0 && (dobj->flags & trsp_mask << 1) != 0){
+	HSD_PObjCleapmtxMark(NULL, 0);
+	for (HSD_DObj* dobj = jobj->u.dobj; dobj != NULL; dobj = dobj->next) {
+		if (dobj->flags & DOBJ_HIDDEN)
+			continue;
+		if((dobj->flags & (trsp_mask << DOBJ_TRSP_SHIFT)) != 0){
 			HSD_DObjSetCurrent(dobj);
-			//HSD_DOBJ_INFO(&dobj)->unk(dobj, vmtx, pmtx, rendermode);
+			HSD_DOBJ_METHOD(dobj)->disp(dobj, vmtx, pmtx, rendermode);
 		}
 		dobj = dobj->next;
 	}
@@ -185,8 +184,8 @@ void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, MtxP pmtx, HSD_TrspMask trsp_mas
 //80374480
 void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 rendermode){
 	if(jobj != NULL){
-		if((jobj->flags & 0x10) == 0){
-			u32 m_flags = jobj->flags & trsp_mask << 18;
+		if((jobj->flags & JOBJ_HIDDEN) == 0){
+			u32 m_flags = jobj->flags & trsp_mask << JOBJ_TRSP_SHIFT;
 			if(m_flags != 0){
 				BOOL need_matrix = FALSE;
 				if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
@@ -200,20 +199,21 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
 					HSD_CObj* cobj = HSD_CObjGetCurrent();
 					vmtx = &cobj->view_mtx;
 				}
+
 				Mtx mtx;
-				HSD_JOBJ_METHOD(jobj)->make_rmtx(jobj, vmtx, &mtx);
-				if((m_flags & 0x40000) != 0){
-					HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, 0x1, rendermode);
+				HSD_JOBJ_METHOD(jobj)->make_pmtx(jobj, vmtx, &mtx);
+				if((m_flags & JOBJ_OPA) != 0){
+					HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, HSD_TRSP_OPA, rendermode);
 				}
-				if(r13_4004 == NULL){
-					if((m_flags & 0x100000) != 0){
-						HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, 0x4, rendermode);
+				if(zsort_listing == 0){
+					if((m_flags & JOBJ_TEXEDGE) != 0){
+						HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, HSD_TRSP_TEXEDGE, rendermode);
 					}
-					if ((m_flags & 0x80000) != 0) {
-						HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, 0x2, rendermode);
+					if ((m_flags & JOBJ_XLU) != 0) {
+						HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, HSD_TRSP_XLU, rendermode);
 					}
 				}else{
-					if ((m_flags & 0x180000) != 0) {
+					if ((m_flags & (JOBJ_TEXEDGE | JOBJ_XLU)) != 0) {
 						HSD_ZList* zlist = (HSD_ZList*)HSD_ObjAlloc(&zlist_alloc_data);
 						memset(&zlist->vmtx, 0, 0x18);
 						guMtxCopy(mtx, zlist->pmtx);
@@ -226,13 +226,13 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
 						zlist->rendermode = rendermode;
 						zlist_top = zlist;
 						zlist_bottom = &zlist->next;
-						if ((m_flags & 0x100000) != 0) {
-							zlist_texedge_top = zlist;
+						if ((m_flags & JOBJ_TEXEDGE) != 0) {
+							*zlist_texedge_bottom = zlist;
 							zlist_texedge_bottom = &zlist->sort.texedge;
 							zlist_texedge_nb += 1;
 						}
-						if ((m_flags & 0x80000) != 0) {
-							zlist_xlu_top = zlist;
+						if ((m_flags & JOBJ_XLU) != 0) {
+							*zlist_xlu_bottom = zlist;
 							zlist_xlu_bottom = &zlist->sort.xlu;
 							zlist_xlu_nb += 1;
 						}

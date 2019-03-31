@@ -7,6 +7,10 @@
 #include "hsd_state.h"
 #include "hsd_jobj.h"
 
+#define RENDER_SHADOW 0x4000000
+
+#define JOBJ_SPECULAR 0x10000
+
 #define JOBJ_PTCL_ACTIVE 0x7FFFFFFF
 #define JOBJ_PTCL_OFFSET_MASK 0xFFFFFF
 #define JOBJ_PTCL_OFFSET_SHIFT 6
@@ -19,8 +23,25 @@
 #define JOBJ_RBILLBOARD 0x800
 #define JOBJ_PBILLBOARD 0x2000
 
+#define DOBJ_TRSP_SHIFT 1
+#define JOBJ_TRSP_SHIFT 18
+
+#define DOBJ_HIDDEN 0x1
+#define JOBJ_HIDDEN 0x10
+
+#define JOBJ_OPA 0x40000
+#define JOBJ_XLU 0x80000
+#define JOBJ_TEXEDGE 0x100000
+
+#define HSD_TRSP_OPA 0x1
+#define HSD_TRSP_XLU 0x2
+#define HSD_TRSP_TEXEDGE 0x4
+
 #define HSD_JOBJ_INFO(i)	((HSD_JObjInfo *)(i))
 #define HSD_JOBJ_METHOD(o)	HSD_JOBJ_INFO(HSD_CLASS_METHOD(o))
+
+#define HSD_DOBJ_INFO(i)	((HSD_DObjInfo *)(i))
+#define HSD_DOBJ_METHOD(o)	HSD_DOBJ_INFO(HSD_CLASS_METHOD(o))
 
 typedef void (*HSD_PtclCallback)(u32, u32, u32, HSD_JObj*);
 
@@ -48,6 +69,7 @@ Mtx HSD_identityMtx =
 	{0,0,1,0}
 };
 
+void mkRBillBoardMtx(HSD_JObj*, Mtx, Mtx);
 void HSD_JObjDisp(HSD_JObj*, MtxP, HSD_TrspMask, u32);
 void HSD_JObjDispSub(HSD_JObj*, MtxP, MtxP, HSD_TrspMask, u32);
 

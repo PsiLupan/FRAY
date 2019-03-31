@@ -25,6 +25,11 @@ typedef struct _HSD_DObjDesc {
 	u32 flags;
 } HSD_DObjDesc;
 
+typedef struct _HSD_DObjInfo {
+	HSD_ClassInfo parent;
+	void (*disp)(HSD_DObj *dobj, Mtx vmtx, Mtx pmtx);
+	int (*load)(HSD_DObj *dobj, HSD_DObjDesc *desc);
+} HSD_DObjInfo;
 
 typedef struct _HSD_ShapeAnim {
 	
@@ -41,6 +46,10 @@ typedef struct _HSD_ShapeAnimJoint {
 typedef struct _HSD_DObjInfo {
 	HSD_ClassInfo parent;
 } HSD_DObjInfo;
+
+#define HSD_DOBJ(o)		((HSD_DObj *)(o))
+#define HSD_DOBJ_INFO(i)	((HSD_DObjInfo *)(i))
+#define HSD_DOBJ_METHOD(o)	HSD_DOBJ_INFO(HSD_CLASS_METHOD(o))
 
 extern HSD_DObjInfo hsdDObj;
 
