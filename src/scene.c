@@ -360,12 +360,12 @@ static void Scene_Minor_Class0_OnLoad(){
   GObj_InitKindObj(lobj_gobj, 2, lobj);
   GObj_SetupGXLink(lobj_gobj, LObj_Setup_Callback, 0, 0);
   
-  HSD_GObj* menu_gobj = GObj_Create(0x13, 0x14, 0);
+  HSD_GObj* menu_gobj = GObj_Create(GOBJ_CLASS_HSD_COBJ_TITLE, 0x14, 0);
   HSD_CObj* menu_cobj = CObj_Create(scene_cobj_desc);
   GObj_InitKindObj(menu_gobj, GOBJ_KIND_MENU_COBJ, menu_cobj);
   GObj_SetupGXLink_Max(menu_gobj, CObj_SetErase_Callback, 0);
 
-  HSD_GObj* menu_gobj_2 = GObj_Create(0x13, 0x14, 0);
+  HSD_GObj* menu_gobj_2 = GObj_Create(GOBJ_CLASS_HSD_COBJ_TITLE, 0x14, 0);
   HSD_CObj* menu_cobj_2 = CObj_Create(scene_cobj_desc);
   GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_MENU_COBJ, menu_cobj_2);
   GObj_SetupGXLink_Max(menu_gobj_2, CObj_SetCurrent_Callback, 0xC);
