@@ -71,7 +71,7 @@ typedef struct _HSD_JObjInfo {
 	HSD_ClassInfo parent;
 	int (*load)(HSD_JObj *jobj, HSD_JObjDesc *desc);
 	void (*make_pmtx)(HSD_JObj *jobj, MtxP vmtx, Mtx pmtx);
-	void (*make_rmtx)(HSD_JObj* jobj);
+	void (*make_rmtx)(HSD_JObj* jobj, Mtx mtx, MtxP pmtx);
 	void (*disp)(HSD_JObj *jobj, MtxP vmtx, Mtx pmtx, HSD_TrspMask trsp_mask, u32 rendermode);
 	void (*release_child)(HSD_JObj* jobj);
 	void (*setup)(HSD_JObj *jobj, u32 rendermode);

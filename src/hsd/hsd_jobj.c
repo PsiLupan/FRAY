@@ -1129,13 +1129,13 @@ static void JObjInfoInit(){
 	HSD_CLASS_INFO(&hsdJObj)->amnesia = JObjAmnesia;
 	HSD_JOBJ_INFO(&hsdJObj)->disp = HSD_JObjDispSub;
 	HSD_JOBJ_INFO(&hsdJObj)->make_pmtx = HSD_JObjMakeMatrix;
-	HSD_JOBJ_INFO(&hsdJObj)->make_rmtx = mkRBillBoardMtx;
+	HSD_JOBJ_INFO(&hsdJObj)->make_pmtx = mkRBillBoardMtx;
 	HSD_JOBJ_INFO(&hsdJObj)->load = JObjLoad;
 	HSD_JOBJ_INFO(&hsdJObj)->release_child = JObjReleaseChild;
 }
 
 //80373E44
-static void mkBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
+static void mkBillBoardMtx(HSD_JObj* jobj, Mtx mtx, MtxP pmtx){
 	f64 xval = (mtx[2][0] * mtx[2][0]) + (mtx[1][0] * mtx[1][0]) + (mtx[0][0] * mtx[0][0]);
 	f64 res;
 	if (xval > 0){
@@ -1167,37 +1167,37 @@ static void mkBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
 	f64 mtx_mag = sqrt((double)(mtx[0][1] * mtx[0][1] + mtx[0][2] * mtx[0][2] + mtx[0][3] * mtx[0][3]));
 	f64 x_res = (xval / rvec_mag);
 	f32 y_res = (float)(res / mtx_mag);
-	rmtx[0][0] = (float)(x_res * (double)rvec.x);
-	rmtx[1][0] = (float)(x_res * (double)rvec.y);
-	rmtx[2][0] = (float)(x_res * (double)rvec.z);
-	rmtx[0][1] = y_res * mtx[0][1];
-	rmtx[1][1] = y_res * mtx[1][1];
-	rmtx[2][1] = y_res * mtx[2][1];
-	rmtx[0][2] = (float)(zval * (double)mtx[0][3]);
-	rmtx[1][2] = (float)(zval * (double)mtx[1][0]);
-	rmtx[2][2] = (float)(zval * (double)mtx[1][1]);
-	rmtx[0][3] = mtx[0][3];
-	rmtx[1][3] = mtx[1][3];
-	rmtx[2][3] = mtx[2][3];
+	pmtx[0][0] = (float)(x_res * (double)rvec.x);
+	pmtx[1][0] = (float)(x_res * (double)rvec.y);
+	pmtx[2][0] = (float)(x_res * (double)rvec.z);
+	pmtx[0][1] = y_res * mtx[0][1];
+	pmtx[1][1] = y_res * mtx[1][1];
+	pmtx[2][1] = y_res * mtx[2][1];
+	pmtx[0][2] = (float)(zval * (double)mtx[0][3]);
+	pmtx[1][2] = (float)(zval * (double)mtx[1][0]);
+	pmtx[2][2] = (float)(zval * (double)mtx[1][1]);
+	pmtx[0][3] = mtx[0][3];
+	pmtx[1][3] = mtx[1][3];
+	pmtx[2][3] = mtx[2][3];
 }
 
 //803740E8
-static void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
+static void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, MtxP pmtx){
 	if((jobj->flags & 0xE00) == 0){
-		guMtxConcat(mtx, jobj->mtx, rmtx);
+		guMtxConcat(mtx, jobj->mtx, *pmtx);
 	}else{
 		Mtx tmtx;
 		guMtxConcat(mtx, jobj->mtx, tmtx);
 		u32 flags = jobj->flags & 0xE00;
 		if(flags == 0x600){
-			mkHBillBoardMtx(jobj, tmtx, rmtx);
+			mkHBillBoardMtx(jobj, tmtx, pmtx);
 		}else{
 			if(flags < 0x600){
 				if(flags == 0x400){
-					mkVBillBoardKMtx(jobj, tmtx, rmtx);
+					mkVBillBoardKMtx(jobj, tmtx, pmtx);
 					return;
 				}else if(flags < 0x400 && flags == 0x200){
-					mkBillBoardMtx(jobj, tmtx, rmtx);
+					mkBillBoardMtx(jobj, tmtx, pmtx);
 					return;
 				}
 			}else{
@@ -1207,7 +1207,7 @@ static void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
 					f32 z = 1.f; //FUN_8000d5bc((double)(local_24 * local_24 + local_34 * local_34 + local_44 * local_44));
 					guMtxScale(tmtx, x, y, z);
 					guMtxRotRad(tmtx, 'z', jobj->rotation.z);
-					//guMtxConcat(, rmtx);
+					//guMtxConcat(, pmtx);
 					return;
 				}
 			}
@@ -1222,7 +1222,7 @@ static void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, Mtx pmtx, HSD_TrspMask tr
 	if ((rendermode & 0x4000000) == 0 && (jobj->flags & 0x10000) != 0){
 		HSD_LobjSetupSpecularInit(pmtx);
 	}
-	HSD_PObjClearMtxMark(0, 0);
+	HSD_PObjCleapmtxMark(0, 0);
 	HSD_DObj* dobj = jobj->u.dobj;
 	while(dobj != NULL){
 		if((dobj->flags & 1) == 0 && (dobj->flags & trsp_mask << 1) != 0){
@@ -1234,3 +1234,5 @@ static void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, Mtx pmtx, HSD_TrspMask tr
 	HSD_DObjSetCurrent(NULL);
 	HSD_JObjSetCurrent(NULL);
 }
+
+//80374480
