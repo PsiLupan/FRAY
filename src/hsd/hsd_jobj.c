@@ -92,7 +92,7 @@ void HSD_JObjWalkTree(HSD_JObj* jobj, void (*cb)(), u32 unk){
 
 //8036F1F8
 void HSD_JObjMakeMatrix(HSD_JObj* jobj){
-
+	
 }
 
 //8036F4C8
@@ -238,7 +238,33 @@ static void JObjSortAnim(HSD_AObj* aobj){
 
 //8036FA10
 void HSD_JObjAddAnim(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoint* mat_joint, HSD_ShapeAnimJoint* sh_joint){
-
+	if(jobj != NULL){
+		if(an_joint != NULL){
+			if(jobj->aobj != NULL){
+				HSD_AObjRemove(jobj->aobj);
+			}
+			HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->anim);
+			jobj->aobj = aobj;
+			JObjSortAnim(jobj->aobj);
+			HSD_RObjAddAnimAll(jobj->robj, an_joint->unk);
+			if((an_joint->unk2 & 1) == 0){
+				HSD_JObjClearFlags(jobj, 0x8);
+			}else{
+				HSD_JObjSetFlags(jobj, 0x8);
+			}
+		}
+		if(union_type_dobj(jobj)){
+			HSD_ShapeAnim* sh_anim = NULL;
+			HSD_MatAnim* mat_anim = NULL;
+			if(sh_joint != NULL){
+				sh_anim = sh_joint->shapeanim;
+			}
+			if(mat_joint != NULL){
+				mat_anim = mat_joint->matanim;
+			}
+			HSD_DObjAddAnimAll(jobj->u.dobj, mat_anim, sh_anim);
+		}
+	}
 }
 
 //8036FB5C
@@ -1106,6 +1132,88 @@ static void JObjInfoInit(){
 	HSD_JOBJ_INFO(&hsdJObj)->make_rmtx = mkRBillBoardMtx;
 	HSD_JOBJ_INFO(&hsdJObj)->load = JObjLoad;
 	HSD_JOBJ_INFO(&hsdJObj)->release_child = JObjReleaseChild;
+}
+
+//80373E44
+static void mkBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
+	f64 xval = (mtx[2][0] * mtx[2][0]) + (mtx[1][0] * mtx[1][0]) + (mtx[0][0] * mtx[0][0]);
+	f64 res;
+	if (xval > 0){
+		f64 sqrd = 1.0f / sqrt(xval);
+		res = 0.5 * sqrd -(xval * sqrd * sqrd - 3.0);
+		xval = xval * 0.5 * res -(xval * sqrd * sqrd - 3.0);
+	}
+	f64 zval = (mtx[2][2] * mtx[2][2]) + (mtx[1][2] * mtx[1][2]) + (mtx[0][2] * mtx[0][2]);
+	if (zval > 0){
+		f64 sqrd = 1.0f / sqrt(zval);
+		res = 0.5 * sqrd -(zval * sqrd * sqrd - 3.0);
+		zval = zval * 0.5 * res -(zval * sqrd * sqrd - 3.0);
+	}
+
+	guVector rvec;
+	if((jobj->flags & 0x2000) == 0){
+		guVector v = {0.f, 0.f, 1.f};
+		guVecCross(&mtx[0][1], &v, &rvec);
+		guVecCross(&v, &rvec, &mtx[0][1]);
+		f64 mag_result = sqrt((double)(v.x * v.x + v.y * v.y + v.z * v.z));
+		zval = zval / mag_result;
+	}else{
+		guVecCross(&mtx[0][3], &mtx[0][1], &rvec);
+		guVecCross(&rvec, &mtx[0][3], &mtx[0][1]);
+		f64 mag_result = sqrt((double)(mtx[0][3] * mtx[0][3] * mtx[1][0] * mtx[1][0] + mtx[1][1] * mtx[1][1]));
+		zval = zval / -(mag_result);
+	}
+  	f64 rvec_mag = sqrt((double)(rvec.x * rvec.x + rvec.y * rvec.y + rvec.z * rvec.z));
+	f64 mtx_mag = sqrt((double)(mtx[0][1] * mtx[0][1] + mtx[0][2] * mtx[0][2] + mtx[0][3] * mtx[0][3]));
+	f64 x_res = (xval / rvec_mag);
+	f32 y_res = (float)(res / mtx_mag);
+	rmtx[0][0] = (float)(x_res * (double)rvec.x);
+	rmtx[1][0] = (float)(x_res * (double)rvec.y);
+	rmtx[2][0] = (float)(x_res * (double)rvec.z);
+	rmtx[0][1] = y_res * mtx[0][1];
+	rmtx[1][1] = y_res * mtx[1][1];
+	rmtx[2][1] = y_res * mtx[2][1];
+	rmtx[0][2] = (float)(zval * (double)mtx[0][3]);
+	rmtx[1][2] = (float)(zval * (double)mtx[1][0]);
+	rmtx[2][2] = (float)(zval * (double)mtx[1][1]);
+	rmtx[0][3] = mtx[0][3];
+	rmtx[1][3] = mtx[1][3];
+	rmtx[2][3] = mtx[2][3];
+}
+
+//803740E8
+static void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
+	if((jobj->flags & 0xE00) == 0){
+		guMtxConcat(mtx, jobj->mtx, rmtx);
+	}else{
+		Mtx tmtx;
+		guMtxConcat(mtx, jobj->mtx, tmtx);
+		u32 flags = jobj->flags & 0xE00;
+		if(flags == 0x600){
+			mkHBillBoardMtx(jobj, tmtx, rmtx);
+		}else{
+			if(flags < 0x600){
+				if(flags == 0x400){
+					mkVBillBoardKMtx(jobj, tmtx, rmtx);
+					return;
+				}else if(flags < 0x400 && flags == 0x200){
+					mkBillBoardMtx(jobj, tmtx, rmtx);
+					return;
+				}
+			}else{
+				if(flags == 0x800){
+					f32 x = 1.f; //FUN_8000d5bc((double)(local_2c * local_2c + local_3c * local_3c + local_4c * local_4c));
+					f32 y = 1.f; //FUN_8000d5bc((double)(local_28 * local_28 + local_38 * local_38 + local_48 * local_48));
+					f32 z = 1.f; //FUN_8000d5bc((double)(local_24 * local_24 + local_34 * local_34 + local_44 * local_44));
+					guMtxScale(tmtx, x, y, z);
+					guMtxRotRad(tmtx, 'z', jobj->rotation.z);
+					//guMtxConcat(, rmtx);
+					return;
+				}
+			}
+		}
+		HSD_Panic("Unknown type of billboard");
+	}
 }
 
 //803743B8

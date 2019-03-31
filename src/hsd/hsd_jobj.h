@@ -1,6 +1,8 @@
 #ifndef _hsd_jobj_h_
 #define _hsd_jobj_h_
 
+#include <math.h>
+
 #include <gctypes.h>
 #include <ogc/gu.h>
 
