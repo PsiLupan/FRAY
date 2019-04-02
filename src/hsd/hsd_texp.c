@@ -15,7 +15,7 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list){
     texp->flags = 1;
     texp->next = (HSD_TExp*)list[0];
     list[0] = texp;
-    texp->x8_unk; = 0;
+    texp->x8_unk = 0;
     texp->x14_unk = 0;
     texp->x28_unk = 0;
     texp->x30_unk = 0;
@@ -28,3 +28,4 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list){
     texp->x64_unk = 0;
     return texp;
 }
+

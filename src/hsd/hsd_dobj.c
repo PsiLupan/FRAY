@@ -149,3 +149,14 @@ void HSD_DObjRemoveAll(HSD_DObj* dobj){
         }
     }
 }
+
+//8035E440
+static void DObjRelease(HSD_Class* o){
+    HSD_DObj* dobj = (HSD_DObj*)o;
+
+    HSD_MObjRemove(dobj->mobj);
+    HSD_PObjRemoveAll(dobj->pobj);
+    HSD_AObjRemove(dobj->aobj);
+
+    HSD_PARENT_INFO(&hsdDObj)->release(o);
+}
