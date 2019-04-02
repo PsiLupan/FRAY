@@ -68,6 +68,18 @@ typedef struct _Vertex {
 
 } Vertex;
 
+typedef struct _HSD_ShapeAnim {
+	struct _HSD_ShapeAnim* next;
+} HSD_ShapeAnim;
+
+typedef struct _HSD_ShapeAnimJoint {
+	struct _HSD_ShapeAnimJoint* child;
+	struct _HSD_ShapeAnimJoint* next;
+	struct _HSD_ShapeAnim* shapeanim;
+	u32 unk;
+	u32 unk2;
+} HSD_ShapeAnimJoint;
+
 typedef struct _HSD_PObjInfo {
 	HSD_ClassInfo class_info;
 } HSD_PObjInfo;

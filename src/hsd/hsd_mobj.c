@@ -58,7 +58,7 @@ void HSD_MObjAddAnim(HSD_MObj *mobj, HSD_MatAnim *matanim){
 }
 
 //80362E30
-void HSD_MObjReqAnimByFlags(HSD_MObj *mobj, f32 startframe, u32 flags){
+void HSD_MObjReqAnimByFlags(HSD_MObj *mobj, u32 flags, f32 startframe){
 	if (mobj){
 		if (flags & MOBJ_ANIM) {
 			HSD_AObjReqAnim(mobj->aobj, startframe);
