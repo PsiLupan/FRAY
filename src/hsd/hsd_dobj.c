@@ -58,11 +58,11 @@ void HSD_DObjAddAnimAll(HSD_DObj* dobj, HSD_MatAnim* mat_anim, HSD_ShapeAnim* sh
         HSD_MatAnim* m = mat_anim;
         HSD_ShapeAnim* sh = sh_anim;
         for(HSD_DObj* i = dobj; i != NULL; i = i->next, m = m->next, sh = sh->next){
-            u32 pval = NULL;
+            u32* unk = NULL;
             if(sh != NULL){
-                pval = sh->0x4;
+                unk = sh->unk;
             }
-            HSD_PObjRemoveAnimAll(i->pobj, pval);
+            HSD_PObjRemoveAnimAll(i->pobj, unk);
             HSD_MObjAddAnim(i->mobj, m);
         }
     }

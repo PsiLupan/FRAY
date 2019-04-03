@@ -52,12 +52,12 @@ typedef struct _HSD_JObjDesc {
 	guVector scale;
 	guVector position;
 	Mtx mtx;
-	HSD_RObjDesc* robj;
+	struct _HSD_RObjDesc* robj;
 } HSD_JObjDesc;
 
 typedef struct _HSD_JObjInfo {
 	HSD_ClassInfo parent; 
-	int (*load)(HSD_JObj *jobj, HSD_JObjDesc *desc); //0x3C
+	int (*load)(HSD_JObj *jobj, HSD_JObjDesc *desc, u32); //0x3C
 	void (*make_pmtx)(HSD_JObj *jobj, Mtx vmtx, Mtx pmtx); //0x40
 	void (*make_rmtx)(HSD_JObj* jobj, Mtx mtx, Mtx rmtx); //0x44
 	void (*disp)(HSD_JObj *jobj, Mtx vmtx, Mtx pmtx, HSD_TrspMask trsp_mask, u32 rendermode); //0x48
@@ -70,8 +70,46 @@ extern HSD_JObjInfo hsdJObj;
 #define HSD_JOBJ_INFO(i)	((HSD_JObjInfo *)(i))
 #define HSD_JOBJ_METHOD(o)	HSD_JOBJ_INFO(HSD_CLASS_METHOD(o))
 
-void HSD_JObjAnimAll(HSD_JObj*);
+void HSD_JObjCheckDepend(HSD_JObj *);
 
-HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc*);
+void HSD_JObjWalkTree(HSD_JObj *, void (*)(), u32);
+
+void HSD_JObjRemoveAnimByFlags(HSD_JObj *, u32);
+void HSD_JObjRemoveAnimAllByFlags(HSD_JObj *, u32);
+void HSD_JObjRemoveAnim(HSD_JObj *);
+void HSD_JObjRemoveAnimAll(HSD_JObj *);
+void HSD_JObjReqAnimByFlags(HSD_JObj *, u32, f32);
+void HSD_JObjReqAnimAllByFlags(HSD_JObj *, u32, f32);
+void HSD_JObjReqAnimAll(HSD_JObj *, f32);
+void HSD_JObjReqAnim(HSD_JObj *, f32);
+void HSD_JObjAddAnim(HSD_JObj *, HSD_AnimJoint *, HSD_MatAnimJoint *, HSD_ShapeAnimJoint *);
+void HSD_JObjAddAnimAll(HSD_JObj *, HSD_AnimJoint *, HSD_MatAnimJoint *, HSD_ShapeAnimJoint *);
+void JObjUpdateFunc(HSD_JObj *, u32, f32*);
+void HSD_JObjAnim(HSD_JObj *);
+void HSD_JObjAnimAll(HSD_JObj *);
+void HSD_JObjSetDefaultClass(HSD_JObjInfo *);
+HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc *);
+void HSD_JObjRemove(HSD_JObj *);
+void HSD_JObjRemoveAll(HSD_JObj *);
+void RecalcParentTrspBits(HSD_JObj *);
+void HSD_JObjAddChild(HSD_JObj *, HSD_JObj *);
+void HSD_JObjReparent(HSD_JObj *, HSD_JObj *);
+void HSD_JObjAddNext(HSD_JObj *, HSD_JObj *);
+HSD_JObj* HSD_JObjGetPrev(HSD_JObj *);
+HSD_DObj* HSD_JObjGetDObj(HSD_JObj *);
+void HSD_JObjAddDObj(HSD_JObj *, HSD_DObj *);
+void HSD_JObjPrependRObj(HSD_JObj *, HSD_RObj *);
+void HSD_JObjDeleteRObj(HSD_JObj *, HSD_RObj *);
+u32 HSD_JObjGetFlags(HSD_JObj *);
+void HSD_JObjSetFlags(HSD_JObj *, u32);
+void HSD_JObjSetFlagsAll(HSD_JObj *, u32);
+void HSD_JObjClearFlags(HSD_JObj *, u32);
+void HSD_JObjClearFlagsAll(HSD_JObj *, u32);
+HSD_JObj* HSD_JObjAlloc();
+void HSD_JObjSetCurrent(HSD_JObj *);
+HSD_JObj* HSD_JObjGetCurrent();
+
+void HSD_JObjSetMtxDirtySub(HSD_JObj *);
+void HSD_JObjSetCallback(void (*)());
 
 #endif

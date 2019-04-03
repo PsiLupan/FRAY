@@ -6,6 +6,8 @@
 #include "hsd_object.h"
 #include "hsd_util.h"
 
+#include "hsd_aobj.h"
+
 #define POBJ_ANIM 1<<3
 #define POBJ_SHAPEANIM 1<<12
 #define POBJ_ENVELOPE 1<<13
@@ -22,7 +24,7 @@ typedef struct _HSD_PObj {
 	struct _HSD_Display* display;
 	struct _HSD_Weight* weight;
 	union {
-		HSD_ShapeSet shape_set;
+		struct _HSD_ShapeSet* shape_set;
 		HSD_SList* envelope_list;
 	} u;
 	struct _HSD_AObj* aobj;
@@ -31,14 +33,14 @@ typedef struct _HSD_PObj {
 typedef struct _HSD_PObjDesc {
 	char* class_name;
 	struct _HSD_PObjDesc* next;
-	HSD_VertAttr* verts;
+	struct _HSD_VertAttr* verts;
 	u16 flags;
 	u16 n_display;
-	HSD_Display* display;
-	HSD_Weight* weight;
+	struct _HSD_Display* display;
+	struct _HSD_Weight* weight;
 	union {
-		HSD_ShapeSetDesc* shape_set;
-		EnvelopeDesc** envelope_p;
+		struct _HSD_ShapeSetDesc* shape_set;
+		struct _HSD_EnvelopeDesc** envelope_p;
 	} u;
 } HSD_PObjDesc;
 
@@ -61,15 +63,48 @@ typedef struct _HSD_VertAttr {
 	u8 scale;
 	u8 unk;
 	u16 stride;
-	Vertex* vertex;
+	struct _HSD_Vertex* vertex;
 } HSD_VertAttr;
 
-typedef struct _Vertex {
+typedef struct _HSD_Vertex {
 
 } Vertex;
 
+typedef struct _HSD_VertexDesc {
+
+} HSD_VertexDesc;
+
+typedef struct _HSD_ShapeSet {
+	u16 flags;
+	u16 nb_shape;
+	u32 nb_vertex_index;
+	struct _HSD_VertexDesc* vertex_desc;
+	HSD_SList* vertex_idx_list;
+	u32 nb_normal_index;
+	void* normal_desc;
+	HSD_SList* normal_idx_list;
+	struct {
+		f32* bp;
+		f32 bl;
+	} blend;
+	u32 x20_unk;
+	u32 x24_unk;
+} HSD_ShapeSet;
+
+typedef struct _HSD_ShapeSetDesc {
+	u16 flags;
+	u16 nb_shape;
+	u32 nb_vertex_index;
+	struct _HSD_VertexDesc* vertex_desc;
+	HSD_SList* vertex_idx_list;
+	u32 nb_normal_index;
+	void* normal_desc;
+	HSD_SList* normal_idx_list;
+} HSD_ShapeSetDesc;
+
 typedef struct _HSD_ShapeAnim {
 	struct _HSD_ShapeAnim* next;
+	u32* unk;
 } HSD_ShapeAnim;
 
 typedef struct _HSD_ShapeAnimJoint {

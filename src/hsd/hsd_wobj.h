@@ -27,7 +27,7 @@ typedef struct _HSD_WObjInfo {
     HSD_ClassInfo parent;
 } HSD_WObjInfo;
 
-struct _HSD_InterestAnim {
+typedef struct _HSD_InterestAnim {
     struct _HSD_InterestAnim* next;
     struct _HSD_AObjDesc* desc;
     u32 unk;

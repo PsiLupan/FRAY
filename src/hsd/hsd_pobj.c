@@ -1,5 +1,9 @@
 #include "hsd_pobj.h"
 
+#include "hsd_memory.h"
+
+#include "hsd_fobj.h"
+
 static void PObjInfoInit(void);
 
 HSD_PObjInfo hsdPObj = { PObjInfoInit };
@@ -14,8 +18,8 @@ u16 HSD_PObjGetFlags(HSD_PObj* pobj){
 //8036B8E8
 void HSD_PObjRemoveAnimAllByFlags(HSD_PObj* pobj, u16 flags){   
     if (pobj != NULL){
-        for (HSD_PObj *pp = pobj; pp; pp = pp->next) {
-            if (pp->flags & POBJ_ANIM) {
+        for (HSD_PObj *pp = pobj->next; pp; pp = pp->next) {
+            if ((flags & 8) != 0 && (pp->flags & 0x3000) == POBJ_ANIM) {
                 HSD_AObjRemove(pp->aobj);
                 pp->aobj = NULL;
             }
@@ -24,12 +28,18 @@ void HSD_PObjRemoveAnimAllByFlags(HSD_PObj* pobj, u16 flags){
 }
 
 //8036B978
-void HSD_PObjRemoveAnimAll(HSD_PObj* pobj){ //TODO: Function is a bit longer than later versions.
-    if (pobj != NULL){
+void HSD_PObjRemoveAnimAll(HSD_PObj* pobj, u32* unk){
+    if (pobj != NULL && unk != NULL){
+        u32* j = unk;
         for (HSD_PObj *pp = pobj; pp; pp = pp->next) {
-            if (pp->flags & POBJ_ANIM) {
-                HSD_AObjRemove(pp->aobj);
-                pp->aobj = NULL;
+            if ((pp->flags & 0x3000) == POBJ_ANIM && pp->weight != NULL) {
+                if(pp->aobj != NULL){
+                    HSD_AObjRemove(pp->aobj);
+                }
+                pp->aobj = HSD_AObjLoadDesc((HSD_AObjDesc*)j[1]);
+            }
+            if(j != NULL){
+                j = j[0];
             }
         }
     }
@@ -107,14 +117,14 @@ static HSD_ShapeSet* loadShapeSetDesc(HSD_ShapeSetDesc* sdesc){
     shape_set->normal_desc = sdesc->normal_desc;
     shape_set->normal_idx_list = sdesc->normal_idx_list;
     if (shape_set->flags & SHAPESET_ADDITIVE) {
-        int i;
-        shape_set->blend.bp = (float *)HSD_Alloc(shape_set->nb_shape * sizeof(float));
-        for (i = 0; i < shape_set->nb_shape; i++){
+        shape_set->blend.bp = (f32 *)HSD_Alloc(shape_set->nb_shape * sizeof(f32));
+        for (u32 i = 0; i < shape_set->nb_shape; i++){
             shape_set->blend.bp[i] = 0.0F;
         }
     }else {
         shape_set->blend.bl = 0.0F;
     }
+    shape_set->x20_unk = 0;
     return shape_set;
 }
 

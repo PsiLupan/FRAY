@@ -35,7 +35,7 @@ void HSD_JObjSetMtxDirty(HSD_JObj* jobj, void* unk){
 }
 
 //8036EFAC
-void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb)(), u32 unk){
+static void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb)(), u32 unk){
 	if(jobj != NULL){
 		assert(jobj->parent != NULL);
 		u32 type = 0;
@@ -674,13 +674,92 @@ void HSD_JObjSetDefaultClass(HSD_JObjInfo* info){
 }
 
 //80370BEC
-void JObjLoad(){
+static void JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, u32 unk){
 
 }
 
 //80370E44
-HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc* jdesc){
-	
+HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc* desc){
+	HSD_JObj* jobj = NULL;
+	if(desc == NULL){
+		goto END;
+	}
+	HSD_ClassInfo* info;
+	if (!desc->class_name || !(info = hsdSearchClassInfo(desc->class_name))){
+		jobj = HSD_JObjAlloc();
+	}else{
+		jobj = hsdNew(info);
+		assert(jobj != NULL);
+	}
+	HSD_JOBJ_METHOD(jobj)->load(jobj, desc, 0);
+END:
+	HSD_JObjResolveRefsAll(jobj, desc);
+	return jobj;
+}
+
+//8037115C
+void HSD_JObjUnref(HSD_JObj* jobj){
+
+}
+
+//80371370
+void HSD_JObjRemove(HSD_JObj* jobj){
+	if(jobj != NULL){
+		HSD_JObj* child = jobj->child;
+		if(child != NULL && child->next != NULL){
+			HSD_Halt("child->next == NULL");
+		}
+		HSD_JObj* next = child;
+		if(child == NULL){
+			 next = jobj->next;
+		}
+		HSD_JObj* prev = HSD_JObjGetPrev(jobj);
+		if(prev == NULL){
+			if(jobj->parent != NULL){
+				jobj->parent->child = next;
+			}
+		}else{
+			prev->next = next;
+		}
+		if(next != NULL && next == child){
+			next->next = jobj->next;
+			next->parent = jobj->parent;
+		}
+		jobj->parent = NULL;
+		jobj->child = NULL;
+		jobj->next = NULL;
+
+		u16 ref_count = jobj->class_parent.ref_count;
+		u32 lz = __builtin_clz(0xFFFF - ref_count);
+		lz = lz >> 5;
+		if(lz == 0){
+			jobj->class_parent.ref_count -= 1;
+			lz = __builtin_clz(-ref_count);
+			lz = lz >> 5;
+		}
+		if(lz != 0){
+			u16 ref_count_indiv = jobj->class_parent.ref_count_individual;
+			if((ref_count_indiv - 1) < 0){
+				HSD_INFO_METHOD(jobj)->release((HSD_Class*)jobj);
+				HSD_INFO_METHOD(jobj)->destroy((HSD_Class*)jobj);
+			}else{
+				jobj->class_parent.ref_count_individual += 1;
+				assert(jobj->class_parent.ref_count_individual != 0);
+				HSD_JOBJ_METHOD(jobj)->release_child(jobj);
+				lz = __builtin_clz(-jobj->class_parent.ref_count_individual);
+				lz = lz >> 5;
+				if(lz == 0){
+					jobj->class_parent.ref_count_individual -= 1;
+					lz = __builtin_clz(-jobj->class_parent.ref_count_individual);
+					lz = lz >> 5;
+				}
+				if(lz != 0){
+					HSD_INFO_METHOD(jobj)->release((HSD_Class*)jobj);
+					HSD_INFO_METHOD(jobj)->destroy((HSD_Class*)jobj);
+				}
+			}
+		}
+	}
 }
 
 //80371590

@@ -26,4 +26,6 @@ typedef struct _HSD_MemoryEntry {
 
 void* HSD_MemAlloc(u32);
 
+HSD_MemPiece* hsdAllocMemPiece(u32);
+
 #endif
