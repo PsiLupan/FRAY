@@ -41,7 +41,7 @@ static void mkHBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx){
 		ay.y = sqrtf(pos.x * pos.x + pos.z * pos.z) + FLT_EPSILON;
 		ay.x = -pos.y / ay.y * pos.x;
 		ay.z = -pos.y / ay.y * pos.z;
-		guVecNormalize(&ay, &ay);
+		guVecNormalize(&ay);
 	} else {
 		ay.x = 0.f;
 		ay.y = 1.f;
@@ -135,6 +135,8 @@ void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
 		Mtx tmtx;
 		guMtxConcat(mtx, jobj->mtx, tmtx);
 		u32 flags = jobj->flags & 0xE00;
+		Mtx rot, scl;
+		f32 x, y, z;
 		switch (jobj->flags & JOBJ_BILLBOARD_FIELD){
 			case JOBJ_BILLBOARD:
 				mkBillBoardMtx(jobj, tmtx, rmtx);
@@ -146,10 +148,9 @@ void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
 				mkHBillBoardMtx(jobj, tmtx, rmtx);
 				break;
 			case JOBJ_RBILLBOARD:
-				Mtx rot, scl;
-				f32 x = sqrtf(mtx[0][0] * mtx[0][0] + mtx[1][0] * mtx[1][0] + mtx[2][0] * mtx[2][0]);
-				f32 y = sqrtf(mtx[0][1] * mtx[0][1] + mtx[1][1] * mtx[1][1] + mtx[2][1] * mtx[2][1]);
-				f32 z = sqrtf(mtx[0][2] * mtx[0][2] + mtx[1][2] * mtx[1][2] + mtx[2][2] * mtx[2][2]);
+				x = sqrtf(mtx[0][0] * mtx[0][0] + mtx[1][0] * mtx[1][0] + mtx[2][0] * mtx[2][0]);
+				y = sqrtf(mtx[0][1] * mtx[0][1] + mtx[1][1] * mtx[1][1] + mtx[2][1] * mtx[2][1]);
+				z = sqrtf(mtx[0][2] * mtx[0][2] + mtx[1][2] * mtx[1][2] + mtx[2][2] * mtx[2][2]);
 				guMtxScale(scl, x, y, z);
 				guMtxRotRad(rot, 'z', jobj->rotation.z);
 				guMtxConcat(rot, scl, rmtx);
@@ -173,7 +174,7 @@ void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, MtxP pmtx, HSD_TrspMask trsp_mas
 			continue;
 		if((dobj->flags & (trsp_mask << DOBJ_TRSP_SHIFT)) != 0){
 			HSD_DObjSetCurrent(dobj);
-			HSD_DOBJ_METHOD(dobj)->disp(dobj, vmtx, pmtx, rendermode);
+			HSD_DOBJ_METHOD(dobj)->disp(dobj, vmtx, pmtx);
 		}
 		dobj = dobj->next;
 	}

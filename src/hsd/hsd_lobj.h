@@ -4,12 +4,11 @@
 #include <ogc/gx.h>
 
 #include "hsd_object.h"
+#include "hsd_util.h"
 
 #include "hsd_aobj.h"
 #include "hsd_cobj.h"
 #include "hsd_fobj.h"
-#include "hsd_jobj.h"
-#include "hsd_util.h"
 #include "hsd_wobj.h"
 
 #define MAX_GXLIGHT 9
@@ -77,7 +76,7 @@ typedef struct _HSD_LObj {
 	} u;
 	f32 shininess;
 	guVector lvec;
-	HSD_AObj* aobj;
+	struct _HSD_AObj* aobj;
 	u8 id; //GXLightID
 	GXLightObj* lightobj; //0x50
 	u8 spec_id; //0x90 GXLightID
@@ -121,6 +120,41 @@ extern HSD_LObjInfo hsdLObj;
 #define HSD_LOBJ_INFO(i)	((HSD_LObjInfo *)(i))
 #define HSD_LOBJ_METHOD(o)	HSD_LOBJ_INFO(HSD_CLASS_METHOD(o))
 
-
+u32 HSD_LObjGetFlags(HSD_LObj *);
+void HSD_LObjSetFlags(HSD_LObj *, u32);
+void HSD_LObjClearFlags(HSD_LObj *, u32);
+u8 HSD_LObjGetLightMaskDiffuse();
+u8 HSD_LObjGetLightMaskAttnFunc();
+u8 HSD_LObjGetLightMaskAlpha();
+u8 HSD_LObjGetLightMaskSpecular();
+s32 HSD_LObjGetNbActive();
+HSD_LObj* HSD_LObjGetActiveByID(u8);
+HSD_LObj* HSD_LObjGetActiveByIndex(u8);
+void HSD_LObjAnim(HSD_LObj *);
+void HSD_LObjAnimAll(HSD_LObj *);
+void HSD_LObjReqAnimAll(HSD_LObj *, f32);
+void HSD_LObjGetLightVector(HSD_LObj *, guVector *);
+void HSD_LObjSetup(HSD_LObj *, GXColor, f32);
+void HSD_LObjSetupSpecularInit(MtxP);
+void HSD_LObjSetupInit(HSD_CObj *);
+void HSD_LObjAddCurrent(HSD_LObj *);
+void HSD_LObjDeleteCurrent(HSD_LObj *);
+void HSD_LObjDeleteCurrentAll(HSD_LObj *);
+void HSD_LObjSetCurrent(HSD_LObj *);
+void HSD_LObjSetCurrentAll(HSD_LObj *);
+HSD_LObj* HSD_LObjGetCurrentByType(u32);
+void HSD_LObjRemoveAll(HSD_LObj *);
+void HSD_LObjSetColor(HSD_LObj *, GXColor);
+void HSD_LObjGetColor(HSD_LObj *, GXColor *);
+void HSD_LObjSetSpot(HSD_LObj *, f32, u8);
+void HSD_LObjSetDistAttn(HSD_LObj *, f32, f32, u8);
+void HSD_LObjSetPosition(HSD_LObj *, guVector *);
+BOOL HSD_LObjGetPosition(HSD_LObj *, guVector *);
+void HSD_LObjSetInterest(HSD_LObj *, guVector *);
+BOOL HSD_LObjGetInterest(HSD_LObj *, guVector *);
+HSD_WObj* HSD_LObjGetPositionWObj(HSD_LObj *);
+HSD_WObj* HSD_LObjGetInterestWObj(HSD_LObj *);
+HSD_LObj* HSD_LObjLoadDesc(HSD_LightDesc *);
+void HSD_LObjAddAnim(HSD_LObj *, HSD_LightAnim *);
 
 #endif

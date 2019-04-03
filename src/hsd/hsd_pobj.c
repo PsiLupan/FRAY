@@ -2,7 +2,8 @@
 
 #include "hsd_memory.h"
 
-#include "hsd_fobj.h"
+#include "hsd_aobj.h"
+#include "hsd_jobj.h"
 
 static void PObjInfoInit(void);
 

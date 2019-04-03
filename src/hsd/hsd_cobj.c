@@ -67,23 +67,21 @@ void HSD_CObjAddAnim(HSD_CObj* cobj, HSD_WorldAnim* worldanim){
 //80367948
 void CObjUpdateFunc(HSD_CObj* cobj, u32 type, f32* val){
     if(cobj != NULL){
+        guVector vec;
         switch(type){
             case 1:
-            guVector vec;
             HSD_CObjGetEyePosition(cobj, vec);
             vec.x = *val;
             HSD_CObjSetEyePosition(cobj, vec);
             break;
 
             case 2:
-            guVector vec;
             HSD_CObjGetEyePosition(cobj, vec);
             vec.y = *val;
             HSD_CObjSetEyePosition(cobj, vec);
             break;
 
             case 3:
-            guVector vec;
             HSD_CObjGetEyePosition(cobj, vec);
             vec.z = *val;
             HSD_CObjSetEyePosition(cobj, vec);
@@ -92,7 +90,6 @@ void CObjUpdateFunc(HSD_CObj* cobj, u32 type, f32* val){
             case 5:
             case 6:
             case 7:
-            guVector vec;
             HSD_CObjGetInterest(cobj, vec);
             vec.x = *val;
             HSD_CObjSetInterest(cobj, vec);
@@ -738,6 +735,24 @@ static void CObjInit(HSD_Class *o){
         cobj->eye_position = HSD_WObjAlloc();
         cobj->interest = HSD_WObjAlloc();
     }
+}
+
+//8036A590
+HSD_CObj* HSD_CObjLoadDesc(HSD_CObjDesc* desc){
+    HSD_CObj* cobj = NULL;
+    if(desc != NULL){
+        HSD_ClassInfo *info;
+        if (!desc->class_name || !(info = hsdSearchClassInfo(desc->class_name))){
+            info = &hsdCObj;
+            if(info == NULL){
+                info = default_class;
+            }
+        }
+        cobj = hsdNew(info);
+        assert(cobj != NULL);
+        HSD_COBJ_METHOD(cobj)->load(cobj, desc);
+    }
+    return cobj;
 }
 
 //8036A6C8

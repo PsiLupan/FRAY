@@ -27,7 +27,7 @@ typedef struct _HSD_JObj {
 	u32 flags; //0x14
 	union {
 		HSD_SList* ptcl;
-		HSD_DObj* dobj;
+		struct _HSD_DObj* dobj;
 		f32* spline;
 	} u;
 	guQuaternion rotation;

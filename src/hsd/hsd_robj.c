@@ -2,6 +2,7 @@
 
 #include "hsd_aobj.h"
 #include "hsd_mobj.h"
+#include "hsd_jobj.h"
 #include "hsd_wobj.h"
 
 HSD_ObjDef robj_alloc_data;

@@ -1,6 +1,8 @@
 #include "hsd_dobj.h"
 
-HSD_DObjInfo hsdDObj = NULL;
+HSD_DObjInfo hsdDObj = { DObjInfoInit };
+
+static HSD_DObjInfo *default_class = NULL;
 
 static HSD_DObj *current_dobj = NULL; //-0x40FC(r13)
 
@@ -131,7 +133,7 @@ HSD_DObj* HSD_DObjLoadDesc(HSD_DObjDesc* desc){
         if(desc->class_name == NULL || !(info = hsdSearchClassInfo(desc->class_name))){
             dobj = HSD_DObjAlloc();
         }else{
-            dobj = (HSD_DObj*)hsdNew();
+            dobj = (HSD_DObj*)hsdNew(info);
             assert(dobj != NULL);
         }
         HSD_DOBJ_METHOD(dobj)->load(dobj, desc);
@@ -144,10 +146,21 @@ HSD_DObj* HSD_DObjLoadDesc(HSD_DObjDesc* desc){
 void HSD_DObjRemoveAll(HSD_DObj* dobj){
     if(dobj != NULL){
         for(HSD_DObj* i = dobj; i != NULL; i = i->next){
-            i->class_parent.class_init->release(i);
-            i->class_parent.class_init->destroy(i);
+            i->class_parent.class_init->release((HSD_Class*)i);
+            i->class_parent.class_init->destroy((HSD_Class*)i);
         }
     }
+}
+
+//8035E2C0
+HSD_DObj* HSD_DObjAlloc(){
+    HSD_DObjInfo* info = default_class;
+    if(default_class == NULL){
+        info = &hsdDObj;
+    }
+    HSD_DObj* dobj = hsdNew(info);
+    assert(dobj != NULL);
+    return dobj;
 }
 
 //8035E440
@@ -159,4 +172,14 @@ static void DObjRelease(HSD_Class* o){
     HSD_AObjRemove(dobj->aobj);
 
     HSD_PARENT_INFO(&hsdDObj)->release(o);
+}
+
+//8035E49C
+static void DObjAmnesia(HSD_Class* o){
+    
+}
+
+//8035E4E4
+static void DObjInfoInit(){
+    
 }

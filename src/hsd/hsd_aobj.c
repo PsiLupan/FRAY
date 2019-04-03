@@ -7,6 +7,8 @@
 static u32 r13_4070 = 0; //frames elapsed
 static u32 r13_4074 = 0; //conditional frames elapsed
 
+HSD_ObjDef aobj_alloc_data; //804C0880
+
 typedef struct _callback {
 	u32 count;
 	void (*func_ptr)();
@@ -14,16 +16,14 @@ typedef struct _callback {
 
 static callback r13_4078;
 
-static HSD_AObj *init_aobj = NULL; //804C0880
-
 //80363FC8
 void HSD_AObjInitAllocData(){
-	HSD_ObjAllocInit(init_aobj, sizeof(HSD_AObj), 4);
+	HSD_ObjAllocInit(&aobj_alloc_data, sizeof(HSD_AObj), 4);
 }
 
 //80363FF8
-HSD_AObj* HSD_AObjGetAllocData(){
-	return init_aobj;
+HSD_ObjDef* HSD_AObjGetAllocData(){
+	return &aobj_alloc_data;
 }
 
 //80364004
@@ -193,7 +193,7 @@ void HSD_AObjRemove(HSD_AObj* aobj){
 
 //8036453C
 HSD_AObj* HSD_AObjAlloc(){
-	HSD_AObj *aobj = HSD_AOBJ(HSD_ObjAlloc(init_aobj));
+	HSD_AObj *aobj = HSD_AOBJ(HSD_ObjAlloc(&aobj_alloc_data));
 	assert(aobj);
 	memset(aobj, 0, sizeof(aobj));
 	aobj->flags = 0x40000000;
@@ -204,7 +204,7 @@ HSD_AObj* HSD_AObjAlloc(){
 //803645A8
 void HSD_AObjFree(HSD_AObj* aobj){
 	if(aobj)
-		HSD_ObjFree(init_aobj, aobj);
+		HSD_ObjFree(&aobj_alloc_data, aobj);
 }
 
 //8036530C

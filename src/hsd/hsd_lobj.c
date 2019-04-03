@@ -1,5 +1,7 @@
 #include "hsd_lobj.h"
 
+#include "hsd_jobj.h"
+
 static void LObjInfoInit(void);
 
 HSD_LObjInfo hsdLObj = { LObjInfoInit };
@@ -166,7 +168,7 @@ void HSD_LObjAnimAll(HSD_LObj *lobj){
 }
 
 //803656F8
-void HSD_LObjReqAnimAll(HSD_LObj *lobj, float startframe){
+void HSD_LObjReqAnimAll(HSD_LObj *lobj, f32 startframe){
 	HSD_LObj *lp;
 	
 	if (lobj){
@@ -483,7 +485,7 @@ void HSD_LObjSetupInit(HSD_CObj *cobj){
     flags = lobj->flags;
 
     if ((flags & LOBJ_SPECULAR) && (flags & (LOBJ_DIFFUSE|LOBJ_ALPHA))) {
-      setup_spec_lightobj(lobj, vmtx, HSD_Index2LightID(idx++));
+      setup_spec_lightobj(lobj, vmtx, idx++);
     }
   }
 
@@ -670,12 +672,12 @@ void HSD_LObjSetPosition(HSD_LObj *lobj, guVector* position){
 }
 
 //80366D70
-bool HSD_LObjGetPosition(HSD_LObj *lobj, guVector* position){
+BOOL HSD_LObjGetPosition(HSD_LObj *lobj, guVector* position){
 	if (lobj && lobj->position) {
 		HSD_WObjGetPosition(lobj->position, position);
-		return true;
+		return TRUE;
 	}
-	return false;
+	return FALSE;
 }
 
 //80366DB0
@@ -689,12 +691,12 @@ void HSD_LObjSetInterest(HSD_LObj *lobj, guVector* interest){
 }
 
 //80366E38
-bool HSD_LObjGetInterest(HSD_LObj *lobj, guVector* interest){
+BOOL HSD_LObjGetInterest(HSD_LObj *lobj, guVector* interest){
 	if (lobj && lobj->interest) {
 		HSD_WObjGetPosition(lobj->interest, interest);
-		return true;
+		return TRUE;
 	}
-	return false;
+	return FALSE;
 }
 
 //80366E78
@@ -788,11 +790,15 @@ HSD_LObj* HSD_LObjLoadDesc(HSD_LightDesc *ldesc){
     HSD_ClassInfo *info;
 
     if (!ldesc->class_name || !(info = hsdSearchClassInfo(ldesc->class_name))){
-      *p = HSD_LObjAlloc();
+			info = &hsdLObj;
+			if(default_class != NULL){
+				info = default_class;
+			}
+      *p = hsdNew(info);
     } else {
       *p = hsdNew(info);
-      assert(*p);
     }
+		assert(*p);
     HSD_LOBJ_METHOD(*p)->load(*p, ldesc);
     p = &(*p)->next;
   }

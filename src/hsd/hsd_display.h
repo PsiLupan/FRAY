@@ -7,8 +7,6 @@
 #include "hsd_state.h"
 #include "hsd_jobj.h"
 
-#define RENDER_SHADOW 0x4000000
-
 #define JOBJ_PTCL_ACTIVE 0x7FFFFFFF
 #define JOBJ_PTCL_OFFSET_MASK 0xFFFFFF
 #define JOBJ_PTCL_OFFSET_SHIFT 6

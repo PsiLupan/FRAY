@@ -58,7 +58,7 @@ typedef struct _HSD_CObjDesc {
     struct _HSD_WObjDesc* eye_desc; //0x18
     struct _HSD_WObjDesc* interest_desc; //0x1C
     f32 roll; //0x20
-    f32* vector; //0x24
+    guVector* vector; //0x24
     f32 near; //0x28
     f32 far; //0x2C
     f32 fov_top; //0x30
@@ -76,6 +76,8 @@ typedef struct _HSD_CObjInfo {
 #define HSD_COBJ(o)		((HSD_CObj *)(o))
 #define HSD_COBJ_INFO(i)	((HSD_CObjInfo *)(i))
 #define HSD_COBJ_METHOD(o)	HSD_COBJ_INFO(HSD_CLASS_METHOD(o))
+
+static void CObjInfoInit();
 
 void HSD_CObjEraseScreen(HSD_CObj *, s32, s32, s32);
 void HSD_CObjRemoveAnim(HSD_CObj *);
@@ -134,5 +136,6 @@ HSD_CObj* HSD_CObjGetCurrent();
 HSD_CObj* HSD_CObjAlloc();
 void HSD_CObjSetDefaultClass(HSD_CObjInfo *);
 HSD_CObjInfo* HSD_CObjGetDefaultClass();
+HSD_CObj* HSD_CObjLoadDesc(HSD_CObjDesc *);
 
 #endif

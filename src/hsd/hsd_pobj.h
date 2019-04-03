@@ -6,8 +6,7 @@
 #include "hsd_object.h"
 #include "hsd_util.h"
 
-#include "hsd_aobj.h"
-#include "hsd_jobj.h"
+#include "hsd_fobj.h"
 
 #define POBJ_ANIM 1<<3
 #define POBJ_SHAPEANIM 1<<12
