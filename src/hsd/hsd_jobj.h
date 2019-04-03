@@ -56,13 +56,12 @@ typedef struct _HSD_JObjDesc {
 } HSD_JObjDesc;
 
 typedef struct _HSD_JObjInfo {
-	HSD_ClassInfo parent;
-	int (*load)(HSD_JObj *jobj, HSD_JObjDesc *desc);
-	void (*make_pmtx)(HSD_JObj *jobj, Mtx vmtx, Mtx pmtx);
-	void (*make_rmtx)(HSD_JObj* jobj, Mtx mtx, Mtx rmtx);
-	void (*disp)(HSD_JObj *jobj, Mtx vmtx, Mtx pmtx, HSD_TrspMask trsp_mask, u32 rendermode);
-	void (*release_child)(HSD_JObj* jobj);
-	void (*setup)(HSD_JObj *jobj, u32 rendermode);
+	HSD_ClassInfo parent; 
+	int (*load)(HSD_JObj *jobj, HSD_JObjDesc *desc); //0x3C
+	void (*make_pmtx)(HSD_JObj *jobj, Mtx vmtx, Mtx pmtx); //0x40
+	void (*make_rmtx)(HSD_JObj* jobj, Mtx mtx, Mtx rmtx); //0x44
+	void (*disp)(HSD_JObj *jobj, Mtx vmtx, Mtx pmtx, HSD_TrspMask trsp_mask, u32 rendermode); //0x48
+	void (*release_child)(HSD_JObj* jobj); //0x4C
 } HSD_JObjInfo;
 
 extern HSD_JObjInfo hsdJObj;

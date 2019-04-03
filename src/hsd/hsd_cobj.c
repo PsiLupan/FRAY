@@ -53,14 +53,14 @@ void HSD_CObjRemoveAnim(HSD_CObj* cobj){
 }
 
 //803678CC
-void HSD_CObjAddAnim(HSD_CObj* cobj, HSD_AObjDesc* aobjdesc){
-    if(cobj != NULL && aobjdesc != NULL){
+void HSD_CObjAddAnim(HSD_CObj* cobj, HSD_WorldAnim* worldanim){
+    if(cobj != NULL && worldanim != NULL){
         if(cobj->aobj != NULL)
             HSD_AObjRemove(cobj->aobj);
         
-        cobj->aobj = HSD_AObjLoadDesc(aobjdesc);
-        HSD_WObjAddAnim(HSD_CObjGetEyePositionWObj(cobj), aobjdesc->end_frame);
-        HSD_WObjAddAnim(HSD_CObjGetInterestWObj(cobj), aobjdesc->fobjdesc);
+        cobj->aobj = HSD_AObjLoadDesc(worldanim->aobjdesc);
+        HSD_WObjAddAnim(HSD_CObjGetEyePositionWObj(cobj), worldanim->eye_anim);
+        HSD_WObjAddAnim(HSD_CObjGetInterestWObj(cobj), worldanim->interest_anim);
     }
 }
 

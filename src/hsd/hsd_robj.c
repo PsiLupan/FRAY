@@ -2,6 +2,7 @@
 
 #include "hsd_aobj.h"
 #include "hsd_mobj.h"
+#include "hsd_wobj.h"
 
 HSD_ObjDef robj_alloc_data;
 HSD_ObjDef rvalue_alloc_data;
@@ -108,7 +109,7 @@ void HSD_RObjReqAnimAllByFlags(HSD_RObj* robj, f32 frame){
 }
 
 //8037B1A0
-void HSD_RObjAddAnimAll(HSD_RObj* robj, HSD_MatAnim* anim){ //The second parameter is assumed based on layout - It literally is never NULL in my experience
+void HSD_RObjAddAnimAll(HSD_RObj* robj, HSD_InterestAnim* anim){ //The second parameter is assumed based on layout - It literally is never NULL in my experience
     if(robj != NULL && anim != NULL){
         HSD_RObj* i;
         HSD_MatAnim* j;

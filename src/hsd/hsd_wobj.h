@@ -27,6 +27,20 @@ typedef struct _HSD_WObjInfo {
     HSD_ClassInfo parent;
 } HSD_WObjInfo;
 
+struct _HSD_InterestAnim {
+    struct _HSD_InterestAnim* next;
+    struct _HSD_AObjDesc* desc;
+    u32 unk;
+    u32 unk2;
+} HSD_InterestAnim;
+
+typedef struct _HSD_WorldAnim {
+    struct _HSD_AObjDesc* aobjdesc;
+    struct _HSD_AObjDesc* eye_anim;
+    struct _HSD_InterestAnim* interest_anim;
+    u32 flags;
+} HSD_WorldAnim;
+
 extern HSD_WObjInfo hsdWObj;
 
 #endif

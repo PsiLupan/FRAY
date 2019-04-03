@@ -30,7 +30,7 @@ typedef struct _HSD_AnimJoint {
 	struct _HSD_AnimJoint *child;
 	struct _HSD_AnimJoint *next;
 	struct _HSD_AObjDesc *anim;
-	struct _HSD_MatAnim *matanim;
+	struct _HSD_InterestAnim *interest_anim;
 	u32 unk2;
 	u32 unk3;
 } HSD_AnimJoint;

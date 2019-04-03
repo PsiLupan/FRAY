@@ -22,13 +22,13 @@ void HSD_WObjReqAnim(HSD_WObj* wobj, f32 frame){
 }
 
 //8037D0E4
-void HSD_WObjAddAnim(HSD_WObj* wobj, HSD_AObjDesc* aobjdesc){
-    if(wobj && aobjdesc){
+void HSD_WObjAddAnim(HSD_WObj* wobj, HSD_WorldAnim* anim){
+    if(wobj && anim){
         if(wobj->aobj != NULL){
             HSD_AObjRemove(wobj->aobj);
         }
-        wobj->aobj = HSD_AObjLoadDesc(aobjdesc);
-        HSD_RObjAddAnimAll(wobj->robj, aobjdesc->end_frame);
+        wobj->aobj = HSD_AObjLoadDesc(anim->aobjdesc);
+        HSD_RObjAddAnimAll(wobj->robj, NULL); //Never none NULL and since I can't figure out the struct, fuck it
     }
 }
 

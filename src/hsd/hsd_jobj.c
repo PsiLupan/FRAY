@@ -253,7 +253,7 @@ void HSD_JObjAddAnim(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoint* 
 			HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->anim);
 			jobj->aobj = aobj;
 			JObjSortAnim(jobj->aobj);
-			HSD_RObjAddAnimAll(jobj->robj, an_joint->matanim);
+			HSD_RObjAddAnimAll(jobj->robj, an_joint->interest_anim);
 			if((an_joint->unk2 & 1) == 0){
 				HSD_JObjClearFlags(jobj, 0x8);
 			}else{
@@ -284,7 +284,7 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoin
 			HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->anim);
 			jobj->aobj = aobj;
 			JObjSortAnim(jobj->aobj);
-			HSD_RObjAddAnimAll(jobj->robj, an_joint->matanim);
+			HSD_RObjAddAnimAll(jobj->robj, an_joint->interest_anim);
 			if((an_joint->unk2 & 1) == 0){
 				HSD_JObjClearFlags(jobj, 0x8);
 			}else{
@@ -363,7 +363,7 @@ void JObjUpdateFunc(HSD_JObj* jobj, u32 type, f32* fval){
 				if((jobj->flags & 0x200000) != 0){
 					HSD_RObj* robj = HSD_RObjGetByType(jobj->robj, 0x40000000, 0);
 					if(robj != NULL){
-						robj->unk = *fval;
+						robj->xC_unk = *fval;
 					}
 				}
 				assert(JOBJ_USE_QUATERNION(jobj));
@@ -1097,6 +1097,77 @@ static void JObjInit(HSD_Class* o){
 		jobj->scale.x = 1.0f;
 		jobj->scale.y = 1.0f;
 		jobj->scale.z = 1.0f;
+	}
+}
+
+//80373470
+static void JObjReleaseChild(HSD_Class* o){
+	HSD_JObj* jobj = HSD_JOBJ(o);
+	HSD_JObj* child = jobj->child;
+	if(child != NULL){
+		if(JOBJ_INSTANCE(jobj)){
+			child->parent = NULL;
+			HSD_JObjRemoveAll(jobj->child);
+		}else{
+			u16 ref_count = child->class_parent.ref_count;
+			u32 lz = __builtin_clz(0xFFFF - ref_count);
+			lz = lz >> 5;
+			if(lz == 0){
+				child->class_parent.ref_count -= 1;
+				lz = __builtin_clz(-ref_count);
+				lz = lz >> 5;
+			}
+			if(lz != 0){
+				u16 ref_count_indiv = child->class_parent.ref_count_individual;
+				if((ref_count_indiv - 1) < 0 && child != NULL){
+					HSD_INFO_METHOD(child)->release((HSD_Class*)child);
+					HSD_INFO_METHOD(child)->destroy((HSD_Class*)child);
+				}else{
+					child->class_parent.ref_count_individual += 1;
+					assert(child->class_parent.ref_count_individual != 0);
+					HSD_JOBJ_METHOD(child)->release_child(child); //method 0x4C, which means my order is fucked?
+					lz = __builtin_clz(-child->class_parent.ref_count_individual);
+					lz = lz >> 5;
+					if(lz == 0){
+						child->class_parent.ref_count_individual -= 1;
+						lz = __builtin_clz(-child->class_parent.ref_count_individual);
+						lz = lz >> 5;
+					}
+					if(lz != 0 && child != NULL){
+						HSD_INFO_METHOD(child)->release((HSD_Class*)child);
+						HSD_INFO_METHOD(child)->destroy((HSD_Class*)child);
+					}
+				}
+			}
+		}
+		jobj->child = NULL;
+	}
+	HSD_JObj* parent = jobj->parent;
+	if(parent != NULL){
+		HSD_JObj* next = jobj->next;
+		if(parent->child == jobj){
+			parent->child = next;
+		}else{
+			HSD_JObj* prev = HSD_JObjGetPrev(jobj);
+			assert(prev != NULL);
+			prev->next = next;
+		}
+		RecalcParentTrspBits(parent);
+		jobj->parent = NULL;
+		jobj->next = NULL;
+		HSD_JObjAddChild(NULL, jobj);
+	}
+	if(union_type_dobj(jobj) && jobj->u.dobj != NULL){
+		HSD_DObjRemoveAll(jobj->u.dobj);
+		jobj->u.dobj = NULL;
+	}
+	if(jobj->robj != NULL){
+		HSD_RObjRemoveAll(jobj->robj);
+		jobj->robj = NULL;
+	}
+	if(jobj->aobj != NULL){
+		HSD_AObjRemove(jobj->aobj);
+		jobj->aobj = NULL;
 	}
 }
 

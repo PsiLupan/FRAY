@@ -13,12 +13,13 @@
 
 #define HSD_CLASS_INFO(s)	((HSD_ClassInfo*)(s))
 #define HSD_PARENT_INFO(s)  (((HSD_ClassInfo*)(s))->parent_info)
-
+#define HSD_INFO_METHOD(o)  (((HSD_Class*)(o))->class_init)
 #define HSD_CLASS_METHOD(o) HSD_PARENT_INFO(((HSD_Class*)(o))->class_init)
 
 typedef struct _HSD_Class {
 	struct _HSD_ClassInfo* class_init;
 	u16 ref_count;
+	u16 ref_count_individual;
 } HSD_Class;
 
 typedef struct _HSD_ClassInfo {

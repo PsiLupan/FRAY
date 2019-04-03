@@ -355,8 +355,8 @@ HSD_TObj* HSD_MObjGetTObj(HSD_MObj *mobj){
 //80363C50
 void HSD_MObjRemove(HSD_MObj *mobj){
 	if(mobj){
-		HSD_PARENT_INFO(&hsdMObj)->release(mobj);
-		HSD_PARENT_INFO(&hsdMObj)->destroy(mobj);
+		HSD_INFO_METHOD(mobj)->release(mobj);
+		HSD_INFO_METHOD(mobj)->destroy(mobj);
 	}
 }
 
