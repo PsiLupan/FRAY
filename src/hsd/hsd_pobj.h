@@ -7,6 +7,7 @@
 #include "hsd_util.h"
 
 #include "hsd_aobj.h"
+#include "hsd_jobj.h"
 
 #define POBJ_ANIM 1<<3
 #define POBJ_SHAPEANIM 1<<12
@@ -73,6 +74,17 @@ typedef struct _HSD_Vertex {
 typedef struct _HSD_VertexDesc {
 
 } HSD_VertexDesc;
+
+typedef struct _HSD_Envelope {
+	struct _HSD_Envelope* next;
+	struct _HSD_JObj* jobj;
+	f32 weight;
+} HSD_Envelope;
+
+typedef struct _HSD_EnvelopeDesc {
+	struct _HSD_JObjDesc* joint;
+	f32 weight;
+} HSD_EnvelopeDesc;
 
 typedef struct _HSD_ShapeSet {
 	u16 flags;

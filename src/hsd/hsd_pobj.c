@@ -89,7 +89,9 @@ static HSD_SList* loadEnvelopeDesc(HSD_EnvelopeDesc** edesc_p){
         HSD_EnvelopeDesc *edesc = *edesc_p;
         
         while (edesc->joint) {
-            (*env_p) = HSD_EnvelopeAlloc();
+            (*env_p) = hsdAllocMemPiece(sizeof(HSD_Envelope));
+            assert(*env_p != NULL);
+            memset(*env_p, 0, sizeof(HSD_Envelope));
             (*env_p)->weight = edesc->weight;
             env_p = &((*env_p)->next);
             edesc++;
