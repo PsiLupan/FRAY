@@ -27,7 +27,7 @@
 #define HSD_TE_ALL 7
 
 typedef struct _HSD_TExpTevDesc {
-    
+    u32 unk;
 } HSD_TExpTevDesc;
 
 typedef struct _HSD_TExp {

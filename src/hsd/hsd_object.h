@@ -52,7 +52,7 @@ typedef struct _HSD_ObjDef {
 	s32 unk_1C;
 	s32 unk_20;
 	s32 unk_24;
-	struct _HSD_ObjDef next; //0x28
+	struct _HSD_ObjDef* next; //0x28
 } HSD_ObjDef;
 
 struct unk_80406E48 {

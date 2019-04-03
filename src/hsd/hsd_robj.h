@@ -46,7 +46,7 @@ void HSD_RObjAnimAll(HSD_RObj *);
 void HSD_RObjRemoveAnimAllByFlags(HSD_RObj *, u32);
 void HSD_RObjRemoveAnimAll(HSD_RObj *);
 void HSD_RObjReqAnimAllByFlags(HSD_RObj *, u32, f32);
-void HSD_RObjReqAnimAllByFlags(HSD_RObj *, f32);
+void HSD_RObjReqAnimAll(HSD_RObj *, f32);
 void HSD_RObjAddAnimAll(HSD_RObj *, HSD_MatAnim *);
 u32 HSD_RObjGetGlobalPosition(HSD_RObj *, u32, guVector *);
 

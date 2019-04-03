@@ -7,7 +7,7 @@ static HSD_CObjInfo *default_class = NULL;
 static HSD_CObj *current_cobj = NULL;
 
 //803676F8
-void HSD_CObjEraseScreen(HSD_CObj* cobj, int enable_color, int enable_alpha, int enable_depth){
+void HSD_CObjEraseScreen(HSD_CObj* cobj, s32 enable_color, s32 enable_alpha, s32 enable_depth){
     if(cobj != NULL && (enable_color != 0 || enable_alpha != 0 || enable_depth != 0)){
         f32 far = HSD_CObjGetFar(cobj);
         f32 near = HSD_CObjGetNear(cobj);
@@ -139,28 +139,28 @@ void HSD_CObjReqAnim(HSD_CObj* cobj, f32 frame){
 }
 
 //80367B68
-bool makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx){
-    bool isOrtho;
+BOOL makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx){
+    BOOL isOrtho;
     switch(cobj->projection_type){
         case PROJ_PERSPECTIVE:
-        isOrtho = false;
+        isOrtho = FALSE;
         guPerspective(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->near, cobj->far);
         break;
         
         case PROJ_FRUSTRUM:
-        isOrtho = false;
+        isOrtho = FALSE;
         guFrustum(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->proj_left, cobj->proj_right, cobj->near, cobj->far);
         break;
         
         case PROJ_ORTHO:
-        isOrtho = true;
+        isOrtho = TRUE;
         guOrtho(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->proj_left, cobj->proj_right, cobj->near, cobj->far);
         break;
 
         default:
-        assert(true);
-        break;
+        HSD_Halt("Bad projection type!");
     }
+    return isOrtho;
 }
 
 //80368608
@@ -206,7 +206,7 @@ void HSD_CObjSetEyePosition(HSD_CObj* cobj, guVector pos){
 }
 
 //8036885C
-bool HSD_CObjGetEyeVector(HSD_CObj* cobj, guVector* vec){
+BOOL HSD_CObjGetEyeVector(HSD_CObj* cobj, guVector* vec){
     if(cobj != NULL){
         if(cobj->eye_position != NULL && cobj->interest != NULL && vec != NULL){
             guVector eye_pos;
@@ -216,7 +216,7 @@ bool HSD_CObjGetEyeVector(HSD_CObj* cobj, guVector* vec){
 
             guVecSub(&interest_pos, &eye_pos, vec);
 
-            bool denormalized = TRUE;
+            BOOL denormalized = TRUE;
             if((u32)vec->x & 0x7FFFFFFF > 1.17549435E-38f 
                     && (u32)vec->y & 0x7FFFFFFF > 1.17549435E-38f
                     && (u32)vec->z & 0x7FFFFFFF > 1.17549435E-38f){
@@ -234,16 +234,98 @@ bool HSD_CObjGetEyeVector(HSD_CObj* cobj, guVector* vec){
             return denormalized;
         }
     }
+    return FALSE;
 }
 
 //80368A08
-void HSD_CObjGetEyeDistance(HSD_CObj* cobj){
+f32 HSD_CObjGetEyeDistance(HSD_CObj* cobj){
+    f32 res = 0.0f;
+    if(cobj != NULL){
+        assert(cobj->eye_position != NULL);
+        assert(cobj->interest != NULL);
+        
+        guVector pos;
+        guVector interest;
+        HSD_WObjGetPosition(cobj->eye_position, pos);
+        HSD_WObjGetPosition(cobj->interest, interest);
+        guVector dist;
+        guVecSub(&interest, &pos, &dist);
+        res = sqrtf(dist.x * dist.x + dist.y * dist.y + dist.z * dist.z);
+    }
+    return res;
+}
 
+//803690B4
+void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec){
+    if(cobj != NULL && vec != NULL){
+        if((cobj->flags & 1) == 0){
+            guVector uvec;
+            f32 val;
+            BOOL res = HSD_CObjGetEyeVector(cobj, &uvec);
+            if(res == FALSE){
+                f32 val = guVecDotProduct(vec, &uvec);
+                if(1.17549E-38F <= 1.0f - abs(val)){
+                    guVector zero = {0.f, 0.f, 0.f};
+                    guVector upvec = {0.f, 1.f, 0.f};
+                    Mtx mtx;
+                    guLookAt(&mtx, &zero, &upvec, &uvec);
+                    guVector rvec = {0.0f, 0.0f, 0.0f};
+                    //MTXMultVecSR(mtx, vec, rvec); NOT IMPLEMENTED - Post-multiplies a 3D vector or 3D point by a 3x3 sub-matrix (Scale and Rotate component of 3x4 matrix).
+                    if(0.0f == rvec.y){
+                        if(rvec.x < 0.0f){
+                            val = -1.94635f;
+                        }
+                    }else{
+                        val = (f32)atan2((double)rvec.y, (double)rvec.x);
+                    }
+                }else{
+                    val = 0.0f;
+                }
+            }else{
+                val = 0.0f;
+            }
+            HSD_CObjSetRoll(cobj, val);
+        }else{
+            BOOL use_local = FALSE;
+            if(vec == NULL){
+                use_local = FALSE;
+            }else{
+                f32 n = 1.17549E-38F;
+                if(n < vec->x || n < vec->y || n < vec->z){
+                    use_local = TRUE;
+                }
+            }
+            guVector uvec = {0.f, 1.f, 0.f};
+            if(use_local == TRUE){
+                //uvec = local_vec; No fucking clue how the local vector ends up on the stack
+            }
+            if(cobj->roll != uvec.x || cobj->pitch != uvec.y || cobj->yaw != uvec.z){
+                HSD_CObjSetMtxDirty(cobj);
+            }
+            cobj->roll = uvec.x;
+            cobj->pitch = uvec.y;
+            cobj->yaw = uvec.z;
+        }
+    }
 }
 
 //80369564
 void HSD_CObjSetMtxDirty(HSD_CObj* cobj){
     cobj->flags |= 0xC0000000;
+}
+
+//803699C0
+void HSD_CObjSetRoll(HSD_CObj* cobj, f32 roll){
+    if(cobj != NULL){
+        if((cobj->flags & 1) == 0){
+            if(cobj->roll != roll){
+                cobj->flags |= 0xC0000000;
+            }
+            cobj->roll = roll;
+        }else{
+            //FUCK YOU I'M NOT WRITING ALL THIS
+        }
+    }
 }
 
 //80369BC8
@@ -252,7 +334,7 @@ f32 HSD_CObjGetFov(HSD_CObj* cobj){
         if(cobj->projection_type == PROJ_PERSPECTIVE)
             return cobj->fov_top;
     }
-    return 0.0f; //r2 - 0x1568, assumed 0.0f currently
+    return 0.0f;
 }
 
 //80369BEC
@@ -269,7 +351,7 @@ f32 HSD_CObjGetAspect(HSD_CObj* cobj){
         if(cobj->projection_type == PROJ_PERSPECTIVE)
             return cobj->aspect_bottom;
     }
-    return 0.0f; //r2 - 0x1568, assumed 0.0f currently
+    return 0.0f;
 }
 
 //80369C30
@@ -303,20 +385,51 @@ void HSD_CObjSetTop(HSD_CObj* cobj, f32 top){
 
 //80369D18
 f32 HSD_CObjGetBottom(HSD_CObj* cobj){
-
+    f32 res = 0.0f;
+    if(cobj != NULL){
+        u8 proj_type = cobj->projection_type;
+        switch(proj_type){
+            case PROJ_PERSPECTIVE:
+                res = tanf(0.5f * 0.0174533f * cobj->fov_top);
+                res = cobj->near * res;
+                break;
+            case PROJ_FRUSTRUM:
+            case PROJ_ORTHO:
+                res = cobj->aspect_bottom;
+                break;
+            default:
+                res = 0.0f;
+        }
+    }
+    return res;
 }
 
 //80369DB0
 void HSD_CObjSetBottom(HSD_CObj* cobj, f32 bottom){
     if(cobj != NULL){
-        if(cobj->projection_type == PROJ_FRUSTRUM || cobj->projection_type == PROJ_ORTHO)
+        if(cobj->projection_type == PROJ_FRUSTRUM || cobj->projection_type == PROJ_ORTHO){
             cobj->aspect_bottom = bottom;
+        }
     }
 }
 
 //80369DE4
 f32 HSD_CObjGetLeft(HSD_CObj* cobj){
-
+    f32 res = 0.0f;
+    if(cobj != NULL){
+        u8 proj_type = cobj->projection_type;
+        switch(proj_type){
+            case PROJ_PERSPECTIVE:
+                res = tanf(0.5f * 0.0174533f * cobj->fov_top);
+                res = cobj->aspect_bottom * cobj->near * res;
+                break;
+            case PROJ_FRUSTRUM:
+            case PROJ_ORTHO:
+                res = cobj->proj_left;
+                break;
+        }
+    }
+    return res;
 }
 
 //80369E84
@@ -329,7 +442,21 @@ void HSD_CObjSetLeft(HSD_CObj* cobj, f32 left){
 
 //80369EB8
 f32 HSD_CObjGetRight(HSD_CObj* cobj){
-
+    f32 res = 0.0f;
+    if(cobj != NULL){
+        u8 proj_type = cobj->projection_type;
+        switch(proj_type){
+            case PROJ_PERSPECTIVE:
+                res = tanf(0.5f * 0.0174533f * cobj->fov_top);
+                res = cobj->aspect_bottom * cobj->near * res;
+                break;
+            case PROJ_FRUSTRUM:
+            case PROJ_ORTHO:
+                res = cobj->proj_right;
+                break;
+        }
+    }
+    return res;
 }
 
 //80369F54
@@ -344,7 +471,7 @@ void HSD_CObjSetRight(HSD_CObj* cobj, f32 right){
 f32 HSD_CObjGetNear(HSD_CObj* cobj){
     if(cobj != NULL)
         return cobj->near;
-    return 0.0f; //r2 - 0x1568, assumed 0.0f
+    return 0.0f;
 }
 
 //80369FA0
@@ -357,7 +484,7 @@ void HSD_CObjSetNear(HSD_CObj* cobj, f32 near){
 f32 HSD_CObjGetFar(HSD_CObj* cobj){
     if(cobj != NULL)
         return cobj->far;
-    return 0.0f; //r2 - 0x1568, assumed 0.0f
+    return 0.0f;
 }
 
 //80369FC8
@@ -406,6 +533,16 @@ void HSD_CObjGetViewportf(HSD_CObj* cobj, f32 viewports[4]){
     }
 }
 
+//8036A058
+void HSD_CObjSetViewport(HSD_CObj* cobj, u16 viewports[4]){
+    if(cobj != NULL){
+        cobj->viewport_left = (f32)viewports[0];
+        cobj->viewport_right = (f32)viewports[1];
+        cobj->viewport_top = (f32)viewports[2];
+        cobj->viewport_bottom = (f32)viewports[3];
+    }
+}
+
 //8036A0E4
 void HSD_CObjSetViewportf(HSD_CObj* cobj, f32 viewports[4]){
     if(cobj != NULL){
@@ -419,10 +556,10 @@ void HSD_CObjSetViewportf(HSD_CObj* cobj, f32 viewports[4]){
 //8036A110
 void HSD_CObjSetViewportfx4(HSD_CObj* cobj, u16 left, u16 right, u16 top, u16 bottom){
     if(cobj != NULL){
-        cobj->viewport_left = left;
-        cobj->viewport_right = right;
-        cobj->viewport_top = top;
-        cobj->viewport_bottom = bottom;
+        cobj->viewport_left = (f32)left;
+        cobj->viewport_right = (f32)right;
+        cobj->viewport_top = (f32)top;
+        cobj->viewport_bottom = (f32)bottom;
     }
 }
 
@@ -531,7 +668,55 @@ HSD_CObj* HSD_CObjAlloc(){
 
 //8036A2EC
 static int CObjLoad(HSD_CObj* cobj, HSD_CObjDesc* desc){
-    //TODO
+    cobj->flags = desc->flags;
+    cobj->flags = cobj->flags & 0xC0000000 | desc->flags;
+    cobj->viewport_left = (f32)desc->viewport_left;
+    cobj->viewport_right = (f32)desc->viewport_right;
+    cobj->viewport_top = (f32)desc->viewport_top;
+    cobj->viewport_bottom = (f32)desc->viewport_bottom;
+    cobj->scissor_left = desc->scissor_lr;
+    cobj->scissor_top = desc->scissor_tb;
+    HSD_WObjInit(cobj->eye_position, desc->eye_desc);
+    HSD_WObjInit(cobj->interest, desc->interest_desc);
+    cobj->near = desc->near;
+    cobj->far = desc->far;
+    if((desc->flags & 1) == 0 ){
+        if((cobj->flags & 1) == 0){
+            if(cobj->roll != desc->roll){
+                cobj->flags |= 0xC0000000;
+            }
+            cobj->roll = desc->roll;
+        }else{
+            //roll2upvec(cobj, ??);
+            //HSD_CObjSetUpVector(cobj, ??);
+        }
+    }else{
+        if(desc->vector == NULL){
+            guVector vec = {0.f, 1.f, 0.f};
+            HSD_CObjSetUpVector(cobj, &vec);
+        }else{
+            HSD_CObjSetUpVector(cobj, desc->vector);
+        }
+    }
+    u8 proj_type = desc->projection_type;
+    switch(proj_type){
+        case PROJ_PERSPECTIVE:
+            cobj->projection_type = PROJ_PERSPECTIVE;
+            cobj->fov_top = desc->fov_top;
+            cobj->aspect_bottom = desc->aspect_bottom;
+            break;
+        case PROJ_FRUSTRUM:
+        case PROJ_ORTHO:
+            cobj->projection_type = PROJ_FRUSTRUM;
+            cobj->fov_top = desc->fov_top;
+            cobj->aspect_bottom = desc->aspect_bottom;
+            cobj->proj_left = desc->proj_left;
+            cobj->proj_right = desc->proj_right;
+            break;
+        default:
+            HSD_Halt("Unexpected projection type");
+    }
+    return 0;
 }
 
 void HSD_CObjSetDefaultClass(HSD_CObjInfo *info){

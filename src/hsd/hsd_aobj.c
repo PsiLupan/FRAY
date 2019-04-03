@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+#include "hsd_jobj.h"
+
 static u32 r13_4070 = 0; //frames elapsed
 static u32 r13_4074 = 0; //conditional frames elapsed
 

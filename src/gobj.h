@@ -63,7 +63,7 @@ BOOL GObj_IsPlayer(HSD_GObj *);
 void GObj_AnimAll_Callback(HSD_GObj *);
 BOOL GObj_IsItem(HSD_GObj *);
 void GObj_LinkProc(HSD_GObjProc *);
-HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj*, void *, u8);
+HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj*, void (*)(), u8);
 void GObj_PReorder(HSD_GObj *, HSD_GObj *);
 HSD_GObj* GObj_Create(u32, u32, u32);
 void GObj_Free(HSD_GObj *);

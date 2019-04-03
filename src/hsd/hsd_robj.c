@@ -98,7 +98,7 @@ void HSD_RObjReqAnimAllByFlags(HSD_RObj* robj, u32 flags, f32 frame){
 }
 
 //8037B134
-void HSD_RObjReqAnimAllByFlags(HSD_RObj* robj, f32 frame){
+void HSD_RObjReqAnimAll(HSD_RObj* robj, f32 frame){
     if(robj != NULL){
         for(HSD_RObj* i = robj; i != NULL; i = i->next){
             if(i->aobj != NULL){
