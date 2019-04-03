@@ -694,37 +694,43 @@ void HSD_JObjRemoveAll(HSD_JObj *jobj){
 				jobj->parent->next = NULL;
 			}
 		}
-		HSD_JObj *curr = jobj;
-		HSD_JObj *next = NULL;
-		while(curr){
-			next = curr->next;
+		for(HSD_JObj* curr = jobj; curr != NULL; curr = curr->next){
+			HSD_JObj* next = curr->next;
 			curr->parent = NULL;
 			curr->next = NULL;
 			
 			if(curr != NULL){
-				BOOL norefs = HSD_OBJ_NOREF == curr->class_parent.ref_count;
-				if(norefs == FALSE){
+				u16 ref_count = curr->class_parent.ref_count;
+				u32 lz = __builtin_clz(0xFFFF - ref_count);
+				lz = lz >> 5;
+				if(lz == 0){
 					curr->class_parent.ref_count -= 1;
-					norefs = curr->class_parent.ref_count == 0;
+					lz = __builtin_clz(-ref_count);
+					lz = lz >> 5;
 				}
-				/*
-				if(isMaxMinRefs){
-					v21 = (_WORD *)((char *)v16 + 6);
-					result = (char **)*((unsigned __int16 *)v16 + 3);
-					if ( (signed int)result - 1 >= 0 ){
-						*v21 = (_WORD)result + 1;
-						assert(*v21); //HSD_OBJ(o)->ref_count_individual != 0
-						result = curr;
-						v23 = curr->flags;
-						return result;
+				if(lz != 0){
+					u16 ref_count_indiv = curr->class_parent.ref_count_individual;
+					if((ref_count_indiv - 1) < 0){
+						HSD_INFO_METHOD(curr)->release((HSD_Class*)curr);
+						HSD_INFO_METHOD(curr)->destroy((HSD_Class*)curr);
+					}else{
+						curr->class_parent.ref_count_individual += 1;
+						assert(curr->class_parent.ref_count_individual != 0);
+						HSD_JOBJ_METHOD(curr)->release_child(curr);
+						lz = __builtin_clz(-curr->class_parent.ref_count_individual);
+						lz = lz >> 5;
+						if(lz == 0){
+							curr->class_parent.ref_count_individual -= 1;
+							lz = __builtin_clz(-curr->class_parent.ref_count_individual);
+							lz = lz >> 5;
+						}
+						if(lz != 0){
+							HSD_INFO_METHOD(curr)->release((HSD_Class*)curr);
+							HSD_INFO_METHOD(curr)->destroy((HSD_Class*)curr);
+						}
 					}
-					if(curr){
-						result = curr;
-						v22 = curr->parent;
-					}
-				}*/
+				}
 			}
-			curr = next;
 		}
 	}
 }
@@ -1125,7 +1131,7 @@ static void JObjReleaseChild(HSD_Class* o){
 				}else{
 					child->class_parent.ref_count_individual += 1;
 					assert(child->class_parent.ref_count_individual != 0);
-					HSD_JOBJ_METHOD(child)->release_child(child); //method 0x4C, which means my order is fucked?
+					HSD_JOBJ_METHOD(child)->release_child(child);
 					lz = __builtin_clz(-child->class_parent.ref_count_individual);
 					lz = lz >> 5;
 					if(lz == 0){
