@@ -38,23 +38,23 @@ typedef struct _HSD_AnimJoint {
 
 void HSD_AObjInitAllocData();
 HSD_ObjDef* HSD_AObjGetAllocData();
-u32 HSD_AObjGetFlags(HSD_AObj* aobj);
-void HSD_AObjSetFlags(HSD_AObj* aobj, u32 flags);
-void HSD_AObjClearFlags(HSD_AObj* aobj, u32 flags);
-void HSD_AObjSetFObj(HSD_AObj* aobj, HSD_FObj* fobj);
+u32 HSD_AObjGetFlags(HSD_AObj*);
+void HSD_AObjSetFlags(HSD_AObj *, u32);
+void HSD_AObjClearFlags(HSD_AObj *, u32);
+void HSD_AObjSetFObj(HSD_AObj *, HSD_FObj *);
 void HSD_AObjInitEndCallBack();
 void HSD_AObjInvokeCallBacks();
-void HSD_AObjReqAnim(HSD_AObj *aobj, f32 frame);
-void HSD_AObjStopAnim(HSD_AObj *aobj);
-void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void* updatecb);
-HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc);
-void HSD_AObjRemove(HSD_AObj* aobj);
+void HSD_AObjReqAnim(HSD_AObj *, f32);
+void HSD_AObjStopAnim(HSD_AObj *, void *, void (*)());
+void HSD_AObjInterpretAnim(HSD_AObj *, void *, void (*)());
+HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc *);
+void HSD_AObjRemove(HSD_AObj *);
 HSD_AObj* HSD_AObjAlloc();
-void HSD_AObjFree(HSD_AObj* aobj);
-void HSD_AObjSetRate(HSD_AObj* aobj, f32 rate);
-void HSD_AObjSetRewindFrame(HSD_AObj* aobj, f32 frame);
-void HSD_AObjSetEndFrame(HSD_AObj* aobj, f32 frame);
-void HSD_AObjSetCurrentFrame(HSD_AObj* aobj, f32 frame);
+void HSD_AObjFree(HSD_AObj *);
+void HSD_AObjSetRate(HSD_AObj *, f32);
+void HSD_AObjSetRewindFrame(HSD_AObj *, f32);
+void HSD_AObjSetEndFrame(HSD_AObj *, f32);
+void HSD_AObjSetCurrentFrame(HSD_AObj *, f32);
 
 void _HSD_AObjForgetMemory();
 

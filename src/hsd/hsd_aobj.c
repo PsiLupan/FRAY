@@ -77,15 +77,15 @@ void HSD_AObjReqAnim(HSD_AObj *aobj, f32 frame){
 }
 
 //8036414C
-void HSD_AObjStopAnim(HSD_AObj *aobj){
+void HSD_AObjStopAnim(HSD_AObj *aobj, void* obj, void (*callback)()){
 	if(aobj){
-		HSD_FObjStopAnimAll(aobj->fobj);
+		HSD_FObjStopAnimAll(aobj->fobj, obj, callback, aobj->framerate);
 		aobj->flags |= 0x40000000u;
 	}
 }
 
 //80364190
-void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void* updatecb){
+void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void (*updatecb)()){
 	f32 framerate = 0;
 	f32 curr_frame = 0;
 	
@@ -105,10 +105,10 @@ void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void* updatecb){
 				if(aobj->rewind_frame >= aobj->end_frame){
 					aobj->curr_frame = aobj->end_frame;
 				}else{
-					HSD_FObjStopAnimAll(aobj->fobj);
+					HSD_FObjStopAnimAll(aobj->fobj, caller_obj, updatecb, framerate);
 					f32 e_frame = aobj->end_frame - aobj->rewind_frame;
 					f32 c_frame = aobj->curr_frame - aobj->rewind_frame;
-					f32 r_frame = aobj->rewind_frame - (f32)fmod((f64)c_frame, (f64)e_frame);
+					f32 r_frame = aobj->rewind_frame - fmodf(c_frame, e_frame);
 					aobj->curr_frame = r_frame;
 					HSD_FObjReqAnimAll(aobj->fobj, aobj->curr_frame);
 				}
@@ -119,12 +119,12 @@ void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void* updatecb){
 			}
 			
 			if(aobj->flags & 0x10000000)
-				HSD_FObjInterpretAnimAll(aobj->fobj, caller_obj, 0);
+				HSD_FObjInterpretAnimAll(aobj->fobj, caller_obj, updatecb, 0);
 			else
-				HSD_FObjInterpretAnimAll(aobj->fobj, caller_obj, updatecb);
+				HSD_FObjInterpretAnimAll(aobj->fobj, caller_obj, updatecb, framerate);
 			
 			if(!(aobj->flags & 0x20000000) && (aobj->end_frame <= aobj->curr_frame)){
-				HSD_FObjStopAnimAll(aobj->fobj, caller_obj, updatecb);
+				HSD_FObjStopAnimAll(aobj->fobj, caller_obj, updatecb, aobj->framerate);
 				aobj->flags |= 0x40000000u;
 			}
 			

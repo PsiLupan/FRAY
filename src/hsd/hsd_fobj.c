@@ -96,23 +96,31 @@ void HSD_FObjStopAnimAll(HSD_FObj* fobj, void* obj, void(*obj_update)(), f32 fra
 //8036AC10
 static f32 FObjLoadData(u8** curr_parse, u8 unk){
     if(unk){
+        f32 fvar;
         u8 flag = unk & 0xE0;
         if(flag == 96){
-
+            u8 val = (*curr_parse)++;
+            fvar = val - 176.f;
         }else if(flag < 96){
             if(flag == 64){
-
+                /*Converts curr_parse[0] & [1] to a double then subtracts 176.f*/
+                *curr_parse += 2;
             }else{
                 if(flag > 64 || flag != 32){
                     return 0.0f;
+                }else{
+                    /*Converts curr_parse[0] & [1] to a double then subtracts 176.f*/
+                    *curr_parse += 2;
                 }
             }
         }else{
             if(flag != 128){
                 return 0.0f;
             }
+            u8 val = (*curr_parse)++;
+            fvar = val - 176.f;
         }
-        return;
+        return fvar / (1 << unk & 0x1f) - 176.f;
     }
     u8* parse_pos = (*curr_parse)++;
     u32 data = *parse_pos;
