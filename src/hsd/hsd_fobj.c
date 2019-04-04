@@ -1,15 +1,15 @@
 #include "hsd_fobj.h"
 
-static HSD_FObj* init_fobj = NULL;
+HSD_ObjDef fobj_alloc_data;
 
 //8036A938
 HSD_FObj* HSD_FObjGetAllocData(){
-    return init_fobj;
+    return &fobj_alloc_data;
 }
 
 //8036A944
-HSD_FObj* HSD_FObjInitAllocData(){
-    return HSD_ObjAllocInit(init_fobj, sizeof(HSD_FObj), 4);
+void HSD_FObjInitAllocData(){
+    return HSD_ObjAllocInit(&fobj_alloc_data, sizeof(HSD_FObj), 4);
 }
 
 //8036A974
@@ -55,28 +55,26 @@ u8 HSD_FObjGetState(HSD_FObj* fobj){
 }
 
 //8036AA80
-void HSD_FObjReqAnimAll(HSD_FObj* fobj, float frame){
+void HSD_FObjReqAnimAll(HSD_FObj* fobj, f32 frame){
     if(fobj){
-        v3 = r2 - 5384;
-        v4 = r2 - 5392;
         for(HSD_FObj* curr = fobj; curr != NULL; curr = curr->next){
             *curr->curr_parse = curr->parse_start;
             
-            fobj->unk1C = (f32)(fobj->unk18 ^ 0x80000000) - v3 + frame;
+            fobj->unk1C = (f32)fobj->unk18 - 176.f + frame;
             curr->flags &= 0xBFu;
             curr->parsed_state = 0;
             curr->obj_type = 0;
             fobj->flags &= 0xF0u;
-            fobj->unk20 = 0;
-            fobj->unk24 = 0;
-            fobj->unk28 = 0;
+            fobj->unk20 = 0.f;
+            fobj->unk24 = 0.f;
+            fobj->unk28 = 0.f;
             fobj->flags = fobj->flags & 0xF0 | 1;
         }
     }
 }
 
 //8036AB24
-void HSD_FObjStopAnim(HSD_FObj* fobj, void* obj, void(obj_update)(), f32 frame){
+void HSD_FObjStopAnim(HSD_FObj* fobj, void* obj, void(*obj_update)(), f32 frame){
     if(fobj){
         if(fobj->obj_state == 6){
             HSD_FObjInterpretAnim(fobj, obj, obj_update, frame);
@@ -86,7 +84,7 @@ void HSD_FObjStopAnim(HSD_FObj* fobj, void* obj, void(obj_update)(), f32 frame){
 }
 
 //8036AB78
-void HSD_FObjStopAnimAll(HSD_FObj* fobj, void* obj, void(obj_update)(), f32 frame){
+void HSD_FObjStopAnimAll(HSD_FObj* fobj, void* obj, void(*obj_update)(), f32 frame){
     for(HSD_FObj* curr = fobj; curr != NULL; curr = curr->next){
         if(fobj->obj_state == 6){
             HSD_FObjInterpretAnim(curr, obj, obj_update, frame);
@@ -96,7 +94,7 @@ void HSD_FObjStopAnimAll(HSD_FObj* fobj, void* obj, void(obj_update)(), f32 fram
 }
 
 //8036AC10
-f32 FObjLoadData(u8** curr_parse, u8 unk){
+static f32 FObjLoadData(u8** curr_parse, u8 unk){
     if(unk){
         u8 flag = unk & 0xE0;
         if(flag == 96){
@@ -106,12 +104,12 @@ f32 FObjLoadData(u8** curr_parse, u8 unk){
 
             }else{
                 if(flag > 64 || flag != 32){
-                    return /*v2 - 5392*/;
+                    return 0.0f;
                 }
             }
         }else{
             if(flag != 128){
-                return /*v2 - 5392*/;
+                return 0.0f;
             }
         }
         return;
@@ -127,7 +125,7 @@ f32 FObjLoadData(u8** curr_parse, u8 unk){
 }
 
 //8036ADDC
-u16 sub_8036ADDC(u8** curr_parse){
+static u16 sub_8036ADDC(u8** curr_parse){
     u8* temp = *curr_parse;
     *curr_parse += 1;
     u8 parse_start = *temp;
@@ -151,7 +149,7 @@ u16 sub_8036ADDC(u8** curr_parse){
 }
 
 //8036AE38
-void FObjConditionalAdjust(HSD_FObj* fobj){
+static void FObjConditionalAdjust(HSD_FObj* fobj){
     if(fobj->flags & 0x40){
         fobj->obj_state = fobj->parsed_state;
         fobj->flags &= 0xBFu;
@@ -348,7 +346,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
             break;
         
         fobj->unk1C = fobj->unk1C - fobj->parse_res;
-        v22 = v56;
+        v22 = fobj->unk1C;
         result = 3;
         fobj->flags = fobj->flags & 0xF0 | result;
     }
@@ -366,7 +364,7 @@ void HSD_FObjInterpretAnimAll(HSD_FObj* fobj, void* caller_obj, void (*callback)
 
 //8036B848
 HSD_FObj* HSD_FObjAlloc(){
-    HSD_FObj* fobj = HSD_ObjAlloc(init_fobj);
+    HSD_FObj* fobj = HSD_ObjAlloc(&fobj_alloc_data);
     assert(fobj);
     memset(fobj, 0, sizeof(HSD_FObj));
     return fobj;
@@ -374,5 +372,5 @@ HSD_FObj* HSD_FObjAlloc(){
 
 //8036B8A4
 void HSD_FObjFree(HSD_FObj* fobj){
-    HSD_ObjFree(init_fobj, fobj);
+    HSD_ObjFree(&fobj_alloc_data, fobj);
 }

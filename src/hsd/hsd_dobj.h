@@ -41,6 +41,8 @@ typedef struct _HSD_DObjInfo {
 
 extern HSD_DObjInfo hsdDObj;
 
+static void DObjInfoInit();
+
 void HSD_DObjSetCurrent(HSD_DObj *);
 u32 HSD_DObjGetFlags(HSD_DObj *);
 void HSD_DObjSetFlags(HSD_DObj *, u32);

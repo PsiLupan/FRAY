@@ -6,6 +6,8 @@
 #include <gctypes.h>
 #include <ogc/gu.h>
 
+#include "hsd_object.h"
+
 #define TYPE_ROBJ 1
 #define TYPE_JOBJ 12
 
@@ -43,5 +45,20 @@ typedef struct _HSD_FObjDesc {
 typedef struct _HSD_FObjData {
 	f32 fv;
 } FObjData;
+
+HSD_FObj* HSD_FObjGetAllocData();
+void HSD_FObjInitAllocData();
+void HSD_FObjRemove(HSD_FObj *);
+void HSD_FObjRemoveAll(HSD_FObj *);
+u8 HSD_FObjSetState(HSD_FObj *, u8);
+u8 HSD_FObjGetState(HSD_FObj *);
+void HSD_FObjReqAnimAll(HSD_FObj *, f32);
+void HSD_FObjStopAnim(HSD_FObj *, void *, void(*)(), f32);
+void HSD_FObjStopAnimAll(HSD_FObj *, void *, void(*)(), f32);
+void FObjUpdateAnim(HSD_FObj *, void *, void (*)(void*, u32, FObjData));
+void HSD_FObjInterpretAnim(HSD_FObj *, void *, void (*)(), f32);
+void HSD_FObjInterpretAnimAll(HSD_FObj *, void *, void (*)(), f32);
+HSD_FObj* HSD_FObjAlloc();
+void HSD_FObjFree(HSD_FObj *);
 
 #endif
