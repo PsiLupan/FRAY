@@ -46,7 +46,7 @@ typedef struct _HSD_FObjData {
 	f32 fv;
 } FObjData;
 
-HSD_FObj* HSD_FObjGetAllocData();
+HSD_ObjDef* HSD_FObjGetAllocData();
 void HSD_FObjInitAllocData();
 void HSD_FObjRemove(HSD_FObj *);
 void HSD_FObjRemoveAll(HSD_FObj *);

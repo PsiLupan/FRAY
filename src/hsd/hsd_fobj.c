@@ -3,7 +3,7 @@
 HSD_ObjDef fobj_alloc_data;
 
 //8036A938
-HSD_FObj* HSD_FObjGetAllocData(){
+HSD_ObjDef* HSD_FObjGetAllocData(){
     return &fobj_alloc_data;
 }
 
