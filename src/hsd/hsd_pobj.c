@@ -44,15 +44,15 @@ void HSD_PObjRemoveAnimAllByFlags(HSD_PObj* pobj, u16 flags){
 }
 
 //8036B978
-void HSD_PObjRemoveAnimAll(HSD_PObj* pobj, HSD_ShapeAnim* sh_anim){
-    if (pobj != NULL && sh_anim != NULL){
-        HSD_ShapeAnim* j = sh_anim;
-        for (HSD_PObj *pp = pobj; pp; pp = pp->next) {
+void HSD_PObjRemoveAnimAll(HSD_PObj* pobj, HSD_SList* list){
+    if (pobj != NULL && list != NULL){
+        HSD_SList* j = list;
+        for (HSD_PObj *pp = pobj; pp != NULL; pp = pp->next) {
             assert(pobj_type(pobj) == POBJ_SHAPEANIM && pobj->u.shape_set != NULL);
             if(pp->u.shape_set->aobj != NULL){
                 HSD_AObjRemove(pobj->u.shape_set->aobj);
             }
-            pobj->u.shape_set->aobj = HSD_AObjLoadDesc(j->aobjdesc);
+            pobj->u.shape_set->aobj = HSD_AObjLoadDesc((HSD_AObjDesc*)j->data);
             if(j != NULL){
                 j = j->next;
             }

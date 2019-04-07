@@ -118,7 +118,7 @@ typedef struct _HSD_ShapeSetDesc {
 
 typedef struct _HSD_ShapeAnim {
 	struct _HSD_ShapeAnim* next;
-	struct _HSD_AObjDesc* aobjdesc;
+	HSD_SList* aobjdescs_list;
 } HSD_ShapeAnim;
 
 typedef struct _HSD_ShapeAnimJoint {
