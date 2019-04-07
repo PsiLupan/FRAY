@@ -33,9 +33,18 @@ void* Archive_Alloc(u32 offset, u32 size){
 }
 
 //800161A0
-s32 Archive_800161A0(){
-    sub_800195D0();
+static s32 Archive_GetFileLoadStatus(){
+    //sub_800195D0();
     return file_load_status;
+}
+
+//8001615C
+static void Archive_DVDCallback(s32 result, DVDFileInfo* fileInfo){
+    if(result != DVD_RESULT_FATAL_ERROR && result != DVD_RESULT_CANCELED){
+        file_load_status = 1;
+    }
+    file_load_status = -1;
+    HSD_Halt("DVDReadAsync failed");
 }
 
 //8001634C
@@ -71,33 +80,33 @@ u32 Archive_GetDVDFileLengthByName(char* filename){
     return len;
 }
 
-//8001615C
-void Archive_8001615C(u32 unk, u32 unk1, u32 unk2, u32 in_r6){
-    if (in_r6 != 0) {
-        HSD_Halt("!cancelflag");
-    }
-    file_load_status = 1;
-}
-
 //8001668C
 void Archive_LoadFileIntoMemory(char* filename, void* mem, u32* filelength){
+    file_load_status = 0;
     //Archive_PathFromFilename(filename);
     s32 entry = DVDConvertPathToEntrynum(filename);
     if(entry == -1){
         HSD_Halt("Archive_LoadFileIntoMemory: Could not locate file");
     }
     *filelength = Archive_GetDVDFileLengthByEntry(entry);
-    u32 unk;
+    /*u32 unk;
     if((int)mem < 0x80000000) {
         unk = 0x23;
     }else {
         unk = 0x21;
     }
-    sub_8038FD64(entry, 0, mem, *filelength + 0x1fU & 0xffffffe0, unk, 1, Archive_8001615C, 0);
-    s32 cont;
+    sub_8038FD64(entry, 0, mem, *filelength + 0x1fU & 0xffffffe0, unk, 1, Archive_8001615C, 0);*/
+
+    /* The below is unique to Fray in order to accomplish the file loading */
+    DVDFileInfo handle;
+    if(!DVDFastOpen(entry, &handle)){
+        HSD_Halt("Archive_LoadFileIntoMemory: Could not open file");
+    }
+    DVDReadAsync(&handle, mem, (*filelength + 0x1F) & 0xFFFFFFE0, 0, Archive_DVDCallback);
+    s32 status = 0;
     do {
-        cont = Archive_800161A0();
-    } while (cont == 0);
+        status = Archive_GetFileLoadStatus();
+    } while (status == 0);
 }
 
 //80016A54
