@@ -23,6 +23,10 @@
 
 #define SHAPESET_ADDITIVE 1<<1
 
+#define GX_NOP 0
+#define GX_VAT_MASK 0x7
+#define GX_OPCODE_MASK 0xF8
+
 //Polygon Object
 typedef struct _HSD_PObj {
 	HSD_Class parent;
@@ -46,16 +50,16 @@ typedef struct _HSD_PObjDesc {
 	u16 n_display;
 	struct _HSD_Display* display;
 	union {
-		struct _HSD_JObj* jobj;
+		struct _HSD_JObjDesc* joint;
 		struct _HSD_ShapeSetDesc* shape_set;
 		struct _HSD_EnvelopeDesc** envelope_p;
 	} u;
 } HSD_PObjDesc;
 
 typedef struct _HSD_Display {
-	u8 unk;
 	u8 primitive;
-	u16 indices;
+	u8 vtxcnt;
+	u16* indices;
 } HSD_Display;
 
 typedef struct _HSD_VtxDescList {
@@ -66,16 +70,8 @@ typedef struct _HSD_VtxDescList {
 	u8 frac;
 	u8 unk;
 	u16 stride;
-	struct _HSD_Vertex* vertex;
+	f32* vertex;
 } HSD_VtxDescList;
-
-typedef struct _HSD_Vertex {
-
-} Vertex;
-
-typedef struct _HSD_VertexDesc {
-
-} HSD_VertexDesc;
 
 typedef struct _HSD_Envelope {
 	struct _HSD_Envelope* next;
@@ -92,11 +88,11 @@ typedef struct _HSD_ShapeSet {
 	u16 flags;
 	u16 nb_shape;
 	u32 nb_vertex_index;
-	struct _HSD_VertexDesc* vertex_desc;
-	HSD_SList* vertex_idx_list;
+	struct _HSD_VtxDescList* vertex_desc;
+	u8* vertex_idx_list;
 	u32 nb_normal_index;
-	void* normal_desc;
-	HSD_SList* normal_idx_list;
+	struct _HSD_VtxDescList* normal_desc;
+	u8* normal_idx_list;
 	struct {
 		f32* bp;
 		f32 bl;

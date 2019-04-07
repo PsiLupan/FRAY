@@ -116,7 +116,7 @@ static HSD_SList* loadEnvelopeDesc(HSD_EnvelopeDesc** edesc_p){
             edesc++;
         }
         
-        (*list_p) = HSD_SListAlloc();
+        (*list_p) = HSD_MemAlloc(sizeof(HSD_SList));
         (*list_p)->data = envelope;
         list_p = &((*list_p)->next);
         edesc_p++;
@@ -138,7 +138,7 @@ static HSD_ShapeSet* loadShapeSetDesc(HSD_ShapeSetDesc* sdesc){
     shape_set->normal_desc = sdesc->normal_desc;
     shape_set->normal_idx_list = sdesc->normal_idx_list;
     if (shape_set->flags & SHAPESET_ADDITIVE) {
-        shape_set->blend.bp = (f32 *)HSD_Alloc(shape_set->nb_shape * sizeof(f32));
+        shape_set->blend.bp = (f32 *)HSD_MemAlloc(shape_set->nb_shape * sizeof(f32));
         for (u32 i = 0; i < shape_set->nb_shape; i++){
             shape_set->blend.bp[i] = 0.0F;
         }
@@ -150,7 +150,7 @@ static HSD_ShapeSet* loadShapeSetDesc(HSD_ShapeSetDesc* sdesc){
 }
 
 //8036BDA0
-static s32 PObjLoad(HSD_PObj* pobj, HSD_PObjDesc *desc){
+static s32 PObjLoad(HSD_PObj* pobj, HSD_PObjDesc* desc){
     pobj->next = HSD_PObjLoadDesc(desc->next);
     pobj->verts = desc->verts;
     pobj->flags = desc->flags;
@@ -165,10 +165,152 @@ static s32 PObjLoad(HSD_PObj* pobj, HSD_PObjDesc *desc){
         pobj->u.envelope_list = loadEnvelopeDesc(desc->u.envelope_p);
         break;
 
+        case POBJ_SKIN:
+        break;
+
         default:
-        assert(TRUE);
+            HSD_Halt("PObjLoad: Unexpected type");
     }
     return 0;
+}
+
+//8036BE64
+HSD_PObj* HSD_PObjLoadDesc(HSD_PObjDesc* pobjdesc){
+    if (pobjdesc != NULL) {
+        HSD_PObj *pobj;
+        HSD_ClassInfo *info;
+        
+        if (pobjdesc->class_name == NULL || !(info = hsdSearchClassInfo(pobjdesc->class_name))){
+            pobj = HSD_PObjAlloc();
+        }else {
+            pobj = hsdNew(info);
+            assert(pobj);
+        }
+        HSD_POBJ_METHOD(pobj)->load(pobj, pobjdesc);
+        return pobj;
+    }
+    return NULL;
+}
+
+//8036BEFC
+void HSD_PObjRemoveAll(HSD_PObj *pobj){
+    while (pobj != NULL) {
+        HSD_PObj *next = pobj->next;
+        if(next != NULL){
+            HSD_CLASS_METHOD(pobj)->release;
+            HSD_CLASS_METHOD(pobj)->destroy;
+        }
+        pobj = next;
+    }
+}
+
+//8036BF70
+void HSD_PObjSetDefaultClass(HSD_PObjInfo* info){
+    if (info != NULL) {
+        assert(hsdIsDescendantOf(info, &hsdPObj));
+    }
+    default_class = info;
+}
+
+//8036BFCC
+HSD_PObj* HSD_PObjAlloc(){
+    HSD_PObj *pobj = hsdNew(default_class != NULL ? default_class : &hsdPObj);
+    assert(pobj != NULL);
+    return pobj;
+}
+
+//8036C028
+static void resolveEnvelope(HSD_SList *list, HSD_EnvelopeDesc **edesc_p){
+    if (list == NULL || edesc_p == NULL)
+        return;
+    
+    for (; list && *edesc_p; list=list->next, edesc_p++) {
+        HSD_Envelope *env = list->data;
+        HSD_EnvelopeDesc *edesc = *edesc_p;
+        
+        while (env && edesc->joint) {
+            HSD_JObjUnrefThis(env->jobj);
+            env->jobj = HSD_IDGetDataFromTable((HSD_ID)edesc->joint, NULL);
+            assert(env->jobj);
+            HSD_JObjRefThis(env->jobj);
+            env = env->next;
+            edesc++;
+        }
+    }
+}
+
+//8036C124
+void HSD_PObjResolveRefsAll(HSD_PObj *pobj, HSD_PObjDesc *pdesc){
+    while (pobj != NULL && pdesc != NULL) {            
+        switch (pobj_type(pobj)) {
+            case POBJ_ENVELOPE:
+                resolveEnvelope(pobj->u.envelope_list, pdesc->u.envelope_p);
+            break;
+            
+            case POBJ_SKIN:
+                HSD_JObjUnrefThis(pobj->u.jobj);
+                pobj->u.jobj = NULL;
+                if (pdesc->u.joint != NULL) {
+                    pobj->u.jobj = HSD_IDGetDataFromTable((HSD_ID)pdesc->u.joint, NULL);
+                    assert(pobj->u.jobj);
+                    pobj->u.jobj->class_parent.ref_count_individual += 1;
+                    assert(pobj->u.jobj->class_parent.ref_count_individual != 0);
+                }
+            break;
+            
+            default:
+                break;
+        }
+        pobj = pobj->next;
+        pdesc = pdesc->next;
+    }
+}
+
+//8036C244
+void HSD_ClearVtxDesc(){
+    GXClearVtxDesc();
+    prev_vtxdesclist_array = NULL;
+    prev_vtxdesc = NULL;
+}
+
+//8036C270
+static void setupArrayDesc(HSD_VtxDescList* desc_list){
+  HSD_VtxDescList *desc;
+  if (prev_vtxdesclist_array != desc_list) {
+    for (desc = desc_list; desc->attr != GX_VA_NULL; desc++) {
+		if (desc->attr_type != GX_DIRECT) {
+		  GX_SetArray(desc->attr, desc->vertex, desc->stride);
+		}
+    }
+    prev_vtxdesclist_array = desc_list;
+  }
+}
+
+//8036C2E8
+static void setupVtxDesc(HSD_PObj *pobj){
+    HSD_VtxDescList *desc;
+    if (prev_vtxdesc != pobj->verts) {
+        GX_ClearVtxDesc();
+        for (desc = pobj->verts; desc->attr != GX_VA_NULL; desc++) {
+            GX_SetVtxDesc(desc->attr, desc->attr_type);
+            switch (desc->attr) {
+                case GX_VA_PTNMTXIDX:
+                case GX_VA_TEX0MTXIDX:
+                case GX_VA_TEX1MTXIDX:
+                case GX_VA_TEX2MTXIDX:
+                case GX_VA_TEX3MTXIDX:
+                case GX_VA_TEX4MTXIDX:
+                case GX_VA_TEX5MTXIDX:
+                case GX_VA_TEX6MTXIDX:
+                case GX_VA_TEX7MTXIDX:
+                    break;
+                
+                default:
+                GX_SetVtxAttrFmt(GX_VTXFMT0, desc->attr, desc->comp_cnt, desc->comp_type, desc->frac);
+            }
+        }
+        prev_vtxdesc = pobj->verts;
+    }
 }
 
 //8036C384
@@ -210,15 +352,306 @@ static void setupShapeAnimVtxDesc(HSD_PObj* pobj){
             case GX_VA_TEX5MTXIDX:
             case GX_VA_TEX6MTXIDX:
             case GX_VA_TEX7MTXIDX:
-                GXSetVtxDesc(desc->attr, desc->attr_type);
+                GX_SetVtxDesc(desc->attr, desc->attr_type);
                 break;
             
             default:
                 GX_SetVtxDesc(desc->attr, desc->attr_type);
-                GXSetVtxAttrFmt(GX_VTXFMT0, desc->attr, desc->comp_cnt, desc->comp_type, desc->frac);
+                GX_SetVtxAttrFmt(GX_VTXFMT0, desc->attr, desc->comp_cnt, desc->comp_type, desc->frac);
         }
     }
     prev_vtxdesc = NULL;
+}
+
+//8036C4D4
+static void get_shape_vertex_xyz(HSD_ShapeSet* shape_set, s32 shape_id, s32 arrayidx, f32 dst[3]){
+    u8* index_array = shape_set->vertex_idx_list[shape_id];
+    s32 idx;
+    void* src_base;
+    
+    if (shape_set->vertex_desc->attr_type == GX_INDEX16) {
+        idx = index_array[arrayidx * 2];
+        idx = (idx << 8) + index_array[arrayidx * 2 + 1];
+    } else {
+        idx = index_array[arrayidx];
+    }
+    
+    assert(shape_set->vertex_desc->comp_cnt == GX_POS_XYZ);
+    src_base = ((u8*) shape_set->vertex_desc->vertex) + idx * shape_set->vertex_desc->stride;
+    
+    if (shape_set->vertex_desc->comp_type == GX_F32) {
+        memcpy(dst, src_base, sizeof(f32[3]));
+    } else {
+        s32 decimal_point = 1 << shape_set->vertex_desc->frac;
+        switch (shape_set->vertex_desc->comp_type) {
+            case GX_U8: {
+                u8* src = src_base;
+                dst[0] = (f32)src[0] / decimal_point;
+                dst[1] = (f32)src[1] / decimal_point;
+                dst[2] = (f32)src[2] / decimal_point;
+            }
+            break;
+            
+            case GX_S8: {
+                s8* src = src_base;
+                dst[0] = (f32)src[0] / decimal_point;
+                dst[1] = (f32)src[1] / decimal_point;
+                dst[2] = (f32)src[2] / decimal_point;
+            }
+            break;
+            
+            case GX_U16: {
+                u16* src = src_base;
+                dst[0] = (f32)src[0] / decimal_point;
+                dst[1] = (f32)src[1] / decimal_point;
+                dst[2] = (f32)src[2] / decimal_point;
+            }
+            break;
+            
+            case GX_S16: {
+                s16* src = src_base;
+                dst[0] = (f32)src[0] / decimal_point;
+                dst[1] = (f32)src[1] / decimal_point;
+                dst[2] = (f32)src[2] / decimal_point;
+            }
+            break;
+            
+            default:
+                HSD_Halt("Unexpected vertex type.\n");
+        }
+    }
+}
+
+//8036C860
+static void get_shape_normal_xyz(HSD_ShapeSet* shape_set, s32 shape_id, s32 arrayidx, f32 dst[3]){
+    u8* index_array = shape_set->normal_idx_list[shape_id];    
+    s32 idx;
+    void* src_base;
+    
+    if (shape_set->normal_desc->attr_type == GX_INDEX16) {
+        idx = index_array[arrayidx * 2];
+        idx = (idx << 8) + index_array[arrayidx * 2 + 1];
+    } else {
+        idx = index_array[arrayidx];
+    }
+    
+    assert(shape_set->normal_desc->comp_cnt == GX_NRM_XYZ);
+    src_base = ((u8*) shape_set->normal_desc->vertex) + idx * shape_set->normal_desc->stride;
+    
+    if (shape_set->normal_desc->comp_type == GX_F32) {
+        memcpy(dst, src_base, sizeof(f32[3]));
+    } else {
+        s32 decimal_point = 1 << shape_set->normal_desc->frac;
+        switch (shape_set->normal_desc->comp_type) {
+            case GX_U8: {
+                u8* src = src_base;
+                dst[0] = (f32)src[0] / decimal_point;
+                dst[1] = (f32)src[1] / decimal_point;
+                dst[2] = (f32)src[2] / decimal_point;
+            }
+            break;
+            
+            case GX_S8: {
+                s8* src = src_base;
+                dst[0] = (f32)src[0] / decimal_point;
+                dst[1] = (f32)src[1] / decimal_point;
+                dst[2] = (f32)src[2] / decimal_point;
+            }
+            break;
+            
+            case GX_U16: {
+                u16* src = src_base;
+                dst[0] = (f32)src[0] / decimal_point;
+                dst[1] = (f32)src[1] / decimal_point;
+                dst[2] = (f32)src[2] / decimal_point;
+            }
+            break;
+            
+            case GX_S16: {
+                s16* src = src_base;
+                dst[0] = (f32)src[0] / decimal_point;
+                dst[1] = (f32)src[1] / decimal_point;
+                dst[2] = (f32)src[2] / decimal_point;
+            }
+            break;
+            
+            default:
+                HSD_Halt("Unexpected normal type.");
+        }
+    }
+}
+
+//8036CBEC
+static void get_shape_nbt_xyz(HSD_ShapeSet* shape_set, s32 shape_id, s32 arrayidx, f32 *dst){
+    u8* index_array = shape_set->normal_idx_list[shape_id];    
+    s32 idx;
+    void* src_base;
+    
+    if (shape_set->normal_desc->attr_type == GX_INDEX16) {
+        idx = index_array[arrayidx * 2];
+        idx = (idx << 8) + index_array[arrayidx * 2 + 1];
+    } else {
+        idx = index_array[arrayidx];
+    }
+    
+    assert(shape_set->normal_desc->comp_cnt == GX_NRM_XYZ);
+    src_base = ((u8*) shape_set->normal_desc->vertex) + idx * shape_set->normal_desc->stride;
+
+    if (shape_set->normal_desc->comp_type == GX_F32) {
+        memcpy(dst, src_base, sizeof(f32[3]));
+    } else {
+        s32 decimal_point = 1 << shape_set->normal_desc->frac;
+        switch (shape_set->normal_desc->comp_type) {
+            case GX_U8: {
+                for (u32 i = 0; i < 9; i++) {
+                    dst[i] = (f32)((u8*)src_base)[i] / decimal_point;
+                }
+            }
+            break;
+            
+            case GX_S8: {
+                for (u32 i = 0; i < 9; i++) {
+                    dst[i] = (f32)((s8*)src_base)[i] / decimal_point;
+                }
+            }
+            break;
+            
+            case GX_U16: {
+                for (u32 i = 0; i < 9; i++) {
+                    dst[i] = (f32)((u16*)src_base)[i] / decimal_point;
+                }
+            }
+            break;
+            
+            case GX_S16: {
+                for (u32 i = 0; i < 9; i++) {
+                    dst[i] = (f32)((s16*)src_base)[i] / decimal_point;
+                }
+            }
+            break;
+
+            default:
+                HSD_Halt("Unexpected normal type.");
+        }
+    }
+}
+
+//8036D4D0
+static void interpretShapeAnimDisplayList(HSD_PObj *pobj, f32 (*vertex)[3], f32 (*normal)[3]){
+    u8 *dl = pobj->display;
+    s32 length = pobj->n_display << 5;
+    
+    for (u32 l = 0; l + 3 < length; ) {
+        s32 n = dl[1] << 8 | dl[2];
+        s32 m = 3;
+        
+        if ((dl[0] & GX_OPCODE_MASK) == GX_NOP) {
+            break;
+        }
+        GX_Begin((dl[0] & GX_OPCODE_MASK), (dl[0] & GX_VAT_MASK), n);
+        for (u32 i = 0; i < n; i++) {
+            for (u32 j = 0; ;j++) {
+                HSD_VtxDescList *desc = &pobj->verts[j];
+                if (desc->attr == GX_VA_NULL) {
+                    break;
+                }else {
+                    u16 idx = dl[m++];
+                    switch (desc->attr) {
+                        case GX_VA_PTNMTXIDX:
+                        case GX_VA_TEX0MTXIDX:
+                        case GX_VA_TEX1MTXIDX:
+                        case GX_VA_TEX2MTXIDX:
+                        case GX_VA_TEX3MTXIDX:
+                        case GX_VA_TEX4MTXIDX:
+                        case GX_VA_TEX5MTXIDX:
+                        case GX_VA_TEX6MTXIDX:
+                        case GX_VA_TEX7MTXIDX:
+                            GX_MatrixIndex1x8(idx);
+                        break;
+                        
+                        case GX_VA_POS:
+                            if (desc->attr_type == GX_INDEX16) {
+                                idx = (idx << 8) | dl[m++];
+                            }
+                            GX_Position3f32(vertex[idx][0], vertex[idx][1], vertex[idx][2]);
+                        break;
+                        
+                        case GX_VA_NRM:
+                            if (desc->attr_type == GX_INDEX16) {
+                                idx = (idx << 8) | dl[m++];
+                            }
+                            GX_Normal3f32(normal[idx][0], normal[idx][1], normal[idx][2]);
+                        break;
+                        
+                        case GX_VA_NBT:
+                            if (desc->attr_type == GX_INDEX16) {
+                                idx = (idx << 8) | dl[m++];
+                            }
+                            idx *= 3;
+                            GX_Normal3f32(normal[idx+0][0], normal[idx+0][1], normal[idx+0][2]);
+                            GX_Normal3f32(normal[idx+1][0], normal[idx+1][1], normal[idx+1][2]);
+                            GX_Normal3f32(normal[idx+2][0], normal[idx+2][1], normal[idx+2][2]);
+                        break;
+                        
+                        case GX_VA_TEX0:
+                        case GX_VA_TEX1:
+                        case GX_VA_TEX2:
+                        case GX_VA_TEX3:
+                        case GX_VA_TEX4:
+                        case GX_VA_TEX5:
+                        case GX_VA_TEX6:
+                        case GX_VA_TEX7:
+                            if (desc->attr_type == GX_INDEX16) {
+                                idx = (idx << 8) | dl[m++];
+                                GX_TexCoord1x16(idx);
+                            } else {
+                                GX_TexCoord1x8(idx);
+                            }
+                        break;
+                        
+                        case GX_VA_CLR0:
+                        case GX_VA_CLR1:
+                            if (desc->attr_type == GX_INDEX16) {
+                                idx = (idx << 8) | dl[m++];
+                                GX_Color1x16(idx);
+                            } else if (desc->attr_type == GX_INDEX8) {
+                                GX_Color1x8(idx);
+                            } else {
+                                switch (desc->comp_type) {
+                                    case GX_RGB565:
+                                    case GX_RGBA4:
+                                        GX_Color1u16((idx << 8)|dl[m++]);
+                                    break;
+                                    
+                                    case GX_RGB8:
+                                    case GX_RGBA6:
+                                        GX_Color3u8(idx, dl[m], dl[m+1]); 
+                                        m += 2;
+                                    break;
+                                    
+                                    case GX_RGBA8:
+                                    case GX_RGBX8:
+                                        GX_Color4u8(idx, dl[m], dl[m+1], dl[m+2]);
+                                        m += 3;
+                                    break;
+                                }
+                            }
+                        break;
+                        
+                        default:
+                            if (desc->attr_type == GX_INDEX16) {
+                                idx = (idx << 8) | dl[m++];
+                            }
+                            HSD_Report("attr is not supported by sysdolphin\n");
+                        break;
+                    }
+                }
+            }
+        }
+        GX_End();
+        l += m;
+        dl+= m;
+    }
 }
 
 //8036E034
@@ -328,7 +761,7 @@ static void PObjRelease(HSD_Class* o){
     HSD_PARENT_INFO(&hsdPObj)->release(o);
 }
 
-//8036EB14P
+//8036EB14
 static void PObjAmnesia(HSD_ClassInfo* info){
     if (info == HSD_CLASS_INFO(default_class)) {
         default_class = NULL;

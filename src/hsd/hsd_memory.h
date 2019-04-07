@@ -19,7 +19,7 @@ typedef struct _HSD_MemoryEntry {
     u32 total_bits;
     u32 x4_unk;
     u32 free_pieces;
-    struct _HSD_MemPiece* data; //0x0C
+    struct _HSD_MemPiece* data;
     struct _HSD_MemoryEntry* next;
     u32 x14_unk;
 } HSD_MemoryEntry;
@@ -27,5 +27,6 @@ typedef struct _HSD_MemoryEntry {
 void* HSD_MemAlloc(u32);
 
 HSD_MemPiece* hsdAllocMemPiece(u32);
+void hsdFreeMemPiece(void *, u32);
 
 #endif
