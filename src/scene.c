@@ -42,6 +42,8 @@ s32 scene_804337C4[55];
 
 unk_8046B0F0 dword_8046B0F0;
 
+u32 scene_80479C38[14][4]; //80479C38 - Length made up but currently assumed based on layout in memory
+
 u8 menu_804D6730[6];
 
 //8016795C
@@ -290,49 +292,50 @@ void Scene_80026F2C(u32 flags){
 
 //801A1C18
 static void Scene_Minor_Class0_OnFrame(){
-    sub_801A36A0(4u);
-    u32* r13_4F8C = Scene_Load4F80_idx3();
-    if(r13_4F8C != NULL){
-        *r13_4F8C -= 1;
-    }else{
-        u32* pVal = Scene_Load4F80_idx2();
-        *pVal += 1;
-        if(*pVal <= 0x258u){
-            if(*pVal & 0x1000){
-                u32 res = sub_80026F2C(28);
-                sub_8002702C(0xC, res, 0);
-                sub_80027168();
-                sub_80027648();
-                SFX_Menu_CommonSound(1);
-                *pVal = Music_DecideRandom();
-                MatchController_ChangeScreen();
-            }else if(debug_level >= 3){
-                if(*pVal & 0x100){
-                    SFX_Menu_CommonSound(1);
-                    *pVal = 0;
-                    MatchController_ChangeScreen();
-                }else if(*pVal & 0x400){
-                    SFX_Menu_CommonSound(1);
-                    *pVal = 0;
-                    MatchController_ChangeScreen();
-                }else if(*pVal & 0x800){
-                    SFX_Menu_CommonSound(1);
-                    *pVal = 0;
-                    MatchController_ChangeScreen();
-                }
-            }
-        }else{
-            *pVal = 0;
-            MatchController_ChangeScreen();
+  u32 res_r4;
+  Scene_801A36A0(4, NULL, &res_r4);
+  u32* r13_4F8C = Scene_Load4F80_idx3();
+  if(*r13_4F8C != 0){
+    *r13_4F8C -= 1;
+  }else{
+    u32* pVal = Scene_Load4F80_idx2();
+    *pVal += 1;
+    if(*pVal <= 0x258){
+      if(*pVal & 0x1000){
+        u32 res = sub_80026F2C(0x1C);
+        sub_8002702C(0xC, res, 0);
+        sub_80027168();
+        sub_80027648();
+        SFX_Menu_CommonSound(1);
+        *pVal = Music_DecideRandom();
+        MatchController_ChangeScreen();
+      }else if(debug_level >= 3){
+        if(*pVal & 0x100){
+          SFX_Menu_CommonSound(1);
+          *pVal = res_r4;
+          MatchController_ChangeScreen();
+        }else if(*pVal & 0x400){
+          SFX_Menu_CommonSound(1);
+          *pVal = res_r4;
+          MatchController_ChangeScreen();
+        }else if(*pVal & 0x800){
+          SFX_Menu_CommonSound(1);
+          *pVal = res_r4;
+          MatchController_ChangeScreen();
+          }
         }
+    }else{
+      *pVal = 0;
+      MatchController_ChangeScreen();
     }
+  }
 }
 
 //801A1E20
 static void Scene_Minor_Class0_OnLoad(){
   sub_800236DC();
-  //r13 - 0x4F8C = 0x14;
-  //r13 - 0x4F88 = 0;
+  *Scene_Load4F80_idx3() = 0x14;
+  *Scene_Load4F80_idx2() = 0;
   char* filename = "GmTtAll.usd";
   /*if(sub_8000ADD4() == TRUE){ //CheckLanguage
     filename = "GmTtAll.usd";
@@ -402,6 +405,16 @@ static void Scene_Minor_Class0_OnLoad(){
     unk_struct[0x49] = 1;
     sub_803A7548(unk, unk_struct, 0.7f, 0.55f);
   }*/
+}
+
+//801A36A0
+void Scene_801A36A0(u32 offset, u32* res_r3, u32* res_r4){
+  if(res_r3 != NULL){
+    *res_r3 = scene_80479C38[offset][2];
+  }
+  if(res_r4 != NULL){
+    *res_r4 = scene_80479C38[offset][3];
+  }
 }
 
 //801A4014
