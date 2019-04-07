@@ -6,6 +6,7 @@
 
 static HSD_GObjProc* slinklow_procs[S_LINK_MAX * S_LINK_MAX]; //r13_3E5C
 static HSD_GObjProc* slinkhigh_procs[S_LINK_MAX * S_LINK_MAX]; //r13_3E60
+static u32 r13_3E64 = 0; //r13_3E64
 static HSD_GObjProc* first_gobjproc; //r13_3E68
 static u32 last_s_link = 0; //r13_3E6C
 static HSD_GObjProc* last_gobjproc; //r13_3E70
@@ -14,7 +15,7 @@ static HSD_GObj* plinklow_gobjs[P_LINK_MAX + 2]; //r13_3E78
 static HSD_GObj* highestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E7C
 static HSD_GObj* lowestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E80
 static HSD_GObj* current_gobj = NULL; //r13_3E84 - Really just a guess
-static void* r13_3E88 = NULL;
+static HSD_GObj* active_gx_gobj = NULL; //r13_3E88
 static void* r13_3E8C = NULL;
 static void* hsd_destructors[14]; //r13_3E90 - Length is currently made up, TODO: need to explictly assign the functions to this at some point
 
@@ -371,7 +372,37 @@ void GObj_CallDestructor(HSD_GObj* gobj){
 	}
 }
 
+//80390CFC
+void GObj_80390CFC(){
+	HSD_ObjDef* def;
+	u32 unk;
+	/*if(unk_804CE380[2] == 0){
+		def = NULL;
+		unk = 0;
+	}else{
+		unk = unk_804CE380[2];
+		def = &gobj_def;
+	}*/
+	r13_3E64 += 1;
+	if(r13_3E64 > 2){
+		r13_3E64 = 0;
+	}
+}
+
 //80390EB8
 u32 GObj_GetFlagFromArray(u32 offset){
 	return flag_array[offset];
+}
+
+//80390FC0
+void GObj_RunGXLinkMaxCallbacks(){
+	HSD_GObj* gobj = highestprio_gobjs[GX_LINK_MAX + 1];
+	for(HSD_GObj* i = gobj; i != NULL; i = i->next_gx){
+		if(gobj->render_cb != NULL){
+			HSD_GObj* last_active = active_gx_gobj;
+			active_gx_gobj = gobj;
+			gobj->render_cb(gobj, 0);
+			active_gx_gobj = last_active;
+		}
+	}
 }

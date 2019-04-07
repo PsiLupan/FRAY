@@ -80,23 +80,25 @@ typedef struct _MatchController {
 	u32 unk04;
 	u32 timer2;
 	u32 screen_ctrl;
-	bool frozen;
+	u8 frozen;
 	u8 unk11;
 	u8 pause;
 	u8 unk13;
 	u32* unk14;
 	u32* unk18;
 	u32* dev_togglefunc; //0x1C
-	u32 unk20;
-	u32 unk24;
+	s32 unk20;
+	s32 unk24;
 	u32 unk28;
-	u32 unk2C;
+	void (*unk2C)();
 	u32 unk30;
-	u32 unk34;
+	u32 unk34; //0x80479D8C
+	u8 flags; //0x80479D90
 } MatchController;
 
 extern MatchController match_controller;
 
+void MatchController_InitData(MatchController* mc);
 extern u32 MatchController_LoadTimer();
 
 extern u32 MatchController_LoadTimer2();

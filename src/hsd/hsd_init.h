@@ -30,10 +30,12 @@ extern GXRModeObj* rmode;
 void HSD_InitComponent();
 void HSD_GXSetFifoObj(GXFifoObj *);
 void HSD_DVDInit();
-void** HSD_AllocateXFB(u32 nbBuffer, GXRModeObj *rm);
+void** HSD_AllocateXFB(u32, GXRModeObj *);
 void* HSD_AllocateFIFO(u32);
 void HSD_GXInit();
 
-BOOL HSD_SetInitParameter(HSD_InitParam param, ...);
+void HSD_StartRender(HSD_RenderPass);
+
+BOOL HSD_SetInitParameter(HSD_InitParam, ...);
 
 #endif

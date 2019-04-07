@@ -40,7 +40,7 @@ static s32 Archive_GetFileLoadStatus(){
 
 //8001615C
 static void Archive_DVDCallback(s32 result, DVDFileInfo* fileInfo){
-    if(result != DVD_RESULT_FATAL_ERROR && result != DVD_RESULT_CANCELED){
+    if(result >= 0){
         file_load_status = 1;
     }
     file_load_status = -1;

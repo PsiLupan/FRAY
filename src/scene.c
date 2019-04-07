@@ -291,7 +291,7 @@ void Scene_80026F2C(u32 flags){
 }
 
 //801A1C18
-static void Scene_Minor_Class0_OnFrame(){
+static void Scene_Minor_Class0_OnFrame(u32 unused, u32 inputs){
   u32 res_r4;
   Scene_801A36A0(4, NULL, &res_r4);
   u32* r13_4F8C = Scene_Load4F80_idx3();
@@ -307,20 +307,20 @@ static void Scene_Minor_Class0_OnFrame(){
         sub_80027168();
         sub_80027648();
         SFX_Menu_CommonSound(1);
-        *pVal = Music_DecideRandom();
+        *pVal = inputs;
         MatchController_ChangeScreen();
       }else if(debug_level >= 3){
         if(*pVal & 0x100){
           SFX_Menu_CommonSound(1);
-          *pVal = res_r4;
+          *pVal = inputs;
           MatchController_ChangeScreen();
         }else if(*pVal & 0x400){
           SFX_Menu_CommonSound(1);
-          *pVal = res_r4;
+          *pVal = inputs;
           MatchController_ChangeScreen();
         }else if(*pVal & 0x800){
           SFX_Menu_CommonSound(1);
-          *pVal = res_r4;
+          *pVal = inputs;
           MatchController_ChangeScreen();
           }
         }
@@ -725,7 +725,116 @@ void Scene_PerFrameUpdate(void (*onframefunc)()){
   match_controller.screen_ctrl = 0;
   HSD_PadFlushQueue(2);
   sub_8001CF18();
-  /*TODO*/
+  do {
+    if(match_controller.screen_ctrl != 0){
+      HSD_VISetXFBDrawDone();
+      return;
+    }
+    //sub_80392E80(); Something memory card related
+    u32 val;
+    while(true){
+      val = sub_80019894(); //GetsPadRawQueueCount and does some stuff
+      if((val & 0xFF) != 0){
+        break;
+      }
+      sub_800195D0();
+    }
+    sub_800195D0();
+    BOOL reset = HSD_PadGetResetSwitch();
+    if(reset == TRUE){
+      dword_8046B0F0.unk04 = 1;
+      HSD_VISetXFBDrawDone();
+      return;
+    }
+    u32 i = 0;
+    while (i < (val & 0xFF)){
+      //HSD_PerfSetStartTime();
+      sub_800198E0();
+      /*if(debug_level >= 3){
+        DevelopMode_CPUStats(&match_controller.unk14);
+      }*/
+      
+      if((match_controller.pause & 1) == 0 && (match_controller.frozen & 1) != 0){
+        match_controller.flags &= 0x7F;
+      }else{
+        match_controller.flags = match_controller.flags & 0x7F | 0x80;
+      }
+      if(match_controller.flags >> 7 != 0){      
+        if(sub_80019A30(0) != 0){
+          sub_801A3A74();
+          if(sub_80019A30(0) != 0 && onframefunc != NULL){
+            (*onframefunc)();
+          }
+        }
+      }
+
+      s32 res;
+      if(match_controller.frozen != match_controller.unk11 || match_controller.pause != match_controller.unk13){
+        s32 res = sub_801A48A4(match_controller.frozen);
+        if(match_controller.flags >> 7 == 0){
+          res = -1;
+        }
+        match_controller.unk11 = match_controller.frozen;
+        match_controller.unk13 = match_controller.pause;
+        match_controller.pause = 0;
+      }
+      match_controller.unk20 = res;
+      match_controller.unk24 = res;
+
+      if(sub_80019A30(0) == 0){
+        match_controller.unk24 = match_controller.unk24 | match_controller.unk28;
+      }
+
+      if(sub_80019A30(1) == 0){
+        match_controller.unk24 = match_controller.unk24 | match_controller.unk28;
+      }
+      /*if(debug_level >= 3){
+        DevelopMode_USBScreenshot();
+      }*/
+
+      sub_80027DF8();
+      if(match_controller.unk2C != NULL){
+        (*match_controller.unk2C)();
+      }
+      //GObj_80390CFC();
+      if(match_controller.timer != -2){
+        match_controller.timer += 1;
+      }
+
+      if(match_controller.flags >> 7 != 0){
+        if(sub_80019A30(0) != 0 && match_controller.timer2 != -2){
+          match_controller.timer2 += 1;
+        }
+      }
+
+      /*HSD_PerfSetCPUTime();
+      if(debug_level >= 3){
+        OSCheckActiveThreads();
+      }*/
+      dword_8046B0F0.unk0C = 0;
+      if(match_controller.screen_ctrl != 0){
+        break;
+      }
+      ++i;
+    }
+    if(match_controller.screen_ctrl == 2){
+      HSD_VISetXFBDrawDone();
+      return;
+    }
+    //sub_800195D0(); //DiscCheck();
+    GX_InvVtxCache();
+    GX_InvalidateTexAll();
+    HSD_StartRender(0);
+    GObj_RunGXLinkMaxCallbacks();
+    //HSD_PerfSetDrawTime();
+    HSD_VICopyXFBASync(0);
+    if(match_controller.unk04 != -2){
+      match_controller.unk04 += 1;
+    }
+    //DevelopMode_CheckForUSBScreenshot();
+    //HSD_PerfSetTotalTime();
+    //HSD_PerfInitStat();
+  } while(true);
 }
 
 //801A50A0
