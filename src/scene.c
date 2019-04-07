@@ -340,7 +340,7 @@ static void Scene_Minor_Class0_OnLoad(){
     filename = "GmTtAll.dat";
   }*/
 
-  Archive_LoadFileSections(filename, title_ptrs.dat_start, 24,  title_ptrs.top_joint, "TtlMoji_Top_joint",
+  Archive_LoadFileSections(filename, 24, title_ptrs.top_joint, "TtlMoji_Top_joint",
     title_ptrs.top_animjoint, "TtlMoji_Top_animjoint", title_ptrs.top_matanim_joint, "TtlMoji_Top_matanim_joint",
     title_ptrs.top_shapeanim_joint, "TtlMoji_Top_shapeanim_joint", scene_cobj_desc, "ScTitle_cam_int1_camera", scene_lights_desc, "ScTitle_scene_lights",
     scene_fog_desc, "ScTitle_fog", title_ptrs.bg_top_joint, "TtlBg_Top_joint", title_ptrs.bg_top_animjoint, "TtlBg_Top_animjoint",

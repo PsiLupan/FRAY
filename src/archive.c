@@ -1,11 +1,41 @@
 #include "archive.h"
+#include "hsd/hsd_memory.h"
 
-static s32 r13_52D8 = 0;
+static s32 file_load_status = 0;
+
+Archive_Allocation alloc_data[6];
+
+//80015BD0
+void* Archive_Alloc(u32 offset, u32 size){
+    void* mem;
+    u32 intr = IRQ_Disable();
+    if(alloc_data[offset].x28_unk == 0){
+        if(alloc_data[offset].x20_unk == 0){
+            /* This is where the custom allocator would be useful
+            OSHeapHandle heap_handle = HSD_GetHeap();
+            HSD_SetHeap(alloc_data[offset].heap_handle);
+            mem = HSD_MemAlloc(size);
+            HSD_SetHeap(heap_handle);
+            */
+           mem = HSD_MemAlloc(size);
+        }else{
+            //mem = sub_80014FC8(alloc_data[offset].x14_unk, size);
+            mem = HSD_MemAlloc(size);
+            if(alloc_data[offset].x20_unk == 3){
+                mem = (void*)((u32*)mem + 4);
+            }
+        }
+    }else{
+        mem = NULL;
+    }
+    IRQ_Restore(intr);
+    return mem;
+}
 
 //800161A0
 s32 Archive_800161A0(){
     sub_800195D0();
-    return r13_52D8;
+    return file_load_status;
 }
 
 //8001634C
@@ -46,7 +76,7 @@ void Archive_8001615C(u32 unk, u32 unk1, u32 unk2, u32 in_r6){
     if (in_r6 != 0) {
         HSD_Halt("!cancelflag");
     }
-    r13_52D8 = 1;
+    file_load_status = 1;
 }
 
 //8001668C
@@ -56,7 +86,7 @@ void Archive_LoadFileIntoMemory(char* filename, void* mem, u32* filelength){
     if(entry == -1){
         HSD_Halt("Archive_LoadFileIntoMemory: Could not locate file");
     }
-    *filelength = Archive_LoadFileByEntrynum(entry);
+    *filelength = Archive_GetDVDFileLengthByEntry(entry);
     u32 unk;
     if((int)mem < 0x80000000) {
         unk = 0x23;
@@ -71,38 +101,37 @@ void Archive_LoadFileIntoMemory(char* filename, void* mem, u32* filelength){
 }
 
 //80016A54
-void Archive_InitializeDAT(void* mem_1, void* mem_2, u32 file_size){
-    assert(Archive_Parse(mem_1, mem_2, file_size) != -1);
-    u32 counter = 0;
+void Archive_InitializeDAT(s32* header_info, s32* dat_file, u32 file_size){
+    assert(Archive_InitHeaderInfo(header_info, dat_file, file_size) != -1);
+    u32 offset = 0;
     s32 val = NULL;
-    void* temp;
     while(true){
-        val = Archive_Check((s32*)mem_1, counter++);
-        temp = val;
-        if ( val == 0 )
+        char* str = Archive_GetString(header_info, offset++);
+        if ( str == NULL )
             break;
-        val = sub_80380434(mem_1, val, 0);
+        Archive_InitXrefs(header_info, str, 0);
     }
 }
 
 //80016C64
-void Archive_LoadFileSections(char* filename, void* dat_start, u32 sections, ...){
+void Archive_LoadFileSections(char* filename, u32 sections, ...){
     va_list ap;
 
     u32 file_size = Archive_GetDVDFileLengthByName(filename);
-    void* mem_1 = sub_80015BD0(0, (file_size + 31) & 0xFFFFFFE0);
-    void* mem_2 = sub_80015BD0(0, 68);
+    void* dat_file = Archive_Alloc(0, (file_size + 0x1F) & 0xFFFFFFE0); //This (size + 0x1F) & 0xFFFFFFE0 aligns the file size along 0x20 sized boundaries, IE Anything from 0x74581 - 0x745A0 would become 0x745A0
+    void* header_info = Archive_Alloc(0, 0x44);
     u32* filelength;
-    Archive_LoadFileIntoMemory(filename, mem_2, &filelength);
-    Archive_InitializeDAT((u32*)mem_2, (u32*)mem_1, file_size);
-
-    //Still TODO here w/ Mallocs, etc..
+    Archive_LoadFileIntoMemory(filename, dat_file, &filelength);
+    Archive_InitializeDAT((s32*)header_info, (s32*)dat_file, filelength);
 
     va_start(ap, sections);
     while(sections > 0) {
         void* file_ptr = va_arg(ap, void *);
         char* section_name = va_arg(ap, char *);
-        file_ptr = Archive_GetFileSection(dat_start, section_name);
+        file_ptr = Archive_GetFileSection(header_info, section_name);
+        if(file_ptr == NULL){
+            HSD_Halt("Could not find section");
+        }
         sections -= 2;
     }
     va_end(ap);
@@ -129,14 +158,39 @@ void* Archive_GetFileSection(void* dat_start, char* section_name){
 }
 
 //803803FC
-s32 Archive_Check(s32* src, u32 counter){
-    if((counter > -1) && (counter < src[4])){
-        return src[12] + *(s32*)(src[11] + counter * 8 + 4);
+char* Archive_GetString(s32* src, u32 offset){
+    if((offset > -1) && (offset < src[4])){
+        u32* string_ptr = (src[12] + *(s32*)(src[11] + offset * 8 + 4));
+        return (char*)string_ptr;
+    }
+}
+
+//80380434
+void Archive_InitXrefs(s32* header_info, char* str, u32 val){
+    u32 xref = 0;
+    s32 n = -1;
+    u32 offset = 0;
+    while(header_info[4] < xref){
+        s32 res = strcmp(str, (char*)(header_info[12] + *(u32*)(header_info[11] + offset + 4)));
+        if(res == 0){
+            u32* addr = (u32*)header_info[11];
+            n = addr[2 * xref];
+            break;
+        }
+        offset += 8;
+        ++xref;
+    }
+    if(n != -1){
+        while ( n != -1 && n < header_info[1] ){
+            u32* addr = (u32*)(header_info[8] + n);
+            n = *addr;
+            *addr = val;
+        }
     }
 }
 
 //803810E4
-s32 Archive_Parse(s32* dst, s32* src, u32 file_size){
+s32 Archive_InitHeaderInfo(s32* dst, s32* src, u32 file_size){
     if(dst == NULL){
         return -1;
     }else{
@@ -145,23 +199,23 @@ s32 Archive_Parse(s32* dst, s32* src, u32 file_size){
         memcpy(dst, src, 0x20);
         if(dst[0] == file_size){
             u32 offset = 0x20;
-            if(dst[1] != 0){
+            if(dst[1] != 0){ //Body Size
                 dst[8] = src[8];
                 offset = src[1] + 0x20;
             }
-            if(dst[2] != 0){
+            if(dst[2] != 0){ //Relocation Size
                 dst[9] = (s32)src + offset;
                 offset = offset + dst[2] * 4;
             }
-            if(dst[3] != 0){
+            if(dst[3] != 0){ //Root Size
                 dst[10] = (s32)src + offset;
                 offset = offset + dst[3] * 8;
             }
-            if(dst[4] != 0){
+            if(dst[4] != 0){ //XRef Size
                 dst[11] = (s32)src + offset;
                 offset = offset + dst[4] * 8;
             }
-            if(offset < dst[0]){
+            if(offset < dst[0]){ //File Size
                 dst[12] = (s32)src + offset;
             }
             u32 iter = 0;

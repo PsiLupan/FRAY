@@ -6,11 +6,20 @@
 #include "hsd_object.h"
 #include "hsd_util.h"
 
+#include "hsd_aobj.h"
 #include "hsd_fobj.h"
 
+#define HSD_A_S_W0 8
+
 #define POBJ_ANIM 1<<3
+#define POBJ_SKIN 3<<12
 #define POBJ_SHAPEANIM 1<<12
 #define POBJ_ENVELOPE 1<<13
+
+#define pobj_type(o)	(o->flags & 0x3000)
+
+#define POBJ_CULLFRONT 0x4000
+#define POBJ_CULLBACK 0x8000
 
 #define SHAPESET_ADDITIVE 1<<1
 
@@ -18,27 +27,26 @@
 typedef struct _HSD_PObj {
 	HSD_Class parent;
 	struct _HSD_PObj* next;
-	struct _HSD_VertAttr* verts;
+	struct _HSD_VtxDescList* verts;
 	u16 flags;
 	u16 n_display;
 	struct _HSD_Display* display;
-	struct _HSD_Weight* weight;
 	union {
+		struct _HSD_JObj* jobj;
 		struct _HSD_ShapeSet* shape_set;
 		HSD_SList* envelope_list;
 	} u;
-	struct _HSD_AObj* aobj;
 } HSD_PObj;
 
 typedef struct _HSD_PObjDesc {
 	char* class_name;
 	struct _HSD_PObjDesc* next;
-	struct _HSD_VertAttr* verts;
+	struct _HSD_VtxDescList** verts;
 	u16 flags;
 	u16 n_display;
 	struct _HSD_Display* display;
-	struct _HSD_Weight* weight;
 	union {
+		struct _HSD_JObj* jobj;
 		struct _HSD_ShapeSetDesc* shape_set;
 		struct _HSD_EnvelopeDesc** envelope_p;
 	} u;
@@ -50,21 +58,16 @@ typedef struct _HSD_Display {
 	u16 indices;
 } HSD_Display;
 
-typedef struct _HSD_Weight {
-	struct _HSD_JObj* jobj;
-	f32 weight;
-} HSD_Weight;
-
-typedef struct _HSD_VertAttr {
-	u32 ident;
-	u32 usage;
-	u32 format;
-	u32 type;
-	u8 scale;
+typedef struct _HSD_VtxDescList {
+	u32 attr;
+	u32 attr_type;
+	u32 comp_cnt;
+	u32 comp_type;
+	u8 frac;
 	u8 unk;
 	u16 stride;
 	struct _HSD_Vertex* vertex;
-} HSD_VertAttr;
+} HSD_VtxDescList;
 
 typedef struct _HSD_Vertex {
 
@@ -98,7 +101,7 @@ typedef struct _HSD_ShapeSet {
 		f32* bp;
 		f32 bl;
 	} blend;
-	u32 x20_unk;
+	struct _HSD_AObj* aobj;
 	u32 x24_unk;
 } HSD_ShapeSet;
 
@@ -115,23 +118,30 @@ typedef struct _HSD_ShapeSetDesc {
 
 typedef struct _HSD_ShapeAnim {
 	struct _HSD_ShapeAnim* next;
-	u32* unk;
+	struct _HSD_AObjDesc* aobjdesc;
 } HSD_ShapeAnim;
 
 typedef struct _HSD_ShapeAnimJoint {
 	struct _HSD_ShapeAnimJoint* child;
 	struct _HSD_ShapeAnimJoint* next;
 	struct _HSD_ShapeAnim* shapeanim;
-	u32 unk;
-	u32 unk2;
 } HSD_ShapeAnimJoint;
 
 typedef struct _HSD_PObjInfo {
 	HSD_ClassInfo class_info;
+	void (*disp)(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermode);
+	void (*setup_mtx)(HSD_PObj *pobj, Mtx vmtx, Mtx pmtx, u32 rendermode);
+	void (*load)(HSD_PObj* pobj, HSD_PObjDesc *desc);
+	void (*update)(void *obj, u32 type, FObjData* val);
 } HSD_PObjInfo;
 
 extern HSD_PObjInfo hsdPObj;
 
 #define HSD_POBJ(o) ((HSD_PObj*)(o))
+#define HSD_POBJ_INFO(i)	((HSD_PObjInfo *)(i))
+#define HSD_POBJ_METHOD(o)	HSD_POBJ_INFO(HSD_CLASS_METHOD(o))
+
+
+void HSD_PObjDisp(HSD_PObj *, Mtx, Mtx, u32);
 
 #endif

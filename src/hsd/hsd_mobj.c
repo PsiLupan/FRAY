@@ -46,14 +46,12 @@ void HSD_MObjRemoveAnimByFlags(HSD_MObj *mobj, u32 flags){
 
 //80362DC8
 void HSD_MObjAddAnim(HSD_MObj *mobj, HSD_MatAnim *matanim){
-	if (mobj){
-		if (matanim) {
-			if (mobj->aobj) {
-				HSD_AObjRemove(mobj->aobj);
-			}
-			mobj->aobj = HSD_AObjLoadDesc(matanim->aobjdesc);
-			HSD_TObjAddAnimAll(mobj->tobj, matanim->texanim); 
+	if (mobj != NULL && matanim != NULL){
+		if (mobj->aobj != NULL) {
+			HSD_AObjRemove(mobj->aobj);
 		}
+		mobj->aobj = HSD_AObjLoadDesc(matanim->aobjdesc);
+		HSD_TObjAddAnimAll(mobj->tobj, matanim->texanim); 
 	}
 }
 

@@ -4,7 +4,6 @@
 #include <gctypes.h>
 
 typedef struct _GmTitle_File {
-    void* dat_start;
     void* top_joint;
     void* top_animjoint;
     void* top_matanim_joint;

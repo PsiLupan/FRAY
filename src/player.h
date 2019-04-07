@@ -35,7 +35,7 @@ typedef struct _SubactionInfo {
 	f32 frame_count;
 	u32* data_position;
 	u32 loop_count;
-	void (*EventReturn);
+	void (*EventReturn)();
 	u32 loop_count_dup;
 	u32 unk;
 } SubactionInfo;
