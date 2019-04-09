@@ -10,6 +10,8 @@
 #include "hsd_fobj.h"
 
 #define HSD_A_S_W0 8
+#define HSD_DEFAULT_MAX_SHAPE_VERTICES 2000
+#define HSD_DEFAULT_MAX_SHAPE_NORMALS 2000
 
 #define POBJ_ANIM 1<<3
 #define POBJ_SKIN 3<<12
@@ -21,6 +23,7 @@
 #define POBJ_CULLFRONT 0x4000
 #define POBJ_CULLBACK 0x8000
 
+#define SHAPESET_AVERAGE 1
 #define SHAPESET_ADDITIVE 1<<1
 
 #define GX_NOP 0

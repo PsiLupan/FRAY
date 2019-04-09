@@ -1,10 +1,12 @@
 #include "hsd_memory.h"
 
+#include <stdint.h>
+
 static HSD_MemoryEntry** entrybysz;
 static u32 sz_entries = 0;
 
-static u32 hsd_iddata[4][12];
-static u8 hsd_idtable[404]; //804C23EC
+static HSD_ObjDef hsd_iddata; //804C23C0
+static u32* hsd_idtable[101]; //804C23EC
 
 //8037CD80
 u32* HSD_IDGetAllocData(){
@@ -21,9 +23,83 @@ void* HSD_IDSetup(){
 	return memset(&hsd_idtable, 0, 404);
 }
 
+//8037CDEC
+void HSD_IDInsertToTable(u32** id_table, u32* id, u8** j){
+	if(id_table == NULL){
+		id_table = &hsd_idtable;
+	}
+	u32* unk1 = (id_table + ((uintptr_t)id % 101) * 4); 
+	u32* unk2 = *unk1; 
+	while(unk2 != NULL && unk2[1] == id){
+		unk2 = (u32*)*unk2;
+	}
+	if(unk2 == NULL){
+		unk2 = HSD_ObjAlloc(&hsd_iddata);
+		assert(unk2 != NULL);
+		memset(unk2, 0, 12);
+		unk2[1] = id;
+		unk2[2] = j;
+		unk2[0] = unk1[0];
+		unk1[0] = unk2;
+
+	}else{
+		unk2[1] = id;
+		unk2[2] = j;
+	}
+}
+
+//8037CEE8
+void HSD_IDRemoveByIDFromTable(u32* id_table, u32* id){
+	if(id_table == NULL){
+		id_table = &hsd_idtable;
+	}
+	u32* unk1 = (id_table + ((uintptr_t)id % 101) * 4);
+	u32* unk2 = NULL;
+	u32* unk3 = NULL;
+	while(true) {
+		unk2 = unk1;
+		if (unk2 == NULL) {
+			return;
+		}
+		if (unk2[1] == id) 
+			break;
+		unk1 = (u32*)*unk2;
+		unk3 = unk2;
+	}
+	if (unk3 == NULL) {
+		*(u32*)(unk1 + ((uintptr_t)id % 101) * 4) = *unk2;
+	}else {
+		*unk3 = *unk2;
+	}
+	HSD_ObjFree(&hsd_iddata, unk2);
+}
+
+//8037CF98
+void HSD_IDGetDataFromTable(u32* id_table, u32* id, u8* val){
+	if(id_table == NULL){
+		id_table = &hsd_idtable;
+	}
+	u32* unk = (id_table + ((uintptr_t)id % 101) * 4);
+	while(true){
+		if(unk == NULL){
+			if(val != NULL){
+				*val = 0;
+			}
+			return 0;
+		}
+		if(unk[1] = id)
+			break;
+		unk = *unk;
+	}
+	if(val != NULL){
+		*val = 1;
+	}
+	return unk[2];
+}
+
 //8037D020
 void _HSD_IDForgetMemory(){
-	return memset(&hsd_idtable, 0, 404);
+	return memset(&hsd_idtable, 0, 101*sizeof(u32));
 }
 
 //8037F1B0

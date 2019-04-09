@@ -183,7 +183,7 @@ HSD_PObj* HSD_PObjLoadDesc(HSD_PObjDesc* pobjdesc){
         if (pobjdesc->class_name == NULL || !(info = hsdSearchClassInfo(pobjdesc->class_name))){
             pobj = HSD_PObjAlloc();
         }else {
-            pobj = hsdNew(info);
+            pobj = (HSD_PObj*)hsdNew(info);
             assert(pobj);
         }
         HSD_POBJ_METHOD(pobj)->load(pobj, pobjdesc);
@@ -550,7 +550,7 @@ static void interpretShapeAnimDisplayList(HSD_PObj *pobj, f32 (*vertex)[3], f32 
         }
         GX_Begin((dl[0] & GX_OPCODE_MASK), (dl[0] & GX_VAT_MASK), n);
         for (u32 i = 0; i < n; i++) {
-            for (u32 j = 0; ;j++) {
+            for (u32 j = 0; ; j++) {
                 HSD_VtxDescList *desc = &pobj->verts[j];
                 if (desc->attr == GX_VA_NULL) {
                     break;
@@ -652,6 +652,114 @@ static void interpretShapeAnimDisplayList(HSD_PObj *pobj, f32 (*vertex)[3], f32 
         l += m;
         dl+= m;
     }
+}
+
+//8036D7E4
+static void drawShapeAnim(HSD_PObj *pobj){
+    HSD_ShapeSet *shape_set = pobj->u.shape_set;
+    f32 blend;
+    s32 shape_id;
+    s32 blend_nbt;
+    
+    if (vertex_buffer_size == 0) {
+        vertex_buffer_size = HSD_DEFAULT_MAX_SHAPE_VERTICES;
+        vertex_buffer = HSD_MemAlloc(vertex_buffer_size * sizeof(f32[3]));
+    }
+    assert (vertex_buffer_size >= shape_set->nb_vertex_index);
+    
+    if (shape_set->normal_desc && normal_buffer_size == 0) {
+        normal_buffer_size = HSD_DEFAULT_MAX_SHAPE_NORMALS;
+        normal_buffer = HSD_MemAlloc(normal_buffer_size * sizeof(f32[3]));
+    }
+    
+    if (shape_set->normal_desc) {
+        if (shape_set->normal_desc->attr == GX_VA_NRM) {
+            assert (normal_buffer_size >= shape_set->nb_normal_index);
+            blend_nbt = 0;
+        } else { // GX_VA_NBT
+            assert (normal_buffer_size >= shape_set->nb_normal_index * 3);
+            blend_nbt = 1;
+        }
+    }
+    
+    if (shape_set->flags & SHAPESET_AVERAGE) {
+        blend = shape_set->blend.bl;
+        shape_id = min(max(0, (s32)blend), shape_set->nb_shape - 1);
+        blend = min(max(0.0, blend - (f32)shape_id), 1.0);
+        for (u32 i = 0; i < shape_set->nb_vertex_index; i++) {
+            f32 s0[3], s1[3];
+            get_shape_vertex_xyz(shape_set, shape_id, i, s0);
+            get_shape_vertex_xyz(shape_set, min(shape_id + 1, shape_set->nb_shape - 1), i, s1);
+            vertex_buffer[i][0] = (s1[0] - s0[0]) * blend + s0[0];
+            vertex_buffer[i][1] = (s1[1] - s0[1]) * blend + s0[1];
+            vertex_buffer[i][2] = (s1[2] - s0[2]) * blend + s0[2];
+        }
+        if (shape_set->nb_normal_index) {
+            if (blend_nbt) {
+                for (u32 i = 0; i < shape_set->nb_normal_index; i++) {
+                    f32 s0[9], s1[9];
+                    s32 idx = i * 3;
+                    get_shape_nbt_xyz(shape_set, shape_id, i, s0);
+                    get_shape_nbt_xyz(shape_set, min(shape_id + 1, shape_set->nb_shape - 1), i, s1);
+                    for (u32 j = 0; j < 9; j++) {
+                        normal_buffer[idx][j] = (s1[j] - s0[j]) * blend + s0[j];
+                    }
+                }
+            } else {
+                for (u32 i = 0; i < shape_set->nb_normal_index; i++) {
+                    f32 s0[3], s1[3];
+                    get_shape_normal_xyz(shape_set, shape_id, i, s0);
+                    get_shape_normal_xyz(shape_set, min(shape_id + 1, shape_set->nb_shape - 1), i, s1);
+                    normal_buffer[i][0] = (s1[0] - s0[0]) * blend + s0[0];
+                    normal_buffer[i][1] = (s1[1] - s0[1]) * blend + s0[1];
+                    normal_buffer[i][2] = (s1[2] - s0[2]) * blend + s0[2];
+                }
+            }
+        }
+    } else {
+        f32 *blend_bp;
+        blend_bp = shape_set->blend.bp;
+        for (u32 i = 0; i < shape_set->nb_vertex_index; i++) {
+            get_shape_vertex_xyz(shape_set, 0, i, vertex_buffer[i]);
+            for (u32 j = 0; j < shape_set->nb_shape; j++) {
+                f32 b = max(0.0, blend_bp[j]);
+                f32 s[3];
+                get_shape_vertex_xyz(shape_set, j + 1, i, s);
+                vertex_buffer[i][0] += s[0] * b;
+                vertex_buffer[i][1] += s[1] * b;
+                vertex_buffer[i][2] += s[2] * b;
+            }
+        }
+        if (shape_set->nb_normal_index) {
+            if (blend_nbt) {
+                for (u32 i = 0; i < shape_set->nb_normal_index; i++) {
+                    s32 idx = i * 3;
+                    get_shape_nbt_xyz(shape_set, 0, i, normal_buffer[idx]);
+                    for (u32 j = 0; j < shape_set->nb_shape; j++) {
+                        f32 b = max(0.0, blend_bp[j]);
+                        f32 s[9];
+                        get_shape_nbt_xyz(shape_set, j + 1, i, s);
+                        for (u32 k = 0; k < 9; k++) {
+                            normal_buffer[idx][k] += s[k] * b;
+                        }
+                    }
+                }
+            } else {
+                for (u32 i = 0; i < shape_set->nb_normal_index; i++) {
+                    get_shape_normal_xyz(shape_set, 0, i, normal_buffer[i]);
+                    for (u32 j = 0; j < shape_set->nb_shape; j++) {
+                        f32 b = max(0.0, blend_bp[j]);
+                        f32 s[3];
+                        get_shape_normal_xyz(shape_set, j + 1, i, s);
+                        normal_buffer[i][0] += s[0] * b;
+                        normal_buffer[i][1] += s[1] * b;
+                        normal_buffer[i][2] += s[2] * b;
+                    }
+                }
+            }
+        }
+    }
+    interpretShapeAnimDisplayList(pobj, vertex_buffer, normal_buffer);
 }
 
 //8036E034

@@ -5,6 +5,10 @@
 
 #define FLT_EPSILON 1.19209290E-07F
 
+#define max(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b; })
+
+#define min(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })
+
 typedef struct _HSD_SList {
     struct _HSD_SList *next;
     void* data;
