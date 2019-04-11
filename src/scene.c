@@ -650,39 +650,60 @@ BOOL Scene_IsSinglePlayer(u8 scene){
 //801A43A0
 u8* Scene_ProcessMajor(u8 scene){
 	MajorScene* major_scenes = Scene_GetMajorScenes();
-	MajorScene* scene_ptr;
-	u32* result;
+	MajorScene* scene_ptr = NULL;
+	u8* result;
 
-	for (u32 i = 0; ; i += 1 )
-	{
-		if ( major_scenes[i].idx == 45 )
-			break;
+	for (u32 i = 0; i < 45; i += 1 ){
 		if ( major_scenes[i].idx == scene )
 		{
 			scene_ptr = &major_scenes[i];
-			goto JMP_NULL;
+			break;
 		}
 	}
-	scene_ptr = NULL;
-JMP_NULL:
 	gamestate.pending = FALSE;
-	gamestate.curr_minor = 0;
+	gamestate.curr_major = 0;
 	gamestate.unk04 = 0;
 	gamestate.unk05 = 0;
 	Scene_SetPreloadBool(scene_ptr->preload);
-	if ( !scene_ptr->idx )
-	{
+  if(scene_ptr->Load != NULL){
+    (*scene_ptr->Load)();
+  }
+  do {
 		result = NULL;
-		while ( !gamestate.pending )
+		while ( true)
 		{
-			if ( gamestate.unk10 )
-				return (u8*)result;
-			Scene_ProcessMinor(scene_ptr);
+			if ( gamestate.pending != FALSE ){
+        if ( dword_8046B0F0.unk04 == 0 && !scene_ptr->Unload != NULL ){
+          (*scene_ptr->Unload)();
+        }
+      }
+      if(gamestate.unk10 != NULL){
+        break;
+      }
+JMP_PROCESS:
+      Scene_ProcessMinor(scene_ptr);
 		}
-		result = &dword_8046B0F0;
-		if ( dword_8046B0F0.unk04 || !scene_ptr->flags )
-			result = &gamestate.pending_major;
-	}
+    u8 major = (*gamestate.unk10)();
+    if(major == 45){
+      goto JMP_PROCESS;
+    }
+    gamestate.unk06 = gamestate.curr_major;
+    gamestate.unk0A = gamestate.unk04;
+    gamestate.unk0B = gamestate.unk05;
+    gamestate.pending = FALSE;
+    gamestate.curr_major = 0;
+    scene_ptr = NULL;
+    for(u32 i = 0; i < 45; i++){
+      if(major_scenes[i].idx == major){
+        scene_ptr = &major_scenes[i];
+      }
+    }
+    Scene_ProcessMinor(scene_ptr);
+    if(dword_8046B0F0.unk04 == FALSE){
+      gamestate.curr_major = gamestate.unk06;
+      gamestate.unk04 = gamestate.unk0A;
+    }
+	} while (true);
 	return result;
 }
 

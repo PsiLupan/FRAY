@@ -35,14 +35,16 @@ typedef struct _GameState {
 	u8 unk04;
 	s8 unk05;
 	u16 unk06;
-	u32 unk08;
-	BOOL pending;
+	u16 unk08;
+	u8 unk0A;
+	s8 unk0B;
+	u8 pending;
 	u8 unk0D;
 	u8 unk0E;
 	u8 unk0F;
 	void (*unk10)();
 	void* unk14;
-} GameState;
+} GameState; //80479D30
 
 extern GameState gamestate;
 

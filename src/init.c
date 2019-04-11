@@ -3,7 +3,7 @@
 static u32 arena_size; //-0x5110(r13)
 static u64 sys_time;
 
-u8* pad_raw_queue[PAD_QUEUE_SIZE * 0x44]; //
+u8* pad_raw_queue[PAD_QUEUE_SIZE * 0x44]; //8046B108
 
 //80019AAC
 void Init_PadReader(void (*init_func)(void)){

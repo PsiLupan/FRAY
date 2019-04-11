@@ -438,7 +438,7 @@ static void TObjSetupMtx(HSD_TObj *tobj){
 				assert(cobj);
 				vmtx = HSD_CObjGetViewingMtxPtrDirect(cobj);
 				HSD_LObjGetLightVector(lobj, &ldir);
-				ps_guVecMultiplySR(vmtx, &ldir, &ldir);
+				guVecMultiplySR(vmtx, &ldir, &ldir);
 				ldir.z += -1.0F;
 				
 				half = ldir; //libogc implements normalize as just returning the result in the ptr, rather than DSDK's (*src, *rslt);
