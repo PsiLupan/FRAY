@@ -23,8 +23,6 @@ static int	 zlist_xlu_nb = 0;
 
 #define ZLIST_NEXT(list,offset) (*(HSD_ZList **)(((u8 *)(list)) + (offset)))
 
-#define MTXRowCol(pmtx, row, col) (pmtx[row][col])
-
 //80373B90
 static void mkHBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx){	
 	guVector pos = {mtx[0][3], mtx[1][3], mtx[2][3]};
@@ -276,7 +274,7 @@ static HSD_ZList* zlist_sort(HSD_ZList *list, int nb, int offset){
 	ptr = &list;
 	
 	while (fore && hind) {
-		if (MTXRowCol(fore->pmtx, 2, 3) <= MTXRowCol(hind->pmtx, 2, 3)) {
+		if (guMtxRowCol(fore->pmtx, 2, 3) <= guMtxRowCol(hind->pmtx, 2, 3)) {
 			*ptr = fore;
 			fore = ZLIST_NEXT(fore, offset);
 		} else {
@@ -335,7 +333,7 @@ void _HSD_ZListClear(){
 
 	for(list = zlist_top; list; list = list->next){
 		if (list->vmtx) {
-			HSD_MtxFree(list->vmtx);
+			HSD_Free(list->vmtx);
 		}
 		HSD_ZListFree(list);
 	}
