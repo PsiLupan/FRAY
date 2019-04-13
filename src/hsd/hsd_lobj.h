@@ -45,6 +45,8 @@
 #define LOBJ_DIFF_DIRTY 0x80
 #define LOBJ_SPEC_DIRTY 0x100
 
+#define HSD_LObjGetType(o) (o->flags & 0x3)
+
 struct spot {
 	f32 cutoff;
 	u8 spot_func;
@@ -127,8 +129,9 @@ u8 HSD_LObjGetLightMaskDiffuse();
 u8 HSD_LObjGetLightMaskAttnFunc();
 u8 HSD_LObjGetLightMaskAlpha();
 u8 HSD_LObjGetLightMaskSpecular();
+void HSD_LObjSetActive(HSD_LObj *);
 s32 HSD_LObjGetNbActive();
-HSD_LObj* HSD_LObjGetActiveByID(u8);
+HSD_LObj* HSD_LObjGetActiveByID(u32);
 HSD_LObj* HSD_LObjGetActiveByIndex(u8);
 void HSD_LObjAnim(HSD_LObj *);
 void HSD_LObjAnimAll(HSD_LObj *);

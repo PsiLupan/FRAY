@@ -54,13 +54,30 @@ u8 HSD_LObjGetLightMaskSpecular(){
 	return lightmask_specular;
 }
 
+void HSD_LObjSetActive(HSD_LObj *lobj){
+	s32 idx;
+  if (HSD_LObjGetType(lobj) == LOBJ_AMBIENT) {
+    idx = MAX_GXLIGHT - 1;
+    if (active_lights[idx]){
+      return;
+		}
+	} else {
+			idx = nb_active_lights ++;
+  }
+  active_lights[idx] = lobj;
+  lobj->id = idx;
+}
+
 //80365404
 s32 HSD_LObjGetNbActive(){
 	return nb_active_lights;
 }
 
 //8036540C - Modified due to Libogc
-HSD_LObj* HSD_LObjGetActiveByID(u8 idx){
+HSD_LObj* HSD_LObjGetActiveByID(u32 idx){
+	if(idx == GX_MAXLIGHT){
+		idx = MAX_GXLIGHT - 1;
+	}
 	if (0 <= idx && idx < MAX_GXLIGHT) {
 		return active_lights[idx];
 	} else {
@@ -209,7 +226,7 @@ void HSD_LObjSetup(HSD_LObj *lobj, GXColor color, f32 shininess){
     }
 
     if (lobj->flags & LOBJ_DIFF_DIRTY) {
-      GX_LoadLightObjIdx(lobj->lightobj, lobj->id);
+      GX_LoadLightObj(lobj->lightobj, lobj->id);
       lobj->flags &= ~LOBJ_DIFF_DIRTY;
     }
   }
@@ -222,7 +239,7 @@ void HSD_LObjSetup(HSD_LObj *lobj, GXColor color, f32 shininess){
     }
 
     if (lobj->flags & LOBJ_SPEC_DIRTY) {
-      GX_LoadLightObjIdx(lobj->spec_lightobj, lobj->spec_id);
+      GX_LoadLightObj(lobj->spec_lightobj, lobj->spec_id);
       lobj->flags &= ~LOBJ_SPEC_DIRTY;
     }
   }
@@ -300,9 +317,9 @@ static void setup_diffuse_lightobj(HSD_LObj *lobj){
 static void setup_spec_lightobj(HSD_LObj *lobj, Mtx vmtx, u8 spec_id){
 	lobj->spec_id = spec_id;
 	if (spec_id != GX_LIGHTNULL) {
-		GX_InitLightColor(&lobj->spec_lightobj, lobj->color);
+		GX_InitLightColor(lobj->spec_lightobj, lobj->color);
 		lobj->shininess = 50.0F;
-		GX_InitLightShininess(&lobj->spec_lightobj, lobj->shininess);
+		GX_InitLightShininess(lobj->spec_lightobj, lobj->shininess);
 		
 		switch (HSD_LObjGetType(lobj)) {
 			case LOBJ_POINT:
@@ -578,8 +595,9 @@ HSD_LObj* HSD_LObjGetCurrentByType(u32 type){
 	HSD_SList *list;
 	
 	type &= LOBJ_TYPE_MASK;
-	for (list=current_lights; list; list=list->next) {
-		if (HSD_LObjGetType(list->data) == type) {
+	for (list = current_lights; list; list=list->next) {
+		HSD_LObj* lobj = (HSD_LObj*)list->data;
+		if (HSD_LObjGetType(lobj) == type) {
 			return list->data;
 		}
 	}
@@ -587,7 +605,7 @@ HSD_LObj* HSD_LObjGetCurrentByType(u32 type){
 }
 
 //80366A78 - Unused due to Libogc in our version
-u32 HSD_LightID2Index(u8 id){
+/*u32 HSD_LightID2Index(u8 id){
 	u32 index;
 	switch (id) {
 		case GX_LIGHT0: index = 0; break;
@@ -602,10 +620,10 @@ u32 HSD_LightID2Index(u8 id){
 		default: assert(0);
 	}
 	return index;
-}
+}*/
 
 //80366B64 - Unused due to Libogc in our version
-u8 HSD_Index2LightID(u32 index){
+/*u8 HSD_Index2LightID(u32 index){
 	u8 id;
 	switch (index) {
 		case 0: id = GX_LIGHT0; break;
@@ -620,7 +638,7 @@ u8 HSD_Index2LightID(u32 index){
 		default: id = GX_LIGHTNULL;
 	}
 	return id;
-}
+}*/
 
 //80366BD4
 void HSD_LObjRemoveAll(HSD_LObj *lobj){

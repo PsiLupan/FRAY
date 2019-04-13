@@ -78,7 +78,8 @@ void** HSD_AllocateXFB(u32 nbBuffer, GXRModeObj *rm){
     /*if ((FrameBuffer[i] = (void *) SYS_AllocArena1MemLo(fbSize, 32)) == NULL) {
       assert(TRUE);
     }*/
-    if ((FrameBuffer[i] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rm)) == NULL)) {
+    FrameBuffer[i] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rm));
+    if (FrameBuffer[i] == NULL) {
       HSD_Halt("Failed to allocate framebuffer\n");
     }
   }
@@ -93,8 +94,7 @@ void** HSD_AllocateXFB(u32 nbBuffer, GXRModeObj *rm){
 //80375194
 void* HSD_AllocateFIFO(u32 size){
   void *fifo;
-  
-  fifo = SYS_AllocArena1MemLo(size, 32);
+  fifo = HSD_MemAlloc(size);
   if (!fifo) {
     assert(TRUE);
     HSD_Halt("Failed to allocate GFX FIFO\n");
