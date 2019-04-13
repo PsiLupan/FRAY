@@ -14,7 +14,7 @@
 #define VI_DISPLAY_PIX_SZ 2
 #define HSD_ANTIALIAS_GARBAGE_SIZE	(640 * HSD_ANTIALIAS_OVERLAP * VI_DISPLAY_PIX_SZ)
 
-typedef void (*HSD_VIGXDrawDoneCallback)(u32);
+typedef void (*HSD_VIGXDrawDoneCallback)(s32);
 
 typedef enum _HSD_VIXFBDrawDispStatus {
 	HSD_VI_XFB_NONE, 
@@ -94,7 +94,7 @@ typedef struct _HSD_VIInfo {
 
 
 VIRetraceCallback HSD_VISetUserPreRetraceCallback(VIRetraceCallback);
-VIRetraceCallback HSD_VISetUserGXDrawDoneCallback(VIRetraceCallback);
+VIRetraceCallback HSD_VISetUserPostRetraceCallback(VIRetraceCallback);
 HSD_VIGXDrawDoneCallback HSD_VISetUserGXDrawDoneCallback(HSD_VIGXDrawDoneCallback);
 s32 HSD_VIGetXFBDrawEnable();
 void HSD_VICopyEFB2XFBPtr(HSD_VIStatus *, void *, HSD_RenderPass);
