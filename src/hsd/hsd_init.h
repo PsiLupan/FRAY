@@ -25,8 +25,6 @@ typedef enum _HSD_InitParam {
     HSD_INIT_RENDER_MODE_OBJ
 } HSD_InitParam;
 
-extern GXRModeObj* rmode;
-
 void HSD_InitComponent();
 void HSD_GXSetFifoObj(GXFifoObj *);
 void HSD_DVDInit();
@@ -36,6 +34,8 @@ void HSD_GXInit();
 
 void HSD_StartRender(HSD_RenderPass);
 
+void HSD_ObjInit();
+void HSD_ObjDumpStat();
 BOOL HSD_SetInitParameter(HSD_InitParam, ...);
 
 #endif

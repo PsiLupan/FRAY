@@ -7,6 +7,8 @@
 
 #include "hsd_object.h"
 
+typedef u32* HSD_ID;
+
 typedef struct _HSD_MemPiece {
     struct _HSD_MemPiece* next;
     u32 x4_unk;
@@ -26,7 +28,7 @@ typedef struct _HSD_MemoryEntry {
 
 void* HSD_MemAlloc(u32);
 
-HSD_MemPiece* hsdAllocMemPiece(u32);
+void* hsdAllocMemPiece(u32);
 void hsdFreeMemPiece(void *, u32);
 
 #endif

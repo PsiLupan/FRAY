@@ -200,12 +200,14 @@ JUMP_OUT:
 }
 
 //80381FA8
-HSD_MemPiece* hsdAllocMemPiece(u32 size){
-	HSD_MemoryEntry* entry;
-	HSD_MemoryEntry* entry_2;
-	HSD_MemPiece* piece;
+void* hsdAllocMemPiece(u32 size){
+	HSD_MemoryEntry* entry = NULL;
+	HSD_MemoryEntry* entry_2 = NULL;
+	HSD_MemPiece* piece = NULL;
 
-	entry = GetMemoryEntry(((size + 31) >> 5) - 1);
+	u32 adj_size = size + 0x1F;
+	u32 entry_sz = ((adj_size >> 5) + (u32)(adj_size < 0 && (adj_size & 0x1F) != 0) - 1);
+	entry = GetMemoryEntry(entry_sz);
 	if(entry == NULL){
 		return NULL;
 	}
@@ -216,7 +218,8 @@ HSD_MemPiece* hsdAllocMemPiece(u32 size){
 	}else{
 		for(HSD_MemoryEntry* i = entry->next; i != NULL; i = entry->next){
 			if(i->data != NULL){
-				entry_2 = GetMemoryEntry((i->total_bits - entry->total_bits + 31) >> 5) + size - 1;
+				adj_size = (i->total_bits - entry->total_bits) + 0x1F;
+				entry_2 = GetMemoryEntry(adj_size >> 5) + (u32)(adj_size < 0 && (adj_size & 0x1F) != 0) - 1;
 				if(entry_2 == NULL){
 					return NULL;
 				}
@@ -231,10 +234,10 @@ HSD_MemPiece* hsdAllocMemPiece(u32 size){
 				np->x4_unk += 1;
 				np->x8_unk += 1;
 				entry->x4_unk += 1;
-				return piece;
+				return (void*)piece;
 			}
 		}
-		u32 tmp_size = sz_entries - ((size + 31) >> 5) - 2;
+		u32 tmp_size = (sz_entries - entry_sz) - 2;
 		if(tmp_size < 0 || (entry_2 = GetMemoryEntry(tmp_size)) != NULL){
 			piece = (HSD_MemPiece*)HSD_MemAlloc(sz_entries * 32);
 			if(piece != NULL){
@@ -253,7 +256,7 @@ HSD_MemPiece* hsdAllocMemPiece(u32 size){
 			return NULL;
 		}
 	}
-	return piece;
+	return (void*)piece;
 }
 
 //8038216C
@@ -267,5 +270,4 @@ void hsdFreeMemPiece(void* mem, u32 size){
 		entry->data = piece;
 		entry->free_pieces += 1;
 	}
-	return entry;
 }

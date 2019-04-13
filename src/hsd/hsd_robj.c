@@ -15,12 +15,12 @@ void HSD_RObjInitAllocData(){
 }
 
 //8037AE78
-void HSD_RObjGetAllocData(){
+HSD_ObjDef* HSD_RObjGetAllocData(){
     return &robj_alloc_data;
 }
 
 //8037AE84
-void HSD_RvalueObjGetAllocData(){
+HSD_ObjDef* HSD_RvalueObjGetAllocData(){
     return &rvalue_alloc_data;
 }
 
@@ -110,15 +110,16 @@ void HSD_RObjReqAnimAll(HSD_RObj* robj, f32 frame){
 }
 
 //8037B1A0
-void HSD_RObjAddAnimAll(HSD_RObj* robj, HSD_InterestAnim* anim){ //The second parameter is assumed based on layout - It literally is never NULL in my experience
-    if(robj != NULL && anim != NULL){
+void HSD_RObjAddAnimAll(HSD_RObj* robj, void* anim){ //The second parameter is assumed based on layout - It literally is never NULL in my experience
+    HSD_InterestAnim* ianim = (HSD_InterestAnim*)anim;
+    if(robj != NULL && ianim != NULL){
         HSD_RObj* i;
-        HSD_MatAnim* j;
-        for(i = robj, j = anim; i != NULL && j != NULL; i = i->next, j = j->next){
+        HSD_InterestAnim* j;
+        for(i = robj, j = ianim; i != NULL && j != NULL; i = i->next, j = j->next){
             if(i->aobj != NULL){
                 HSD_AObjRemove(i->aobj);
             }
-            i->aobj = HSD_AObjLoadDesc(j->aobjdesc);
+            i->aobj = HSD_AObjLoadDesc(j->desc);
         }
     }
 }
@@ -170,6 +171,7 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc){
         robj->next = next;
         robj->flags = desc->flags;
         u32 type = robj->flags & TYPE_MASK;
+        u32 flags = robj->flags & 0xfffffff;
         switch (type){
             case 0:
                 //expLoadDesc(&robj->u.rvalue, desc->u.rvalue);
@@ -177,7 +179,6 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc){
             case REFTYPE_JOBJ:
                 break;
             case 0x20000000:
-                u32 flags = robj->flags & 0xfffffff;
                 if(flags != 0 && flags < 7){
                     robj->u.fv = 0.01754533f * desc->u.fv;
                 }else{

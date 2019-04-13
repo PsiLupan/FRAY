@@ -1,6 +1,8 @@
 #ifndef _hsd_video_h_
 #define _hsd_video_h_
 
+#include <assert.h>
+
 #include <gctypes.h>
 #include <ogc/gx.h>
 #include <ogc/irq.h>

@@ -123,8 +123,8 @@ void CObjUpdateFunc(HSD_CObj* cobj, u32 type, f32* val){
 void HSD_CObjAnim(HSD_CObj* cobj){
     if(cobj != NULL){
         HSD_AObjInterpretAnim(cobj->aobj, cobj, CObjUpdateFunc);
-        HSD_WObjInterpretAnim(cobj->eye_position, cobj);
-        HSD_WObjInterpretAnim(cobj->interest, cobj);
+        HSD_WObjInterpretAnim(cobj->eye_position);
+        HSD_WObjInterpretAnim(cobj->interest);
     }
 }
 
@@ -266,10 +266,10 @@ void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec){
                 if(1.17549E-38F <= 1.0f - abs(val)){
                     guVector zero = {0.f, 0.f, 0.f};
                     guVector upvec = {0.f, 1.f, 0.f};
-                    Mtx mtx;
-                    guLookAt(&mtx, &zero, &upvec, &uvec);
+                    MtxP mtx;
+                    guLookAt(mtx, &zero, &upvec, &uvec);
                     guVector rvec = {0.0f, 0.0f, 0.0f};
-                    guVecMultiplySR(&mtx, &vec, &rvec);
+                    guVecMultiplySR(mtx, vec, &rvec);
                     if(0.0f == rvec.y){
                         if(rvec.x < 0.0f){
                             val = -1.94635f;

@@ -358,6 +358,7 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoin
 //8036FDC0
 void JObjUpdateFunc(HSD_JObj* jobj, u32 type, f32* fval){
 	if(jobj != NULL){
+		Mtx mtx;
 		switch(type){
 			case 1:
 				if((jobj->flags & 0x200000) != 0){
@@ -595,7 +596,6 @@ void JObjUpdateFunc(HSD_JObj* jobj, u32 type, f32* fval){
 			case 55:
 			case 56:
 			case 57:
-				Mtx mtx;
 				if(jobj->parent == NULL){
 					c_guMtxCopy(jobj->mtx, mtx);
 				}else{ //InverseConcat
@@ -1168,7 +1168,7 @@ void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj){
 }
 
 //80373404
-void HSD_JObjSetCallback(void* cb){
+void HSD_JObjSetCallback(void (*cb)()){
 	callback_4018 = cb;
 }
 
@@ -1259,7 +1259,7 @@ static void JObjReleaseChild(HSD_Class* o){
 //803736F8
 static void JObjRelease(HSD_Class* o){
 	HSD_JObj* jobj = HSD_JOBJ(o);
-	HSD_JOBJ_METHOD(jobj)->release_child(o); //Technically uses the class_parent from the jobj to get to this, so will probably need to account for that later
+	HSD_JOBJ_METHOD(jobj)->release_child(jobj);
 	if(HSD_IDGetDataFromTable(NULL, jobj->desc, NULL) == o){
 		HSD_IDRemoveByIDFromTable(NULL, jobj->desc);
 	}

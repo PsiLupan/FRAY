@@ -268,7 +268,7 @@ void HSD_PObjResolveRefsAll(HSD_PObj *pobj, HSD_PObjDesc *pdesc){
 
 //8036C244
 void HSD_ClearVtxDesc(){
-    GXClearVtxDesc();
+    GX_ClearVtxDesc();
     prev_vtxdesclist_array = NULL;
     prev_vtxdesc = NULL;
 }
@@ -846,9 +846,10 @@ void HSD_PObjDisp(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermode){
 //8036E9F0
 static void PObjRelease(HSD_Class* o){
     HSD_PObj *pobj = HSD_POBJ(o);
+    HSD_ShapeSet* shape_set = NULL;
     switch (pobj_type(pobj)) {
         case POBJ_SHAPEANIM:
-            HSD_ShapeSet* shape_set = pobj->u.shape_set; 
+            shape_set = pobj->u.shape_set; 
             if (shape_set != NULL) {
                 if (shape_set->flags & SHAPESET_ADDITIVE){
                     HSD_Free(shape_set->blend.bp);

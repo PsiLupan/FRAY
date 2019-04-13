@@ -1220,8 +1220,9 @@ HSD_TObj* HSD_TObjAlloc(){
 
 //803611E8
 void HSD_TObjFree(HSD_TObj *tobj){
-  if (tobj) 
-	  tobj->class_parent.class_init->destroy(HSD_CLASS(tobj));
+	if (tobj){
+		HSD_CLASS_METHOD(tobj)->destroy((HSD_Class*)tobj);
+	}
 }
 
 //8036121C
@@ -1260,7 +1261,7 @@ void HSD_ImageDescFree(HSD_ImageDesc *idesc){
 }
 
 //80361374
-void HSD_ImageDescCopyFromEFB(HSD_ImageDesc *idesc, u16 origx, u16 origy, u8 clear, int sync){
+void HSD_ImageDescCopyFromEFB(HSD_ImageDesc *idesc, u16 origx, u16 origy, u8 clear, s32 sync){
 	if (idesc){
 		GX_SetTexCopySrc(origx, origy, idesc->width, idesc->height);
 		GX_SetTexCopyDst(idesc->width, idesc->height, idesc->format, idesc->mipmap? GX_TRUE : GX_FALSE);

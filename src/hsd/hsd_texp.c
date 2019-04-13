@@ -1,5 +1,7 @@
 #include "hsd_texp.h"
 
+#include "hsd_tobj.h"
+
 //80382C00
 u32 HSD_TExpGetType(u32* texp){
     if (texp == NULL) {
@@ -101,7 +103,7 @@ HSD_TExp* HSD_TExpCnst(u8* color, u32 value, u32 type, HSD_TExp** list){
 }
 
 //80384050
-void HSD_TExpOrder(HSD_TExp* texp, HSD_TObj* tobj, u8 chan){
+void HSD_TExpOrder(HSD_TExp* texp, void* tobj, u8 chan){
 
 }
 

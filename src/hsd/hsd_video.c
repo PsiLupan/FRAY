@@ -315,7 +315,7 @@ void HSD_VISetBlack(u8 black){
 
 //803767B8
 void HSD_VIInit(HSD_VIStatus *vi, void *xfb0, void *xfb1, void *xfb2){
-	int i, fbnum, idx;
+	s32 fbnum, idx;
 	
 	VIDEO_Init();
 	
@@ -326,7 +326,7 @@ void HSD_VIInit(HSD_VIStatus *vi, void *xfb0, void *xfb1, void *xfb2){
 	_p->xfb[1].buffer = xfb1;
 	_p->xfb[2].buffer = xfb2;
 	
-	for (i = 0, fbnum = 0; i < HSD_VI_XFB_MAX; i++) {
+	for (u32 i = 0, fbnum = 0; i < HSD_VI_XFB_MAX; i++) {
 		_p->xfb[i].vi_all = _p->current;
 		if (_p->xfb[i].buffer) {
 			fbnum++;
@@ -362,7 +362,7 @@ void HSD_VIInit(HSD_VIStatus *vi, void *xfb0, void *xfb1, void *xfb2){
 	VIDEO_Flush();
 	
 	idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_FREE);
-	HSD_VICopyEFB2XFBPtr(HSD_VIGetVIStatus(), HSD_VIGetXFBPtr(idx), HSD_RP_SCREEN);
+	HSD_VICopyEFB2XFBPtr(&vi, HSD_VIData.xfb[idx].buffer, HSD_RP_SCREEN);
 }
 
 static u32 HSD_VIGetNbXFB(){

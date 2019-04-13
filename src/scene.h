@@ -42,7 +42,7 @@ typedef struct _GameState {
 	u8 unk0D;
 	u8 unk0E;
 	u8 unk0F;
-	void (*unk10)();
+	u8 (*unk10)();
 	void* unk14;
 } GameState; //80479D30
 

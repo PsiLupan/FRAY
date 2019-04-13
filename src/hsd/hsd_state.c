@@ -4,32 +4,32 @@ static u8   state_num_chans = -1; //This variable is set but unused?
 static u8   state_num_tevstages;
 
 /* HSD_STATE_PRIMITIVE Group */
-static u8	state_line_width;
+static s8	state_line_width;
 static u8	state_line_tex_offsets;
 static u8	state_point_size;
 static u8	state_point_tex_offsets;
-static u8	state_cull_mode;
+static s8	state_cull_mode;
 static u8	state_coplanar;
 
 /* HSD_STATE_RENDER_MODE Group */
-static u8	state_blend_type;
-static u8	state_src_factor;
-static u8	state_dst_factor;
-static u8	state_logic_op;
-static u8	state_z_enable;
-static u8	state_z_func;
-static u8   state_z_update;
-static u8	state_alpha_comp0;
+static s8	state_blend_type;
+static s8	state_src_factor;
+static s8	state_dst_factor;
+static s8	state_logic_op;
+static s8	state_z_enable;
+static s8	state_z_func;
+static s8   state_z_update;
+static s8	state_alpha_comp0;
 static u8	state_alpha_ref0;
-static u8	state_alpha_op;
-static u8	state_alpha_comp1;
+static s8	state_alpha_op;
+static s8	state_alpha_comp1;
 static u8	state_alpha_ref1;
-static u8	state_color_update;
-static u8	state_alpha_update;
-static u8	state_enable_dst_alpha;
+static s8	state_color_update;
+static s8	state_alpha_update;
+static s8	state_enable_dst_alpha;
 static u8	state_dst_alpha;
-static u8	state_before_tex;
-static u8	state_dither;
+static s8	state_before_tex;
+static s8	state_dither;
 
 static struct {
   GXColor ambient;
@@ -111,30 +111,120 @@ void HSD_SetupRenderMode(u32 rendermode){
     HSD_SetupChannelMode(rendermode);
 }
 
+//80361A20
+void HSD_SetMaterialColor(GXColor ambient, GXColor diffuse, GXColor specular, f32 alpha){
+    matstate.ambient = ambient;
+    matstate.diffuse = diffuse;
+    matstate.specular = specular;
+    matstate.alpha = (u8)(255.0F * HSD_ClampFloat(alpha, 0, 1));
+}
+
+//80361A64
+void HSD_SetMaterialShininess(f32 shininess){
+    matstate.shininess = shininess;
+}
+
+//80361A74
+void HSD_StateSetLineWidth(u8 width, u8 tex_offsets){
+    if (state_line_width != width || state_line_tex_offsets != tex_offsets){
+        GX_SetLineWidth(width, tex_offsets);
+        state_line_width = width;
+        state_line_tex_offsets = tex_offsets;
+    }
+}
+
+//80361BB8
+void HSD_StateSetZMode(s32 enable, u8 func, s32 update){
+    u8 _enable = (enable) ? GX_ENABLE : GX_DISABLE;
+    u8 _update = (update) ? GX_ENABLE : GX_DISABLE;
+    
+    if (state_z_enable != _enable || state_z_func != func || state_z_update != _update){
+        GX_SetZMode(_enable, func, _update);
+        state_z_enable = _enable;
+        state_z_func = func;
+        state_z_update = _update;
+    }
+}
+
+//80361D6C
+void HSD_StateSetColorUpdate(s32 enable){
+    u8 _enable = (enable) ? GX_ENABLE : GX_DISABLE;
+    
+    if (state_color_update != _enable) {
+        GX_SetColorUpdate(_enable);
+        state_color_update = _enable;
+    }
+}
+
+//80361DC0
+void HSD_StateSetAlphaUpdate(s32 enable){
+    u8 _enable = (enable) ? GX_ENABLE : GX_DISABLE;
+    
+    if (state_alpha_update != _enable) {
+        GX_SetAlphaUpdate(_enable);
+        state_alpha_update = _enable;
+    }
+}
+
+//80361F34
+static void _HSD_StateInvalidatePrimitive(){
+  state_point_size	= 0;
+  state_cull_mode	= 0;
+  state_line_width	= -1;
+}
+
+//80361F4C
+static void _HSD_StateInvalidateVtxAttr(){
+    HSD_ClearVtxDesc();
+}
+
+//80361F6C
+static void _HSD_StateInvalidateRenderMode(){
+    state_blend_type	 = -1;
+    state_src_factor	 = -1;
+    state_dst_factor	 = -1;
+    state_logic_op	 = -1;
+    state_z_enable	 = -1;
+    state_z_func		 = -1;
+    state_z_update	 = -1;
+    state_alpha_comp0	 = -1;
+    state_alpha_ref0	 = 0;
+    state_alpha_op	 = -1;
+    state_alpha_comp1	 = -1;
+    state_alpha_ref1	 = 0;
+    state_color_update	 = -1;
+    state_alpha_update	 = -1;
+    state_enable_dst_alpha = -1;
+    state_dst_alpha	 = 0;
+    state_before_tex	 = -1;
+    state_dither		 = -1;
+}
+
 //80361FC4
-void HSD_StateInvalidate(s32 state){ //The real code uses a struct and a for loop, and I cbf right now
-    if(state == HSD_STATE_ALL){
-        _HSD_StateInvalidatePrimitive();
-        _HSD_StateInvalidateVtxAttr();
-        _HSD_StateInvalidateColorChannel();
-        _HSD_StateInvalidateTevStage();
-        _HSD_StateInvalidateTevRegister();
-        _HSD_StateInvalidateTexCoordGen();
-        _HSD_StateInvalidateRenderMode();
-    }else if(state == 1){
-        _HSD_StateInvalidatePrimitive();
-    }else if(state == 2){
-        _HSD_StateInvalidateVtxAttr();
-    }else if(state == 4){
-        _HSD_StateInvalidateColorChannel();
-    }else if(state == 8){
-        _HSD_StateInvalidateTevStage();
-    }else if(state == 0x10){
-        _HSD_StateInvalidateTevRegister();
-    }else if(state == 0x20){
-        _HSD_StateInvalidateTexCoordGen();
-    }else if(state == 0x40){
-        _HSD_StateInvalidateRenderMode();
+void HSD_StateInvalidate(HSD_StateMask state){
+    extern void _HSD_StateInvalidateColorChannel();
+    extern void _HSD_StateInvalidateTevStage();
+    extern void _HSD_StateInvalidateTevRegister();
+    extern void _HSD_StateInvalidateTexCoordGen();
+    
+    static struct {
+        HSD_StateMask mask;
+        void (*func)(void);
+    } invalidate_funcs[] = {
+    { HSD_STATE_PRIMITIVE,	_HSD_StateInvalidatePrimitive },
+    { HSD_STATE_VTX_ATTR,	_HSD_StateInvalidateVtxAttr },
+    { HSD_STATE_COLOR_CHANNEL,	_HSD_StateInvalidateColorChannel },
+    { HSD_STATE_TEV_STAGE,	_HSD_StateInvalidateTevStage },
+    { HSD_STATE_TEV_REGISTER,	_HSD_StateInvalidateTevRegister },
+    { HSD_STATE_TEX_COORD_GEN,	_HSD_StateInvalidateTexCoordGen },
+    { HSD_STATE_RENDER_MODE,	_HSD_StateInvalidateRenderMode },
+    { HSD_STATE_NONE, NULL }
+    };
+    
+    for (u32 i = 0; invalidate_funcs[i].mask != HSD_STATE_NONE; i++) {
+        if (state & invalidate_funcs[i].mask) {
+            invalidate_funcs[i].func();
+        }
     }
 }
 
@@ -211,5 +301,20 @@ u8 HSD_TevStage2Index(u8 idx){
 
 //80362CA0
 void _HSD_StateInvalidateColorChannel(){
+
+}
+
+//80362CF8
+void _HSD_StateInvalidateTevStage(){
+
+}
+
+//80362D04
+void _HSD_StateInvalidateTevRegister(){
+
+}
+
+//80362D24
+void _HSD_StateInvalidateTexCoordGen(){
 
 }

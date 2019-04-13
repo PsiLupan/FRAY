@@ -53,13 +53,6 @@ void _HSD_ZListSort();
 void _HSD_ZListDisp();
 void _HSD_ZListClear();
 
-Mtx HSD_identityMtx = 
-{
-	{1,0,0,0},
-	{0,1,0,0},
-	{0,0,1,0}
-};
-
 void mkRBillBoardMtx(HSD_JObj*, Mtx, Mtx);
 void HSD_JObjDisp(HSD_JObj*, MtxP, HSD_TrspMask, u32);
 void HSD_JObjDispSub(HSD_JObj*, MtxP, MtxP, HSD_TrspMask, u32);

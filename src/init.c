@@ -3,6 +3,8 @@
 static u32 arena_size; //-0x5110(r13)
 static u64 sys_time;
 
+GXRModeObj* rmode = &TVNtsc480IntDf;
+
 u8* pad_raw_queue[PAD_QUEUE_SIZE * 0x44]; //8046B108
 
 //80019AAC
@@ -41,12 +43,12 @@ int main(void){
 	arena_size = (u32)SYS_GetArena1Hi() - (u32)SYS_GetArena1Lo();
 
 	HSD_SetInitParameter(1, 2); //Set XFB Max Num
-	HSD_SetInitParameter(4, &TVNtsc480IntDf); //Set RModeObj
+	HSD_SetInitParameter(4, rmode); //Set RModeObj
 	HSD_SetInitParameter(0, 0x40000); //Set FifoSize
 	HSD_SetInitParameter(2, 4); //Set Heap Size
 	//sub_80228C4C - Checks DebuggerIsPresent, so may be used to init the leak checker or something of that nature
 
-	HSD_AllocateXFB(2, &TVNtsc480IntDf);
+	HSD_AllocateXFB(2, rmode);
 	void* fifo = HSD_AllocateFIFO(0x40000);
 	HSD_GXSetFifoObj(GX_Init(fifo, 0x40000));
 

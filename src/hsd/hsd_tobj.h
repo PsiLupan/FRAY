@@ -295,9 +295,9 @@ HSD_TObj* HSD_TObjLoadDesc(HSD_TObjDesc *td);
 
 HSD_ImageDesc* HSD_ImageDescAlloc();
 void HSD_ImageDescFree(HSD_ImageDesc *idesc);
-void HSD_ImageDescCopyFromEFB(HSD_ImageDesc *idesc, u16 origx, u16 origy, u8 clear, int sync);
+void HSD_ImageDescCopyFromEFB(HSD_ImageDesc *idesc, u16 origx, u16 origy, u8 clear, s32 sync);
 
-int HSD_TObjAssignResources(HSD_TObj* tobj_top);
+s32 HSD_TObjAssignResources(HSD_TObj* tobj_top);
 
 u32 HSD_TGTex2Index(u32 tgtex);
 u32 HSD_TexCoordID2TexGenSrc(u16 coord);

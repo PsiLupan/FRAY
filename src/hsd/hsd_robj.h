@@ -38,8 +38,8 @@ typedef struct _HSD_RObjDesc {
 } HSD_RObjDesc;
 
 void HSD_RObjInitAllocData();
-void HSD_RObjGetAllocData();
-void HSD_RvalueObjGetAllocData();
+HSD_ObjDef* HSD_RObjGetAllocData();
+HSD_ObjDef* HSD_RvalueObjGetAllocData();
 void HSD_RObjSetFlags(HSD_RObj *, u32);
 HSD_RObj* HSD_RObjGetByType(HSD_RObj *, u32, u32);
 void HSD_RObjAnimAll(HSD_RObj *);
@@ -47,7 +47,7 @@ void HSD_RObjRemoveAnimAllByFlags(HSD_RObj *, u32);
 void HSD_RObjRemoveAnimAll(HSD_RObj *);
 void HSD_RObjReqAnimAllByFlags(HSD_RObj *, u32, f32);
 void HSD_RObjReqAnimAll(HSD_RObj *, f32);
-void HSD_RObjAddAnimAll(HSD_RObj *, HSD_MatAnim *);
+void HSD_RObjAddAnimAll(HSD_RObj *, void *);
 u32 HSD_RObjGetGlobalPosition(HSD_RObj *, u32, guVector *);
 
 HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc *);

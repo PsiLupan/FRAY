@@ -1,5 +1,7 @@
 #include "hsd_object.h"
 
+static void _hsdInfoInit();
+
 HSD_ClassInfo hsdClass = { 
 	_hsdInfoInit
 };

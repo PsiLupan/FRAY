@@ -168,15 +168,15 @@ void HSD_StartRender(HSD_RenderPass pass){
 
 //803755B4
 void HSD_ObjInit(){
-  HSD_ListInitAllocData();
+  //HSD_ListInitAllocData();
   HSD_AObjInitAllocData();
   HSD_FObjInitAllocData();
   HSD_IDInitAllocData();
-  HSD_VecInitAllocData();
-  HSD_MtxInitAllocData();
+  //HSD_VecInitAllocData();
+  //HSD_MtxInitAllocData();
   HSD_RObjInitAllocData();
-  HSD_RenderInitAllocData();
-  HSD_ShadowInitAllocData();
+  //HSD_RenderInitAllocData();
+  //HSD_ShadowInitAllocData();
   HSD_ZListInitAllocData();
 }
 

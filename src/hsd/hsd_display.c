@@ -439,7 +439,9 @@ void HSD_EraseRect(float top, float bottom, float left, float right, float z, in
 	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
 	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, GX_RGBA8, 0);
 	GX_SetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, GX_U8, 0);
-	GX_LoadPosMtxImm(HSD_identityMtx, GX_PNMTX0);
+	MtxP identity_mtx;
+	guMtxIdentity(identity_mtx);
+	GX_LoadPosMtxImm(identity_mtx, GX_PNMTX0);
 	GX_SetCurrentMtx(GX_PNMTX0);
 	GX_SetVtxDesc(GX_VA_POS, GX_DIRECT);
 	GX_SetVtxDesc(GX_VA_CLR0, GX_DIRECT);

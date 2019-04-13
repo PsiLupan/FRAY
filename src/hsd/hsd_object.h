@@ -66,4 +66,6 @@ void* HSD_ObjAlloc(HSD_ObjDef *);
 
 void HSD_ObjAllocInit(HSD_ObjDef *, u32, u32);
 
+void hsdInitClassInfo(HSD_ClassInfo *, HSD_ClassInfo *, char *, char*, u64, u64);
+
 #endif
