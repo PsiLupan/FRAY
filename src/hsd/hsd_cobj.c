@@ -267,7 +267,7 @@ void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec){
                     Mtx mtx;
                     guLookAt(&mtx, &zero, &upvec, &uvec);
                     guVector rvec = {0.0f, 0.0f, 0.0f};
-                    //MTXMultVecSR(mtx, vec, rvec); NOT IMPLEMENTED - Post-multiplies a 3D vector or 3D point by a 3x3 sub-matrix (Scale and Rotate component of 3x4 matrix).
+                    guVecMultiplySR(&mtx, &vec, &rvec);
                     if(0.0f == rvec.y){
                         if(rvec.x < 0.0f){
                             val = -1.94635f;

@@ -231,9 +231,9 @@ void HSD_LObjSetup(HSD_LObj *lobj, GXColor color, f32 shininess){
 //8036597C
 void HSD_LObjSetupSpecularInit(MtxP pmtx){
 	int i, num;
-	guVector cdir, jpos;
+	guVector cdir;
+	guVector jpos = {pmtx[0][3], pmtx[1][3], pmtx[2][3]};
 	
-	HSD_MtxColVec(pmtx, 3, &jpos);
 	if (vec_normalize_check(&jpos, &cdir) != 0) {
 		cdir.x = 0.0F;
 		cdir.y = 0.0F;
@@ -252,19 +252,19 @@ void HSD_LObjSetupSpecularInit(MtxP pmtx){
 		switch (HSD_LObjGetType(lobj)) {
 			case LOBJ_POINT:
 			case LOBJ_SPOT:
-			VECSubtract(&jpos, &lobj->lvec, &ldir);
-			VECNormalize(&ldir, &ldir);
-			VECAdd(&ldir, &cdir, &half);
+			guVecSub(&jpos, &lobj->lvec, &ldir);
+			guVecNormalize(&ldir, &ldir);
+			guVecAdd(&ldir, &cdir, &half);
 			break;
 			
 			case LOBJ_INFINITE:
-			VECAdd(&lobj->lvec, &cdir, &half);
+			guVecAdd(&lobj->lvec, &cdir, &half);
 			break;
 			
 			default:
 			assert(0);
 		}
-		VECNormalize(&half, &half);
+		guVecNormalize(&half, &half);
 		GX_InitLightDirv(&lobj->spec_lightobj, &half);
 		lobj->flags |= LOBJ_SPEC_DIRTY;
 	}
@@ -308,13 +308,13 @@ static void setup_spec_lightobj(HSD_LObj *lobj, Mtx vmtx, u8 spec_id){
 			case LOBJ_POINT:
 			case LOBJ_SPOT:
 			HSD_LObjGetPosition(lobj, &lobj->lvec);
-			MTXMultVec(vmtx, &lobj->lvec, &lobj->lvec);
+			guVecMultiply(vmtx, &lobj->lvec, &lobj->lvec);
 			break;
 			
 			case LOBJ_INFINITE:
 			HSD_LObjGetLightVector(lobj, &lobj->lvec);
-			MTXMultVecSR(vmtx, &lobj->lvec, &lobj->lvec);
-			VECNormalize(&lobj->lvec, &lobj->lvec);
+			guVecMultiplySR(vmtx, &lobj->lvec, &lobj->lvec);
+			guVecNormalize(&lobj->lvec, &lobj->lvec);
 			break;
 			
 			default:
@@ -333,7 +333,7 @@ static void setup_point_lightobj(HSD_LObj *l, MtxP vmtx){
 	GX_InitLightColor(&l->lightobj, l->color);
 	l->hw_color = l->color;
 	HSD_LObjGetPosition(l, &lpos);
-	MTXMultVec(vmtx, &lpos, &lpos);
+	guVecMultiply(vmtx, &lpos, &lpos);
 	GX_InitLightPosv(&l->lightobj, &lpos);
 	GX_InitLightPosv(&l->spec_lightobj, &lpos);
 	
@@ -366,10 +366,10 @@ static void setup_spot_lightobj(HSD_LObj *l, MtxP vmtx){
 	guVector lpos, ldir;
 	
 	HSD_LObjGetPosition(l, &lpos);
-	MTXMultVec(vmtx, &lpos, &lpos);
+	guVecMultiply(vmtx, &lpos, &lpos);
 	HSD_LObjGetLightVector(l, &ldir);
-	MTXMultVecSR(vmtx, &ldir, &ldir);
-	VECNormalize(&ldir, &ldir);
+	guVecMultiplySR(vmtx, &ldir, &ldir);
+	guVecNormalize(&ldir, &ldir);
 	GX_InitLightPosv(&l->lightobj, &lpos);
 	GX_InitLightPosv(&l->spec_lightobj, &lpos);
 	GX_InitLightDirv(&l->lightobj, &ldir);
@@ -382,9 +382,9 @@ static void setup_spot_lightobj(HSD_LObj *l, MtxP vmtx){
 		    l->u.attn.k1,
 		    l->u.attn.k2);
 	} else {
-		float ref_br = l->u.spot.ref_br;
-		float ref_dist = l->u.spot.ref_dist;
-		float cutoff = l->u.spot.cutoff;
+		f32 ref_br = l->u.spot.ref_br;
+		f32 ref_dist = l->u.spot.ref_dist;
+		f32 cutoff = l->u.spot.cutoff;
 		u8 spot_func = l->u.spot.spot_func;
 		u8 dist_func = l->u.spot.dist_func;
 		
@@ -404,7 +404,7 @@ static void setup_spot_lightobj(HSD_LObj *l, MtxP vmtx){
 //80365F28
 void HSD_LObjSetupInit(HSD_CObj *cobj){
   MtxP vmtx;
-  int i, num, idx;
+  u32 i, num, idx;
   HSD_SList *list;
 
   lightmask_diffuse  = GX_LIGHTNULL;
