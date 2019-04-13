@@ -1,6 +1,7 @@
 #include "hsd_mobj.h"
 
 #include "hsd_aobj.h"
+#include "hsd_state.h"
 
 static void MObjInfoInit();
 

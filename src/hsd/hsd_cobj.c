@@ -181,25 +181,25 @@ HSD_WObj* HSD_CObjGetEyePositionWObj(HSD_CObj* cobj){
 //803686AC
 void HSD_CObjGetInterest(HSD_CObj* cobj, guVector interest){
     assert(cobj != NULL);
-    HSD_WObjGetPosition(cobj->interest, interest);
+    HSD_WObjGetPosition(cobj->interest, &interest);
 }
 
 //80368718
 void HSD_CObjSetInterest(HSD_CObj* cobj, guVector interest){
     assert(cobj != NULL);
-    HSD_WObjSetPosition(cobj->interest, interest);
+    HSD_WObjSetPosition(cobj->interest, &interest);
 }
 
 //80368784
 void HSD_CObjGetEyePosition(HSD_CObj* cobj, guVector pos){
     assert(cobj != NULL);
-    HSD_WObjGetPosition(cobj->eye_position, pos);
+    HSD_WObjGetPosition(cobj->eye_position, &pos);
 }
 
 //803687F0
 void HSD_CObjSetEyePosition(HSD_CObj* cobj, guVector pos){
     assert(cobj != NULL);
-    HSD_WObjSetPosition(cobj->eye_position, pos);
+    HSD_WObjSetPosition(cobj->eye_position, &pos);
 }
 
 //8036885C
@@ -208,8 +208,8 @@ BOOL HSD_CObjGetEyeVector(HSD_CObj* cobj, guVector* vec){
         if(cobj->eye_position != NULL && cobj->interest != NULL && vec != NULL){
             guVector eye_pos;
             guVector interest_pos;
-            HSD_WObjGetPosition(cobj->eye_position, eye_pos);
-            HSD_WObjGetPosition(cobj->interest, interest_pos);
+            HSD_WObjGetPosition(cobj->eye_position, &eye_pos);
+            HSD_WObjGetPosition(cobj->interest, &interest_pos);
 
             guVecSub(&interest_pos, &eye_pos, vec);
 
@@ -243,8 +243,8 @@ f32 HSD_CObjGetEyeDistance(HSD_CObj* cobj){
         
         guVector pos;
         guVector interest;
-        HSD_WObjGetPosition(cobj->eye_position, pos);
-        HSD_WObjGetPosition(cobj->interest, interest);
+        HSD_WObjGetPosition(cobj->eye_position, &pos);
+        HSD_WObjGetPosition(cobj->interest, &interest);
         guVector dist;
         guVecSub(&interest, &pos, &dist);
         res = sqrtf(dist.x * dist.x + dist.y * dist.y + dist.z * dist.z);
@@ -658,7 +658,7 @@ HSD_CObj* HSD_CObjGetCurrent(){
 
 //8036A290
 HSD_CObj* HSD_CObjAlloc(){
-    HSD_CObj* cobj = hsdNew(HSD_CObjGetDefaultClass());
+    HSD_CObj* cobj = hsdNew(default_class ? default_class : &hsdCObj);
     assert(cobj != NULL);
     return cobj;
 }
@@ -716,24 +716,10 @@ static int CObjLoad(HSD_CObj* cobj, HSD_CObjDesc* desc){
     return 0;
 }
 
-void HSD_CObjSetDefaultClass(HSD_CObjInfo *info){
-	default_class = info;
-}
-
-HSD_CObjInfo* HSD_CObjGetDefaultClass(){
-	return default_class ? default_class : &hsdCObj;
-}
-
 //8036A55C
-static void CObjInit(HSD_Class *o){
-    HSD_PARENT_INFO(&hsdCObj)->init(o);
-    
-    if(o != NULL){
-        HSD_CObj* cobj = HSD_COBJ(o);
-        cobj->flags |= 0xC000;
-
-        cobj->eye_position = HSD_WObjAlloc();
-        cobj->interest = HSD_WObjAlloc();
+void HSD_CObjInit(HSD_CObj* cobj, HSD_CObjDesc* desc){
+    if(cobj != NULL && desc != NULL){
+        CObjLoad(cobj, desc);
     }
 }
 
@@ -753,6 +739,19 @@ HSD_CObj* HSD_CObjLoadDesc(HSD_CObjDesc* desc){
         HSD_COBJ_METHOD(cobj)->load(cobj, desc);
     }
     return cobj;
+}
+
+//8036A654
+static void CObjInit(HSD_Class* o){
+    HSD_PARENT_INFO(&hsdCObj)->init(o);
+    
+    if(o != NULL){
+        HSD_CObj* cobj = HSD_COBJ(o);
+        cobj->flags |= 0xC0000000;
+
+        cobj->eye_position = HSD_WObjAlloc();
+        cobj->interest = HSD_WObjAlloc();
+    }
 }
 
 //8036A6C8

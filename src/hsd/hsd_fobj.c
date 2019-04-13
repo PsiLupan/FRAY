@@ -1,5 +1,7 @@
 #include "hsd_fobj.h"
 
+#include "hsd_util.h"
+
 HSD_ObjDef fobj_alloc_data;
 
 //8036A938
@@ -196,14 +198,12 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
             fobj->flags &= 0x7Fu;
         }else if(state < 6){
             if(fobj->parse_res != 0){
-                f32 f0 = (f32)fobj->parse_res;
-                f32 f1 = 1.0f / f0;
-                fobjdata.fv = splGetHelmite(f0, f1, fobj->unk1C, fobj->unk20, fobj->unk24, fobj->unk28, fobj->unk2C);
+                fobjdata.fv = splGetHermite(0.166667f, fobj->unk1C, fobj->unk20, fobj->unk24, fobj->unk28, fobj->unk2C);
             }else{
                 fobjdata.fv = fobj->unk24;
             }
         }
-        (obj_update)(obj, fobj->obj_type, fobjdata);
+        (*obj_update)(obj, fobj->obj_type, fobjdata);
     }
 }
 

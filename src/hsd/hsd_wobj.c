@@ -1,5 +1,7 @@
 #include "hsd_wobj.h"
 
+#include "hsd_util.h"
+
 #include "hsd_jobj.h"
 
 static void HSD_WObjInfoInit();
@@ -41,6 +43,20 @@ static void WObjUpdateFunc(HSD_WObj* wobj, u32 type, f32* fval){
     if(wobj != NULL){
         switch(type) {
             case 4: {
+                if(*fval < 0.0f){
+                    *fval = 0.0f;
+                }
+                if(*fval > 1.0f){
+                    *fval = 1.0f;
+                }
+
+                assert(wobj->aobj != NULL);
+                HSD_FObj* fobj = wobj->aobj->fobj;
+                assert(fobj != NULL);
+
+                guVector pos;
+                splArcLengthPoint(&pos, &fobj->unk18, *fval);
+                HSD_WObjSetPosition(wobj, &pos);
                 wobj->flags |= 1;
             }
             break;
@@ -131,7 +147,7 @@ void HSD_WObjSetPositionX(HSD_WObj* wobj, f32 x){
                     if ((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
                         HSD_JObjSetupMatrixSub(jobj);
                     }
-                    MTXMultVec(jobj->mtx, &wobj->vec, &wobj->vec);
+                    guVecMultiply(jobj->mtx, &wobj->pos, &wobj->pos);
                 }
             }
             wobj->flags &= 0xFFFFFFFE;
@@ -151,7 +167,7 @@ void HSD_WObjSetPositionY(HSD_WObj* wobj, f32 y){
                     if ((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
                         HSD_JObjSetupMatrixSub(jobj);
                     }
-                    MTXMultVec(jobj->mtx, &wobj->vec, &wobj->vec);
+                    guVecMultiply(jobj->mtx, &wobj->pos, &wobj->pos);
                 }
             }
             wobj->flags &= 0xFFFFFFFE;
@@ -171,7 +187,7 @@ void HSD_WObjSetPositionZ(HSD_WObj* wobj, f32 z){
                     if ((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
                         HSD_JObjSetupMatrixSub(jobj);
                     }
-                    MTXMultVec(jobj->mtx, &wobj->vec, &wobj->vec);
+                    guVecMultiply(jobj->mtx, &wobj->pos, &wobj->pos);
                 }
             }
             wobj->flags &= 0xFFFFFFFE;
@@ -191,7 +207,7 @@ void HSD_WObjGetPosition(HSD_WObj* wobj, guVector* pos){
                     if ((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
                         HSD_JObjSetupMatrixSub(jobj);
                     }
-                    MTXMultVec(jobj->mtx, &wobj->vec, &wobj->vec);
+                    guVecMultiply(jobj->mtx, &wobj->pos, &wobj->pos);
                 }
             }
             wobj->flags &= 0xFFFFFFFE;
@@ -235,14 +251,16 @@ static void HSD_WObjInfoInit(){
 
 void WObjUnref(HSD_WObj* wobj){
     if(wobj != NULL){
-        BOOL norefs = HSD_OBJ_NOREF == wobj->class_parent.ref_count;
-        if(norefs == FALSE){
-            wobj->class_parent.ref_count -= 1;
-            norefs = wobj->class_parent.ref_count == 0;
-        }
-        if(norefs == TRUE && wobj != NULL){
-            wobj->class_parent.class_init->release(wobj);
-            wobj->class_parent.class_init->destroy(wobj);
+        u16 ref_count = wobj->class_parent.ref_count;
+		u32 lz = __builtin_clz(0xFFFF - ref_count);
+		lz = lz >> 5;
+		if(lz == 0){
+			wobj->class_parent.ref_count -= 1;
+            lz = __builtin_clz(-ref_count);
+			lz = lz >> 5;
+		}
+        if(lz != 0){
+            HSD_INFO_METHOD(wobj)->release(wobj);
         }
     }
 }

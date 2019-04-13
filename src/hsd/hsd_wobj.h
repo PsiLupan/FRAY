@@ -49,4 +49,18 @@ extern HSD_WObjInfo hsdWObj;
 
 #define HSD_WOBJ_METHOD(o)	HSD_WOBJ_INFO(HSD_CLASS_METHOD(o))
 
+void HSD_WObjRemoveAnim(HSD_WObj *);
+void HSD_WObjReqAnim(HSD_WObj *, f32);
+void HSD_WObjAddAnim(HSD_WObj *, HSD_WorldAnim *);
+void HSD_WObjInterpretAnim(HSD_WObj *);
+void HSD_WObjInit(HSD_WObj *, HSD_WObjDesc *);
+HSD_WObj* HSD_WObjLoadDesc(HSD_WObjDesc *);
+void HSD_WObjSetPosition(HSD_WObj *, guVector *);
+void HSD_WObjSetPositionX(HSD_WObj *, f32);
+void HSD_WObjSetPositionY(HSD_WObj *, f32);
+void HSD_WObjSetPositionZ(HSD_WObj *, f32);
+void HSD_WObjGetPosition(HSD_WObj *, guVector *);
+HSD_WObj* HSD_WObjAlloc();
+void WObjUnref(HSD_WObj* wobj);
+
 #endif
