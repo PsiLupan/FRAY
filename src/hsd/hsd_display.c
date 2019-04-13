@@ -335,7 +335,7 @@ void _HSD_ZListClear(){
 		if (list->vmtx) {
 			HSD_Free(list->vmtx);
 		}
-		HSD_ZListFree(list);
+		HSD_Free(list);
 	}
 	zlist_top = NULL;
 	zlist_bottom = &zlist_top;

@@ -1264,10 +1264,10 @@ static void JObjRelease(HSD_Class* o){
 		HSD_IDRemoveByIDFromTable(NULL, jobj->desc);
 	}
 	if(jobj->pvec != NULL){
-		HSD_VecFree(jobj->pvec);
+		HSD_Free(jobj->pvec);
 	}
 	if(jobj->vmtx != NULL){
-		HSD_MtxFree(jobj->vmtx);
+		HSD_Free(jobj->vmtx);
 	}
 	HSD_PARENT_INFO(&hsdJObj)->release(o);
 }

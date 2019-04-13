@@ -84,6 +84,7 @@ void CObjUpdateFunc(HSD_CObj *, u32, f32 *);
 void HSD_CObjAnim(HSD_CObj *);
 void HSD_CObjReqAnim(HSD_CObj *, f32);
 BOOL makeProjectionMtx(HSD_CObj *, Mtx44);
+void HSD_CObjSetCurrent(HSD_CObj*);
 void HSD_CObjEndCurrent();
 HSD_WObj* HSD_CObjGetInterestWObj(HSD_CObj *);
 HSD_WObj* HSD_CObjGetEyePositionWObj(HSD_CObj *);

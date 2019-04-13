@@ -249,7 +249,7 @@ static void HSD_WObjInfoInit(){
     HSD_WOBJ_INFO(&hsdWObj)->load = WObjLoad;
 }
 
-void WObjUnref(HSD_WObj* wobj){
+void HSD_WObjUnref(HSD_WObj* wobj){
     if(wobj != NULL){
         u16 ref_count = wobj->class_parent.ref_count;
 		u32 lz = __builtin_clz(0xFFFF - ref_count);

@@ -70,6 +70,6 @@ f32 JObj_GetFrame(HSD_JObj* jobj){
 //80391070
 void JObj_SetupInstanceMtx_Callback(HSD_GObj* gobj, u32 offset){
     HSD_JObj* jobj = GOBJ_HSD_JOBJ(gobj);
-    u32 flags = GObj_GetArrayFlag(offset);
+    u32 flags = GObj_GetFlagFromArray(offset);
     setupInstanceMtx(jobj, 0, flags, 0);
 }

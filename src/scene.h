@@ -122,7 +122,7 @@ u8 Scene_LoadPrevMajor();
 
 BOOL Scene_IsSinglePlayer(u8);
 u8* Scene_ProcessMajor(u8);
-void Scene_StoreClassIDPtr(u8 *);
+void Scene_StoreClassID(u8);
 u32* Scene_Load4F80_idx2();
 u32* Scene_Load4F80_idx3();
 void Scene_PrepCommon();

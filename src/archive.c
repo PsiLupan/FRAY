@@ -56,7 +56,7 @@ u32 Archive_GetDVDFileLengthByEntry(s32 entry){
         HSD_Halt("Archive_GetDVDFileLength: Could not open file");
     }
     len = handle.length;
-    DVD_Close(&handle);
+    DVDClose(&handle);
     IRQ_Restore(intr);
     return len;
 }

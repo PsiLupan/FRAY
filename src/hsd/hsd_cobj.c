@@ -1,5 +1,7 @@
 #include "hsd_cobj.h"
 
+#include "hsd_memory.h"
+
 static void CObjInfoInit();
 
 static HSD_CObjInfo hsdCObj = { CObjInfoInit };
@@ -160,6 +162,11 @@ BOOL makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx){
         HSD_Halt("Bad projection type!");
     }
     return isOrtho;
+}
+
+//80368458
+void HSD_CObjSetCurrent(HSD_CObj* cobj){ //TODO: Write actual function
+    current_cobj = cobj;
 }
 
 //80368608
@@ -775,13 +782,13 @@ static void CObjRelease(HSD_Class* o){
     HSD_AObjRemove(cobj->aobj);
 
     HSD_WObj* wobj = cobj->eye_position;
-    WObjUnref(wobj);
+    HSD_WObjUnref(wobj);
 
     wobj = cobj->interest;
-    WObjUnref(wobj);
+    HSD_WObjUnref(wobj);
 
     if(cobj->proj_mtx != NULL){
-        HSD_MtxFree(cobj->proj_mtx);
+        HSD_Free(cobj->proj_mtx);
     }
 
     HSD_PARENT_INFO(&hsdCObj)->release(o);

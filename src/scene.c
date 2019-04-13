@@ -19,7 +19,7 @@ MajorScene major_scenes[45] = {
 }; //803DACA4
 
 static void* scene_sobj_desc; //0x4EB0(r13)
-static u32* r13_4F80[3];
+static u32 r13_4F80[3];
 static HSD_FogDesc* scene_fog_desc; // 0x4F90(r13)
 static HSD_LightDesc** scene_lights_desc; // -0x4F94(r13)
 static HSD_CObjDesc* scene_cobj_desc; //-0x4F98(r13)
@@ -290,6 +290,12 @@ void Scene_80026F2C(u32 flags){
   } while (flag_out < 55);
 }
 
+//801A146C
+static void Scene_ReqAnimAll_Callback(HSD_GObj* gobj){
+  HSD_JObj* jobj = GOBJ_HSD_JOBJ(gobj);
+  Scene_ReqAnimAll(jobj, title_frames);
+}
+
 //801A1C18
 static void Scene_Minor_Class0_OnFrame(u32 unused, u32 inputs){
   u32 res_r4;
@@ -417,108 +423,6 @@ void Scene_801A36A0(u32 offset, u32* res_r3, u32* res_r4){
   }
 }
 
-//801A4014
-void Scene_ProcessMinor(MajorScene* scene){
-  u32 curr_minor;
-  u32 ctr;
-  MinorScene* minor_scenes;
-  MinorScene* minor_scene = NULL;
-  MinorSceneHandler *scene_handler;
-  u8 v15; // r3@23
-  
-  curr_minor = gamestate.curr_minor;
-  minor_scenes = scene->minor_scenes;
-  ctr = -(gamestate.curr_minor - 255);
-  MinorScene curr;
-  do {
-    for (u32 i = 0; i < 255 ; ++i )
-    {
-      curr = minor_scenes[i];
-      if ( curr.idx == 255 )
-        break;
-        
-      if ( curr.idx == curr_minor )
-      {
-        minor_scene = &minor_scenes[i];
-        break;
-      }
-    }
-    --ctr;
-  }
-  while ( ctr );
-
-  gamestate.curr_minor = minor_scene->idx;
-  Scene_CompareCacheOnChange(minor_scene);
-  if ( minor_scene->Prep != NULL ){
-    minor_scene->Prep();
-  }
-  scene_handler = Scene_GetSceneHandlerByClass(minor_scene->class_id);
-  Scene_PrepCommon();
-  Scene_StoreClassIDPtr(&minor_scene->class_id);
-  
-  if ( scene_handler->OnLoad != NULL ){
-    scene_handler->OnLoad(minor_scene->unk_struct_0);
-  }
-  Scene_PerFrameUpdate(scene_handler->OnFrame);
-  
-  if ( !dword_8046B0F0.unk04 && scene_handler->OnLeave != NULL ){
-    scene_handler->OnLeave(minor_scene->unk_struct_1);
-  }
-  
-  if ( !dword_8046B0F0.unk04 )
-  {
-    if ( minor_scene->Decide != NULL ){
-      minor_scene->Decide(&gamestate);
-    }
-    gamestate.unk04 = gamestate.curr_minor;
-    
-    if (gamestate.unk05 != 0){
-      gamestate.curr_minor = gamestate.unk05 - 1;
-      gamestate.unk05 = 0;
-    } else {
-      for(u32 i = 0; i < 255; i++){
-        if ( scene->minor_scenes[i].idx > gamestate.curr_minor ){
-          v15 = scene->minor_scenes[i].idx;
-          break;
-        }
-      }
-      if ( v15 == 255 ){
-        v15 = 0;
-      }
-      gamestate.curr_minor = v15;
-    }
-  }
-
-  //sub_8001CDB4(); Memcard related, likely ignorable for now
-  //sub_8001B760(11); More memcard
-  //sub_8001F800(); Movie_Unload();
-  
-  if ( dword_8046B0F0.unk04 ){
-    sub_80027DBC();
-    HSD_PadReset();
-    /*s32 v16 = 0;
-    do {
-      v16 = sub_8001B6F8(); //Save related, so we can ignore for now
-    } while ( v16 == 11 );*/
-    //if ( !DVD_CheckDisk() )
-      //sub_8001F800(); Movie_Unload();
-    SYS_ResetSystem(1, 0, 0);
-    while (sub_8038EA50(1));
-    InitializeStaticMemRegions();
-    memset(&gamestate, 0, 20);
-    Scene_RunStartupInit();
-    dword_8046B0F0.unk00 = 1;
-    Scene_SetPendingMajor(40);
-    HSD_VISetBlack(0);
-  }
-}
-
-//801A146C
-static void Scene_ReqAnimAll_Callback(HSD_GObj* gobj){
-  HSD_JObj* jobj = GOBJ_HSD_JOBJ(gobj);
-  Scene_ReqAnimAll(jobj, title_frames);
-}
-
 //801A3EF4
 static void Scene_RunStartupInit(){  
   for (u32 i = 0; major_scenes[i].idx != 45; i += 1 ){
@@ -565,6 +469,105 @@ LABEL_9:
   sub_8001E27C();
   sub_803127D4();
   sub_8031C8B8();*/
+}
+
+//801A4014
+void Scene_ProcessMinor(MajorScene* scene){
+  u32 curr_minor;
+  u32 ctr;
+  MinorScene* minor_scenes;
+  MinorScene* minor_scene = NULL;
+  MinorSceneHandler *scene_handler;
+  u8 v15; // r3@23
+  
+  curr_minor = gamestate.curr_minor;
+  minor_scenes = scene->minor_scenes;
+  ctr = 255 - gamestate.curr_minor;
+  if(gamestate.curr_minor != 255){
+    do {
+      MinorScene curr;
+      for(u32 i = 0; i < 255 && curr.idx != 255; i++){
+        curr = minor_scenes[i];
+        if ( curr.idx == curr_minor )
+        {
+          minor_scene = &minor_scenes[i];
+          goto OUT;
+        }
+      }
+      curr_minor += 1;
+      --ctr;
+    }
+    while ( ctr != 0 );
+  }
+OUT:
+  if(minor_scene != NULL){
+    gamestate.curr_minor = minor_scene->idx;
+  }else{
+    return;
+  }
+  Scene_CompareCacheOnChange(minor_scene);
+  if ( minor_scene->Prep != NULL ){
+    minor_scene->Prep();
+  }
+  scene_handler = Scene_GetSceneHandlerByClass(minor_scene->class_id);
+  Scene_PrepCommon();
+  Scene_StoreClassID(minor_scene->class_id);
+  
+  if ( scene_handler->OnLoad != NULL ){
+    scene_handler->OnLoad(minor_scene->unk_struct_0);
+  }
+  Scene_PerFrameUpdate(scene_handler->OnFrame);
+  
+  if ( !dword_8046B0F0.unk04 && scene_handler->OnLeave != NULL ){
+    scene_handler->OnLeave(minor_scene->unk_struct_1);
+  }
+  
+  if ( !dword_8046B0F0.unk04 )
+  {
+    if ( minor_scene->Decide != NULL ){
+      minor_scene->Decide(&gamestate);
+    }
+    gamestate.unk04 = gamestate.curr_minor;
+    
+    if (gamestate.unk05 != 0){
+      gamestate.curr_minor = gamestate.unk05 - 1;
+      gamestate.unk05 = 0;
+    } else {
+      for(u32 i = 0; i < 255; i++){
+        if ( scene->minor_scenes[i].idx > gamestate.curr_minor ){
+          v15 = scene->minor_scenes[i].idx;
+          break;
+        }
+      }
+      if ( v15 == 255 ){
+        v15 = 0;
+      }
+      gamestate.curr_minor = v15;
+    }
+  }
+
+  //sub_8001CDB4(); Memcard related, likely ignorable for now
+  //sub_8001B760(11); More memcard
+  //sub_8001F800(); Movie_Unload();
+  
+  if ( dword_8046B0F0.unk04 ){
+    //sub_80027DBC();
+    HSD_PadReset();
+    /*s32 v16 = 0;
+    do {
+      v16 = sub_8001B6F8(); //Save related, so we can ignore for now
+    } while ( v16 == 11 );*/
+    //if ( !DVD_CheckDisk() )
+      //sub_8001F800(); Movie_Unload();
+    /*SYS_ResetSystem(1, 0, 0);
+    while (sub_8038EA50(1));*/
+    InitializeStaticMemRegions();
+    memset(&gamestate, 0, 20);
+    Scene_RunStartupInit();
+    dword_8046B0F0.unk00 = 1;
+    Scene_SetPendingMajor(40);
+    HSD_VISetBlack(0);
+  }
 }
 
 //801A427C
@@ -707,18 +710,18 @@ JMP_PROCESS:
 }
 
 //801A4B88
-void Scene_StoreClassIDPtr(u8* class_id){
-	r13_4F80[0] = (u32*)class_id;
+void Scene_StoreClassID(u8 class_id){
+	r13_4F80[0] = class_id;
 }
 
 //801A4B90
 u32* Scene_Load4F80_idx2(){
-	return r13_4F80[1];
+	return (u32*)r13_4F80[1];
 }
 
 //801A4B9C
 u32* Scene_Load4F80_idx3(){
-	return r13_4F80[2];
+	return (u32*)r13_4F80[2];
 }
 
 //801A4BD4
@@ -729,7 +732,7 @@ void Scene_PrepCommon(){
 //801A4CE0
 MinorSceneHandler* Scene_GetSceneHandlerByClass(u8 class_id){
   MinorSceneHandler* sh = Scene_GetClassHandler();
-  for ( u32 i = 0; i >= 45 ; i++ ){
+  for ( u32 i = 0; i < 45 ; i++ ){
     if ( sh[0].class_id == class_id )
       return &sh[i];
   }
