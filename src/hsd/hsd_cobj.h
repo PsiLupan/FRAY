@@ -77,8 +77,6 @@ typedef struct _HSD_CObjInfo {
 #define HSD_COBJ_INFO(i)	((HSD_CObjInfo *)(i))
 #define HSD_COBJ_METHOD(o)	HSD_COBJ_INFO(HSD_CLASS_METHOD(o))
 
-static void CObjInfoInit();
-
 void HSD_CObjEraseScreen(HSD_CObj *, s32, s32, s32);
 void HSD_CObjRemoveAnim(HSD_CObj *);
 void HSD_CObjAddAnim(HSD_CObj *, HSD_WorldAnim *);

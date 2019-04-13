@@ -1,5 +1,7 @@
 #include "hsd_cobj.h"
 
+static void CObjInfoInit();
+
 static HSD_CObjInfo hsdCObj = { CObjInfoInit };
 
 static HSD_CObjInfo *default_class = NULL;

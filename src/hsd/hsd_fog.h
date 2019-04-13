@@ -17,16 +17,19 @@ typedef struct _HSD_FogAdj {
     f32 x40_unk; //0x40
     f32 x44_unk; //0x44
     f32 x48_unk; //0x48
+    u32 x4C_unk;
+    u32 x50_unk;
 } HSD_FogAdj;
 
 typedef struct _HSD_Fog {
     HSD_Class class_parent;
     u8 type; //0x08
-    u32 fog_adj; //0x0C
+    struct _HSD_FogAdj* fog_adj; //0x0C
     f32 start; //0x10
     f32 end; //0x14
     GXColor color; //0x18
-    HSD_AObj* aobj; //0x1C
+    struct _HSD_AObj* aobj; //0x1C
+    u32 unk;
 } HSD_Fog;
 
 typedef struct _HSD_FogAdjDesc {
@@ -35,9 +38,17 @@ typedef struct _HSD_FogAdjDesc {
     MtxP pmtx; //0x04
 } HSD_FogAdjDesc;
 
-typedef struct _HSD_FogDesc {
+typedef struct _HSD_FogInfo {
     HSD_ClassInfo parent;
-    struct _HSD_FogAdjDesc fogadjdesc; //0x04
+} HSD_FogInfo;
+
+typedef struct _HSD_FogAdjInfo {
+    HSD_ClassInfo parent;
+} HSD_FogAdjInfo;
+
+typedef struct _HSD_FogDesc {
+    u32 unk;
+    struct _HSD_FogAdjDesc* fogadjdesc; //0x04
 } HSD_FogDesc;
 
 void HSD_FogSet(HSD_Fog *);
@@ -45,10 +56,9 @@ HSD_Fog* HSD_FogLoadDesc(HSD_FogDesc *);
 HSD_FogAdj* HSD_FogAdjLoadDesc(HSD_FogAdjDesc *);
 void HSD_FogAdjInit(HSD_FogAdj *, HSD_FogAdjDesc *);
 void HSD_FogAddAnim(HSD_Fog *, HSD_AObjDesc *);
-void HSD_FogReqAnim(HSD_Fog *);
-void HSD_FogReqAnimByFlags(HSD_Fog *, u32);
+void HSD_FogReqAnim(HSD_Fog *, f32);
+void HSD_FogReqAnimByFlags(HSD_Fog *, u32, f32);
 void HSD_FogInterpretAnim(HSD_Fog *);
 void FogUpdateFunc(HSD_Fog *, u32, f32 *);
-
 
 #endif

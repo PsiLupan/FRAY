@@ -1,14 +1,19 @@
 #include "hsd_fog.h"
 
+static void FogInfoInit();
+static void FogAdjInfoInit();
+
 HSD_ObjDef fog_init_alloc; //80407078
+HSD_FogInfo hsdFog = { FogInfoInit }; //8040708C
 
 HSD_ObjDef fogadj_init_alloc; //804070B4
+HSD_FogAdjInfo hsdFogAdj = { FogAdjInfoInit };
 
 //8037D970
 void HSD_FogSet(HSD_Fog* fog){
     if(fog == NULL){
         GXColor color = {0, 0, 0, 0};
-        GX_SetFog(0, 0.f, 0.f, 0.f, 0.f, );
+        GX_SetFog(0, 0.f, 0.f, 0.f, 0.f, color);
     }else{
         HSD_CObj* cobj = HSD_CObjGetCurrent();
         HSD_Halt("You must specify a CObj for fog first");
@@ -75,14 +80,14 @@ void HSD_FogAddAnim(HSD_Fog* fog, HSD_AObjDesc* aodesc){
 }
 
 //8037DED0
-void HSD_FogReqAnim(HSD_Fog* fog){
-    HSD_FogReqAnimByFlags(fog, 0x7FF);
+void HSD_FogReqAnim(HSD_Fog* fog, f32 frame){
+    HSD_FogReqAnimByFlags(fog, 0x7FF, frame);
 }
 
 //8037DEF4
-void HSD_FogReqAnimByFlags(HSD_Fog* fog, u32 flags){
+void HSD_FogReqAnimByFlags(HSD_Fog* fog, u32 flags, f32 frame){
     if(fog != NULL && (flags & 0x200) != 0){
-        HSD_AObjReqAnim(fog->aobj);
+        HSD_AObjReqAnim(fog->aobj, frame);
     }
 }
 
@@ -105,22 +110,60 @@ void FogUpdateFunc(HSD_Fog* fog, u32 type, f32* fv){
                 fog->end = *fv;
             break;
 
+            case 5:
+                fog->color.r = (u8)(255.f * *fv);
+            break;
 
+            case 6:
+                fog->color.g = (u8)(255.f * *fv);
+            break;
+
+            case 7:
+                fog->color.b = (u8)(255.f * *fv);
+            break;
+
+            case 8:
+                fog->color.a = (u8)(255.f * *fv);
+            break;
+
+            case 20:
+                if (fog->fog_adj != NULL) {
+                    fog->fog_adj->x8_unk = (short)(int)*fv;
+                }
+            break;
         }
     }
 }
 
 //8037E04C
 static void FogRelease(HSD_Class* o){
-
+    HSD_Fog* fog = (HSD_Fog*)o;
+    HSD_FogAdj* fog_adj = fog->fog_adj;
+    if(fog_adj != NULL){
+        u16 ref_count = fog_adj->class_parent.ref_count;
+		u32 lz = __builtin_clz(0xFFFF - ref_count);
+		lz = lz >> 5;
+		if(lz == 0){
+			fog_adj->class_parent.ref_count -= 1;
+            lz = __builtin_clz(-ref_count);
+			lz = lz >> 5;
+		}
+        if(lz != 0){
+            HSD_INFO_METHOD(fog_adj)->release(fog_adj);
+            HSD_INFO_METHOD(fog_adj)->destroy(fog_adj);
+        }
+    }
+    HSD_AObjRemove(fog->aobj);
+    HSD_PARENT_INFO(&hsdFog)->release(o);
 }
 
 //8037E120
 static void FogInfoInit(){
-
+    hsdInitClassInfo(&fog_init_alloc, HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fog", sizeof(HSD_FogInfo), sizeof(HSD_Fog));
+    HSD_PARENT_INFO(&hsdFog)->release = FogRelease;
 }
 
 //8037E178
 static void FogAdjInfoInit(){
-    
+    hsdInitClassInfo(&fogadj_init_alloc, HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fogadj", sizeof(HSD_FogAdjInfo), sizeof(HSD_FogAdj));
 }

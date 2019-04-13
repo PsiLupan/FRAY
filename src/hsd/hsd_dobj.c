@@ -1,5 +1,7 @@
 #include "hsd_dobj.h"
 
+static void DObjInfoInit();
+
 HSD_DObjInfo hsdDObj = { DObjInfoInit };
 
 static HSD_DObjInfo *default_class = NULL;

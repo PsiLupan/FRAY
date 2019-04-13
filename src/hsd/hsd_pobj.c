@@ -61,7 +61,7 @@ void HSD_PObjRemoveAnimAll(HSD_PObj* pobj, HSD_SList* list){
 }
 
 //8036BA6C
-void HSD_PObjReqAnimAllByFlags(HSD_PObj* pobj, float startframe, u32 flags){
+void HSD_PObjReqAnimAllByFlags(HSD_PObj* pobj, f32 startframe, u32 flags){
     if(pobj != NULL){
         for (HSD_PObj* p = pobj; p != NULL && flags != 0; p = p->next){
             if(flags & POBJ_ANIM){
@@ -771,7 +771,7 @@ void HSD_PObjClearMtxMark(void *obj, u32 mark){
 }
 
 //8036E04C
-void HSD_PObjSetMtxMark(int idx,  void *obj, u32 mark){
+void HSD_PObjSetMtxMark(s32 idx,  void *obj, u32 mark){
     if (idx >= 2)
         return;
         
@@ -783,7 +783,7 @@ void HSD_PObjSetMtxMark(int idx,  void *obj, u32 mark){
 }
 
 //8036E080
-void HSD_PObjGetMtxMark(int idx,  void **obj, u32 *mark){
+void HSD_PObjGetMtxMark(s32 idx,  void **obj, u32 *mark){
     assert(obj);
     assert(mark);
     

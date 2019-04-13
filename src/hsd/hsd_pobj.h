@@ -141,6 +141,20 @@ extern HSD_PObjInfo hsdPObj;
 #define HSD_POBJ_METHOD(o)	HSD_POBJ_INFO(HSD_CLASS_METHOD(o))
 
 
+u16 HSD_PObjGetFlags(HSD_PObj *);
+void HSD_PObjRemoveAnimAllByFlags(HSD_PObj *, u16);
+void HSD_PObjRemoveAnimAll(HSD_PObj *, HSD_SList *);
+void HSD_PObjReqAnimAllByFlags(HSD_PObj *, f32, u32);
+void HSD_PObjAnimAll(HSD_PObj *);
+HSD_PObj* HSD_PObjLoadDesc(HSD_PObjDesc *);
+void HSD_PObjRemoveAll(HSD_PObj *);
+void HSD_PObjSetDefaultClass(HSD_PObjInfo *);
+HSD_PObj* HSD_PObjAlloc();
+void HSD_PObjResolveRefsAll(HSD_PObj *, HSD_PObjDesc *);
+void HSD_ClearVtxDesc();
+void HSD_PObjClearMtxMark(void *, u32);
+void HSD_PObjSetMtxMark(s32,  void *, u32);
+void HSD_PObjGetMtxMark(s32,  void **, u32 *);
 void HSD_PObjDisp(HSD_PObj *, Mtx, Mtx, u32);
 
 #endif
