@@ -50,7 +50,7 @@ void HSD_InitComponent(){
 	VIDEO_WaitVSync();
 	HSD_ObjInit();
   #ifndef NO_DEBUG
-	  CON_InitEx(rmode, 20, 30, rmode->fbWidth - 40, rmode->xfbHeight - 60);
+	  CON_InitEx(rmode, 20, 30, rmode->fbWidth - 100, rmode->xfbHeight - 120);
 	#endif
 	init_done = TRUE;
 }

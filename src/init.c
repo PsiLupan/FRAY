@@ -89,24 +89,22 @@ void Init_Game(){
 	MajorScene* major_scenes = Scene_GetMajorScenes();
 	for (u32 i = 0; i < 45; i += 1 )
 	{
-		if ( major_scenes[i].idx == 45 )
-		{
-			if ( (VIDEO_HaveComponentCable() && (rmode->viTVMode & 0x02)) /*|| OS_GetProgressiveMode() == 1)*/ ){
-				gamestate.curr_major = 39;
-			}else {
-				gamestate.curr_major = 40;
-			}
-			gamestate.prev_major = 45;
-			while ( 1 )
-			{
-				curr_major = *Scene_ProcessMajor(gamestate.curr_major);
-				if ( dword_8046B0F0.unk04 )
-					dword_8046B0F0.unk04 = 0;
-				gamestate.prev_major = gamestate.curr_major;
-				gamestate.curr_major = curr_major;
-			}
-		}else if ( major_scenes[i].Init ){ //For things such as VS, this points to a function that allocates the memory for StartMelee, etc..
+		if( major_scenes[i].Init ){ //For things such as VS, this points to a function that allocates the memory for StartMelee, etc..
 			major_scenes[i].Init();
 		}
+	}
+	if ( (VIDEO_HaveComponentCable() && (rmode->viTVMode & 0x02)) /*|| OS_GetProgressiveMode() == 1)*/ ){
+		gamestate.curr_major = 39;
+	}else {
+		gamestate.curr_major = 40;
+	}
+	gamestate.prev_major = 45;
+	while ( 1 )
+	{
+		curr_major = *Scene_ProcessMajor(gamestate.curr_major);
+		if ( dword_8046B0F0.unk04 )
+			dword_8046B0F0.unk04 = 0;
+		gamestate.prev_major = gamestate.curr_major;
+		gamestate.curr_major = curr_major;
 	}
 }
