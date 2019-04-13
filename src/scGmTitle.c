@@ -76,12 +76,12 @@ void Menu_Title_Decide(void* state){
     u32 inputs = scene_ptr[0];
     if(debug_level < 3){
         if((inputs & 0x1000) == 0){
-            sub_801BF708(1);
+            //sub_801BF708(1);
             Scene_UpdatePendingMajor(0x18);
         }else{
-            sub_80173EEC();
-            sub_80172898(0x100);
-            u32 res = sub_80173754(1, 0);
+            //sub_80173EEC();
+            //sub_80172898(0x100);
+            u32 res = 1;//sub_80173754(1, 0);
             if(res == 0){
                 Scene_UpdatePendingMajor(0x1);
             }
@@ -91,7 +91,7 @@ void Menu_Title_Decide(void* state){
             if((inputs & 0x1000) == 0){
                 if((inputs & 0x400) == 0){
                     if((inputs & 0x800) == 0){
-                        sub_801BF708(1);
+                        //sub_801BF708(1);
                         Scene_UpdatePendingMajor(0x18);
                     }else{
                         Scene_UpdatePendingMajor(0x6);
@@ -100,9 +100,9 @@ void Menu_Title_Decide(void* state){
                     Scene_UpdatePendingMajor(0x7);
                 }
             }else{
-                sub_80173EEC();
-                sub_80172898(0x100);
-                u32 res = sub_80173754(1, 0);
+                //sub_80173EEC();
+                //sub_80172898(0x100);
+                u32 res = 1; //sub_80173754(1, 0);
                 if(res == 0){
                     Scene_UpdatePendingMajor(0x1);
                 }

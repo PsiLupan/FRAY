@@ -168,11 +168,11 @@ BOOL Scene_80017644(s32 val){
 
 //80017700
 void Scene_80017700(s32 val){
-  BOOL i = TRUE;
+  /*BOOL i = TRUE;
   while(i != FALSE){
     i = Scene_80017644(val);
     Scene_800195D0();
-  }
+  }*/
 }
 
 //8001822C
@@ -224,7 +224,7 @@ void Scene_SetPreloadBool(BOOL preload){
 
 //8001955C
 void Scene_8001955C(){
-  BOOL boolie = sub_803769D8();
+  /*BOOL boolie = sub_803769D8();
   if(boolie == TRUE){
     sub_80027DBC();
     u32 i = 0;
@@ -239,7 +239,7 @@ void Scene_8001955C(){
     sub_8034844C(0, 0, 0);
   }
   sub_8001B6F8();
-  sub_8001CC84();
+  sub_8001CC84();*/
 }
 
 //800195D0
@@ -530,7 +530,7 @@ static void Scene_RunStartupInit(){
 
 //801A3F48
 void Scene_CompareCacheOnChange(MinorScene* scene){
-  int v1; // r31@1
+  /*int v1; // r31@1
   s32 *v3; // r31@9
 
   v1 = scene;
@@ -564,7 +564,7 @@ LABEL_9:
   sub_8001D1F4();
   sub_8001E27C();
   sub_803127D4();
-  sub_8031C8B8();
+  sub_8031C8B8();*/
 }
 
 //801A427C
@@ -627,9 +627,8 @@ u8 Scene_LoadPrevMajor(){
 }
 
 //801A4330
-u32 Scene_StoreTo10(u32 val){
-	gamestate.unk10 = val;
-	return val;
+void Scene_StoreTo10(void (*func)()){
+	gamestate.unk10 = func;
 }
 
 //801A4340
@@ -673,7 +672,7 @@ u8* Scene_ProcessMajor(u8 scene){
 		while ( true)
 		{
 			if ( gamestate.pending != FALSE ){
-        if ( dword_8046B0F0.unk04 == 0 && !scene_ptr->Unload != NULL ){
+        if ( dword_8046B0F0.unk04 == 0 && scene_ptr->Unload != NULL ){
           (*scene_ptr->Unload)();
         }
       }
