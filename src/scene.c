@@ -421,7 +421,7 @@ void Scene_801A36A0(u32 offset, u32* res_r3, u32* res_r4){
 void Scene_ProcessMinor(MajorScene* scene){
   u32 curr_minor;
   u32 ctr;
-  MinorScene** minor_scenes;
+  MinorScene* minor_scenes;
   MinorScene* minor_scene = NULL;
   MinorSceneHandler *scene_handler;
   u8 v15; // r3@23
@@ -429,17 +429,17 @@ void Scene_ProcessMinor(MajorScene* scene){
   curr_minor = gamestate.curr_minor;
   minor_scenes = scene->minor_scenes;
   ctr = -(gamestate.curr_minor - 255);
-  MinorScene* curr;
+  MinorScene curr;
   do {
     for (u32 i = 0; i < 255 ; ++i )
     {
       curr = minor_scenes[i];
-      if ( curr->idx == 255 )
+      if ( curr.idx == 255 )
         break;
         
-      if ( curr->idx == curr_minor )
+      if ( curr.idx == curr_minor )
       {
-        minor_scene = minor_scenes[i];
+        minor_scene = &minor_scenes[i];
         break;
       }
     }
@@ -477,8 +477,8 @@ void Scene_ProcessMinor(MajorScene* scene){
       gamestate.unk05 = 0;
     } else {
       for(u32 i = 0; i < 255; i++){
-        if ( scene->minor_scenes[i]->idx > gamestate.curr_minor ){
-          v15 = scene->minor_scenes[i]->idx;
+        if ( scene->minor_scenes[i].idx > gamestate.curr_minor ){
+          v15 = scene->minor_scenes[i].idx;
           break;
         }
       }
@@ -627,7 +627,7 @@ u8 Scene_LoadPrevMajor(){
 }
 
 //801A4330
-void Scene_StoreTo10(void (*func)()){
+void Scene_StoreTo10(u8 (*func)()){
 	gamestate.unk10 = func;
 }
 

@@ -313,6 +313,18 @@ void HSD_CObjSetMtxDirty(HSD_CObj* cobj){
     cobj->flags |= 0xC0000000;
 }
 
+//80369624
+MtxP HSD_CObjGetInvViewingMtxPtrDirect(HSD_CObj* cobj){
+    if((cobj->flags & 0x80000000) != 0){
+        if(cobj->proj_mtx == NULL){
+            cobj->proj_mtx = (MtxP)HSD_MemAlloc(sizeof(Mtx));
+        }
+        guMtxInverse(cobj->view_mtx, cobj->proj_mtx);
+        HSD_CObjClearFlags(cobj, 0x80000000);
+    }
+    return cobj->proj_mtx;
+}
+
 //803699C0
 void HSD_CObjSetRoll(HSD_CObj* cobj, f32 roll){
     if(cobj != NULL){

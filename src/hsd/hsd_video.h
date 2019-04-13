@@ -9,14 +9,12 @@
 #include <ogc/video.h>
 #include <ogc/video_types.h>
 
-#include "hsd_init.h"
-
 #define HSD_VI_XFB_MAX 3
 #define HSD_ANTIALIAS_OVERLAP 4
 #define VI_DISPLAY_PIX_SZ 2
 #define HSD_ANTIALIAS_GARBAGE_SIZE	(640 * HSD_ANTIALIAS_OVERLAP * VI_DISPLAY_PIX_SZ)
 
-typedef void (*HSD_VIGXDrawDoneCallback)();
+typedef void (*HSD_VIGXDrawDoneCallback)(u32);
 
 typedef enum _HSD_VIXFBDrawDispStatus {
 	HSD_VI_XFB_NONE, 

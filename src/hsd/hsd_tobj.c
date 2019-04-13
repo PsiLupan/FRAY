@@ -414,15 +414,14 @@ static void TObjSetupMtx(HSD_TObj *tobj){
 		case TEX_COORD_REFLECTION:
 		{
 			Mtx mtx;
-			int i;
 			
-			for (i=0; i<3; i++) {
+			for (u32 i = 0; i < 3; i++) {
 				mtx[i][0] =  0.5F * tobj->mtx[i][0];
 				mtx[i][1] = -0.5F * tobj->mtx[i][1];
 				mtx[i][2] =  0.0F;
 				mtx[i][3] =  0.5F * tobj->mtx[i][0] + 0.5F * tobj->mtx[i][1] + tobj->mtx[i][2] + tobj->mtx[i][3];
 			}
-		GX_LoadTexMtxImm(mtx, tobj->mtxid, GX_MTX3x4);
+			GX_LoadTexMtxImm(mtx, tobj->mtxid, GX_MTX3x4);
 		}
 		break;
 		

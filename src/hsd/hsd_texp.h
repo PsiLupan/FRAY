@@ -99,7 +99,7 @@ void HSD_TExpRef(u8 *, u8);
 void HSD_TExpUnref(u8 *, u8);
 void HSD_TExpFreeList(HSD_TExp *, u32, u8);
 HSD_TExp* HSD_TExpTev(HSD_TExp **);
-HSD_TExp* HSD_TExpCnst(u8*, u32, u32, HSD_TExp**);
+HSD_TExp* HSD_TExpCnst(void*, u32, u32, HSD_TExp**);
 void HSD_TExpOrder(HSD_TExp *, void *, u8);
 void HSD_TExpCompile(HSD_TExp *, HSD_TExpTevDesc *, HSD_TExp **);
 void HSD_TExpFreeTevDesc(HSD_TExpTevDesc *);

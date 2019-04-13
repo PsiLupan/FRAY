@@ -95,6 +95,8 @@ BOOL HSD_CObjGetEyeVector(HSD_CObj *, guVector *);
 f32 HSD_CObjGetEyeDistance(HSD_CObj *);
 void HSD_CObjSetUpVector(HSD_CObj *, guVector *);
 void HSD_CObjSetMtxDirty(HSD_CObj *);
+MtxP HSD_CObjGetInvViewingMtxPtrDirect(HSD_CObj* cobj);
+
 void HSD_CObjSetRoll(HSD_CObj *, f32);
 
 f32 HSD_CObjGetFov(HSD_CObj *);

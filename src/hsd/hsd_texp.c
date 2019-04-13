@@ -98,7 +98,7 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list){
 }
 
 //803831BC
-HSD_TExp* HSD_TExpCnst(u8* color, u32 value, u32 type, HSD_TExp** list){
+HSD_TExp* HSD_TExpCnst(void* color, u32 value, u32 type, HSD_TExp** list){
 
 }
 

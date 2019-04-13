@@ -1,5 +1,7 @@
 #include "hsd_video.h"
 
+#include "hsd_init.h"
+
 static u32 HSD_VINumXFB = 0; 
 HSD_VIInfo HSD_VIData;
 HSD_VIStatus vi;
@@ -223,7 +225,7 @@ void HSD_VICopyXFBASync(HSD_RenderPass rpass){
 		while((idx = HSD_VIGetXFBDrawEnable()) == -1)
 			VIDEO_WaitVSync();
 
-		HSD_VICopyEFB2XFBPtr(&vi, HSD_VIGetXFBPtr(idx), rpass);
+		HSD_VICopyEFB2XFBPtr(&_p->efb.vi_all.vi, _p->xfb[idx].buffer, rpass);
 		
 		u32 intr;
 		intr = IRQ_Disable();
@@ -362,7 +364,7 @@ void HSD_VIInit(HSD_VIStatus *vi, void *xfb0, void *xfb1, void *xfb2){
 	VIDEO_Flush();
 	
 	idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_FREE);
-	HSD_VICopyEFB2XFBPtr(&vi, HSD_VIData.xfb[idx].buffer, HSD_RP_SCREEN);
+	HSD_VICopyEFB2XFBPtr(&_p->efb.vi_all.vi, _p->xfb[idx].buffer, HSD_RP_SCREEN);
 }
 
 static u32 HSD_VIGetNbXFB(){

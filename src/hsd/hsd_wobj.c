@@ -260,7 +260,7 @@ void WObjUnref(HSD_WObj* wobj){
 			lz = lz >> 5;
 		}
         if(lz != 0){
-            HSD_INFO_METHOD(wobj)->release(wobj);
+            HSD_INFO_METHOD(wobj)->release((HSD_Class*)wobj);
         }
     }
 }

@@ -67,7 +67,7 @@ typedef struct _MajorScene {
 	void (*Load)();
 	void (*Unload)();
 	void (*Init)();
-	struct _MinorScene** minor_scenes;
+	struct _MinorScene* minor_scenes;
 } MajorScene; //803DACA4
 
 typedef struct _MinorScene {
