@@ -50,4 +50,16 @@ typedef struct _HSD_TevDesc {
     } u;
 } HSD_TevDesc;
 
+void HSD_SetupChannelMode(u32 rendermode);
+void HSD_SetupPEMode(u32 rendermode, HSD_PEDesc *pe);
+void HSD_SetupRenderModeWithCustomPE(u32 rendermode, HSD_PEDesc *pe);
+void HSD_SetupRenderMode(u32 rendermode);
+void HSD_StateInvalidate(s32 state);
+void HSD_StateSetNumChans(u8 num);
+u32 HSD_StateGetNumTevStages();
+u8 HSD_StateAssignTev();
+void HSD_StateSetNumTevStages();
+u8 HSD_Index2TevStage(u8 idx);
+u8 HSD_TevStage2Index(u8 idx);
+
 #endif

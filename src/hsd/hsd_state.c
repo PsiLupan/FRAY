@@ -40,12 +40,12 @@ static struct {
 } matstate;
 
 //803615D0
-HSD_SetupChannelMode(u32 rendermode){
+void HSD_SetupChannelMode(u32 rendermode){
     
 }
 
 //80361778
-HSD_SetupPEMode(u32 rendermode, HSD_PEDesc *pe){
+void HSD_SetupPEMode(u32 rendermode, HSD_PEDesc *pe){
     if (pe) {
         HSD_StateSetColorUpdate(pe->flags & ENABLE_COLOR_UPDATE);
         HSD_StateSetAlphaUpdate(pe->flags & ENABLE_ALPHA_UPDATE);
@@ -69,8 +69,8 @@ HSD_SetupPEMode(u32 rendermode, HSD_PEDesc *pe){
             HSD_StateSetZCompLoc(GX_TRUE);
             HSD_StateSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
         }
-    HSD_StateSetDither(GX_DISABLE);
-  }
+        HSD_StateSetDither(GX_DISABLE);
+    }
 }
 
 //8036190C
@@ -158,8 +158,7 @@ u8 HSD_StateAssignTev(){
 }
 
 //80362518
-void HSD_StateSetNumTevStages()
-{
+void HSD_StateSetNumTevStages(){
     GX_SetNumTevStages(state_num_tevstages);
     state_num_tevstages = 0;
 }

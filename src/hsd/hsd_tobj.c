@@ -1,5 +1,7 @@
 #include "hsd_tobj.h"
 
+#include "hsd_lobj.h"
+
 static void TObjInfoInit();
 
 HSD_TObjInfo hsdTObj = { TObjInfoInit };
@@ -527,114 +529,100 @@ void HSD_TObjSetupVolatileTev(HSD_TObj *tobj, u32 rendermode){ //TODO: Verify - 
 
 //8035F7D0
 static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TExp **a, HSD_TExp **list, int repeat){
-#pragma unused(lightmap)
-#pragma unused(repeat)
-
-  HSD_TObjTev *tev = tobj->tev;
-  u8 *in;
-  HSD_TExp *e0, *tmp;
-  int i;
-
-  HSD_TExp *konst_rgb;
-  HSD_TExp *konst_r;
-  HSD_TExp *konst_g;
-  HSD_TExp *konst_b;
-  HSD_TExp *konst_a;
-  HSD_TExp *reg0_rgb;
-  HSD_TExp *reg0_a;
-  HSD_TExp *reg1_rgb;
-  HSD_TExp *reg1_a;
-
-  int use_k_rgb = 0;
-  int use_k_r = 0;
-  int use_k_g = 0;
-  int use_k_b = 0;
-  int use_k_a = 0;
-  int use_reg0_rgb = 0;
-  int use_reg0_a = 0;
-  int use_reg1_rgb = 0;
-  int use_reg1_a = 0;
-
-  in = &tev->color_a;
-  for (i=0; i < 4; i++) {
-    switch (in[i]) {
-    case TOBJ_TEV_CC_KONST_RGB: use_k_rgb = 1; break;
-    case TOBJ_TEV_CC_KONST_RRR: use_k_r = 1; break;
-    case TOBJ_TEV_CC_KONST_GGG: use_k_g = 1; break;
-    case TOBJ_TEV_CC_KONST_BBB: use_k_b = 1; break;
-    case TOBJ_TEV_CC_KONST_AAA: use_k_a = 1; break;
-    case TOBJ_TEV_CC_TEX0_RGB:  use_reg0_rgb = 1; break;
-    case TOBJ_TEV_CC_TEX0_AAA: use_reg0_a = 1; break;
-    case TOBJ_TEV_CC_TEX1_RGB: use_reg1_rgb = 1; break;
-    case TOBJ_TEV_CC_TEX1_AAA: use_reg1_a = 1; break;
-    default:
-      break;
-    }
-  }
-  in = &tev->alpha_a;
-  for (i=0; i<4; i++) {
-    switch (in[i]) {
-    case TOBJ_TEV_CA_KONST_R:
-      use_k_r = 1;
-      break;
-    case TOBJ_TEV_CA_KONST_G:
-      use_k_g = 1;
-      break;
-    case TOBJ_TEV_CA_KONST_B:
-      use_k_b = 1;
-      break;
-    case TOBJ_TEV_CA_KONST_A:
-      use_k_a = 1;
-      break;
-    case TOBJ_TEV_CA_TEX0_A:
-      use_reg0_a = 1;
-      break;
-    case TOBJ_TEV_CA_TEX1_A:
-      use_reg1_a = 1;
-      break;
-    default:
-      break;
-    }
-  }
-
-  if (use_k_rgb) {
-    konst_rgb = HSD_TExpCnst(&tobj->tev->constant, HSD_TE_RGB, HSD_TE_U8, list);
-  }
-  if (use_k_r) {
-    konst_r = HSD_TExpCnst(&tobj->tev->constant.r, HSD_TE_X, HSD_TE_U8, list);
-  }
-  if (use_k_g) {
-    konst_g = HSD_TExpCnst(&tobj->tev->constant.g, HSD_TE_X, HSD_TE_U8, list);
-  }
-  if (use_k_b) {
-    konst_b = HSD_TExpCnst(&tobj->tev->constant.b, HSD_TE_X, HSD_TE_U8, list);
-  }
-  if (use_k_a) {
-    konst_a = HSD_TExpCnst(&tobj->tev->constant.a, HSD_TE_X, HSD_TE_U8, list);
-  }
-  if (use_reg0_rgb) {
-    reg0_rgb = HSD_TExpCnst(&tobj->tev->tev0, HSD_TE_RGB, HSD_TE_U8, list);
-  }
-  if (use_reg0_a) {
-    reg0_a = HSD_TExpCnst(&tobj->tev->tev0.a, HSD_TE_X, HSD_TE_U8, list);
-  }
-  if (use_reg1_rgb) {
-    reg1_rgb = HSD_TExpCnst(&tobj->tev->tev1, HSD_TE_RGB, HSD_TE_U8, list);
-  }
-  if (use_reg1_a) {
-    reg1_a = HSD_TExpCnst(&tobj->tev->tev1.a, HSD_TE_X, HSD_TE_U8, list);
-  }
-
-  e0 = HSD_TExpTev(list);
-  HSD_TExpOrder(e0, tobj, GX_COLORNULL);
+	#pragma unused(lightmap)
+	#pragma unused(repeat)
+	
+	HSD_TObjTev *tev = tobj->tev;
+	u8 *in;
+	HSD_TExp *e0, *tmp;
+	
+	HSD_TExp *konst_rgb;
+	HSD_TExp *konst_r;
+	HSD_TExp *konst_g;
+	HSD_TExp *konst_b;
+	HSD_TExp *konst_a;
+	HSD_TExp *reg0_rgb;
+	HSD_TExp *reg0_a;
+	HSD_TExp *reg1_rgb;
+	HSD_TExp *reg1_a;
+	
+	s32 use_k_rgb = 0;
+	s32 use_k_r = 0;
+	s32 use_k_g = 0;
+	s32 use_k_b = 0;
+	s32 use_k_a = 0;
+	s32 use_reg0_rgb = 0;
+	s32 use_reg0_a = 0;
+	s32 use_reg1_rgb = 0;
+	s32 use_reg1_a = 0;
+	
+	in = &tev->color_a;
+	for (u32 i = 0; i < 4; i++) {
+		switch (in[i]) {
+			case TOBJ_TEV_CC_KONST_RGB: use_k_rgb = 1; break;
+			case TOBJ_TEV_CC_KONST_RRR: use_k_r = 1; break;
+			case TOBJ_TEV_CC_KONST_GGG: use_k_g = 1; break;
+			case TOBJ_TEV_CC_KONST_BBB: use_k_b = 1; break;
+			case TOBJ_TEV_CC_KONST_AAA: use_k_a = 1; break;
+			case TOBJ_TEV_CC_TEX0_RGB:  use_reg0_rgb = 1; break;
+			case TOBJ_TEV_CC_TEX0_AAA: use_reg0_a = 1; break;
+			case TOBJ_TEV_CC_TEX1_RGB: use_reg1_rgb = 1; break;
+			case TOBJ_TEV_CC_TEX1_AAA: use_reg1_a = 1; break;
+			default:
+			break;
+		}
+	}
+	
+	in = &tev->alpha_a;
+	for (u32 i = 0; i < 4; i++) {
+		switch (in[i]) {
+			case TOBJ_TEV_CA_KONST_R: use_k_r = 1; break;
+			case TOBJ_TEV_CA_KONST_G: use_k_g = 1; break;
+			case TOBJ_TEV_CA_KONST_B: use_k_b = 1; break;
+			case TOBJ_TEV_CA_KONST_A: use_k_a = 1; break;
+			case TOBJ_TEV_CA_TEX0_A: use_reg0_a = 1; break;
+			case TOBJ_TEV_CA_TEX1_A: use_reg1_a = 1; break;
+			default: break;
+		}
+	}
+	
+	if (use_k_rgb) {
+		konst_rgb = HSD_TExpCnst(&tobj->tev->constant, HSD_TE_RGB, HSD_TE_U8, list);
+	}
+	if (use_k_r) {
+		konst_r = HSD_TExpCnst(&tobj->tev->constant.r, HSD_TE_X, HSD_TE_U8, list);
+	}
+	if (use_k_g) {
+		konst_g = HSD_TExpCnst(&tobj->tev->constant.g, HSD_TE_X, HSD_TE_U8, list);
+	}
+	if (use_k_b) {
+		konst_b = HSD_TExpCnst(&tobj->tev->constant.b, HSD_TE_X, HSD_TE_U8, list);
+	}
+	if (use_k_a) {
+		konst_a = HSD_TExpCnst(&tobj->tev->constant.a, HSD_TE_X, HSD_TE_U8, list);
+	}
+	if (use_reg0_rgb) {
+		reg0_rgb = HSD_TExpCnst(&tobj->tev->tev0, HSD_TE_RGB, HSD_TE_U8, list);
+	}
+	if (use_reg0_a) {
+		reg0_a = HSD_TExpCnst(&tobj->tev->tev0.a, HSD_TE_X, HSD_TE_U8, list);
+	}
+	if (use_reg1_rgb) {
+		reg1_rgb = HSD_TExpCnst(&tobj->tev->tev1, HSD_TE_RGB, HSD_TE_U8, list);
+	}
+	if (use_reg1_a) {
+		reg1_a = HSD_TExpCnst(&tobj->tev->tev1.a, HSD_TE_X, HSD_TE_U8, list);
+	}
+	
+	e0 = HSD_TExpTev(list);
+	HSD_TExpOrder(e0, tobj, GX_COLORNULL);
 
   if (tev->active & TOBJ_TEVREG_ACTIVE_COLOR_TEV) {
-    HSD_TEInput sel[4];
+    s32 sel[4];
     HSD_TExp *exp[4];
-    int i;
 
     in = &tev->color_a;
-    for (i = 0; i < 4; i++) {
+    for (u32 i = 0; i < 4; i++) {
       switch (in[i]) {
 		case GX_CC_ZERO:
 		sel[i] = HSD_TE_0;
@@ -754,88 +742,80 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
 		sel[3], exp[3]);
     *c = e0;
   }
+  
+	if (tev->active & TOBJ_TEVREG_ACTIVE_ALPHA_TEV) {
+		s32 sel[4];
+		HSD_TExp *exp[4];
 
-  if (tev->active & TOBJ_TEVREG_ACTIVE_ALPHA_TEV) {
-    HSD_TEInput sel[4];
-    HSD_TExp *exp[4];
-    int i;
+    	in = &tev->alpha_a;
+    	for (u32 i = 0; i < 4; i++) {
+			switch (in[i]) {
+				case GX_CA_ZERO:
+				sel[i] = HSD_TE_0;
+				exp[i] = HSD_TEXP_ZERO;
+				break;
+			
+				case GX_CA_TEXA:
+        		sel[i] = HSD_TE_A;
+				exp[i] = HSD_TEXP_TEX;
+				break;
+    
+				case TOBJ_TEV_CA_KONST_R:
+				sel[i] = HSD_TE_X;
+				exp[i] = konst_r;
+				break;
 
-    in = &tev->alpha_a;
-    for (i = 0; i < 4; i++) {
-      switch (in[i]) {
-      case GX_CA_ZERO:
-	sel[i] = HSD_TE_0;
-	exp[i] = HSD_TEXP_ZERO;
-	break;
-      case GX_CA_TEXA:
-        sel[i] = HSD_TE_A;
-	exp[i] = HSD_TEXP_TEX;
-	break;
-      case TOBJ_TEV_CA_KONST_R:
-	sel[i] = HSD_TE_X;
-	exp[i] = konst_r;
-	break;
-      case TOBJ_TEV_CA_KONST_G:
-	sel[i] = HSD_TE_X;
-	exp[i] = konst_g;
-	break;
-      case TOBJ_TEV_CA_KONST_B:
-	sel[i] = HSD_TE_X;
-	exp[i] = konst_b;
-	break;
-      case TOBJ_TEV_CA_KONST_A:
-	sel[i] = HSD_TE_X;
-	exp[i] = konst_a;
-	break;
-      case TOBJ_TEV_CA_TEX0_A:
-	tmp = HSD_TExpTev(list);
-	HSD_TExpOrder  (tmp, NULL, GX_COLORNULL);
-	HSD_TExpAlphaOp(tmp, GX_TEV_ADD, GX_TB_ZERO,
-			     GX_CS_SCALE_1, GX_ENABLE);
-	HSD_TExpAlphaIn(tmp, HSD_TE_0, HSD_TEXP_ZERO,
-			     HSD_TE_0, HSD_TEXP_ZERO,
-			     HSD_TE_0, HSD_TEXP_ZERO,
-			     HSD_TE_X, reg0_a);
-	sel[i] = HSD_TE_A;
-	exp[i] = tmp;
-	break;
-      case TOBJ_TEV_CA_TEX1_A:
-	tmp = HSD_TExpTev(list);
-	HSD_TExpOrder  (tmp, NULL, GX_COLORNULL);
-	HSD_TExpAlphaOp(tmp, GX_TEV_ADD, GX_TB_ZERO,
-			     GX_CS_SCALE_1, GX_ENABLE);
-	HSD_TExpAlphaIn(tmp, HSD_TE_0, HSD_TEXP_ZERO,
-			     HSD_TE_0, HSD_TEXP_ZERO,
-			     HSD_TE_0, HSD_TEXP_ZERO,
-			     HSD_TE_X, reg1_a);
-	sel[i] = HSD_TE_A;
-	exp[i] = tmp;
-	break;
-      default:
-	assert(0);
-	break;
-      }
-    }
+    			case TOBJ_TEV_CA_KONST_G:
+				sel[i] = HSD_TE_X;
+				exp[i] = konst_g;
+				break;
+      
+	  			case TOBJ_TEV_CA_KONST_B:
+				sel[i] = HSD_TE_X;
+				exp[i] = konst_b;
+				break;
+      
+				case TOBJ_TEV_CA_KONST_A:
+				sel[i] = HSD_TE_X;
+				exp[i] = konst_a;
+				break;
 
-    HSD_TExpAlphaOp(e0, tev->alpha_op,
-			tev->alpha_bias,
-			tev->alpha_scale,
-			tev->alpha_clamp);
-    HSD_TExpAlphaIn(e0, sel[0], exp[0],
-			sel[1], exp[1],
-			sel[2], exp[2],
-			sel[3], exp[3]);
-
-    *a = e0;
-  }
+    			case TOBJ_TEV_CA_TEX0_A:
+				tmp = HSD_TExpTev(list);
+				HSD_TExpOrder  (tmp, NULL, GX_COLORNULL);
+				HSD_TExpAlphaOp(tmp, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
+				HSD_TExpAlphaIn(tmp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_X, reg0_a);
+				sel[i] = HSD_TE_A;
+				exp[i] = tmp;
+				break;
+      
+	  			case TOBJ_TEV_CA_TEX1_A:
+				tmp = HSD_TExpTev(list);
+				HSD_TExpOrder  (tmp, NULL, GX_COLORNULL);
+				HSD_TExpAlphaOp(tmp, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
+				HSD_TExpAlphaIn(tmp, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_0, HSD_TEXP_ZERO, HSD_TE_X, reg1_a);
+				sel[i] = HSD_TE_A;
+				exp[i] = tmp;
+				break;
+			
+				default:
+				assert(0);
+				break;
+			}
+		}
+		
+		HSD_TExpAlphaOp(e0, tev->alpha_op, tev->alpha_bias, tev->alpha_scale, tev->alpha_clamp);
+		HSD_TExpAlphaIn(e0, sel[0], exp[0], sel[1], exp[1],	sel[2], exp[2],	sel[3], exp[3]);
+		*a = e0;
+	}
 }
 
 //803600A0
 static void TObjMakeTExp(HSD_TObj *tobj, u32 lightmap, u32 lightmap_done, HSD_TExp **c, HSD_TExp **a, HSD_TExp **list){
 	HSD_TExp *e0, *e1;
 	HSD_TExp *c_src, *a_src;
-	HSD_TEInput c_sel, a_sel;
-	int repeat = (lightmap_done & tobj_lightmap(tobj)) != 0;
+	s32 c_sel, a_sel;
+	s32 repeat = (lightmap_done & tobj_lightmap(tobj)) != 0;
 
 	c_src = HSD_TEXP_TEX;
 	c_sel = HSD_TE_RGB;
@@ -991,8 +971,81 @@ static void TObjMakeTExp(HSD_TObj *tobj, u32 lightmap, u32 lightmap_done, HSD_TE
 }
 
 //803606F0
-int HSD_TObjAssignResources(HSD_TObj* tobj_top){
+s32 HSD_TObjAssignResources(HSD_TObj* tobj_top){
+	HSD_TObj *tobj;
+	u32 texmap_no = 0;
+	u32 texcoord_no = 0;
+	u32 limit = 8;
+	HSD_TObj *bump = NULL;
+	HSD_TObj *toon = NULL;
+
+	if (tobj_top == NULL)
+    	return 0;
+
+	for (tobj = tobj_top; tobj; tobj = tobj->next) {
+		if (tobj_coord(tobj) == TEX_COORD_TOON) {
+			toon = tobj;
+		} else if (tobj_bump(tobj)) {
+			bump = tobj;
+		}
+	}
+
+	if (toon != NULL)
+		limit -= 1;
+	if (bump != NULL)
+		limit -= 2;
+
+	for (tobj = tobj_top; tobj; tobj = tobj->next) {
+    	if (tobj_coord(tobj) == TEX_COORD_TOON) {
+      		if (tobj != toon) {
+				tobj->id = GX_TEXMAP_NULL;
+      		}
+    	} else if (tobj_bump(tobj)) {
+      		if (tobj != bump) {
+				tobj->id = GX_TEXMAP_NULL;
+      		}
+		} else if (texmap_no < limit) {
+			tobj->id = HSD_Index2TexMap(texmap_no ++);
+			tobj->mtxid = HSD_TexMapID2PTTexMtx(tobj->id);
+			switch (tobj_coord(tobj)) {
+				case TEX_COORD_REFLECTION:
+				case TEX_COORD_HILIGHT:
+				case TEX_COORD_SHADOW:
+					tobj->coord = HSD_Index2TexCoord(texcoord_no ++);
+				break;
+				
+				default:
+				break;
+			}
+		}
+	}
+
+	for (tobj = tobj_top; tobj; tobj = tobj->next) {
+		if (tobj->id != GX_TEXMAP_NULL && !tobj_bump(tobj)) {
+			switch (tobj_coord(tobj)) {
+				case TEX_COORD_UV:
+				tobj->coord = HSD_Index2TexCoord(texcoord_no ++);
+				break;
+				
+				default:
+				break;
+			}
+		}
+	}
+
+	if (bump) {
+		bump->id = HSD_Index2TexMap(texmap_no ++);
+		bump->mtxid = GX_TEXMTX9;
+		bump->coord = HSD_Index2TexCoord(texcoord_no);
+		texcoord_no += 2;
+	}
 	
+	if (toon) {
+		toon->id = HSD_Index2TexMap(texmap_no ++);
+		toon->coord = HSD_Index2TexCoord(texcoord_no ++);
+	}
+
+  return (s32) texcoord_no;
 }
 
 //80360C38
