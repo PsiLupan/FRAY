@@ -39,7 +39,7 @@ static s32 Archive_GetFileLoadStatus(){
 }
 
 //8001615C
-static void Archive_DVDCallback(s32 result, DVDFileInfo* fileInfo){
+static void Archive_DVDCallback(s32 result, dvdfileinfo* fileInfo){
     if(result >= 0){
         file_load_status = 1;
     }
@@ -51,11 +51,11 @@ static void Archive_DVDCallback(s32 result, DVDFileInfo* fileInfo){
 u32 Archive_GetDVDFileLengthByEntry(s32 entry){
     u32 len;
     u32 intr = IRQ_Disable();
-    DVDFileInfo handle;
+    dvdfileinfo handle;
     if(!DVDFastOpen(entry, &handle)){
         HSD_Halt("Archive_GetDVDFileLength: Could not open file");
     }
-    len = handle.length;
+    len = handle.len;
     DVDClose(&handle);
     IRQ_Restore(intr);
     return len;
@@ -70,11 +70,11 @@ u32 Archive_GetDVDFileLengthByName(char* filename){
         HSD_Halt("Archive_GetFileSize: Could not locate file");
     }
     u32 intr = IRQ_Disable();
-    DVDFileInfo handle;
+    dvdfileinfo handle;
     if(!DVDFastOpen(entry, &handle)){
         HSD_Halt("Archive_GetFileSize: Could not open file");
     }
-    len = handle.length;
+    len = handle.len;
     DVDClose(&handle);
     IRQ_Restore(intr);
     return len;
@@ -98,7 +98,7 @@ void Archive_LoadFileIntoMemory(char* filename, void* mem, u32* filelength){
     sub_8038FD64(entry, 0, mem, *filelength + 0x1fU & 0xffffffe0, unk, 1, Archive_8001615C, 0);*/
 
     /* The below is unique to Fray in order to accomplish the file loading */
-    DVDFileInfo handle;
+    dvdfileinfo handle;
     if(!DVDFastOpen(entry, &handle)){
         HSD_Halt("Archive_LoadFileIntoMemory: Could not open file");
     }

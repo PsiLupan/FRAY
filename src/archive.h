@@ -6,7 +6,7 @@
 #include <gctypes.h>
 #include <ogc/irq.h>
 
-#include <dolphin/dvd.h>
+#include "ogcext/dvd.h"
 
 #include "hsd/hsd_debug.h"
 

@@ -1,5 +1,18 @@
 #include "init.h"
 
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <gccore.h>
+
+#include "hsd/hsd_init.h"
+#include "hsd/hsd_pad.h"
+#include "hsd/hsd_video.h"
+
+#include "ogcext/dvd.h"
+
+#include "scene.h"
+
 static u32 arena_size; //-0x5110(r13)
 static u64 sys_time;
 
@@ -37,7 +50,7 @@ int main(void){
 
 	SYS_Init();
 	VIDEO_Init();
-	DVD_Init();
+	DVDInit(); //Calls FRAY's custom OGCExt DVDInit
 	PAD_Init();
 
 	arena_size = (u32)SYS_GetArena1Hi() - (u32)SYS_GetArena1Lo();

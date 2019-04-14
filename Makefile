@@ -20,28 +20,28 @@ include $(DEVKITPPC)/gamecube_rules
 #---------------------------------------------------------------------------------
 TARGET		:= boot
 BUILD		:= build
-SOURCES		:= asm src
+SOURCES		:= asm src/ogcext/ src/hsd/ src
 INCLUDES	:= 
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS	= -O2 -mrvl -Wno-implicit-function-declaration $(MACHDEP) $(INCLUDE)
-CXXFLAGS	=	$(CFLAGS)
+CFLAGS	= -O0 -mrvl -Wno-implicit-function-declaration $(MACHDEP) $(INCLUDE)
+CXXFLAGS	= $(CFLAGS)
 
-LDFLAGS	=	$(MACHDEP) -mrvl -Wl,-Map,$(notdir $@).map,--section-start,.init=0x80003100
+LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map,--section-start,.init=0x80003100
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:=	-logc
+LIBS	:= -logc -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(CURDIR)
+LIBDIRS	:= $(CURDIR)/libs
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
@@ -84,7 +84,7 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 #---------------------------------------------------------------------------------
 export INCLUDE	:=	$(foreach dir,$(INCLUDES), -iquote $(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-					-I$(CURDIR)/$(BUILD) \
+					-I$(CURDIR)/$(BUILD) -I$(CURDIR)/include \
 					-I$(LIBOGC_INC)
 					
 #---------------------------------------------------------------------------------
