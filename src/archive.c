@@ -102,7 +102,7 @@ void Archive_LoadFileIntoMemory(char* filename, void* mem, u32* filelength){
     if(!DVDFastOpen(entry, &handle)){
         HSD_Halt("Archive_LoadFileIntoMemory: Could not open file");
     }
-    DVDReadAsync(&handle, mem, (*filelength + 0x1F) & 0xFFFFFFE0, 0, Archive_DVDCallback);
+    DVD_ReadAbsAsyncForBS(&handle.cmd, mem, (*filelength + 0x1F) & 0xFFFFFFE0, handle.addr, Archive_DVDCallback);
     s32 status = 0;
     do {
         status = Archive_GetFileLoadStatus();

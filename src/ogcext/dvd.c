@@ -4,18 +4,37 @@
 #include <ogc/irq.h>
 
 s32 dvd_fd = -1;
+static total_entries = 0; //r13_441C
+static char (*string_table)[] = NULL; //r13_4420
+static FSTEntry (*entry_table)[] = NULL; //r13_4424
+static u32* start_memory = NULL; //r13_4428
 static lwpq_t dvd_wait_queue;
+
+static void __DVDFSInit(){
+    start_memory = (u32*)(0x80000000);
+    entry_table = (FSTEntry*)start_memory[14]; //0x80000038 points to the start of the file system
+    if(entry_table == NULL){
+        return;
+    }
+    total_entries = (*entry_table)[0].len;
+    string_table = &entry_table[total_entries];
+}
 
 void DVDInit(){
     DVD_Init();
     DVD_Mount();
+    __DVDFSInit();
     LWP_InitQueue(&dvd_wait_queue);
 }
 
-
 BOOL DVDFastOpen(s32 entrynum, dvdfileinfo* fileinfo){
-    if(entrynum >= 0){
-        if(){
+    if(entrynum >= 0 && entrynum < total_entries){
+        u32 data = (*entry_table)[entrynum].data;
+        if((data & 0xFF000000) == T_FILE){
+            fileinfo->addr = = (*entry_table)[entrynum].addr;
+            fileinfo->len = (*entry_table)[entrynum].len;
+            fileinfo->cb = NULL;
+            fileinfo->cmd.state = 0;
             return TRUE;
         }
     }
