@@ -12,7 +12,7 @@
 #include "hsd_robj.h"
 
 #define JOBJ_INSTANCE(o) ((o->flags & 0x1000) == 0)
-#define JOBJ_USE_QUATERNION(o) ((o->flags & 0x20000) == 0)
+#define JOBJ_USE_QUATERNION(o) ((o->flags & 0x20000))
 #define union_type_dobj(o) ((o->flags & 0x4020) == 0)
 #define union_type_ptcl(o) ((o->flags & 0x20) != 0)
 
@@ -25,17 +25,17 @@ typedef struct _HSD_JObj {
 	struct _HSD_JObj* parent; //0x0C
 	struct _HSD_JObj* child; //0x10
 	u32 flags; //0x14
-	union {
+	union { //0x18
 		HSD_SList* ptcl;
 		struct _HSD_DObj* dobj;
 		f32* spline;
 	} u;
-	guQuaternion rotation;
-	guVector scale;
-	guVector position;
+	guQuaternion rotation; //0x1C - 0x28
+	guVector scale; //0x2C - 0x34
+	guVector position; //0x38 - 0x40
 	Mtx mtx;
-	guVector* pvec;
-	MtxP vmtx;
+	guVector* pvec; //0x74
+	MtxP vmtx; //0x78
 	struct _HSD_AObj* aobj; //0x7C
 	struct _HSD_RObj* robj; //0x80
 	struct _HSD_JObjDesc* desc;

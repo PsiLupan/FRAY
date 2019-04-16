@@ -99,7 +99,59 @@ void HSD_JObjWalkTree(HSD_JObj* jobj, void (*cb)(), u32 unk){
 
 //8036F1F8
 void HSD_JObjMakeMatrix(HSD_JObj* jobj){
-	
+	HSD_JObj* parent = jobj->parent;
+	if(parent != NULL){
+		if((parent->flags & 0x800000) == 0 && (parent->flags & 0x40) != 0){
+			HSD_JObjSetupMatrixSub(parent);
+		}
+	}
+	if((jobj->flags & 8) == 0){
+		if(jobj->pvec == NULL){
+			jobj->pvec = (guVector*)HSD_MemAlloc(sizeof(guVector));
+		}
+		if(parent != NULL){
+			guVector* pvec = parent->pvec;
+			if(pvec != NULL){
+				jobj->pvec->x = jobj->scale.x * parent->pvec->x;
+				jobj->pvec->y = jobj->scale.y * parent->pvec->y;
+				jobj->pvec->z = jobj->scale.z * parent->pvec->z
+			}
+		}else{
+			jobj->pvec->x = jobj->scale.x;
+			jobj->pvec->y = jobj->scale.y;
+			jobj->pvec->z = jobj->scale.z;
+		}
+	}else{
+		if(parent == NULL || parent->pvec == NULL){
+			if(jobj->pvec != NULL){
+				HSD_Free(jobj->pvec);
+				jobj->pvec = NULL;
+			}
+		}else{
+			if(jobj->pvec == NULL){
+				jobj->pvec = (guVector*)HSD_MemAlloc(sizeof(guVector));
+			}
+			jobj->pvec->x = parent->pvec->x;
+			jobj->pvec->y = parent->pvec->y;
+			jobj->pvec->z = parent->pvec->z;
+		}
+	}
+	guVector* vec = NULL;
+	if(parent != NULL && parent->pvec != NULL){
+		vec = parent->pvec;
+	}
+	if(JOBJ_USE_QUATERNION(jobj) != 0){
+		HSD_MtxSRTQuat(&mtx, &jobj->scale, &jobj->rotation, &jobj->position, vec);
+	}else{
+		HSD_MtxSRT(&mtx, &jobj->scale, &jobj->rotation, &jobj->position, vec);
+	}
+	if(parent != NULL){
+		guMtxConcat(&parent->mtx, &jobj->mtx, &jobj->mtx);
+	}
+
+	if(jobj->aobj != NULL){
+		
+	}
 }
 
 //8036F4C8
@@ -367,7 +419,7 @@ void JObjUpdateFunc(HSD_JObj* jobj, u32 type, f32* fval){
 						robj->xC_unk = *fval;
 					}
 				}
-				assert(JOBJ_USE_QUATERNION(jobj));
+				assert(JOBJ_USE_QUATERNION(jobj) == 0);
 				jobj->rotation.x = *fval;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
@@ -380,7 +432,7 @@ void JObjUpdateFunc(HSD_JObj* jobj, u32 type, f32* fval){
 				}
 				break;
 			case 2:
-				assert(JOBJ_USE_QUATERNION(jobj));
+				assert(JOBJ_USE_QUATERNION(jobj) == 0);
 				jobj->rotation.y = *fval;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
@@ -393,7 +445,7 @@ void JObjUpdateFunc(HSD_JObj* jobj, u32 type, f32* fval){
 				}
 				break;
 			case 3:
-				assert(JOBJ_USE_QUATERNION(jobj));
+				assert(JOBJ_USE_QUATERNION(jobj) == 0);
 				jobj->rotation.z = *fval;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
