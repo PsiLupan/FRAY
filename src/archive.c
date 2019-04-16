@@ -64,8 +64,9 @@ u32 Archive_GetDVDFileLengthByEntry(s32 entry){
 //800163D8
 u32 Archive_GetDVDFileLengthByName(char* filename){
     u32 len = 0;
-    char* file_path = sub_80016204(filename);
-    s32 entry = DVDConvertPathToEntrynum(file_path);
+    /*char* file_path = sub_80016204(filename);
+    s32 entry = DVDConvertPathToEntrynum(file_path);*/
+    s32 entry = DVDConvertFilenameToEntrynum(filename);
     if(entry == -1){
         HSD_Halt("Archive_GetFileSize: Could not locate file");
     }
@@ -83,8 +84,9 @@ u32 Archive_GetDVDFileLengthByName(char* filename){
 //8001668C
 void Archive_LoadFileIntoMemory(char* filename, void* mem, u32* filelength){
     file_load_status = 0;
-    //Archive_PathFromFilename(filename);
-    s32 entry = DVDConvertPathToEntrynum(filename);
+    /*Archive_PathFromFilename(filename);
+    s32 entry = DVDConvertPathToEntrynum(filename);*/
+    s32 entry = DVDConvertFilenameToEntrynum(filename);
     if(entry == -1){
         HSD_Halt("Archive_LoadFileIntoMemory: Could not locate file");
     }
@@ -102,7 +104,7 @@ void Archive_LoadFileIntoMemory(char* filename, void* mem, u32* filelength){
     if(!DVDFastOpen(entry, &handle)){
         HSD_Halt("Archive_LoadFileIntoMemory: Could not open file");
     }
-    DVD_ReadAbsAsyncForBS(&handle.cmd, mem, (*filelength + 0x1F) & 0xFFFFFFE0, handle.addr, Archive_DVDCallback);
+    DVD_ReadAbsAsyncForBS(&handle.block, mem, (*filelength + 0x1F) & 0xFFFFFFE0, handle.addr, Archive_DVDCallback);
     s32 status = 0;
     do {
         status = Archive_GetFileLoadStatus();

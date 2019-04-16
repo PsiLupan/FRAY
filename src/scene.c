@@ -2,20 +2,33 @@
 
 GameState gamestate;
 
+#define END_MINOR {0xFF, 0, 0, NULL, NULL, 0, 0, 0, 0, NULL, NULL}
 
 MinorScene GmTitle_Minors[2] = {
   {0, 3, 0, Menu_Title_Prep, Menu_Title_Decide, 0, 0, 0, 0, NULL, NULL/*struct 804D6878*/}, 
-  {0xFF, 0, 0, NULL, NULL, 0, 0, 0, 0, NULL, NULL}
-};
+  END_MINOR
+}; //803DD6A0
 
-MinorSceneHandler class_0 = {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL};
+MinorScene GmOpening_Progressive_Minors[2] = {
+  {0, 2, 0, Menu_Opening_ProgressiveScan_Prep, Menu_Opening_ProgressiveScan_Decide, 40, 0, 0, 0, NULL, NULL /*0x804D6938, 0x804D693C*/},
+  END_MINOR
+}; //803DFDA8
+
+MinorScene GmOpening_Minors[2] = {
+  {0, 1, 0, Menu_Opening_Prep, Menu_Opening_Decide, 42, 0, 0, 0, NULL, NULL /*0x804D6940, 0x804D6948*/},
+  END_MINOR
+}; //803DFDD8
 
 MinorSceneHandler scene_handlers[45] = {
-  {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL}
+  {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL},
+  {40, 0, 0, Scene_Minor_Class40_OnFrame, Scene_Minor_Class40_OnLoad, Scene_Minor_Class40_OnLeave, NULL}
 }; //803DA920 - 45 in length
 
-MajorScene major_scenes[45] = {
-  {1, 0, 0, NULL, NULL, NULL, &GmTitle_Minors}
+MajorScene major_scenes[46] = {
+  {1, 0, 0, NULL, NULL, NULL, &GmTitle_Minors},
+  {0, 39, 0, NULL, NULL, NULL, &GmOpening_Progressive_Minors},
+  {1, 40, 0, NULL, NULL, NULL, &GmOpening_Minors},
+  {0, 45, 0, NULL, NULL, NULL, NULL}
 }; //803DACA4
 
 static void* scene_sobj_desc; //0x4EB0(r13)
@@ -571,8 +584,8 @@ OUT:
 }
 
 //801A427C
-u32 sub_801A427C(u32 a1){
-  return *(u32 *)(a1 + 16);
+u32* Scene_Get10(GameState* state){
+  return (u32*)state->unk10;
 }
 
 //801A4284
@@ -874,6 +887,21 @@ MajorScene* Scene_GetMajorScenes(){
 u8* Scene_ZeroFillPtr(){
 	memset(&menu_804D6730, 0, 6);
 	return &menu_804D6730[5];
+}
+
+//801AD620
+static void Scene_Minor_Class40_OnFrame(){
+
+}
+
+//801AD874
+static void Scene_Minor_Class40_OnLoad(){
+
+}
+
+//801AD8EC
+static void Scene_Minor_Class40_OnLeave(){
+
 }
 
 //8022BFBC

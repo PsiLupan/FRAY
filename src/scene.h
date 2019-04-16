@@ -25,6 +25,7 @@
 #include "scGmRst.h"
 #include "scGmTitle.h"
 #include "scGmTrain.h"
+#include "scOpening.h"
 
 //Length: 0x14(20)
 typedef struct _GameState {
@@ -104,6 +105,10 @@ void Scene_CopyDataToCache();
 
 static void Scene_Minor_Class0_OnFrame();
 static void Scene_Minor_Class0_OnLoad();
+
+static void Scene_Minor_Class40_OnFrame();
+static void Scene_Minor_Class40_OnLoad();
+static void Scene_Minor_Class40_OnLeave();
 
 void Scene_801A36A0(u32, u32 *, u32 *);
 

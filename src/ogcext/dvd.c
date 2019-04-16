@@ -3,7 +3,9 @@
 #include <ogc/lwp.h>
 #include <ogc/irq.h>
 
-s32 dvd_fd = -1;
+static s32 status = 0;
+static dvdcallback cb = NULL; //r13_43E4
+static u32 status = 0; //r13_43E8
 static total_entries = 0; //r13_441C
 static char (*string_table)[] = NULL; //r13_4420
 static FSTEntry (*entry_table)[] = NULL; //r13_4424
@@ -17,7 +19,7 @@ static void __DVDFSInit(){
         return;
     }
     total_entries = (*entry_table)[0].len;
-    string_table = &entry_table[total_entries];
+    string_table = &(*entry_table)[total_entries];
 }
 
 void DVDInit(){
@@ -31,10 +33,10 @@ BOOL DVDFastOpen(s32 entrynum, dvdfileinfo* fileinfo){
     if(entrynum >= 0 && entrynum < total_entries){
         u32 data = (*entry_table)[entrynum].data;
         if((data & 0xFF000000) == T_FILE){
-            fileinfo->addr = = (*entry_table)[entrynum].addr;
+            fileinfo->addr = (*entry_table)[entrynum].addr;
             fileinfo->len = (*entry_table)[entrynum].len;
             fileinfo->cb = NULL;
-            fileinfo->cmd.state = 0;
+            fileinfo->block.state = 0;
             return TRUE;
         }
     }
@@ -45,38 +47,83 @@ static void cbForCancelAsync(s32 result, dvdcmdblk* cmd){
     LWP_ThreadBroadcast(dvd_wait_queue);
 }
 
-BOOL DVDCancelAsync(dvdcmdblk* cmd, dvdcbcallback callback){
+BOOL DVDCancelAsync(dvdcmdblk* cmd, dvdcallback callback){
     u32 intr = IRQ_Disable();
     switch(cmd->state){
-        case 1:{
-
+        case DVD_STATE_BUSY:{
+            
         }
         break;
 
-        case 2:{
-
+        case DVD_STATE_WAITING:{
+            if(cmd->cb != NULL){
+                (*cmd->cb)(0, cmd);
+            }
         }
         break;
 
         case 3:{
-
+            switch(cmd->cmd){
+                case 4:
+                case 5:
+                case 13:
+                case 15:{
+                    if(callback != NULL){
+                        (*callback)(0, cmd);
+                    }
+                }
+                if(status != 0){
+                    IRQ_Restore(intr);
+                    return 0;
+                }
+                cb = callback;
+                status = 1;
+                break;
+            }
         }
         break;
 
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 11:{
+        case DVD_STATE_NO_DISK:
+        case DVD_STATE_COVER_OPEN:
+        case DVD_STATE_WRONG_DISK:
+        case DVD_STATE_MOTOR_STOPPED:
+        case DVD_STATE_RETRY:{
+            switch(cmd->state){
+                case 4:
+                status = 3;
+                break;
 
-        }
-        break;
+                case 5:
+                status = 4;
+                break;
 
-        case -1:
-        case 0:
-        case 10:{
+                case 6:
+                status = 1;
+                break;
+
+                case 7:
+                status = 7;
+                break;
+
+                case 11:
+                status = 1;
+                break;
+            }
+            cmd->state = 10;
+            if(cmd->cb != NULL){
+                (*cmd->cb)(DVD_ERROR_CANCELED, cmd);
+            }
             if(callback != NULL){
                 (*callback)(0, cmd);
+            }
+        }
+        break;
+
+        case DVD_STATE_FATAL_ERROR:
+        case DVD_STATE_END:
+        case DVD_STATE_CANCELED:{
+            if(callback != NULL){
+                (*callback)(DVD_ERROR_OK, cmd);
             }
         }
         break;
@@ -92,7 +139,7 @@ s32 DVDCancel(dvdcmdblk* cmd){
         u32 intr = IRQ_Disable();
         while(true){
             s32 state = cmd->state;
-            if(1 >= (state + 1) || state == 10 || state == 3){
+            if(1 >= (state + 1) || state == DVD_STATE_CANCELED || state == DVD_STATE_COVER_CLOSED){
                 break;
             }
             u32 command = cmd->cmd;
@@ -107,6 +154,23 @@ s32 DVDCancel(dvdcmdblk* cmd){
 }
 
 BOOL DVDClose(dvdfileinfo* fileinfo){
-    DVDCancel(&fileinfo->block);
+    //DVDCancel(&fileinf->cmd);
+    DVD_Reset(DVD_RESETSOFT);
     return TRUE;
+}
+
+/* 
+Cheater function where we have a lookup table to respond to every request
+*/
+s32 DVDConvertFilenameToEntrynum(char* filename){
+    for(entry *p = files; files->name != NULL; ++p){
+        if(strcmp(p->name, filename) == 0){
+            return p->entrynum;
+        }
+    }
+    return -1;
+}
+
+s32 DVDConvertPathToEntrynum(char* filepath){
+    
 }
