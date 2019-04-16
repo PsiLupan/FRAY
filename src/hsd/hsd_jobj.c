@@ -150,7 +150,17 @@ void HSD_JObjMakeMatrix(HSD_JObj* jobj){
 	}
 
 	if(jobj->aobj != NULL){
-		
+		HSD_JObj* aj = (HSD_JObj*)jobj->aobj->hsd_obj;
+		if(aj != NULL){
+			if((aj->flags & 0x800000) == 0 && (aj->flags & 0x40) != 0){
+				HSD_JObjSetupMatrixSub(parent);
+			}
+			guVector rvec;
+			guVecMultiply(&ja->mtx, &jobj->position, &rvec);
+			guMtxRowCol(jobj->mtx, 0, 4) = rvec.x;
+			guMtxRowCol(jobj->mtx, 1, 4) = rvec.y;
+			guMtxRowCol(jobj->mtx, 2, 4) = rvec.z;
+		}
 	}
 }
 
