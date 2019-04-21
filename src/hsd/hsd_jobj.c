@@ -156,7 +156,7 @@ void HSD_JObjMakeMatrix(HSD_JObj* jobj){
 				HSD_JObjSetupMatrixSub(parent);
 			}
 			guVector rvec;
-			guVecMultiply(&ja->mtx, &jobj->position, &rvec);
+			guVecMultiply(&aj->mtx, &jobj->position, &rvec);
 			guMtxRowCol(jobj->mtx, 0, 4) = rvec.x;
 			guMtxRowCol(jobj->mtx, 1, 4) = rvec.y;
 			guMtxRowCol(jobj->mtx, 2, 4) = rvec.z;
