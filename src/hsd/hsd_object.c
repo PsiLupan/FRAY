@@ -24,25 +24,25 @@ void HSD_ObjSetHeap(u32 size, void* start){
 static HSD_ObjDef* current_obj = NULL;
 
 //8037A968
-void HSD_ObjAllocAddFree(HSD_ObjDef* obj_def, u32 unk){
+void HSD_ObjAllocAddFree(HSD_ObjDef* obj_def, u32 num){
 	assert(obj_def != NULL);
 }
 
 //8037ABC8
 void* HSD_ObjAlloc(HSD_ObjDef* obj_def){
-	if( ((obj_def->flags >> 7) & 1) && (obj_def->unk_ctr >= obj_def->unk_14) ){
+	if( ((obj_def->flags >> 7) & 1) && (obj_def->used >= obj_def->num_limit) ){
 		return NULL;
 	}
 	if( ((obj_def->flags >> 6) & 1) ){
-		if(obj_def->unk_1C == -1){
+		if(obj_def->heap_limit_num == -1){
 			u64 bytes_avail;
 			if(objheap.heap_start){
 				bytes_avail = objheap.bytes_remaining;
 			}else{
 				bytes_avail = SYS_GetArena1Size();
 			}
-			if(bytes_avail <= obj_def->obj_size){
-				obj_def->unk_1C = obj_def->unk_ctr + obj_def->unk_ctr2;
+			if(bytes_avail <= obj_def->heap_limit_size){
+				obj_def->heap_limit_num = obj_def->used + obj_def->free;
 			}
 		}else{
 			u64 bytes_avail;
@@ -51,37 +51,37 @@ void* HSD_ObjAlloc(HSD_ObjDef* obj_def){
 			}else{
 				bytes_avail = SYS_GetArena1Size();
 			}
-			if(bytes_avail > obj_def->obj_size){
-				obj_def->unk_1C = -1;
+			if(bytes_avail > obj_def->heap_limit_size){
+				obj_def->heap_limit_num = -1;
 			}
 		}
 	}
-	if(obj_def->unk_ctr2 == 0){
+	if(obj_def->free == 0){
 		HSD_ObjAllocAddFree(obj_def, 1);
-		if(obj_def->unk_ctr2 == 0){
+		if(obj_def->free == 0){
 			return NULL;
 		}
 	}
-	void* obj_ptr = *obj_def->obj_ptr;
-	obj_def->obj_ptr = obj_ptr;
-	obj_def->unk_ctr += 1;
-	obj_def->unk_ctr2 -= 1;
-	if(obj_def->unk_ctr > obj_def->unk_ctr3){
-		obj_def->unk_ctr3 = obj_def->unk_ctr;
+	HSD_ObjAllocLink* obj_ptr = obj_def->freehead->next;
+	obj_def->freehead->next = obj_ptr;
+	obj_def->used += 1;
+	obj_def->free -= 1;
+	if(obj_def->used > obj_def->peak){
+		obj_def->peak = obj_def->used;
 	}
 	return obj_ptr;
 }
 
 //8037AD20
 void HSD_ObjFree(HSD_ObjDef* init_obj, u32* obj){
-	obj[0] = init_obj->obj_ptr;
-	init_obj->obj_ptr = (void*)&obj;
-	init_obj->unk_ctr2 += 1;
-	init_obj->unk_ctr -= 1;
+	obj[0] = init_obj->freehead->next;
+	init_obj->freehead->next = (HSD_ObjAllocLink*)obj;
+	init_obj->free += 1;
+	init_obj->used -= 1;
 }
 
 //8037AD48
-void HSD_ObjAllocInit(HSD_ObjDef* init_obj, u32 size, u32 count){
+void HSD_ObjAllocInit(HSD_ObjDef* init_obj, u32 size, u32 align){
 	assert(init_obj != NULL);
 	HSD_ObjDef* obj = current_obj;
 	while(obj != NULL){
@@ -92,11 +92,11 @@ void HSD_ObjAllocInit(HSD_ObjDef* init_obj, u32 size, u32 count){
 		}
 	}
 	memset(init_obj, 0, 0x2Cu);
-	init_obj->unk_14 = -1;
-	init_obj->obj_size = 0;
-	init_obj->unk_1C = -1;
-	init_obj->unk_24 = count - 1;
-	init_obj->unk_20 = (size + init_obj->unk_24) & ~init_obj->unk_24;
+	init_obj->num_limit = -1;
+	init_obj->heap_limit_size = 0;
+	init_obj->heap_limit_num = -1;
+	init_obj->align = align - 1;
+	init_obj->size = (size + init_obj->align) & ~init_obj->align;
 	init_obj->next = current_obj;
 	current_obj = init_obj;
 }

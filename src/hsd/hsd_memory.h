@@ -9,21 +9,16 @@
 
 typedef u32* HSD_ID;
 
-typedef struct _HSD_MemPiece {
-    struct _HSD_MemPiece* next;
-    u32 x4_unk;
-    u32 x8_unk;
-    u32 xC_unk;
-    u32 x10_unk;
-} HSD_MemPiece;
+typedef struct _HSD_FreeList {
+    struct _HSD_FreeList* next;
+} HSD_FreeList;
 
 typedef struct _HSD_MemoryEntry {
-    u32 total_bits;
-    u32 x4_unk;
-    u32 free_pieces;
-    struct _HSD_MemPiece* data;
-    struct _HSD_MemoryEntry* next;
-    u32 x14_unk;
+    u32 total_bits; //0x00
+    u32 nb_alloc; //0x04
+    u32 nb_free; //0x08
+    struct _HSD_FreeList* data; //0x0C
+    struct _HSD_MemoryEntry* next; //0x10
 } HSD_MemoryEntry;
 
 void HSD_Free(void* ptr);
