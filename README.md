@@ -1,4 +1,4 @@
-# What is FRAY?
+# What is FRAY? [![Build Status](https://www.travis-ci.org/PsiLupan/FRAY.svg?branch=master)](https://www.travis-ci.org/PsiLupan/FRAY)
 FRAY is a intended to be a recompilable version of the Super Smash Bros. Melee NTSC 1.02 DOL (or DOLphin executable). The term "fray" itself is a synonym to "melee," as I prefer not to infringe on "brawl" or the original game's name.
 
 Unlike other projects, FRAY does not currently intend to integrate a mix of ASM and C, unless it becomes necessary for certain functions like Dolphin SDK or HAL library components that are largely optimized for ASM.
