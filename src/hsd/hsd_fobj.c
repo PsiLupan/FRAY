@@ -153,9 +153,10 @@ static u16 parseOpCode(u8* curr_parse){
         return ((parse_start >> 4) & 7) + 1;
     }
     result = ((parse_start >> 4) & 7) + 1;
-
+    
+    u8 parse;
     do {
-        u8 parse = *curr_parse;
+        parse = *curr_parse;
         curr_parse += 1;
         result += parse & 0x7F << lshift;
         lshift += 7;
