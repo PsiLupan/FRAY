@@ -21,6 +21,10 @@ typedef struct _HSD_MemoryEntry {
     struct _HSD_MemoryEntry* next; //0x10
 } HSD_MemoryEntry;
 
+typedef struct _HSD_MemPiece {
+    struct _HSD_MemPiece* next;
+} HSD_MemPiece;
+
 void HSD_Free(void* ptr);
 void* HSD_MemAlloc(u32);
 
