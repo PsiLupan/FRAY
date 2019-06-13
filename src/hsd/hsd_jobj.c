@@ -141,9 +141,9 @@ void HSD_JObjMakeMatrix(HSD_JObj* jobj){
 		vec = parent->pvec;
 	}
 	if(JOBJ_USE_QUATERNION(jobj) != 0){
-		HSD_MtxSRTQuat(&mtx, &jobj->scale, &jobj->rotation, &jobj->position, vec);
+		HSD_MtxSRTQuat(&jobj->mtx, &jobj->scale, &jobj->rotation, &jobj->position, vec);
 	}else{
-		HSD_MtxSRT(&mtx, &jobj->scale, &jobj->rotation, &jobj->position, vec);
+		HSD_MtxSRT(&jobj->mtx, &jobj->scale, &jobj->rotation, &jobj->position, vec);
 	}
 	if(parent != NULL){
 		guMtxConcat(&parent->mtx, &jobj->mtx, &jobj->mtx);
