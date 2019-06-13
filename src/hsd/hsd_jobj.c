@@ -114,7 +114,7 @@ void HSD_JObjMakeMatrix(HSD_JObj* jobj){
 			if(pvec != NULL){
 				jobj->pvec->x = jobj->scale.x * parent->pvec->x;
 				jobj->pvec->y = jobj->scale.y * parent->pvec->y;
-				jobj->pvec->z = jobj->scale.z * parent->pvec->z
+				jobj->pvec->z = jobj->scale.z * parent->pvec->z;
 			}
 		}else{
 			jobj->pvec->x = jobj->scale.x;
