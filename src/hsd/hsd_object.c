@@ -155,7 +155,7 @@ static void _hsdClassDestroy(HSD_ClassInfo* info){
 		HSD_MemoryEntry* entry = GetMemoryEntry((size >> 5) + (u32)((s32)size < 0 && (size & 0x1F) != 0) + -1);
 		((HSD_MemPiece*)info)->next = entry->data;
 		entry->data = (HSD_MemPiece*)info;
-		entry->free_pieces += 1;
+		entry->nb_free += 1;
 	}
 }
 
