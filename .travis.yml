@@ -5,8 +5,8 @@ env:
   - DEVKITPRO=/opt/devkitpro DEVKITARM=${DEVKITPRO}/devkitARM DEVKITPPC=${DEVKITPRO}/devkitPPC PATH=${DEVKITPRO}/tools/bin:$PATH
 
 before_install:
-  - curl -o devkitpro.pkg 'https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman-installer.pkg'
-  - sudo installer -pkg devkitpro.pkg -target /
+  - curl -o devkitpro.pkg -LJO 'https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman-installer.pkg'
+  - sudo installer -allowUntrusted -verboseR -pkg "$(pwd)/devkitpro.pkg" -target /
   - sudo dkp-pacman -S gamecube-dev wii-dev --noconfirm
 
 script:
