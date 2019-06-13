@@ -88,7 +88,7 @@ typedef struct _MinorScene {
 	void* unk_struct_1;
 } MinorScene;
 
-extern MajorScene major_scenes[45];
+extern MajorScene major_scenes[46];
 
 typedef struct _unk_8046B0F0 {
 	u32 unk00;
