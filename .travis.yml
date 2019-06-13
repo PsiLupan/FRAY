@@ -6,10 +6,7 @@ cache:
     - $HOME/Library/Caches/Homebrew
 
 env:
-  - DEVKITPRO=/opt/devkitpro
-  - DEVKITARM=${DEVKITPRO}/devkitARM
-  - DEVKITPPC=${DEVKITPRO}/devkitPPC
-  - PATH=${DEVKITPRO}/tools/bin:$PATH
+  - DEVKITPRO=/opt/devkitpro DEVKITARM=${DEVKITPRO}/devkitARM DEVKITPPC=${DEVKITPRO}/devkitPPC PATH=${DEVKITPRO}/tools/bin:$PATH
 
 before_install:
   - brew update
