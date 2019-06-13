@@ -3,6 +3,12 @@ FRAY is a intended to be a recompilable version of the Super Smash Bros. Melee N
 
 Unlike other projects, FRAY does not currently intend to integrate a mix of ASM and C, unless it becomes necessary for certain functions like Dolphin SDK or HAL library components that are largely optimized for ASM.
 
+## Is there a Patcher to drop in these functions to the existing game?
+
+Not at present, though if someone has or is willing to create one, I'm open to it. 
+
+I've looked at Hanafuda (https://github.com/AxioDL/hanafuda) and besides the LLVM toolchain crashing outright with an undecipherable exception, it'd take too much work for me to get it working for me.
+
 ## What is the current progress?
 The codebase fluctuates quite often between compilable and non-compilable due to my regular contribution of bad/broken code. A rough estimate of progress around the codebase itself is that HAL's sysdolphin library is nearly recreated and the boot code, with a skip directly to the Title Screen scene, is close to rendering the Title.
 
