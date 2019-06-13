@@ -3,7 +3,6 @@
 #include <ogc/lwp.h>
 #include <ogc/irq.h>
 
-static s32 status = 0;
 static dvdcallback cb = NULL; //r13_43E4
 static u32 status = 0; //r13_43E8
 static total_entries = 0; //r13_441C
