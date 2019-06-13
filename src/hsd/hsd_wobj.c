@@ -55,7 +55,7 @@ static void WObjUpdateFunc(HSD_WObj* wobj, u32 type, f32* fval){
                 assert(fobj != NULL);
 
                 guVector pos;
-                splArcLengthPoint(&pos, &fobj->unk18, *fval);
+                splArcLengthPoint(&pos, &fobj->startframe, *fval);
                 HSD_WObjSetPosition(wobj, &pos);
                 wobj->flags |= 1;
             }
