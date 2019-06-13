@@ -1,24 +1,16 @@
 os: osx
 language: c
 
-cache:
-  directories:
-    - $HOME/Library/Caches/Homebrew
-
 env:
   - DEVKITPRO=/opt/devkitpro DEVKITARM=${DEVKITPRO}/devkitARM DEVKITPPC=${DEVKITPRO}/devkitPPC PATH=${DEVKITPRO}/tools/bin:$PATH
 
 before_install:
-  - brew update
   - curl -o devkitpro.pkg 'https://github.com/devkitPro/pacman/releases/download/devkitpro-pacman-1.0.1/devkitpro-pacman-installer.pkg'
   - sudo installer -pkg devkitpro.pkg -target /
   - sudo dkp-pacman -S gamecube-dev wii-dev --noconfirm
 
 script:
   - make
-  
-before_cache:
-  - brew cleanup
 
 notifications:
   email: false
