@@ -428,7 +428,7 @@ void HSD_LObjSetupInit(HSD_CObj *cobj){
   lightmask_specular = GX_LIGHTNULL;
   lightmask_attnfunc = GX_LIGHTNULL;
   lightmask_alpha    = GX_LIGHTNULL;
-  vmtx = HSD_CObjGetViewingMtxPtrDirect(cobj);
+  vmtx = (MtxP)HSD_CObjGetViewingMtxPtrDirect(cobj);
 
   idx = 0;
 
@@ -533,7 +533,7 @@ void HSD_LObjAddCurrent(HSD_LObj *lobj){
 				break;
 			}
 		}
-		*listp = HSD_SListPrepend(*listp, lobj);
+		*listp = (HSD_SList*)HSD_SListPrepend(*listp, lobj);
 	}
 }
 
@@ -552,7 +552,7 @@ void HSD_LObjDeleteCurrent(HSD_LObj *lobj){
 					active_lights[i] = NULL;
 				}
 			}
-			(*p) = HSD_SListRemove(*p);
+			(*p) = (HSD_SList*)HSD_SListRemove(*p);
 			HSD_LObjUnref(lobj);
 			return;
 		}
@@ -569,7 +569,7 @@ void HSD_LObjDeleteCurrentAll(HSD_LObj *lobj){
 		HSD_LObjClearActive();
 		while (current_lights) {
 			HSD_LObjUnref((HSD_LObj *)(current_lights->data));
-			current_lights = HSD_SListRemove(current_lights);
+			current_lights = (HSD_SList*)HSD_SListRemove(current_lights);
 		}
 	}
 }
@@ -807,14 +807,14 @@ HSD_LObj* HSD_LObjLoadDesc(HSD_LightDesc *ldesc){
   for (; ldesc; ldesc = ldesc->next) {
     HSD_ClassInfo *info;
 
-    if (!ldesc->class_name || !(info = hsdSearchClassInfo(ldesc->class_name))){
-			info = &hsdLObj;
+    if (!ldesc->class_name || !(info = (HSD_ClassInfo*)hsdSearchClassInfo(ldesc->class_name))){
+			info = (HSD_ClassInfo*)&hsdLObj;
 			if(default_class != NULL){
-				info = default_class;
+				info = (HSD_ClassInfo*)default_class;
 			}
-      *p = hsdNew(info);
+      *p = (HSD_LObj*)hsdNew(info);
     } else {
-      *p = hsdNew(info);
+      *p = (HSD_LObj*)hsdNew(info);
     }
 		assert(*p);
     HSD_LOBJ_METHOD(*p)->load(*p, ldesc);
