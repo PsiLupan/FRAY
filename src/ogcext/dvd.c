@@ -5,7 +5,7 @@
 
 static dvdcallback cb = NULL; //r13_43E4
 static u32 status = 0; //r13_43E8
-static total_entries = 0; //r13_441C
+static u32 total_entries = 0; //r13_441C
 static char (*string_table)[] = NULL; //r13_4420
 static FSTEntry (*entry_table)[] = NULL; //r13_4424
 static u32* start_memory = NULL; //r13_4428

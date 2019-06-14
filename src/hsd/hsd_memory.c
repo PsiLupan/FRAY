@@ -10,7 +10,7 @@ static u32* hsd_idtable[101]; //804C23EC
 
 //8037CD80
 u32* HSD_IDGetAllocData(){
-	return &hsd_iddata;
+	return (u32*)&hsd_iddata;
 }
 
 //8037CD8C
@@ -26,32 +26,32 @@ void* HSD_IDSetup(){
 //8037CDEC
 void HSD_IDInsertToTable(u32** id_table, u32* id, u8** j){
 	if(id_table == NULL){
-		id_table = &hsd_idtable;
+		id_table = (u32**)&hsd_idtable;
 	}
-	u32* unk1 = (id_table + ((uintptr_t)id % 101) * 4); 
-	u32* unk2 = *unk1; 
-	while(unk2 != NULL && unk2[1] == id){
+	u32* unk1 = (u32*)(id_table + ((uintptr_t)id % 101) * 4); 
+	u32* unk2 = (u32*)*unk1; 
+	while(unk2 != NULL && (u32*)unk2[1] == id){
 		unk2 = (u32*)*unk2;
 	}
 	if(unk2 == NULL){
 		unk2 = HSD_ObjAlloc(&hsd_iddata);
 		assert(unk2 != NULL);
 		memset(unk2, 0, 12);
-		unk2[1] = id;
-		unk2[2] = j;
+		unk2[1] = (u32)id;
+		unk2[2] = (u32)j;
 		unk2[0] = unk1[0];
-		unk1[0] = unk2;
+		unk1[0] = (u32)unk2;
 
 	}else{
-		unk2[1] = id;
-		unk2[2] = j;
+		unk2[1] = (u32)id;
+		unk2[2] = (u32)j;
 	}
 }
 
 //8037CEE8
 void HSD_IDRemoveByIDFromTable(u32* id_table, u32* id){
 	if(id_table == NULL){
-		id_table = &hsd_idtable;
+		id_table = (u32*)&hsd_idtable;
 	}
 	u32* unk1 = (id_table + ((uintptr_t)id % 101) * 4);
 	u32* unk2 = NULL;
@@ -61,7 +61,7 @@ void HSD_IDRemoveByIDFromTable(u32* id_table, u32* id){
 		if (unk2 == NULL) {
 			return;
 		}
-		if (unk2[1] == id) 
+		if ((u32*)unk2[1] == id) 
 			break;
 		unk1 = (u32*)*unk2;
 		unk3 = unk2;
@@ -77,7 +77,7 @@ void HSD_IDRemoveByIDFromTable(u32* id_table, u32* id){
 //8037CF98
 void HSD_IDGetDataFromTable(u32* id_table, u32* id, u8* val){
 	if(id_table == NULL){
-		id_table = &hsd_idtable;
+		id_table = (u32*)&hsd_idtable;
 	}
 	u32* unk = (id_table + ((uintptr_t)id % 101) * 4);
 	while(true){
