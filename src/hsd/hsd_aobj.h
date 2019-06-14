@@ -7,6 +7,12 @@
 
 #include "hsd_fobj.h"
 
+#define REWINDED   (1<<26)
+#define FIRST_PLAY (1<<27)
+#define NO_UPDATE  (1<<28)
+#define LOOP	   (1<<29)
+#define NO_ANIM    (1<<30)
+
 //Animation Object
 typedef struct _HSD_AObj {
 	u32 flags;
