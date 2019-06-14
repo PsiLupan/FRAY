@@ -146,14 +146,14 @@ HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc){
 			HSD_AObjSetRewindFrame(aobj, 0.0f);
 			HSD_AObjSetEndFrame(aobj, aobjdesc->end_frame);
 			
-			HSD_FObj* fobj = HSD_FObjLoadDesc(aobjdesc->fobjdesc);
+			HSD_FObj* fobj = (HSD_FObj*)HSD_FObjLoadDesc(aobjdesc->fobjdesc);
 			if(aobj->fobj != NULL)
 				HSD_FObjRemoveAll(aobj->fobj);
 			aobj->fobj = fobj;
 			
 			u32 id = aobjdesc->obj_id;
 			if(id){
-				HSD_Class* hsdObj = HSD_IDGetDataFromTable(0, id, 0);
+				HSD_Class* hsdObj = (HSD_Class*)HSD_IDGetDataFromTable(0, id, 0);
 				void* obj = (void*)hsdObj;
 				
 				if(hsdObj){
