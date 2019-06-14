@@ -128,7 +128,7 @@ void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, cha
 
 //803821C4
 static void _hsdClassAlloc(HSD_ClassInfo* info){
-	HSD_MemPiece* mem_piece = hsdAllocMemPiece(info->obj_size);
+	HSD_FreeList* mem_piece = hsdAllocMemPiece(info->obj_size);
 	if(mem_piece != NULL){
 		info->active_objs += 1;
 		if(info->total_allocs < info->active_objs){
@@ -153,8 +153,8 @@ static void _hsdClassDestroy(HSD_ClassInfo* info){
 		info->active_objs -= 1;
 		u32 size = info->obj_size + 0x1F;
 		HSD_MemoryEntry* entry = GetMemoryEntry((size >> 5) + (u32)((s32)size < 0 && (size & 0x1F) != 0) + -1);
-		((HSD_MemPiece*)info)->next = entry->data;
-		entry->data = (HSD_MemPiece*)info;
+		((HSD_FreeList*)info)->next = entry->data;
+		entry->data = (HSD_FreeList*)info;
 		entry->nb_free += 1;
 	}
 }
