@@ -71,7 +71,7 @@ void HSD_AObjInvokeCallBacks(){
 void HSD_AObjReqAnim(HSD_AObj *aobj, f32 frame){
 	if(aobj){
 		aobj->curr_frame = frame;
-		aobj->flags = aobj->flags & 0xBFFFFFFF | 0x8000000;
+		aobj->flags = aobj->flags & 0xBFFFFFFF | AOBJ_FIRST_PLAY;
 		HSD_FObjReqAnimAll(aobj->fobj, frame);
 	}
 }
@@ -80,7 +80,7 @@ void HSD_AObjReqAnim(HSD_AObj *aobj, f32 frame){
 void HSD_AObjStopAnim(HSD_AObj *aobj, void* obj, void (*callback)()){
 	if(aobj){
 		HSD_FObjStopAnimAll(aobj->fobj, obj, callback, aobj->framerate);
-		aobj->flags |= 0x40000000u;
+		aobj->flags |= AOBJ_NO_ANIM;
 	}
 }
 
@@ -90,8 +90,8 @@ void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void (*updatecb)())
 	f32 curr_frame = 0;
 	
 	if(aobj){
-		if(!(aobj->flags & 0x40000000)){
-			if(aobj->flags & 0x8000000){
+		if(!(aobj->flags & AOBJ_NO_ANIM)){
+			if(aobj->flags & AOBJ_FIRST_PLAY){
 				aobj->flags &= 0xF7FFFFFF;
 				framerate = 300.0f;
 			}else{
@@ -101,7 +101,7 @@ void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void (*updatecb)())
 				aobj->curr_frame = curr_frame;
 			}
 
-			if((aobj->flags & 0x20000000) && (aobj->end_frame <= aobj->curr_frame)){
+			if((aobj->flags & AOBJ_LOOP) && (aobj->end_frame <= aobj->curr_frame)){
 				if(aobj->rewind_frame >= aobj->end_frame){
 					aobj->curr_frame = aobj->end_frame;
 				}else{
@@ -113,22 +113,23 @@ void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void (*updatecb)())
 					HSD_FObjReqAnimAll(aobj->fobj, aobj->curr_frame);
 				}
 				framerate = 300.0f;
-				aobj->flags |= 0x4000000u;
+				aobj->flags |= AOBJ_REWINDED;
 			}else{
 				aobj->flags &= 0xFBFFFFFF;
 			}
 			
-			if(aobj->flags & 0x10000000)
+			if(aobj->flags & AOBJ_NO_UPDATE){
 				HSD_FObjInterpretAnimAll(aobj->fobj, caller_obj, updatecb, 0);
-			else
+			}else{
 				HSD_FObjInterpretAnimAll(aobj->fobj, caller_obj, updatecb, framerate);
-			
-			if(!(aobj->flags & 0x20000000) && (aobj->end_frame <= aobj->curr_frame)){
-				HSD_FObjStopAnimAll(aobj->fobj, caller_obj, updatecb, aobj->framerate);
-				aobj->flags |= 0x40000000u;
 			}
 			
-			if(aobj->flags & 0x40000000){
+			if(!(aobj->flags & AOBJ_LOOP) && (aobj->end_frame <= aobj->curr_frame)){
+				HSD_FObjStopAnimAll(aobj->fobj, caller_obj, updatecb, aobj->framerate);
+				aobj->flags |= AOBJ_NO_ANIM;
+			}
+			
+			if(aobj->flags & AOBJ_NO_ANIM){
 				r13_4074 += 1;
 			}else{
 				r13_4070 += 1;
@@ -196,7 +197,7 @@ HSD_AObj* HSD_AObjAlloc(){
 	HSD_AObj *aobj = HSD_AOBJ(HSD_ObjAlloc(&aobj_alloc_data));
 	assert(aobj);
 	memset(aobj, 0, sizeof(aobj));
-	aobj->flags = 0x40000000;
+	aobj->flags = AOBJ_NO_ANIM;
 	aobj->framerate = 1.0f;
 	return aobj;
 }
@@ -227,9 +228,9 @@ void HSD_AObjSetEndFrame(HSD_AObj* aobj, f32 frame){
 
 //8036533C
 void HSD_AObjSetCurrentFrame(HSD_AObj* aobj, f32 frame){
-	if(aobj && !(aobj->flags & 0x40000000)){
+	if(aobj && !(aobj->flags & AOBJ_NO_ANIM)){
 		aobj->curr_frame = frame;
-		aobj->flags = aobj->flags & 0xBFFFFFFF | 0x8000000;
+		aobj->flags = aobj->flags & 0xBFFFFFFF | AOBJ_FIRST_PLAY;
 		HSD_FObjReqAnimAll(aobj->fobj, frame);
 	}
 }
