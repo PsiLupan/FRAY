@@ -10,6 +10,10 @@
 typedef u32* HSD_ID;
 
 typedef struct _HSD_FreeList {
+    u32 total_bits; //0x00
+    u32 nb_alloc; //0x04
+    u32 nb_free; //0x08
+    u32 x8_unk; //0x08
     struct _HSD_FreeList* next;
 } HSD_FreeList;
 
