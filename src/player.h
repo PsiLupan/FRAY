@@ -128,7 +128,7 @@ typedef struct _Attributes {
 	f32 unk0x154;
 	f32 unkConst0x158;
 	u32 unkConst0x15C;
-	f32 iceTraction; //0x160
+	f32 respawnPlatScale; //0x160
 	u32 unkConst0x164;
 	u32 unkConst0x168;
 	u32 cameraTargetBone;
