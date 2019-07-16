@@ -1248,8 +1248,7 @@ static void JObjInit(HSD_Class* o){
 }
 
 //80373470
-static void JObjReleaseChild(HSD_Class* o){
-	HSD_JObj* jobj = HSD_JOBJ(o);
+static void JObjReleaseChild(HSD_JObj* jobj){
 	HSD_JObj* child = jobj->child;
 	if(child != NULL){
 		if(JOBJ_INSTANCE(jobj)){
