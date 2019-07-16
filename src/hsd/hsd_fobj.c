@@ -126,16 +126,16 @@ static f32 FObjLoadData(u8* curr_parse, u8 unk){
         }
         return fvar / (1 << unk & 0x1f) - 176.f;
     }
-    u8* parse_pos = (*curr_parse);
+    u8* parse_pos = curr_parse;
     curr_parse += 1;
     u32 data = *parse_pos;
-    parse_pos = (*curr_parse);
+    parse_pos = curr_parse;
     curr_parse += 1;
     data |= (*parse_pos << 8);
-    parse_pos = (*curr_parse);
+    parse_pos = curr_parse;
     curr_parse += 1;
     data |= (*parse_pos << 16);
-    parse_pos = (*curr_parse);
+    parse_pos = curr_parse;
     curr_parse += 1;
     return (f32)(data | (*parse_pos << 24));
 }
