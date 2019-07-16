@@ -131,7 +131,7 @@ void Archive_LoadFileSections(char* filename, u32 sections, ...){
     u32 file_size = Archive_GetDVDFileLengthByName(filename);
     void* dat_file = Archive_Alloc(0, (file_size + 0x1F) & 0xFFFFFFE0); //This (size + 0x1F) & 0xFFFFFFE0 aligns the file size along 0x20 sized boundaries, IE Anything from 0x74581 - 0x745A0 would become 0x745A0
     void* header_info = Archive_Alloc(0, 0x44);
-    u32* filelength;
+    u32 filelength;
     Archive_LoadFileIntoMemory(filename, dat_file, &filelength);
     Archive_InitializeDAT((s32*)header_info, (s32*)dat_file, filelength);
 
@@ -171,7 +171,7 @@ void* Archive_GetFileSection(void* dat_start, char* section_name){
 //803803FC
 char* Archive_GetString(s32* src, u32 offset){
     if((offset > -1) && (offset < src[4])){
-        u32* string_ptr = (src[12] + *(s32*)(src[11] + offset * 8 + 4));
+        u32* string_ptr = (u32*)(src[12] + *(s32*)(src[11] + offset * 8 + 4));
         return (char*)string_ptr;
     }
 }
