@@ -148,7 +148,7 @@ void Mario_Special_Neutral_Air_IASA(HSD_GObj* gobj){
 
 //800E111C
 void Mario_Special_Neutral_Air_Physics(HSD_GObj* gobj){
-    return Player_CheckFastFallAndUpdate(gobj);
+    Player_CheckFastFallAndUpdate(gobj);
 }
 
 //800E113C

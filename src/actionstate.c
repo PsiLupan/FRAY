@@ -89,10 +89,12 @@ void ActionState_Wait(HSD_GObj* gobj, const f32 unk){
 	Player* ply = GOBJ_PLAYER(gobj);
 
 	if(((ply->x2224_flags >> 5) & 1) != 0){
-		return ActionState_800C8B74(gobj);
+		ActionState_800C8B74(gobj);
+		return;
 	}
 	if(Item_PlayerHasHammer(gobj) == TRUE){
-		return ActionState_HammerWait(gobj);
+		ActionState_HammerWait(gobj);
+		return;
 	}
 	if(ply->xE0_in_air == TRUE){
 		sub_8007D7FC(ply);
@@ -118,9 +120,11 @@ void ActionState_Wait(HSD_GObj* gobj, const f32 unk){
 	Player_SetIndicatorDisplay(ply, 32); //(r13 - 0x514C)->x5F0, but we'll hardcode the value till we understand it better
 	u32 char_id = ply->x4_internal_id;
 	if(char_id == INTERNAL_YLINK){
-		return sub_8014919C(gobj);
+		sub_8014919C(gobj);
+		return;
 	}else if(char_id == INTERNAL_LINK){
-		return sub_800EB3BC(gobj);
+		sub_800EB3BC(gobj);
+		return;
 	}
 }
 
@@ -188,10 +192,14 @@ void ActionState_800C8B74(HSD_GObj* gobj){
 
 //800CC730
 void ActionState_Fall(HSD_GObj* gobj){
-	if(Player_GetInternalID(gobj) == INTERNAL_MASTERHAND)
-		return sub_80151018(gobj);
-	if(Player_GetInternalID(gobj) == INTERNAL_CRAZYHAND)
-		return sub_8015BC88(gobj);
+	if(Player_GetInternalID(gobj) == INTERNAL_MASTERHAND){
+		sub_80151018(gobj);
+		return;
+	}
+	if(Player_GetInternalID(gobj) == INTERNAL_CRAZYHAND){
+		sub_8015BC88(gobj);
+		return;
+	}
 	
 	Player* ply = GOBJ_PLAYER(gobj);
 	BOOL nofall = FALSE;
