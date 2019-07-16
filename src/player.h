@@ -31,13 +31,13 @@ typedef struct _Hitbox {
 } Hitbox;
 
 typedef struct _SubactionInfo {
-	u32 timer;
-	f32 frame_count;
-	u32* data_position;
-	u32 loop_count;
-	void (*EventReturn)();
-	u32 loop_count_dup;
-	u32 unk;
+	u32 timer; //0x00
+	f32 frame_count; //0x04
+	u32* data_position; //0x08
+	u32 loop_count; //0x0C
+	void (*EventReturn)(); //0x10
+	u32 loop_count_dup; //0x14
+	u32 unk; //0x18
 } SubactionInfo;
 
 typedef struct _Attributes {

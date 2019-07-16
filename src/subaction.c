@@ -1,5 +1,40 @@
 #include "subaction.h"
 
+//800059DC
+void Subaction_Event_0C(SubactionInfo* event){ //SetLoop
+    u32 curr_loop = event->loop_count;
+    event->loop_count += 1;
+    *(u32*)(event + curr_loop * 4 + 0x10) = (u32*)(event->data_position + 4);
+    
+    u32 data = *event->data_position;
+    curr_loop = event->loop_count;
+    event->loop_count += 1;
+    *(u32*)(event + curr_loop * 4 + 0x10) = data & 0x3ffffff;
+    event->data_position = event->data_position + 4;
+}
+
+//80005A30
+void Subaction_Event_10_Execute(SubactionInfo* event){
+    SubactionInfo* data = (SubactionInfo*)(event->timer + event->loop_count * 4);
+    event->loop_count -= 1;
+    data = (SubactionInfo*)(event->timer + event->loop_count * 4);
+    if(event->loop_count != 0){
+        event->data_position = data->data_position;
+        return;
+    }
+    event->data_position = (u32*)(event->data_position + 4);
+    event->loop_count -= 2;
+}
+
+//80005A88
+void Subaction_Event_10_GoTo(SubactionInfo* event){
+    event->data_position = (u32*)(event->data_position + 4);
+    u32 curr_loop = event->loop_count;
+    event->loop_count += 1;
+    *(u32*)(event + curr_loop * 4 + 0x10) = (u32*)(event->data_position + 4);
+    event->data_position = (u32*)(*event->data_position);
+}
+
 //8007168C
 //800716F8
 //80071774
