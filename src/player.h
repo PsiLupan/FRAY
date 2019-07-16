@@ -251,7 +251,7 @@ typedef struct _Player {
 	
 	u32 x20A4_unk;
 
-	void (*x21BC_Projectile_Spawn)(HSD_GObj* gobj, guVector* vec);
+	void (*x21BC_Projectile_Spawn)(HSD_GObj* gobj, guVector vec);
 	void (*x21E8_func)(HSD_GObj* gobj);
 	void (*x21DC_Player_OnHit)(HSD_GObj* gobj);
 
