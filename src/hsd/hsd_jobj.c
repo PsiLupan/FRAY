@@ -736,8 +736,8 @@ void HSD_JObjSetDefaultClass(HSD_JObjInfo* info){
 }
 
 //80370BEC
-static void JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, u32 unk){
-
+static int JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, u32 unk){
+	return 0;
 }
 
 //80370E44
