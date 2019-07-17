@@ -42,7 +42,7 @@ HSD_Fog* HSD_FogLoadDesc(HSD_FogDesc* fogdesc){
 
 //8037DD58
 HSD_FogAdj* HSD_FogAdjLoadDesc(HSD_FogAdjDesc* fogadjdesc){
-    HSD_FogAdj* fog_adj = hsdNew((HSD_ClassInfo*)&hsdFogAdj);
+    HSD_FogAdj* fog_adj = (HSD_FogAdj*)hsdNew((HSD_ClassInfo*)&hsdFogAdj);
     assert(fog_adj != NULL);
     HSD_FogAdjInit(fog_adj, fogadjdesc);
     return fog_adj;
