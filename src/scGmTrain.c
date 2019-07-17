@@ -1,4 +1,5 @@
 #include "scGmTrain.h"
+#include "scene.h"
 
 //801B2298
 u32 Menu_GmTrain_Init(){
