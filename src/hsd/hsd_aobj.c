@@ -138,7 +138,7 @@ void HSD_AObjInterpretAnim(HSD_AObj *aobj, void* caller_obj, void (*updatecb)())
 	}
 }
 
-//8036539C
+//8036439C
 HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc){
 	if(aobjdesc){
 		HSD_AObj* aobj = HSD_AObjAlloc();
