@@ -221,7 +221,7 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus *vi, void *buffer, HSD_RenderPass rpass)
 void HSD_VICopyXFBASync(HSD_RenderPass rpass){
 	s32 idx = -1;
 	
-	if (HSD_VIGetNumXFB() >= 2){
+	if (HSD_VIGetNbXFB() >= 2){
 		while((idx = HSD_VIGetXFBDrawEnable()) == -1)
 			VIDEO_WaitVSync();
 
@@ -257,12 +257,18 @@ void HSD_VIDrawDoneXFB(s32 idx){
 void HSD_VISetXFBDrawDone(){
 	u32 intr;
 	s32 idx;
-	if (HSD_VIGetNumXFB() >= 2){
+	if (HSD_VIGetNbXFB() >= 2){
 		intr = IRQ_Disable();
 		
 		idx  = HSD_VISearchXFBByStatus(HSD_VI_XFB_DRAWING);
 		assert(idx != -1);
-		HSD_VISetXFBWaitDone(idx);
+		
+		//HSD_VISetXFBWaitDone
+		assert(_p->xfb[idx].status == HSD_VI_XFB_DRAWING);
+		_p->xfb[idx].status = HSD_VI_XFB_WAITDONE;
+		_p->xfb[idx].vi_all = _p->current;
+		_p->current.chg_flag = 0;
+
 		HSD_VIDrawDoneXFB(idx);
 		
 		IRQ_Restore(intr);
