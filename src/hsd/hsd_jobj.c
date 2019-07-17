@@ -594,7 +594,7 @@ void JObjUpdateFunc(HSD_JObj* jobj, u32 type, f32* fval){
 			case 27:
 			case 28:
 			case 29:
-				/*void* jo = r13_401C;
+				/*HSD_JObj* jo = r13_401C;
 				f32 val = 176.f;
 				while(jo != NULL){
 					u32 uval = (u32)*fval;
@@ -612,7 +612,7 @@ void JObjUpdateFunc(HSD_JObj* jobj, u32 type, f32* fval){
 			case 37:
 			case 38:
 			case 39:
-				/*void* jo = r13_401C;
+				/*HSD_JObj* jo = r13_401C;
 				while(jo != NULL){
 					(*jo->0x4)(jobj, type, *fval);
 					jo = jo->next;
@@ -735,7 +735,7 @@ void HSD_JObjSetDefaultClass(HSD_JObjInfo* info){
 }
 
 //80370BEC
-static int JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, u32 unk){
+static int JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* jobj_2){
 	return 0;
 }
 

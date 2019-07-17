@@ -61,16 +61,17 @@ void HSD_FObjReqAnimAll(HSD_FObj* fobj, f32 frame){
     if(fobj){
         for(HSD_FObj* curr = fobj; curr != NULL; curr = curr->next){
             curr->ad = curr->ad_head;
-            
-            fobj->time = (f32)fobj->startframe - 176.f + frame;
-            curr->flags &= 0xBFu;
+            curr->time = (f32)curr->startframe - 176.f + frame;
             curr->op = 0;
-            curr->obj_type = 0;
-            fobj->flags &= 0xF0u;
-            fobj->p0 = 0.f;
-            fobj->p1 = 0.f;
-            fobj->d0 = 0.f;
-            fobj->flags = fobj->flags & 0xF0 | 1;
+            curr->op_intrp = 0;
+            curr->flags &= 0xBFu;
+            curr->nb_pack = 0;
+            curr->fterm = 0;
+            curr->p0 = 0.f;
+            curr->p1 = 0.f;
+            curr->d0 = 0.f;
+            curr->d1 = 0.f;
+            curr->flags = curr->flags & 0xF0 | 1;
         }
     }
 }
