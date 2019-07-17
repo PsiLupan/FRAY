@@ -41,7 +41,7 @@ typedef struct _HSD_FObjDesc {
 	u8 frac_value; //0x0D
 	u8 frac_slope; //0x0E
 	u8 dummy0; //0x0F
-	char* ad; //0x10
+	u8* ad; //0x10
 } HSD_FObjDesc;
 
 typedef struct _HSD_FObjData {
@@ -60,6 +60,7 @@ void HSD_FObjStopAnimAll(HSD_FObj *, void *, void(*)(), f32);
 void FObjUpdateAnim(HSD_FObj *, void *, void (*)(void*, u32, FObjData));
 void HSD_FObjInterpretAnim(HSD_FObj *, void *, void (*)(), f32);
 void HSD_FObjInterpretAnimAll(HSD_FObj *, void *, void (*)(), f32);
+HSD_FObj* HSD_FObjLoadDesc(HSD_FObjDesc *);
 HSD_FObj* HSD_FObjAlloc();
 void HSD_FObjFree(HSD_FObj *);
 
