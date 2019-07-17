@@ -148,8 +148,8 @@ HSD_DObj* HSD_DObjLoadDesc(HSD_DObjDesc* desc){
 void HSD_DObjRemoveAll(HSD_DObj* dobj){
     if(dobj != NULL){
         for(HSD_DObj* i = dobj; i != NULL; i = i->next){
-            i->class_parent.class_init->release((HSD_Class*)i);
-            i->class_parent.class_init->destroy((HSD_Class*)i);
+            i->class_parent->release((HSD_Class*)i);
+            i->class_parent->destroy((HSD_Class*)i);
         }
     }
 }
