@@ -32,7 +32,7 @@ u16 HSD_PObjGetFlags(HSD_PObj* pobj){
 }
 
 //8036B8E8
-void HSD_PObjRemoveAnimAllByFlags(HSD_PObj* pobj, u16 flags){   
+void HSD_PObjRemoveAnimAllByFlags(HSD_PObj* pobj, u32 flags){   
     if (pobj != NULL){
         for (HSD_PObj *pp = pobj; pp != NULL; pp = pp->next) {
             if (pobj_type(pobj) == POBJ_SHAPEANIM && (pp->flags & POBJ_ANIM)) {

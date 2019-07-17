@@ -73,9 +73,9 @@ void* HSD_ObjAlloc(HSD_ObjDef* obj_def){
 }
 
 //8037AD20
-void HSD_ObjFree(HSD_ObjDef* init_obj, u32* obj){
-	obj[0] = init_obj->freehead->next;
-	init_obj->freehead->next = (HSD_ObjAllocLink*)obj;
+void HSD_ObjFree(HSD_ObjDef* init_obj, HSD_ObjAllocLink* obj){
+	obj->next = init_obj->freehead->next;
+	init_obj->freehead = obj;
 	init_obj->free += 1;
 	init_obj->used -= 1;
 }

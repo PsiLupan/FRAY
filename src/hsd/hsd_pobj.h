@@ -32,7 +32,7 @@
 
 //Polygon Object
 typedef struct _HSD_PObj {
-	HSD_Class parent;
+	HSD_ClassInfo* parent;
 	struct _HSD_PObj* next;
 	struct _HSD_VtxDescList* verts;
 	u16 flags;
@@ -142,7 +142,7 @@ extern HSD_PObjInfo hsdPObj;
 
 
 u16 HSD_PObjGetFlags(HSD_PObj *);
-void HSD_PObjRemoveAnimAllByFlags(HSD_PObj *, u16);
+void HSD_PObjRemoveAnimAllByFlags(HSD_PObj *, u32);
 void HSD_PObjRemoveAnimAll(HSD_PObj *, HSD_SList *);
 void HSD_PObjReqAnimAllByFlags(HSD_PObj *, f32, u32);
 void HSD_PObjAnimAll(HSD_PObj *);
