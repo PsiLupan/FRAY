@@ -161,7 +161,7 @@ HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc){
 					hsdObj->ref_count = hsdObj->ref_count + 1;
 					assert(hsdObj->ref_count != HSD_OBJ_NOREF);
 				}else{
-					obj = (void*)HSD_JObjLoadJoint(aobjdesc->obj_id);
+					obj = (void*)HSD_JObjLoadJoint((HSD_JObjDesc*)aobjdesc->obj_id);
 				}
 				
 				HSD_JObj* jobj = HSD_JOBJ(aobj->hsd_obj);

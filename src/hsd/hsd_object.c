@@ -21,7 +21,7 @@ void HSD_ObjSetHeap(u32 size, void* start){
 	objheap.bytes_remaining = size;
 }
 
-static HSD_ObjDef* current_obj = NULL;
+static HSD_ObjDef* current_obj = NULL; //r13_3FC0
 
 //8037A968
 void HSD_ObjAllocAddFree(HSD_ObjDef* obj_def, u32 num){
@@ -212,4 +212,9 @@ HSD_Class* hsdNew(HSD_ClassInfo* info){
 		}
 	*/
 	return class;
+}
+
+//80382814
+HSD_ClassInfo* hsdSearchClassInfo(char* class_name){
+	return NULL; //class_name is never set, so why the fuck would I write this?
 }
