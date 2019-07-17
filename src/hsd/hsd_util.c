@@ -20,6 +20,6 @@ f32 splGetHermite(f32 a, f32 b, f32 c, f32 d, f32 f, f32 e){
 }
 
 //803792C8
-void splArcLengthPoint(guVector* spline, f32 unkf, guVector* res){
+void splArcLengthPoint(HSD_Spline* spline, f32 unkf, guVector* res){
     
 }

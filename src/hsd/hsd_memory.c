@@ -1,6 +1,7 @@
 #include "hsd_memory.h"
 
 #include <stdint.h>
+#include <stdlib.h>
 
 static HSD_MemoryEntry** memory_list;
 static u32 nb_memory_list = 0;
@@ -75,7 +76,7 @@ void HSD_IDRemoveByIDFromTable(u32* id_table, u32* id){
 }
 
 //8037CF98
-void HSD_IDGetDataFromTable(u32* id_table, u32* id, u8* val){
+u32 HSD_IDGetDataFromTable(u32* id_table, u32* id, u8* val){
 	if(id_table == NULL){
 		id_table = (u32*)&hsd_idtable;
 	}
@@ -99,7 +100,7 @@ void HSD_IDGetDataFromTable(u32* id_table, u32* id, u8* val){
 
 //8037D020
 void _HSD_IDForgetMemory(){
-	return memset(&hsd_idtable, 0, 101*sizeof(u32));
+	memset(&hsd_idtable, 0, 101*sizeof(u32));
 }
 
 //8037F1B0

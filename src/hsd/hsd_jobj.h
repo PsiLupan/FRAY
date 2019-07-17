@@ -5,6 +5,7 @@
 #include <ogc/gu.h>
 
 #include "hsd_object.h"
+#include "hsd_util.h"
 
 #include "hsd_aobj.h"
 #include "hsd_dobj.h"
@@ -28,7 +29,7 @@ typedef struct _HSD_JObj {
 	union { //0x18
 		HSD_SList* ptcl;
 		struct _HSD_DObj* dobj;
-		f32* spline;
+		struct _HSD_Spline* spline;
 	} u;
 	guQuaternion rotation; //0x1C - 0x28
 	guVector scale; //0x2C - 0x34

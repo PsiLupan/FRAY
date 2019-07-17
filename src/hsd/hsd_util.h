@@ -16,9 +16,19 @@ typedef struct _HSD_SList {
     void* data;
 } HSD_SList;
 
+typedef struct _HSD_Spline {
+    u16 type; //0x00
+    u16 point_cnt; //0x02
+    f32 tension; //0x04
+    guVector* points; //0x08
+    f32 total_length; //0x0C
+    f32* lengths; //0x10
+    void* unk; //0x14
+} HSD_Spline;
+
 
 f32 HSD_ClampFloat(f32 val, f32 min, f32 max);
 f32 splGetHermite(f32, f32, f32, f32, f32, f32);
-void splArcLengthPoint(guVector *, f32, guVector *);
+void splArcLengthPoint(HSD_Spline *, f32, guVector *);
 
 #endif

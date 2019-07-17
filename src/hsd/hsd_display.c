@@ -166,7 +166,7 @@ void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, MtxP pmtx, HSD_TrspMask trsp_mas
 	if ((rendermode & RENDER_SHADOW) == 0 && (jobj->flags & JOBJ_SPECULAR) != 0){
 		HSD_LobjSetupSpecularInit(pmtx);
 	}
-	HSD_PObjCleapmtxMark(NULL, 0);
+	HSD_PObjClearMtxMark(NULL, 0);
 	for (HSD_DObj* dobj = jobj->u.dobj; dobj != NULL; dobj = dobj->next) {
 		if (dobj->flags & DOBJ_HIDDEN)
 			continue;

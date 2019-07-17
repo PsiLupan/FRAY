@@ -51,11 +51,11 @@ static void WObjUpdateFunc(HSD_WObj* wobj, u32 type, f32* fval){
                 }
 
                 assert(wobj->aobj != NULL);
-                HSD_FObj* fobj = wobj->aobj->fobj;
-                assert(fobj != NULL);
+                HSD_JObj* jobj = (HSD_JObj*)wobj->aobj->hsd_obj;
+                assert(jobj->u.spline != NULL);
 
                 guVector pos;
-                splArcLengthPoint(&pos, &fobj->startframe, *fval);
+                splArcLengthPoint(jobj->u.spline, *fval, &pos);
                 HSD_WObjSetPosition(wobj, &pos);
                 wobj->flags |= 1;
             }
@@ -236,7 +236,7 @@ static void WObjRelease(HSD_Class* o){
 
 //8037D8B8
 static void WObjAmnesia(HSD_ClassInfo* info){
-    if(info == default_class){
+    if(info == HSD_CLASS_INFO(default_class)){
         default_class = NULL;
     }
     HSD_PARENT_INFO(&hsdWObj)->amnesia(info);

@@ -108,7 +108,7 @@ void HSD_TExpOrder(HSD_TExp* texp, void* tobj, u8 chan){
 }
 
 //803854B4
-void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc* tdesc, HSD_TExp** list){
+void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tdesc, HSD_TExp** list){
 
 }
 

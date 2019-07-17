@@ -3,11 +3,11 @@
 static void FogInfoInit();
 static void FogAdjInfoInit();
 
-HSD_ObjDef fog_init_alloc; //80407078
-HSD_FogInfo hsdFog = { FogInfoInit }; //8040708C
+HSD_FogInfo hsdFog = { FogInfoInit }; //80407078
+HSD_ObjDef fog_init_alloc; //8040708C
 
-HSD_ObjDef fogadj_init_alloc; //804070B4
-HSD_FogAdjInfo hsdFogAdj = { FogAdjInfoInit };
+HSD_ObjDef fogadj_init_alloc; //804070A8
+HSD_FogAdjInfo hsdFogAdj = { FogAdjInfoInit }; //804070B4
 
 //8037D970
 void HSD_FogSet(HSD_Fog* fog){
@@ -31,7 +31,7 @@ void HSD_FogSet(HSD_Fog* fog){
 
 //8037DC38
 HSD_Fog* HSD_FogLoadDesc(HSD_FogDesc* fogdesc){
-    HSD_Fog* fog = (HSD_Fog*)hsdNew(fog_init_alloc);
+    HSD_Fog* fog = (HSD_Fog*)hsdNew((HSD_ClassInfo*)&hsdFog);
     assert(fog != NULL);
     HSD_FogInit(fog, fogdesc);
     if(fogdesc->fogadjdesc != 0){
@@ -42,7 +42,7 @@ HSD_Fog* HSD_FogLoadDesc(HSD_FogDesc* fogdesc){
 
 //8037DD58
 HSD_FogAdj* HSD_FogAdjLoadDesc(HSD_FogAdjDesc* fogadjdesc){
-    HSD_FogAdj* fog_adj = hsdNew(fogadj_init_alloc);
+    HSD_FogAdj* fog_adj = hsdNew((HSD_ClassInfo*)&hsdFogAdj);
     assert(fog_adj != NULL);
     HSD_FogAdjInit(fog_adj, fogadjdesc);
     return fog_adj;
@@ -159,11 +159,11 @@ static void FogRelease(HSD_Class* o){
 
 //8037E120
 static void FogInfoInit(){
-    hsdInitClassInfo(&fog_init_alloc, HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fog", sizeof(HSD_FogInfo), sizeof(HSD_Fog));
+    hsdInitClassInfo((HSD_ClassInfo*)&hsdFog, HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fog", sizeof(HSD_FogInfo), sizeof(HSD_Fog));
     HSD_PARENT_INFO(&hsdFog)->release = FogRelease;
 }
 
 //8037E178
 static void FogAdjInfoInit(){
-    hsdInitClassInfo(&fogadj_init_alloc, HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fogadj", sizeof(HSD_FogAdjInfo), sizeof(HSD_FogAdj));
+    hsdInitClassInfo((HSD_ClassInfo*)&hsdFogAdj, HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fogadj", sizeof(HSD_FogAdjInfo), sizeof(HSD_FogAdj));
 }

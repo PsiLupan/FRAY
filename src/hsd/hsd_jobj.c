@@ -5,7 +5,6 @@
 #include "hsd_debug.h"
 #include "hsd_display.h"
 #include "hsd_memory.h"
-#include "hsd_util.h"
 
 static void JObjInfoInit();
 
