@@ -101,6 +101,13 @@ void HSD_ObjAllocInit(HSD_ObjDef* init_obj, u32 size, u32 align){
 	current_obj = init_obj;
 }
 
+//80381BE4
+static void hsdObjInfoInit(HSD_ClassInfo* info){
+	if(info->initialized == false){
+		(*info->ObjInfoInit)();
+	}
+}
+
 //80381C18
 void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, char* base_class_library, char* type, u64 info_size, u64 class_size){
 	class_info->initialized = TRUE;
@@ -127,7 +134,7 @@ void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, cha
 }
 
 //803821C4
-static void _hsdClassAlloc(HSD_ClassInfo* info){
+static HSD_Class* _hsdClassAlloc(HSD_ClassInfo* info){
 	HSD_FreeList* mem_piece = hsdAllocMemPiece(info->obj_size);
 	if(mem_piece != NULL){
 		info->active_objs += 1;
@@ -135,6 +142,7 @@ static void _hsdClassAlloc(HSD_ClassInfo* info){
 			info->total_allocs = info->active_objs;
 		}
 	}
+	return (HSD_Class*)mem_piece;
 }
 
 //8038221C
@@ -180,4 +188,28 @@ static void _hsdInfoInit(){
 	hsdClass.release = _hsdClassRelease; 
 	hsdClass.destroy = _hsdClassDestroy; 
 	hsdClass.amnesia = _hsdClassAmnesia;
+}
+
+//80382344
+HSD_Class* hsdNew(HSD_ClassInfo* info){
+	hsdObjInfoInit(info);
+
+	HSD_Class* class = (*info->obj_alloc)(info);
+	if(class == NULL){
+		return NULL;
+	}
+	hsdObjInfoInit(info);
+	memset(class, 0, info->obj_size);
+	class->class_init = info;
+	(*info->init)(class);
+	/*  So, the compiler optimized away hsdClassInit to just return 0, which affects
+		every init function that would normally return an int, possibly -1.
+		Otherwise, the below would look something like:
+
+		if(info->init result < 0){
+			(*info->destroy)(class);
+			return NULL;
+		}
+	*/
+	return class;
 }

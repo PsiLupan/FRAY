@@ -478,7 +478,7 @@ void JObjUpdateFunc(HSD_JObj* jobj, u32 type, f32* fval){
 				HSD_JObj* jp = (HSD_JObj*)jobj->aobj->hsd_obj;
 				assert(jp->u.spline != NULL);
 				guVector result;
-				splArcLengthPoint(jp->u.spline, &result, *fval);
+				splArcLengthPoint(jp->u.spline, *fval, &result);
 				jobj->position = result;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
@@ -750,7 +750,7 @@ HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc* desc){
 	if (!desc->class_name || !(info = hsdSearchClassInfo(desc->class_name))){
 		jobj = HSD_JObjAlloc();
 	}else{
-		jobj = hsdNew(info);
+		jobj = (HSD_JObj*)(hsdNew(info));
 		assert(jobj != NULL);
 	}
 	HSD_JOBJ_METHOD(jobj)->load(jobj, desc, 0);
@@ -1178,9 +1178,10 @@ void HSD_JObjClearFlagsAll(HSD_JObj *jobj, u32 flags){
 
 //8037210C
 HSD_JObj* HSD_JObjAlloc(){
-  HSD_JObj *jobj = (HSD_JObj*)hsdNew(default_class != NULL ? default_class : &hsdJObj);
-  assert(jobj);
-  return jobj;
+	HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class != NULL ? default_class : &hsdJObj);
+	HSD_JObj *jobj = (HSD_JObj*)hsdNew(info);
+	assert(jobj);
+	return jobj;
 }
 
 //80372168

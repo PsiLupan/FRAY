@@ -34,7 +34,7 @@ typedef struct _HSD_ClassInfo {
 	struct _HSD_ClassInfo* child_info; //0x1C
 	u32 active_objs; //0x20
 	u32 total_allocs; //0x24
-	void (*obj_alloc)(struct _HSD_Class* o); //0x28
+	HSD_Class* (*obj_alloc)(struct _HSD_ClassInfo* o); //0x28
 	void (*init)(struct _HSD_Class* o); //0x2C
 	void (*release)(struct _HSD_Class* o); //0x30
 	void (*destroy)(struct _HSD_Class* o); //0x34
@@ -72,5 +72,6 @@ void HSD_ObjFree(HSD_ObjDef *, u32 *);
 void HSD_ObjAllocInit(HSD_ObjDef *, u32, u32);
 
 void hsdInitClassInfo(HSD_ClassInfo *, HSD_ClassInfo *, char *, char*, u64, u64);
+HSD_Class* hsdNew(HSD_ClassInfo *);
 
 #endif

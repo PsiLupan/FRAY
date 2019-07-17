@@ -19,6 +19,6 @@ typedef struct _HSD_SList {
 
 f32 HSD_ClampFloat(f32 val, f32 min, f32 max);
 f32 splGetHermite(f32, f32, f32, f32, f32, f32);
-void splArcLengthPoint(guVector *, u16 *, f32);
+void splArcLengthPoint(guVector *, f32, guVector *);
 
 #endif

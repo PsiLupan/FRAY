@@ -214,7 +214,8 @@ void HSD_PObjSetDefaultClass(HSD_PObjInfo* info){
 
 //8036BFCC
 HSD_PObj* HSD_PObjAlloc(){
-    HSD_PObj *pobj = hsdNew(default_class != NULL ? default_class : &hsdPObj);
+    HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class ? default_class : &hsdPObj);
+    HSD_PObj *pobj = (HSD_PObj*)hsdNew(info);
     assert(pobj != NULL);
     return pobj;
 }

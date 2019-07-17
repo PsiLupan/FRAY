@@ -156,10 +156,7 @@ void HSD_DObjRemoveAll(HSD_DObj* dobj){
 
 //8035E2C0
 HSD_DObj* HSD_DObjAlloc(){
-    HSD_DObjInfo* info = default_class;
-    if(default_class == NULL){
-        info = &hsdDObj;
-    }
+    HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class ? default_class : &hsdDObj);
     HSD_DObj* dobj = hsdNew(info);
     assert(dobj != NULL);
     return dobj;

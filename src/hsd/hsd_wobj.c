@@ -220,7 +220,8 @@ void HSD_WObjGetPosition(HSD_WObj* wobj, guVector* pos){
 
 //8037D808
 HSD_WObj* HSD_WObjAlloc(){
-    HSD_WObj* wobj = (HSD_WObj*)hsdNew(default_class != NULL ? default_class : &hsdWObj);
+    HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class != NULL ? (HSD_ClassInfo*)default_class : (HSD_ClassInfo*)&hsdWObj);
+    HSD_WObj* wobj = (HSD_WObj*)hsdNew(info);
 	assert(wobj != NULL);
     return wobj;
 }

@@ -290,7 +290,7 @@ HSD_TObj* HSD_TObjLoadDesc(HSD_TObjDesc *td){
 		if (!td->class_name || !(info = hsdSearchClassInfo(td->class_name))){
 			tobj = HSD_TObjAlloc();
 		} else {
-			tobj = hsdNew(info);
+			tobj = (HSD_TObj*)hsdNew(info);
 			assert(tobj);
 		}
 		HSD_TOBJ_METHOD(tobj)->load(tobj, td);
@@ -1212,7 +1212,7 @@ HSD_TObjInfo* HSD_TObjGetDefaultClass(){
 
 //8036118C
 HSD_TObj* HSD_TObjAlloc(){
-	HSD_TObj *new = hsdNew(HSD_TObjGetDefaultClass());
+	HSD_TObj *new = (HSD_TObj*)hsdNew((HSD_ClassInfo*)HSD_TObjGetDefaultClass());
 	assert(new);
 	return new;
 }

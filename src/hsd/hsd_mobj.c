@@ -360,7 +360,7 @@ void HSD_MObjRemove(HSD_MObj *mobj){
 
 //80363CA4
 HSD_MObj* HSD_MObjAlloc(){
-  HSD_MObj *mobj = hsdNew(HSD_MObjGetDefaultClass());
+  HSD_MObj *mobj = (HSD_MObj*)hsdNew((HSD_ClassInfo*)HSD_MObjGetDefaultClass());
   assert(mobj);
   return mobj;
 }

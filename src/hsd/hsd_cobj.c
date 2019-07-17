@@ -679,7 +679,8 @@ HSD_CObj* HSD_CObjGetCurrent(){
 
 //8036A290
 HSD_CObj* HSD_CObjAlloc(){
-    HSD_CObj* cobj = hsdNew(default_class ? default_class : &hsdCObj);
+    HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class ? default_class : &hsdCObj);
+    HSD_CObj* cobj = (HSD_CObj*)hsdNew(info);
     assert(cobj != NULL);
     return cobj;
 }
@@ -755,7 +756,7 @@ HSD_CObj* HSD_CObjLoadDesc(HSD_CObjDesc* desc){
                 info = default_class;
             }
         }
-        cobj = hsdNew(info);
+        cobj = (HSD_CObj*)hsdNew(info);
         assert(cobj != NULL);
         HSD_COBJ_METHOD(cobj)->load(cobj, desc);
     }
