@@ -4,8 +4,6 @@ static void DObjInfoInit();
 
 HSD_DObjInfo hsdDObj = { DObjInfoInit }; //80405450
 
-HSD_ObjDef dobj_alloc_data; //80405464
-
 static HSD_DObj *current_dobj = NULL; //-0x40FC(r13)
 
 static HSD_DObjInfo *default_class = NULL; //r13_4100
