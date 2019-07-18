@@ -254,7 +254,7 @@ void GObj_Free(HSD_GObj* gobj){
 		}else{
 			plinklow_gobjs[gobj->p_link] = gobj->prev;
 		}
-		HSD_ObjFree(&gobj_def, gobj);
+		HSD_ObjFree(&gobj_def, (HSD_ObjAllocLink*)gobj);
 	}else{
 		gobj_def_3.flags = (gobj_def_3.flags & 0xBF) | 0x40;
 	}
