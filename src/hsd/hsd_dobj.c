@@ -2,11 +2,13 @@
 
 static void DObjInfoInit();
 
-HSD_DObjInfo hsdDObj = { DObjInfoInit };
+HSD_DObjInfo hsdDObj = { DObjInfoInit }; //80405450
 
-static HSD_DObjInfo *default_class = NULL;
+HSD_ObjDef dobj_alloc_data; //80405464
 
 static HSD_DObj *current_dobj = NULL; //-0x40FC(r13)
+
+static HSD_DObjInfo *default_class = NULL; //r13_4100
 
 //8035DD98
 void HSD_DObjSetCurrent(HSD_DObj* dobj){
@@ -148,8 +150,8 @@ HSD_DObj* HSD_DObjLoadDesc(HSD_DObjDesc* desc){
 void HSD_DObjRemoveAll(HSD_DObj* dobj){
     if(dobj != NULL){
         for(HSD_DObj* i = dobj; i != NULL; i = i->next){
-            i->class_parent->release((HSD_Class*)i);
-            i->class_parent->destroy((HSD_Class*)i);
+            HSD_CLASS_METHOD(i)->release((HSD_Class*)i);
+            HSD_CLASS_METHOD(i)->destroy((HSD_Class*)i);
         }
     }
 }
@@ -160,6 +162,19 @@ HSD_DObj* HSD_DObjAlloc(){
     HSD_DObj* dobj = hsdNew(info);
     assert(dobj != NULL);
     return dobj;
+}
+
+//8035E31C
+void HSD_DObjResolveRefsAll(HSD_DObj* dobj){
+
+}
+
+//8035E388
+void HSD_DObjDisp(HSD_DObj *dobj, Mtx vmtx, Mtx pmtx, u32 rendermode){
+    HSD_MObjSetCurrent(dobj->mobj);
+    if ((rendermode & 0x4000000) == 0) {
+        HSD_MOBJ_METHOD(dobj->mobj)->setup(dobj->mobj, rendermode);
+    }
 }
 
 //8035E440
@@ -174,11 +189,19 @@ static void DObjRelease(HSD_Class* o){
 }
 
 //8035E49C
-static void DObjAmnesia(HSD_Class* o){
-    
+static void DObjAmnesia(HSD_ClassInfo* info){
+    if(info == HSD_CLASS_INFO(default_class)){
+        default_class = NULL;
+    }
+    HSD_PARENT_INFO(&hsdDObj)->amnesia(info);
 }
 
 //8035E4E4
 static void DObjInfoInit(){
-    
+    hsdInitClassInfo(HSD_CLASS_INFO(&hsdDObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_dobj", sizeof(HSD_DObjInfo), sizeof(HSD_DObj));
+
+    HSD_PARENT_INFO(&hsdDObj)->release = DObjRelease;
+    HSD_PARENT_INFO(&hsdDObj)->amnesia = DObjAmnesia;
+    //HSD_DOBJ_INFO(&hsdDObj)->disp = HSD_DObjDisp;
+    HSD_DOBJ_INFO(&hsdDObj)->load = DObjLoad;
 }

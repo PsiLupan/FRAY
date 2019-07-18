@@ -15,7 +15,7 @@
 #define PROJ_ORTHO 3
 
 typedef struct _HSD_CObj {
-    HSD_Class class_parent;
+    HSD_Obj parent;
     u32 flags; //0x08
     f32 viewport_left; //0x0C
     f32 viewport_right; //0x10
@@ -68,7 +68,7 @@ typedef struct _HSD_CObjDesc {
 } HSD_CObjDesc;
 
 typedef struct _HSD_CObjInfo {
-    HSD_ClassInfo parent;
+    HSD_ObjInfo parent;
     int	(*load) (HSD_CObj *cobj, HSD_CObjDesc *desc);
 } HSD_CObjInfo;
 

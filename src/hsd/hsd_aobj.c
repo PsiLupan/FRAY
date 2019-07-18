@@ -154,14 +154,14 @@ HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc){
 			
 			u32 id = aobjdesc->obj_id;
 			if(id){
-				HSD_Class* hsdObj = (HSD_Class*)HSD_IDGetDataFromTable(0, id, 0);
+				HSD_Obj* hsdObj = (HSD_Obj*)HSD_IDGetDataFromTable(0, id, 0);
 				void* obj = (void*)hsdObj;
 				
 				if(hsdObj){
 					hsdObj->ref_count = hsdObj->ref_count + 1;
 					assert(hsdObj->ref_count != HSD_OBJ_NOREF);
 				}else{
-					obj = (void*)HSD_JObjLoadJoint((HSD_JObjDesc*)aobjdesc->obj_id);
+					obj = (HSD_Obj*)HSD_JObjLoadJoint((HSD_JObjDesc*)aobjdesc->obj_id);
 				}
 				
 				HSD_JObj* jobj = HSD_JOBJ(aobj->hsd_obj);

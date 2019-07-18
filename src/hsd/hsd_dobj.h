@@ -11,7 +11,7 @@
 
 //Display Object
 typedef struct _HSD_DObj {
-	HSD_ClassInfo* class_parent;
+	HSD_Class parent;
 	struct _HSD_DObj* next; //0x04
 	struct _HSD_MObj* mobj; //0x08
 	struct _HSD_PObj* pobj; //0x0C
@@ -31,7 +31,7 @@ typedef struct _HSD_DObjDesc {
 
 typedef struct _HSD_DObjInfo {
 	HSD_ClassInfo parent;
-	void (*disp)(HSD_DObj *dobj, Mtx vmtx, Mtx pmtx);
+	void (*disp)(HSD_DObj *dobj, Mtx vmtx, Mtx pmtx, u32 rendermode);
 	int (*load)(HSD_DObj *dobj, HSD_DObjDesc *desc);
 } HSD_DObjInfo;
 

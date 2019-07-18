@@ -21,7 +21,7 @@ typedef struct _HSD_AObj {
 	f32 end_frame;
 	f32 framerate;
 	struct _HSD_FObj* fobj;
-	struct _HSD_Class* hsd_obj;
+	struct _HSD_Obj* hsd_obj;
 } HSD_AObj;
 
 typedef struct _HSD_AObjDesc {

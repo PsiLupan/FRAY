@@ -36,9 +36,9 @@ void HSD_JObjSetMtxDirty(HSD_JObj* jobj, void* unk){
 //8036EFAC
 static void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb)(), u32 unk){
 	if(jobj != NULL){
-		assert(jobj->parent != NULL);
+		assert(jobj->prev != NULL);
 		u32 type = 0;
-		if(jobj->parent->child == jobj){
+		if(jobj->prev->child == jobj){
 			type = 1;
 		}else{
 			type = 2;
@@ -48,9 +48,9 @@ static void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb)(), u32 unk){
 		}
 		if(JOBJ_INSTANCE(jobj)){
 			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
-				assert(i->parent != NULL);
+				assert(i->prev != NULL);
 				u32 type = 0;
-				if(i->parent->child == i){
+				if(i->prev->child == i){
 					type = 1;
 				}else{
 					type = 2;
@@ -76,9 +76,9 @@ void HSD_JObjWalkTree(HSD_JObj* jobj, void (*cb)(), u32 unk){
 		}
 		if(JOBJ_INSTANCE(jobj)){
 			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
-				assert(i->parent != NULL);
+				assert(i->prev != NULL);
 				u32 type = 0;
-				if(i->parent->child == i){
+				if(i->prev->child == i){
 					type = 1;
 				}else{
 					type = 2;
@@ -98,7 +98,7 @@ void HSD_JObjWalkTree(HSD_JObj* jobj, void (*cb)(), u32 unk){
 
 //8036F1F8
 void HSD_JObjMakeMatrix(HSD_JObj* jobj){
-	HSD_JObj* parent = jobj->parent;
+	HSD_JObj* parent = jobj->prev;
 	if(parent != NULL){
 		if((parent->flags & 0x800000) == 0 && (parent->flags & 0x40) != 0){
 			HSD_JObjSetupMatrixSub(parent);
@@ -657,10 +657,10 @@ void JObjUpdateFunc(HSD_JObj* jobj, u32 type, f32* fval){
 			case 55:
 			case 56:
 			case 57:
-				if(jobj->parent == NULL){
+				if(jobj->prev == NULL){
 					c_guMtxCopy(jobj->mtx, mtx);
 				}else{ //InverseConcat
-					c_guMtxConcat(jobj->parent->mtx, jobj->mtx, mtx);
+					c_guMtxConcat(jobj->prev->mtx, jobj->mtx, mtx);
 					c_guMtxInverse(mtx, mtx);
 				}
 				if(type == 54 || type == 56){
@@ -776,47 +776,47 @@ void HSD_JObjRemove(HSD_JObj* jobj){
 		}
 		HSD_JObj* prev = HSD_JObjGetPrev(jobj);
 		if(prev == NULL){
-			if(jobj->parent != NULL){
-				jobj->parent->child = next;
+			if(jobj->prev != NULL){
+				jobj->prev->child = next;
 			}
 		}else{
 			prev->next = next;
 		}
 		if(next != NULL && next == child){
 			next->next = jobj->next;
-			next->parent = jobj->parent;
+			next->prev = jobj->prev;
 		}
-		jobj->parent = NULL;
+		jobj->prev = NULL;
 		jobj->child = NULL;
 		jobj->next = NULL;
 
-		u16 ref_count = jobj->class_parent.ref_count;
+		u16 ref_count = jobj->parent.ref_count;
 		u32 lz = __builtin_clz(0xFFFF - ref_count);
 		lz = lz >> 5;
 		if(lz == 0){
-			jobj->class_parent.ref_count -= 1;
+			jobj->parent.ref_count -= 1;
 			lz = __builtin_clz(-ref_count);
 			lz = lz >> 5;
 		}
 		if(lz != 0){
-			u16 ref_count_indiv = jobj->class_parent.ref_count_individual;
+			u16 ref_count_indiv = jobj->parent.ref_count_individual;
 			if((ref_count_indiv - 1) < 0){
-				HSD_INFO_METHOD(jobj)->release((HSD_Class*)jobj);
-				HSD_INFO_METHOD(jobj)->destroy((HSD_Class*)jobj);
+				HSD_OBJECT_METHOD(jobj)->release((HSD_Class*)jobj);
+				HSD_OBJECT_METHOD(jobj)->destroy((HSD_Class*)jobj);
 			}else{
-				jobj->class_parent.ref_count_individual += 1;
-				assert(jobj->class_parent.ref_count_individual != 0);
+				jobj->parent.ref_count_individual += 1;
+				assert(jobj->parent.ref_count_individual != 0);
 				HSD_JOBJ_METHOD(jobj)->release_child(jobj);
-				lz = __builtin_clz(-jobj->class_parent.ref_count_individual);
+				lz = __builtin_clz(-jobj->parent.ref_count_individual);
 				lz = lz >> 5;
 				if(lz == 0){
-					jobj->class_parent.ref_count_individual -= 1;
-					lz = __builtin_clz(-jobj->class_parent.ref_count_individual);
+					jobj->parent.ref_count_individual -= 1;
+					lz = __builtin_clz(-jobj->parent.ref_count_individual);
 					lz = lz >> 5;
 				}
 				if(lz != 0){
-					HSD_INFO_METHOD(jobj)->release((HSD_Class*)jobj);
-					HSD_INFO_METHOD(jobj)->destroy((HSD_Class*)jobj);
+					HSD_OBJECT_METHOD(jobj)->release((HSD_Class*)jobj);
+					HSD_OBJECT_METHOD(jobj)->destroy((HSD_Class*)jobj);
 				}
 			}
 		}
@@ -826,47 +826,47 @@ void HSD_JObjRemove(HSD_JObj* jobj){
 //80371590
 void HSD_JObjRemoveAll(HSD_JObj *jobj){
 	if(jobj != NULL){
-		if(jobj->parent){
+		if(jobj->prev){
 			HSD_JObj *prev = HSD_JObjGetPrev(jobj);
 			if(prev != NULL){
 				prev->next = NULL;
 			}else{
-				jobj->parent->next = NULL;
+				jobj->prev->next = NULL;
 			}
 		}
 		for(HSD_JObj* curr = jobj; curr != NULL; curr = curr->next){
 			HSD_JObj* next = curr->next;
-			curr->parent = NULL;
+			curr->prev = NULL;
 			curr->next = NULL;
 			
 			if(curr != NULL){
-				u16 ref_count = curr->class_parent.ref_count;
+				u16 ref_count = curr->parent.ref_count;
 				u32 lz = __builtin_clz(0xFFFF - ref_count);
 				lz = lz >> 5;
 				if(lz == 0){
-					curr->class_parent.ref_count -= 1;
+					curr->parent.ref_count -= 1;
 					lz = __builtin_clz(-ref_count);
 					lz = lz >> 5;
 				}
 				if(lz != 0){
-					u16 ref_count_indiv = curr->class_parent.ref_count_individual;
+					u16 ref_count_indiv = curr->parent.ref_count_individual;
 					if((ref_count_indiv - 1) < 0){
-						HSD_INFO_METHOD(curr)->release((HSD_Class*)curr);
-						HSD_INFO_METHOD(curr)->destroy((HSD_Class*)curr);
+						HSD_OBJECT_METHOD(curr)->release((HSD_Class*)curr);
+						HSD_OBJECT_METHOD(curr)->destroy((HSD_Class*)curr);
 					}else{
-						curr->class_parent.ref_count_individual += 1;
-						assert(curr->class_parent.ref_count_individual != 0);
+						curr->parent.ref_count_individual += 1;
+						assert(curr->parent.ref_count_individual != 0);
 						HSD_JOBJ_METHOD(curr)->release_child(curr);
-						lz = __builtin_clz(-curr->class_parent.ref_count_individual);
+						lz = __builtin_clz(-curr->parent.ref_count_individual);
 						lz = lz >> 5;
 						if(lz == 0){
-							curr->class_parent.ref_count_individual -= 1;
-							lz = __builtin_clz(-curr->class_parent.ref_count_individual);
+							curr->parent.ref_count_individual -= 1;
+							lz = __builtin_clz(-curr->parent.ref_count_individual);
 							lz = lz >> 5;
 						}
 						if(lz != 0){
-							HSD_INFO_METHOD(curr)->release((HSD_Class*)curr);
-							HSD_INFO_METHOD(curr)->destroy((HSD_Class*)curr);
+							HSD_OBJECT_METHOD(curr)->release((HSD_Class*)curr);
+							HSD_OBJECT_METHOD(curr)->destroy((HSD_Class*)curr);
 						}
 					}
 				}
@@ -893,7 +893,7 @@ void RecalcParentTrspBits(HSD_JObj *jobj){
 //803717A8
 void HSD_JObjAddChild(HSD_JObj *jobj, HSD_JObj *child){
 	if(jobj != NULL && child != NULL){
-		if(!child->parent){ //child should be a orphan
+		if(!child->prev){ //child should be a orphan
 			if(!child->next){ //child should not have siblings
 				if(jobj->child){
 					assert(JOBJ_INSTANCE(jobj)); //!(jobj->flags & JOBJ_INSTANCE)
@@ -908,7 +908,7 @@ void HSD_JObjAddChild(HSD_JObj *jobj, HSD_JObj *child){
 				child->next = jobj;
 				u32 ori_flags = child->flags;
 				u32 flags = (ori_flags | (ori_flags << 10)) & 0x70000000;
-				for(HSD_JObj* senti = jobj; senti; senti->parent){
+				for(HSD_JObj* senti = jobj; senti; senti->prev){
 					ori_flags = senti->flags;
 					if(!(flags & ~ori_flags))
 						break;
@@ -922,8 +922,8 @@ void HSD_JObjAddChild(HSD_JObj *jobj, HSD_JObj *child){
 //803718F4
 void HSD_JObjReparent(HSD_JObj *jobj, HSD_JObj *pjobj){
 	if(jobj != NULL){
-		if(jobj->parent){
-			HSD_JObj* prchild = jobj->parent->child;
+		if(jobj->prev){
+			HSD_JObj* prchild = jobj->prev->child;
 			if(prchild == jobj){
 				prchild = jobj->next;
 			}else{
@@ -932,7 +932,7 @@ void HSD_JObjReparent(HSD_JObj *jobj, HSD_JObj *pjobj){
 				prev->next = jobj->next;
 			}
 			
-			for(HSD_JObj* i = jobj->parent; i; i = i->next){
+			for(HSD_JObj* i = jobj->prev; i; i = i->next){
 				prchild = i->child;
 				u32 a3 = 0x8FFFFFFF;
 				while(prchild){
@@ -944,7 +944,7 @@ void HSD_JObjReparent(HSD_JObj *jobj, HSD_JObj *pjobj){
 					break;
 				i->flags = i->flags & a3;
 			}
-			jobj->parent = NULL;
+			jobj->prev = NULL;
 		}
 		jobj->next = NULL;
 		HSD_JObjAddChild(pjobj, jobj);
@@ -957,26 +957,26 @@ void HSD_JObjAddNext(HSD_JObj *jobj, HSD_JObj *next){
 	
 	if(jobj != NULL && next != NULL){
 		curr = jobj;
-		if(jobj->parent != NULL){
-			curr = jobj->parent->child;
-			jobj->parent->child = NULL;
+		if(jobj->prev != NULL){
+			curr = jobj->prev->child;
+			jobj->prev->child = NULL;
 			jobj->flags = jobj->flags & 0x8FFFFFFF;
 		}
 		
-		HSD_JObj* parent = jobj->parent;
+		HSD_JObj* parent = jobj->prev;
 		if(next != NULL){
 			HSD_JObj* next_next = next->next;
-			if(next->parent != NULL){
-				HSD_JObj* next_p_c = next->parent->child;
+			if(next->prev != NULL){
+				HSD_JObj* next_p_c = next->prev->child;
 				if(next_p_c == next){
-					next->parent->child = next_next;
+					next->prev->child = next_next;
 				}else{
 					HSD_JObj* prev = HSD_JObjGetPrev(next);
 					assert(prev != NULL);
 					prev->next = next_next;
 				}
-				RecalcParentTrspBits(next->parent);
-				next->parent = NULL;
+				RecalcParentTrspBits(next->prev);
+				next->prev = NULL;
 			}
 			next->next = NULL;
 			HSD_JObjAddChild(parent, next);
@@ -991,12 +991,12 @@ void HSD_JObjAddNext(HSD_JObj *jobj, HSD_JObj *next){
 		}
 		
 		while(curr != NULL){
-			curr->parent = next;
+			curr->prev = next;
 			u32 flags = (curr->flags | curr->flags << 10) & 0x70000000;
 			HSD_JObj* i = next;
 			while(i != NULL && (flags & ~i->flags) != 0){
 				i->flags = i->flags | flags;
-				i = i->parent;
+				i = i->prev;
 			}
 			curr = curr->next;
 		}
@@ -1006,13 +1006,13 @@ void HSD_JObjAddNext(HSD_JObj *jobj, HSD_JObj *next){
 //80371B60
 HSD_JObj* HSD_JObjGetPrev(HSD_JObj *jobj){	
 	if(jobj != NULL){
-		if(!jobj->parent)
+		if(!jobj->prev)
 			return NULL;
 
-		if(jobj->parent->child == jobj)
+		if(jobj->prev->child == jobj)
 			return NULL;
 		
-		for (HSD_JObj* i = jobj->parent->child; i; i = i->next){
+		for (HSD_JObj* i = jobj->prev->child; i; i = i->next){
 			if(i->next == jobj){
 				return i;
 			}
@@ -1236,7 +1236,7 @@ void HSD_JObjSetCallback(void (*cb)()){
 
 //8037340C
 static void JObjInit(HSD_Class* o){
-	HSD_PARENT_INFO(&hsdJObj)->init(o);
+	(*hsdJObj.parent.parent.init)(o);
 
 	if(o != NULL){
 		HSD_JObj* jobj = HSD_JOBJ(o);
@@ -1252,43 +1252,43 @@ static void JObjReleaseChild(HSD_JObj* jobj){
 	HSD_JObj* child = jobj->child;
 	if(child != NULL){
 		if(JOBJ_INSTANCE(jobj)){
-			child->parent = NULL;
+			child->prev = NULL;
 			HSD_JObjRemoveAll(jobj->child);
 		}else{
-			u16 ref_count = child->class_parent.ref_count;
+			u16 ref_count = child->parent.ref_count;
 			u32 lz = __builtin_clz(0xFFFF - ref_count);
 			lz = lz >> 5;
 			if(lz == 0){
-				child->class_parent.ref_count -= 1;
+				child->parent.ref_count -= 1;
 				lz = __builtin_clz(-ref_count);
 				lz = lz >> 5;
 			}
 			if(lz != 0){
-				u16 ref_count_indiv = child->class_parent.ref_count_individual;
+				u16 ref_count_indiv = child->parent.ref_count_individual;
 				if((ref_count_indiv - 1) < 0 && child != NULL){
-					HSD_INFO_METHOD(child)->release((HSD_Class*)child);
-					HSD_INFO_METHOD(child)->destroy((HSD_Class*)child);
+					HSD_OBJECT_METHOD(child)->release((HSD_Class*)child);
+					HSD_OBJECT_METHOD(child)->destroy((HSD_Class*)child);
 				}else{
-					child->class_parent.ref_count_individual += 1;
-					assert(child->class_parent.ref_count_individual != 0);
+					child->parent.ref_count_individual += 1;
+					assert(child->parent.ref_count_individual != 0);
 					HSD_JOBJ_METHOD(child)->release_child(child);
-					lz = __builtin_clz(-child->class_parent.ref_count_individual);
+					lz = __builtin_clz(-child->parent.ref_count_individual);
 					lz = lz >> 5;
 					if(lz == 0){
-						child->class_parent.ref_count_individual -= 1;
-						lz = __builtin_clz(-child->class_parent.ref_count_individual);
+						child->parent.ref_count_individual -= 1;
+						lz = __builtin_clz(-child->parent.ref_count_individual);
 						lz = lz >> 5;
 					}
 					if(lz != 0 && child != NULL){
-						HSD_INFO_METHOD(child)->release((HSD_Class*)child);
-						HSD_INFO_METHOD(child)->destroy((HSD_Class*)child);
+						HSD_OBJECT_METHOD(child)->release((HSD_Class*)child);
+						HSD_OBJECT_METHOD(child)->destroy((HSD_Class*)child);
 					}
 				}
 			}
 		}
 		jobj->child = NULL;
 	}
-	HSD_JObj* parent = jobj->parent;
+	HSD_JObj* parent = jobj->prev;
 	if(parent != NULL){
 		HSD_JObj* next = jobj->next;
 		if(parent->child == jobj){
@@ -1299,7 +1299,7 @@ static void JObjReleaseChild(HSD_JObj* jobj){
 			prev->next = next;
 		}
 		RecalcParentTrspBits(parent);
-		jobj->parent = NULL;
+		jobj->prev = NULL;
 		jobj->next = NULL;
 		HSD_JObjAddChild(NULL, jobj);
 	}
@@ -1330,7 +1330,7 @@ static void JObjRelease(HSD_Class* o){
 	if(jobj->vmtx != NULL){
 		HSD_Free(jobj->vmtx);
 	}
-	HSD_PARENT_INFO(&hsdJObj)->release(o);
+	HSD_OBJECT_INFO(&hsdJObj)->release(o);
 }
 
 //80373790
@@ -1342,7 +1342,7 @@ static void JObjAmnesia(HSD_ClassInfo* info){
 		r13_401C = NULL;
 		current_jobj = NULL;
 	}
-	HSD_PARENT_INFO(&hsdJObj)->amnesia(info);
+	HSD_OBJECT_INFO(&hsdJObj)->amnesia(info);
 }
 
 //803737F4

@@ -21,9 +21,9 @@
 
 //Joint Object
 typedef struct _HSD_JObj {
-	HSD_Class class_parent;
+	HSD_Obj parent;
 	struct _HSD_JObj* next; //0x08
-	struct _HSD_JObj* parent; //0x0C
+	struct _HSD_JObj* prev; //0x0C
 	struct _HSD_JObj* child; //0x10
 	u32 flags; //0x14
 	union { //0x18
@@ -56,7 +56,7 @@ typedef struct _HSD_JObjDesc {
 } HSD_JObjDesc;
 
 typedef struct _HSD_JObjInfo {
-	HSD_ClassInfo parent; 
+	HSD_ObjInfo parent; 
 	int (*load)(HSD_JObj *jobj, HSD_JObjDesc *desc, HSD_JObj *jobj_2); //0x3C
 	void (*make_pmtx)(HSD_JObj *jobj, Mtx vmtx, Mtx pmtx); //0x40
 	void (*make_rmtx)(HSD_JObj* jobj, Mtx mtx, Mtx rmtx); //0x44
@@ -68,7 +68,7 @@ extern HSD_JObjInfo hsdJObj;
 
 #define HSD_JOBJ(o)		((HSD_JObj *)(o))
 #define HSD_JOBJ_INFO(i)	((HSD_JObjInfo *)(i))
-#define HSD_JOBJ_METHOD(o)	HSD_JOBJ_INFO(HSD_CLASS_METHOD(o))
+#define HSD_JOBJ_METHOD(o)	HSD_JOBJ_INFO(HSD_OBJECT_METHOD(o))
 
 void HSD_JObjCheckDepend(HSD_JObj *);
 

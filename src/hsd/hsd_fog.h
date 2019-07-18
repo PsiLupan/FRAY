@@ -9,7 +9,7 @@
 #include "hsd_cobj.h"
 
 typedef struct _HSD_FogAdj {
-    HSD_Class class_parent;
+    HSD_Obj parent;
     u16 x8_unk; //0x08
     u16 xA_unk; //0xA
     Mtx mtx; //0x0C
@@ -22,7 +22,7 @@ typedef struct _HSD_FogAdj {
 } HSD_FogAdj;
 
 typedef struct _HSD_Fog {
-    HSD_Class class_parent;
+    HSD_Obj parent;
     u8 type; //0x08
     struct _HSD_FogAdj* fog_adj; //0x0C
     f32 start; //0x10
@@ -39,11 +39,11 @@ typedef struct _HSD_FogAdjDesc {
 } HSD_FogAdjDesc;
 
 typedef struct _HSD_FogInfo {
-    HSD_ClassInfo parent;
+    HSD_ObjInfo parent;
 } HSD_FogInfo;
 
 typedef struct _HSD_FogAdjInfo {
-    HSD_ClassInfo parent;
+    HSD_ObjInfo parent;
 } HSD_FogAdjInfo;
 
 typedef struct _HSD_FogDesc {

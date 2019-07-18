@@ -197,8 +197,8 @@ void HSD_PObjRemoveAll(HSD_PObj *pobj){
     while (pobj != NULL) {
         HSD_PObj *next = pobj->next;
         if(next != NULL){
-            HSD_CLASS_METHOD(pobj)->release;
-            HSD_CLASS_METHOD(pobj)->destroy;
+            HSD_CLASS_METHOD(pobj)->release((HSD_Class*)pobj);
+            HSD_CLASS_METHOD(pobj)->destroy((HSD_Class*)pobj);
         }
         pobj = next;
     }
@@ -254,8 +254,8 @@ void HSD_PObjResolveRefsAll(HSD_PObj *pobj, HSD_PObjDesc *pdesc){
                 if (pdesc->u.joint != NULL) {
                     pobj->u.jobj = HSD_IDGetDataFromTable((HSD_ID)pdesc->u.joint, NULL);
                     assert(pobj->u.jobj);
-                    pobj->u.jobj->class_parent.ref_count_individual += 1;
-                    assert(pobj->u.jobj->class_parent.ref_count_individual != 0);
+                    pobj->u.jobj->parent.ref_count_individual += 1;
+                    assert(pobj->u.jobj->parent.ref_count_individual != 0);
                 }
             break;
             
@@ -831,7 +831,7 @@ void HSD_PObjDisp(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermode){
         case POBJ_CULLFRONT|POBJ_CULLBACK:
             return;
     }
-    HSD_POBJ_INFO(pobj)->setup_mtx(pobj, vmtx, pmtx, rendermode);
+    HSD_POBJ_METHOD(pobj)->setup_mtx(pobj, vmtx, pmtx, rendermode);
     if(pobj_type(pobj) == POBJ_SHAPEANIM){
         setupShapeAnimArrayDesc(pobj->verts);
         setupShapeAnimVtxDesc(pobj);

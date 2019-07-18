@@ -802,27 +802,24 @@ static int LObjLoad(HSD_LObj *lobj, HSD_LightDesc *ldesc){
 
 //803672DC
 HSD_LObj* HSD_LObjLoadDesc(HSD_LightDesc *ldesc){
-  HSD_LObj *top, **p = &top;
-  
-  for (; ldesc; ldesc = ldesc->next) {
-    HSD_ClassInfo *info;
-
-    if (!ldesc->class_name || !(info = (HSD_ClassInfo*)hsdSearchClassInfo(ldesc->class_name))){
+	HSD_LObj *top, **p = &top;
+	for (; ldesc; ldesc = ldesc->next) {
+		HSD_ClassInfo *info;
+		if (!ldesc->class_name || !(info = (HSD_ClassInfo*)hsdSearchClassInfo(ldesc->class_name))){
 			info = (HSD_ClassInfo*)&hsdLObj;
 			if(default_class != NULL){
 				info = (HSD_ClassInfo*)default_class;
 			}
-      *p = (HSD_LObj*)hsdNew(info);
-    } else {
-      *p = (HSD_LObj*)hsdNew(info);
-    }
+			*p = (HSD_LObj*)hsdNew(info);
+		} else {
+			*p = (HSD_LObj*)hsdNew(info);
+		}
 		assert(*p);
-    HSD_LOBJ_METHOD(*p)->load(*p, ldesc);
-    p = &(*p)->next;
-  }
-  *p = NULL;
-
-  return top;
+		HSD_LOBJ_INFO((*p)->parent.parent.class_info)->load(*p, ldesc);
+		p = &(*p)->next;
+	}
+	*p = NULL;
+	return top;
 }
 
 //803673D8
@@ -852,7 +849,7 @@ static void LObjRelease(HSD_Class *o){
 	HSD_WObjUnref(HSD_LObjGetPositionWObj(lobj));
 	HSD_WObjUnref(HSD_LObjGetInterestWObj(lobj));
 	
-	HSD_PARENT_INFO(&hsdLObj)->release(o);
+	HSD_OBJECT_INFO(&hsdLObj)->release(o);
 }
 
 //80367628
@@ -863,7 +860,7 @@ static void LObjAmnesia(HSD_ClassInfo *info){
 	if (info == HSD_CLASS_INFO(&hsdLObj)) {
 		current_lights = NULL;
 	}
-	HSD_PARENT_INFO(&hsdLObj)->amnesia(info);
+	HSD_OBJECT_INFO(&hsdLObj)->amnesia(info);
 }
 
 //80367688
@@ -875,8 +872,8 @@ static void LObjInfoInit(void){
 		sizeof(HSD_LObjInfo),
 		sizeof(HSD_LObj));
 		
-	HSD_CLASS_INFO(&hsdLObj)->release = LObjRelease;
-	HSD_CLASS_INFO(&hsdLObj)->amnesia = LObjAmnesia;
+	HSD_OBJECT_INFO(&hsdLObj)->release = LObjRelease;
+	HSD_OBJECT_INFO(&hsdLObj)->amnesia = LObjAmnesia;
 	
 	HSD_LOBJ_INFO(&hsdLObj)->load     = LObjLoad;
 	HSD_LOBJ_INFO(&hsdLObj)->update   = LObjUpdateFunc;
@@ -884,16 +881,16 @@ static void LObjInfoInit(void){
 
 static void LObjUnref(HSD_LObj* lobj){
 	if(lobj != NULL){
-		u16 ref_count = lobj->class_parent.ref_count;
+		u16 ref_count = lobj->parent.ref_count;
 		u32 lz = __builtin_clz(0xFFFF - ref_count);
 		lz = lz >> 5;
 		if(lz == 0){
-			lobj->class_parent.ref_count -= 1;
+			lobj->parent.ref_count -= 1;
       lz = __builtin_clz(-ref_count);
 			lz = lz >> 5;
 		}
     if(lz != 0){
-      HSD_INFO_METHOD(lobj)->release((HSD_Class*)lobj);
+      HSD_OBJECT_METHOD(lobj)->release((HSD_Class*)lobj);
     }
   }
 }

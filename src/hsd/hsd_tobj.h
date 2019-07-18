@@ -132,7 +132,7 @@
 
 //Texture Object
 typedef struct _HSD_TObj {
-	HSD_Class class_parent;
+	HSD_Class parent;
 	u16 flags;
 	struct _HSD_TObj* next;
 	u8 id; //GXTexMapID

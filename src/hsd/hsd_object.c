@@ -103,43 +103,43 @@ void HSD_ObjAllocInit(HSD_ObjDef* init_obj, u32 size, u32 align){
 
 //80381BE4
 static void hsdObjInfoInit(HSD_ClassInfo* info){
-	if(info->initialized == false){
-		(*info->ObjInfoInit)();
+	if((info->head.flags & 1) == 0){
+		(*info->head.info_init)();
 	}
 }
 
 //80381C18
 void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, char* base_class_library, char* type, u64 info_size, u64 class_size){
-	class_info->initialized = TRUE;
-	class_info->base_class_library = base_class_library;
-	class_info->obj_size = (u16)class_size;
-	class_info->info_size = (u16)info_size;
-	class_info->parent_info = parent_info;
-	class_info->next_info = NULL;
-	class_info->child_info = NULL;
-	class_info->active_objs = 0;
-	class_info->total_allocs = 0;
+	class_info->head.flags = 1;
+	class_info->head.library_name = base_class_library;
+	class_info->head.obj_size = (u16)class_size;
+	class_info->head.info_size = (u16)info_size;
+	class_info->head.parent = parent_info;
+	class_info->head.next = NULL;
+	class_info->head.child = NULL;
+	class_info->head.nb_exist = 0;
+	class_info->head.nb_peak = 0;
 	
 	if(parent_info != NULL){
-		if(parent_info->initialized == TRUE){
-			assert(class_info->obj_size >= parent_info->obj_size);
-			assert(class_info->info_size >= parent_info->info_size);
-			memcpy(&class_info->obj_alloc, &parent_info->obj_alloc, parent_info->info_size - 0x28);
-			class_info->next_info = parent_info->child_info;
-			parent_info->child_info = class_info;
+		if((class_info->head.flags & 1) == 1){
+			assert(class_info->head.obj_size >= parent_info->head.obj_size);
+			assert(class_info->head.info_size >= parent_info->head.info_size);
+			memcpy(&class_info->alloc, &parent_info->alloc, parent_info->head.info_size - 0x28);
+			class_info->head.next = parent_info->head.child;
+			parent_info->head.child = class_info;
 		}else{
-			parent_info->ObjInfoInit();
+			(*parent_info->head.info_init)();
 		}
 	}
 }
 
 //803821C4
 static HSD_Class* _hsdClassAlloc(HSD_ClassInfo* info){
-	HSD_FreeList* mem_piece = hsdAllocMemPiece(info->obj_size);
+	HSD_FreeList* mem_piece = hsdAllocMemPiece(info->head.obj_size);
 	if(mem_piece != NULL){
-		info->active_objs += 1;
-		if(info->total_allocs < info->active_objs){
-			info->total_allocs = info->active_objs;
+		info->head.nb_exist += 1;
+		if(info->head.nb_peak < info->head.nb_exist){
+			info->head.nb_peak = info->head.nb_exist;
 		}
 	}
 	return (HSD_Class*)mem_piece;
@@ -158,8 +158,8 @@ static void _hsdClassRelease(HSD_Class* info){
 //80382228
 static void _hsdClassDestroy(HSD_ClassInfo* info){
 	if(info != NULL){
-		info->active_objs -= 1;
-		u32 size = info->obj_size + 0x1F;
+		info->head.nb_exist -= 1;
+		u32 size = info->head.obj_size + 0x1F;
 		HSD_MemoryEntry* entry = GetMemoryEntry((size >> 5) + (u32)((s32)size < 0 && (size & 0x1F) != 0) + -1);
 		((HSD_FreeList*)info)->next = entry->data;
 		entry->data = (HSD_FreeList*)info;
@@ -169,8 +169,8 @@ static void _hsdClassDestroy(HSD_ClassInfo* info){
 
 //80382294
 static void _hsdClassAmnesia(HSD_ClassInfo* info){
-	info->active_objs = 0;
-	info->total_allocs = 0;
+	info->head.nb_exist = 0;
+	info->head.nb_peak = 0;
 	if(info == &hsdClass){
 		/*
 		-0x3F98(r13) = 0;
@@ -183,7 +183,7 @@ static void _hsdClassAmnesia(HSD_ClassInfo* info){
 //803822C0
 static void _hsdInfoInit(){
 	hsdInitClassInfo(&hsdClass, NULL, HSD_BASE_CLASS_LIBRARY, "hsd_class", sizeof(HSD_ClassInfo), 4);
-	hsdClass.obj_alloc = _hsdClassAlloc; 
+	hsdClass.alloc = _hsdClassAlloc; 
 	hsdClass.init = _hsdClassInit; 
 	hsdClass.release = _hsdClassRelease; 
 	hsdClass.destroy = _hsdClassDestroy; 
@@ -191,22 +191,22 @@ static void _hsdInfoInit(){
 }
 
 //80382344
-HSD_Class* hsdNew(HSD_ClassInfo* info){
+void* hsdNew(HSD_ClassInfo* info){
 	hsdObjInfoInit(info);
 
-	HSD_Class* class = (*info->obj_alloc)(info);
+	HSD_Class* class = (*info->alloc)(info);
 	if(class == NULL){
 		return NULL;
 	}
 	hsdObjInfoInit(info);
-	memset(class, 0, info->obj_size);
-	class->class_init = info;
+	memset(class, 0, info->head.obj_size);
+	class->class_info = info;
 	(*info->init)(class);
 	/*  So, the compiler optimized away hsdClassInit to just return 0, which affects
 		every init function that would normally return an int, possibly -1.
 		Otherwise, the below would look something like:
 
-		if(info->init result < 0){
+		if(info->init(class) < 0){
 			(*info->destroy)(class);
 			return NULL;
 		}

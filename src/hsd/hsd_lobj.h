@@ -65,11 +65,11 @@ struct attn {
 };
 
 typedef struct _HSD_LObj {
-	HSD_Class class_parent;
-	u16 flags;
-	struct _HSD_LObj* next;
+	HSD_Obj parent;
+	u16 flags; //0x08
+	struct _HSD_LObj* next; //0x0C
 	GXColor color; //0x10
-	GXColor hw_color;
+	GXColor hw_color; //0x14
 	HSD_WObj* position; //0x18
 	HSD_WObj* interest; //0x1C
 	union {
@@ -109,7 +109,7 @@ typedef struct _HSD_LightAnim {
 } HSD_LightAnim;
 
 typedef struct _HSD_LObjInfo {
-	HSD_ClassInfo parent;
+	HSD_ObjInfo parent;
 	void    (*release)(HSD_Class *o);
 	void    (*amnesia)(HSD_ClassInfo *info);
 	int	    (*load)(HSD_LObj *lobj, HSD_LightDesc *ldesc);
@@ -120,7 +120,7 @@ extern HSD_LObjInfo hsdLObj;
 
 #define HSD_LOBJ(o)		((HSD_LObj *)(o))
 #define HSD_LOBJ_INFO(i)	((HSD_LObjInfo *)(i))
-#define HSD_LOBJ_METHOD(o)	HSD_LOBJ_INFO(HSD_CLASS_METHOD(o))
+#define HSD_LOBJ_METHOD(o)	HSD_LOBJ_INFO(HSD_OBJECT_METHOD(o))
 
 u32 HSD_LObjGetFlags(HSD_LObj *);
 void HSD_LObjSetFlags(HSD_LObj *, u32);

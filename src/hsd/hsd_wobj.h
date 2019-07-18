@@ -10,7 +10,7 @@
 #include "hsd_robj.h"
 
 typedef struct _HSD_WObj {
-    struct _HSD_Class class_parent;
+    HSD_Obj parent;
     u32 flags; //0x08
     guVector pos; //0xC
     struct _HSD_AObj* aobj; //0x18
@@ -25,7 +25,7 @@ typedef struct _HSD_WObjDesc {
 } HSD_WObjDesc;
 
 typedef struct _HSD_WObjInfo {
-    HSD_ClassInfo parent;
+    HSD_ObjInfo parent;
     int (*load)(HSD_WObj *wobj, HSD_WObjDesc *desc); 
 } HSD_WObjInfo;
 
@@ -47,7 +47,7 @@ extern HSD_WObjInfo hsdWObj;
 
 #define HSD_WOBJ_INFO(i)	((HSD_WObjInfo *)(i))
 
-#define HSD_WOBJ_METHOD(o)	HSD_WOBJ_INFO(HSD_CLASS_METHOD(o))
+#define HSD_WOBJ_METHOD(o)	HSD_WOBJ_INFO(HSD_OBJECT_METHOD(o))
 
 void HSD_WObjRemoveAnim(HSD_WObj *);
 void HSD_WObjReqAnim(HSD_WObj *, f32);

@@ -765,7 +765,7 @@ HSD_CObj* HSD_CObjLoadDesc(HSD_CObjDesc* desc){
 
 //8036A654
 static void CObjInit(HSD_Class* o){
-    HSD_PARENT_INFO(&hsdCObj)->init(o);
+    HSD_OBJECT_INFO(&hsdCObj)->init(o);
     
     if(o != NULL){
         HSD_CObj* cobj = HSD_COBJ(o);
@@ -792,7 +792,7 @@ static void CObjRelease(HSD_Class* o){
         HSD_Free(cobj->proj_mtx);
     }
 
-    HSD_PARENT_INFO(&hsdCObj)->release(o);
+    HSD_OBJECT_INFO(&hsdCObj)->release(o);
 }
 
 //8036A85C
@@ -803,15 +803,15 @@ static void CObjAmnesia(HSD_ClassInfo *info){
 	if (info == HSD_CLASS_INFO(&hsdCObj)) {
 		current_cobj = NULL;
 	}
-	HSD_PARENT_INFO(&hsdCObj)->amnesia(info);
+	HSD_OBJECT_INFO(&hsdCObj)->amnesia(info);
 }
 
 //8036A8BC
 static void CObjInfoInit(){
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdCObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_cobj", sizeof(HSD_CObjInfo), sizeof(HSD_CObj));
 
-    HSD_CLASS_INFO(&hsdCObj)->init = CObjInit;
-    HSD_CLASS_INFO(&hsdCObj)->release = CObjRelease;
-    HSD_CLASS_INFO(&hsdCObj)->amnesia = CObjAmnesia;
+    HSD_OBJECT_INFO(&hsdCObj)->init = CObjInit;
+    HSD_OBJECT_INFO(&hsdCObj)->release = CObjRelease;
+    HSD_OBJECT_INFO(&hsdCObj)->amnesia = CObjAmnesia;
     HSD_COBJ_INFO(&hsdCObj)->load = CObjLoad;
 }

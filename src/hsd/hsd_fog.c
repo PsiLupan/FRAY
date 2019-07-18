@@ -140,30 +140,30 @@ static void FogRelease(HSD_Class* o){
     HSD_Fog* fog = (HSD_Fog*)o;
     HSD_FogAdj* fog_adj = fog->fog_adj;
     if(fog_adj != NULL){
-        u16 ref_count = fog_adj->class_parent.ref_count;
+        u16 ref_count = fog_adj->parent.ref_count;
 		u32 lz = __builtin_clz(0xFFFF - ref_count);
 		lz = lz >> 5;
 		if(lz == 0){
-			fog_adj->class_parent.ref_count -= 1;
+			fog_adj->parent.ref_count -= 1;
             lz = __builtin_clz(-ref_count);
 			lz = lz >> 5;
 		}
         if(lz != 0){
-            HSD_INFO_METHOD(fog_adj)->release(fog_adj);
-            HSD_INFO_METHOD(fog_adj)->destroy(fog_adj);
+            HSD_OBJECT_METHOD(fog_adj)->release(fog_adj);
+            HSD_OBJECT_METHOD(fog_adj)->destroy(fog_adj);
         }
     }
     HSD_AObjRemove(fog->aobj);
-    HSD_PARENT_INFO(&hsdFog)->release(o);
+    HSD_OBJECT_INFO(&hsdFog)->release(o);
 }
 
 //8037E120
 static void FogInfoInit(){
-    hsdInitClassInfo((HSD_ClassInfo*)&hsdFog, HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fog", sizeof(HSD_FogInfo), sizeof(HSD_Fog));
-    HSD_PARENT_INFO(&hsdFog)->release = FogRelease;
+    hsdInitClassInfo((HSD_CLASS_INFO(&hsdFog), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fog", sizeof(HSD_FogInfo), sizeof(HSD_Fog));
+    HSD_OBJECT_INFO(&hsdFog)->release = FogRelease;
 }
 
 //8037E178
 static void FogAdjInfoInit(){
-    hsdInitClassInfo((HSD_ClassInfo*)&hsdFogAdj, HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fogadj", sizeof(HSD_FogAdjInfo), sizeof(HSD_FogAdj));
+    hsdInitClassInfo((HSD_CLASS_INFO(&hsdFogAdj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fogadj", sizeof(HSD_FogAdjInfo), sizeof(HSD_FogAdj));
 }

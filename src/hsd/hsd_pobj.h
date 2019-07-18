@@ -32,7 +32,7 @@
 
 //Polygon Object
 typedef struct _HSD_PObj {
-	HSD_ClassInfo* parent;
+	HSD_Class parent;
 	struct _HSD_PObj* next;
 	struct _HSD_VtxDescList* verts;
 	u16 flags;
@@ -127,7 +127,7 @@ typedef struct _HSD_ShapeAnimJoint {
 } HSD_ShapeAnimJoint;
 
 typedef struct _HSD_PObjInfo {
-	HSD_ClassInfo class_info;
+	HSD_ClassInfo parent;
 	void (*disp)(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermode);
 	void (*setup_mtx)(HSD_PObj *pobj, Mtx vmtx, Mtx pmtx, u32 rendermode);
 	void (*load)(HSD_PObj* pobj, HSD_PObjDesc *desc);

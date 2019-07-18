@@ -6,9 +6,9 @@
 
 static void HSD_WObjInfoInit();
 
-static HSD_WObjInfo* default_class = NULL; 
-
 HSD_WObjInfo hsdWObj = { HSD_WObjInfoInit };
+
+static HSD_WObjInfo* default_class = NULL; 
 
 //8037D050
 void HSD_WObjRemoveAnim(HSD_WObj* wobj){
@@ -231,7 +231,7 @@ static void WObjRelease(HSD_Class* o){
     HSD_WObj* wobj = (HSD_WObj*)o;
     HSD_RObjRemoveAll(wobj->robj);
     HSD_AObjRemove(wobj->aobj);
-    HSD_PARENT_INFO(&hsdWObj)->release(o);
+    HSD_OBJECT_INFO(&hsdWObj)->release(o);
 }
 
 //8037D8B8
@@ -239,7 +239,7 @@ static void WObjAmnesia(HSD_ClassInfo* info){
     if(info == HSD_CLASS_INFO(default_class)){
         default_class = NULL;
     }
-    HSD_PARENT_INFO(&hsdWObj)->amnesia(info);
+    HSD_OBJECT_INFO(&hsdWObj)->amnesia(info);
 }
 
 //8037D900
@@ -252,16 +252,16 @@ static void HSD_WObjInfoInit(){
 
 void HSD_WObjUnref(HSD_WObj* wobj){
     if(wobj != NULL){
-        u16 ref_count = wobj->class_parent.ref_count;
+        u16 ref_count = wobj->parent.ref_count;
 		u32 lz = __builtin_clz(0xFFFF - ref_count);
 		lz = lz >> 5;
 		if(lz == 0){
-			wobj->class_parent.ref_count -= 1;
+			wobj->parent.ref_count -= 1;
             lz = __builtin_clz(-ref_count);
 			lz = lz >> 5;
 		}
         if(lz != 0){
-            HSD_INFO_METHOD(wobj)->release((HSD_Class*)wobj);
+            HSD_OBJECT_METHOD(wobj)->release((HSD_Class*)wobj);
         }
     }
 }
