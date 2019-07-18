@@ -751,9 +751,9 @@ HSD_CObj* HSD_CObjLoadDesc(HSD_CObjDesc* desc){
     if(desc != NULL){
         HSD_ClassInfo *info;
         if (!desc->class_name || !(info = hsdSearchClassInfo(desc->class_name))){
-            info = &hsdCObj;
+            info = HSD_CLASS_INFO(&hsdCObj);
             if(info == NULL){
-                info = default_class;
+                info = HSD_CLASS_INFO(default_class);
             }
         }
         cobj = (HSD_CObj*)hsdNew(info);
