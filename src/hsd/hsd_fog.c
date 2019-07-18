@@ -149,8 +149,8 @@ static void FogRelease(HSD_Class* o){
 			lz = lz >> 5;
 		}
         if(lz != 0){
-            HSD_OBJECT_METHOD(fog_adj)->release(fog_adj);
-            HSD_OBJECT_METHOD(fog_adj)->destroy(fog_adj);
+            HSD_OBJECT_METHOD(fog_adj)->release(o);
+            HSD_OBJECT_METHOD(fog_adj)->destroy(o);
         }
     }
     HSD_AObjRemove(fog->aobj);
