@@ -115,7 +115,6 @@ void Archive_LoadFileIntoMemory(char* filename, void* mem, u32* filelength){
 void Archive_InitializeDAT(s32* header_info, s32* dat_file, u32 file_size){
     assert(Archive_InitHeaderInfo(header_info, dat_file, file_size) != -1);
     u32 offset = 0;
-    s32 val = NULL;
     while(true){
         char* str = Archive_GetString(header_info, offset++);
         if ( str == NULL )
