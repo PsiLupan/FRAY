@@ -252,20 +252,20 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
 
 				if(vmtx == NULL){
 					HSD_CObj* cobj = HSD_CObjGetCurrent();
-					vmtx = &cobj->view_mtx;
+					vmtx = cobj->view_mtx;
 				}
 
 				Mtx mtx;
-				HSD_JOBJ_METHOD(jobj)->make_rmtx(jobj, vmtx, &mtx);
+				HSD_JOBJ_METHOD(jobj)->make_rmtx(jobj, vmtx, mtx);
 				if((m_flags & JOBJ_OPA) != 0){
-					HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, HSD_TRSP_OPA, rendermode);
+					HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, mtx, HSD_TRSP_OPA, rendermode);
 				}
 				if(zsort_listing == 0){
 					if((m_flags & JOBJ_TEXEDGE) != 0){
-						HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, HSD_TRSP_TEXEDGE, rendermode);
+						HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, mtx, HSD_TRSP_TEXEDGE, rendermode);
 					}
 					if ((m_flags & JOBJ_XLU) != 0) {
-						HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, &mtx, HSD_TRSP_XLU, rendermode);
+						HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, mtx, HSD_TRSP_XLU, rendermode);
 					}
 				}else{
 					if ((m_flags & (JOBJ_TEXEDGE | JOBJ_XLU)) != 0) {
