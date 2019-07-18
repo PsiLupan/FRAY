@@ -366,7 +366,7 @@ void _HSD_ZListDisp(){
 	HSD_CObj* cobj;
 	
 	cobj = HSD_CObjGetCurrent();
-	vmtx = &cobj->view_mtx;
+	vmtx = cobj->view_mtx;
 	
 	list = zlist_texedge_top;
 	while (list) {
