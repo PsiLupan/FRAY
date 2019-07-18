@@ -417,5 +417,5 @@ HSD_FObj* HSD_FObjAlloc(){
 
 //8036B8A4
 void HSD_FObjFree(HSD_FObj* fobj){
-    HSD_ObjFree(&fobj_alloc_data, fobj);
+    HSD_ObjFree(&fobj_alloc_data, (HSD_ObjAllocLink*)fobj);
 }
