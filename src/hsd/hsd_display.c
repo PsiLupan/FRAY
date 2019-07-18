@@ -23,6 +23,62 @@ static int	 zlist_xlu_nb = 0;
 
 #define ZLIST_NEXT(list,offset) (*(HSD_ZList **)(((u8 *)(list)) + (offset)))
 
+//80373964
+static void mkVBillBoardMtx(HSD_JObj* jobj, MtxP src, MtxP dst){
+	guVector pos, ax, ay, az, uy;
+	f32 sx, sz, mag;
+	
+	pos.x = src[0][3];
+	pos.y = src[1][3];
+	pos.z = src[2][3];
+	
+	ay.x = src[0][1];
+	ay.y = src[1][1];
+	ay.z = src[2][1];
+
+	guVecScale(&ay, &uy, 1.0F/(sqrtf(ay.x * ay.x + ay.y * ay.y + ay.z * ay.z)) + FLT_EPSILON);
+	
+	sx = sqrtf(src[0][0] * src[0][0] + src[1][0] * src[1][0] + src[2][0] * src[2][0]);
+	sz = sqrtf(src[0][2] * src[0][2] + src[1][2] * src[1][2] + src[2][2] * src[2][2]);
+	
+	if (jobj->flags & JOBJ_PBILLBOARD) {
+		guVecScale(&pos, &az, -1.0F/(sqrtf(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z)) + FLT_EPSILON);
+		guVecCross(&uy, &az, &ax);
+	} else {
+		guVector tmp;
+		tmp.x = 0;
+		tmp.y = 0;
+		tmp.z = 1;
+		guVecCross(&uy, &tmp, &ax);
+	}
+	mag = sqrtf(ax.x * ax.x + ax.y * ax.y + ax.z * ax.z);
+	if (mag < FLT_EPSILON) {
+		guMtxCopy(src, dst);
+		return;
+	}
+	
+	sx /= mag;
+	guVecCross(&ax, &uy, &az);
+	sz /= sqrtf(az.x * az.x + az.y * az.y + az.z * az.z) + FLT_EPSILON;
+
+	guMtxRowCol(dst, 0, 0) = sx * ax.x;
+	guMtxRowCol(dst, 1, 0) = sx * ax.y;
+	guMtxRowCol(dst, 2, 0) = sx * ax.z;
+	
+	dst[0][1] = ay.x;
+	dst[1][1] = ay.y;
+	dst[2][1] = ay.z;
+	
+	guMtxRowCol(dst, 0, 2) = sz * az.x;
+	guMtxRowCol(dst, 1, 2) = sz * az.y;
+	guMtxRowCol(dst, 2, 2) = sz * az.z;
+	
+	dst[0][3] = pos.x;
+	dst[1][3] = pos.y;
+	dst[2][3] = pos.z;
+	return;
+}
+
 //80373B90
 static void mkHBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx){	
 	guVector pos = {mtx[0][3], mtx[1][3], mtx[2][3]};
@@ -140,7 +196,7 @@ void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
 				mkBillBoardMtx(jobj, tmtx, rmtx);
 				break;
 			case JOBJ_VBILLBOARD:
-				mkVBillBoardKMtx(jobj, tmtx, rmtx);
+				mkVBillBoardMtx(jobj, tmtx, rmtx);
 				break;
 			case JOBJ_HBILLBOARD:
 				mkHBillBoardMtx(jobj, tmtx, rmtx);
@@ -164,7 +220,7 @@ void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
 void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, MtxP pmtx, HSD_TrspMask trsp_mask, u32 rendermode){
 	HSD_JObjSetCurrent(jobj);
 	if ((rendermode & RENDER_SHADOW) == 0 && (jobj->flags & JOBJ_SPECULAR) != 0){
-		HSD_LobjSetupSpecularInit(pmtx);
+		HSD_LObjSetupSpecularInit(pmtx);
 	}
 	HSD_PObjClearMtxMark(NULL, 0);
 	for (HSD_DObj* dobj = jobj->u.dobj; dobj != NULL; dobj = dobj->next) {
@@ -172,7 +228,7 @@ void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, MtxP pmtx, HSD_TrspMask trsp_mas
 			continue;
 		if((dobj->flags & (trsp_mask << DOBJ_TRSP_SHIFT)) != 0){
 			HSD_DObjSetCurrent(dobj);
-			HSD_DOBJ_METHOD(dobj)->disp(dobj, vmtx, pmtx);
+			HSD_DOBJ_METHOD(dobj)->disp(dobj, vmtx, pmtx, rendermode);
 		}
 		dobj = dobj->next;
 	}

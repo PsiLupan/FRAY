@@ -250,12 +250,8 @@ void HSD_LObjSetupSpecularInit(MtxP pmtx){
 	int i, num;
 	guVector cdir;
 	guVector jpos = {pmtx[0][3], pmtx[1][3], pmtx[2][3]};
-	
-	if (vec_normalize_check(&jpos, &cdir) != 0) {
-		cdir.x = 0.0F;
-		cdir.y = 0.0F;
-		cdir.z = -1.0F;
-	}
+	cdir = jpos;
+	guVecNormalize(&cdir);
 	
 	num = HSD_LObjGetNbActive();
 	for (i = 0; i < num; i++) {

@@ -127,24 +127,26 @@ HSD_MemoryEntry* GetMemoryEntry(u32 size){
 	if ( size >= nb_memory_list )
 	{
 		if ( nb_memory_list > 0 ){ //Basically amounts to resizing the array by doubling the size and copying entries to a new array
-			u32 i = 2 * nb_memory_list;
-			while(size >= i){
-				i *= 2;
-			}
-			HSD_MemoryEntry* entry = (HSD_MemoryEntry*)HSD_MemAlloc(4 * i);
+			u32 i;
+			u32 nb = nb_memory_list;
+			do {
+				i = nb;
+				nb *= 2;
+			}while(nb <= size);
+			HSD_MemoryEntry* entry = (HSD_MemoryEntry*)HSD_MemAlloc(8 * i);
 			if ( entry == NULL ){
 				return NULL;
 			}
 			memcpy(entry, memory_list, 4 * nb_memory_list);
-			memset(&entry[nb_memory_list], 0, 4 * (i - nb_memory_list)); //You start *after* existing ptrs and make sure memory is zero'd
+			memset(&entry[nb_memory_list * 4], 0, 4 * (nb - nb_memory_list)); //You start *after* existing ptrs and make sure memory is zero'd
 			
 			HSD_MemoryEntry** mem_list = memory_list;
 			u32 tmp = nb_memory_list;
-			u32 offset = 4 * tmp & 0xFFFFFFE0;
-			nb_memory_list = i;
+			nb_memory_list = nb;
+			i = 4 * (tmp & 0x3FFFFFF8);
 			memory_list = &entry;
-			hsdFreeMemPiece(mem_list, nb_memory_list);
-			HSD_MemoryEntry* unk_entry = (HSD_MemoryEntry*)(*memory_list + (((u32)(offset + 31) >> 3) & 0x1FFFFFFC) - 4);
+			hsdFreeMemPiece(mem_list, i);
+			HSD_MemoryEntry* unk_entry = (HSD_MemoryEntry*)(*memory_list + (i + 31 >> 3 & 0x1FFFFFFC) - 4);
 			unk_entry->nb_alloc += 1;
 		} else { //In this case, it's uninitialized and allocs the array
 			u32 j = 32;
@@ -160,6 +162,7 @@ HSD_MemoryEntry* GetMemoryEntry(u32 size){
 			nb_memory_list = j;
 		}
 	}
+
 	if ( memory_list[size] == NULL ) {
 		HSD_MemoryEntry* entry = (HSD_MemoryEntry*)HSD_MemAlloc(0x14u);
 		if ( entry == NULL ){
@@ -229,7 +232,7 @@ void* hsdAllocMemPiece(u32 size){
 				i->nb_free -= 1;
 				i->nb_alloc -= 1;
 				
-				HSD_FreeList* np = (HSD_FreeList*)((u8*)piece + entry->total_bits);
+				HSD_MemoryEntry* np = (HSD_MemoryEntry*)((u8*)piece + entry->total_bits);
 				np->next = entry_2->data;
 				entry_2->data = np;
 				np->nb_alloc += 1;
@@ -243,11 +246,11 @@ void* hsdAllocMemPiece(u32 size){
 			piece = (HSD_FreeList*)HSD_MemAlloc(nb_memory_list * 32);
 			if(piece != NULL){
 				if(tmp_size >= 0){
-					HSD_FreeList* np = (HSD_FreeList*)((u8*)piece + entry->total_bits);
+					HSD_MemoryEntry* np = (HSD_MemoryEntry*)((u8*)piece + entry->total_bits);
 					np->next = entry->data;
 					entry->data = np;
 					np->nb_alloc += 1;
-					np->x8_unk += 1;
+					np->nb_free += 1;
 				}
 				entry->nb_alloc += 1;
 			}else{

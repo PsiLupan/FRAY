@@ -159,11 +159,11 @@ static void FogRelease(HSD_Class* o){
 
 //8037E120
 static void FogInfoInit(){
-    hsdInitClassInfo((HSD_CLASS_INFO(&hsdFog), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fog", sizeof(HSD_FogInfo), sizeof(HSD_Fog));
+    hsdInitClassInfo(HSD_CLASS_INFO(&hsdFog), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fog", sizeof(HSD_FogInfo), sizeof(HSD_Fog));
     HSD_OBJECT_INFO(&hsdFog)->release = FogRelease;
 }
 
 //8037E178
 static void FogAdjInfoInit(){
-    hsdInitClassInfo((HSD_CLASS_INFO(&hsdFogAdj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fogadj", sizeof(HSD_FogAdjInfo), sizeof(HSD_FogAdj));
+    hsdInitClassInfo(HSD_CLASS_INFO(&hsdFogAdj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_fogadj", sizeof(HSD_FogAdjInfo), sizeof(HSD_FogAdj));
 }

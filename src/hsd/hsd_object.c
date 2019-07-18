@@ -156,7 +156,8 @@ static void _hsdClassRelease(HSD_Class* info){
 }
 
 //80382228
-static void _hsdClassDestroy(HSD_ClassInfo* info){
+static void _hsdClassDestroy(HSD_Class* class){
+	HSD_ClassInfo* info = (class->class_info ? class->class_info : NULL);
 	if(info != NULL){
 		info->head.nb_exist -= 1;
 		u32 size = info->head.obj_size + 0x1F;

@@ -82,11 +82,11 @@ extern HSD_ClassInfo hsdClass;
 
 void HSD_ObjAllocAddFree(HSD_ObjDef *, u32);
 void* HSD_ObjAlloc(HSD_ObjDef *);
-void HSD_ObjFree(HSD_ObjDef *, u32 *);
+void HSD_ObjFree(HSD_ObjDef *, HSD_ObjAllocLink *);
 void HSD_ObjAllocInit(HSD_ObjDef *, u32, u32);
 
 void hsdInitClassInfo(HSD_ClassInfo *, HSD_ClassInfo *, char *, char*, u64, u64);
-HSD_Class* hsdNew(HSD_ClassInfo *);
+void* hsdNew(HSD_ClassInfo *);
 HSD_ClassInfo* hsdSearchClassInfo(char *);
 
 #endif
