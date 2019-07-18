@@ -23,7 +23,7 @@ typedef struct _HSD_MemoryEntry {
 
 void HSD_Free(void* ptr);
 void* HSD_MemAlloc(u32);
-
+HSD_MemoryEntry* GetMemoryEntry(u32);
 void* hsdAllocMemPiece(u32);
 void hsdFreeMemPiece(void *, u32);
 
