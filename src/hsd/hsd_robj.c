@@ -241,5 +241,5 @@ HSD_RObj* HSD_RObjAlloc(){
 
 //8037C4A0
 void HSD_RObjFree(HSD_RObj* robj){
-    HSD_ObjFree(&robj_alloc_data, robj);
+    HSD_ObjFree(&robj_alloc_data, (HSD_ObjAllocLink*)robj);
 }
