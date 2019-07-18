@@ -205,7 +205,7 @@ HSD_AObj* HSD_AObjAlloc(){
 //803645A8
 void HSD_AObjFree(HSD_AObj* aobj){
 	if(aobj)
-		HSD_ObjFree(&aobj_alloc_data, aobj);
+		HSD_ObjFree(&aobj_alloc_data, (HSD_ObjAllocLink*)aobj);
 }
 
 //8036530C
