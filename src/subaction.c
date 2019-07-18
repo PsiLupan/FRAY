@@ -4,7 +4,7 @@
 void Subaction_Event_0C(SubactionInfo* event){ //SetLoop
     u32 curr_loop = event->loop_count;
     event->loop_count += 1;
-    *(u32*)(event + curr_loop * 4 + 0x10) = (u32*)(event->data_position + 4);
+    *(u32*)(event + curr_loop * 4 + 0x10) = *(u32*)(event->data_position + 4);
     
     u32 data = *event->data_position;
     curr_loop = event->loop_count;
@@ -31,7 +31,7 @@ void Subaction_Event_10_GoTo(SubactionInfo* event){
     event->data_position = (u32*)(event->data_position + 4);
     u32 curr_loop = event->loop_count;
     event->loop_count += 1;
-    *(u32*)(event + curr_loop * 4 + 0x10) = (u32*)(event->data_position + 4);
+    *(u32*)(event + curr_loop * 4 + 0x10) = *(u32*)(event->data_position + 4);
     event->data_position = (u32*)(*event->data_position);
 }
 
