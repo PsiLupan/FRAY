@@ -173,7 +173,7 @@ entry fst_files[] = {
     {"/audio/us/luigi.ssm", 168},
     {"/audio/us/main.ssm", 169},
     {"/audio/us/smash2.sem", 190},
-    {"GmTtAll.usd", 381},
+    {"GmTtAll.dat", 381},
     {"GmTtAll.usd", 382},
     {"LbRb.dat", 492},
     {"LbRf.dat", 493},
