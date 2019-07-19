@@ -40,6 +40,29 @@ HSD_Fog* HSD_FogLoadDesc(HSD_FogDesc* fogdesc){
     return fog;
 }
 
+//8037DCCC
+void HSD_FogInit(HSD_Fog* fog, HSD_FogDesc* desc){
+    if (fog != NULL) {
+        if (desc == (HSD_FogDesc *)0x0) {
+            f32* v;
+            //GXGetViewportv(&v);
+            fog->type = 2;
+            fog->start = v[0];
+            fog->end = v[1];
+            fog->color.r = 0xff;
+            fog->color.g = 0xff;
+            fog->color.b = 0xff;
+            fog->color.a = 0xff;
+        }
+        else {
+            fog->type = desc->type;
+            fog->start = desc->start;
+            fog->end = desc->end;
+            fog->color = desc->color;
+        }
+    }
+}
+
 //8037DD58
 HSD_FogAdj* HSD_FogAdjLoadDesc(HSD_FogAdjDesc* fogadjdesc){
     HSD_FogAdj* fog_adj = (HSD_FogAdj*)hsdNew((HSD_ClassInfo*)&hsdFogAdj);
@@ -51,8 +74,8 @@ HSD_FogAdj* HSD_FogAdjLoadDesc(HSD_FogAdjDesc* fogadjdesc){
 //8037DDD8
 void HSD_FogAdjInit(HSD_FogAdj* fog_adj, HSD_FogAdjDesc* desc){
     if(fog_adj != NULL){
-        if(desc != NULL){
-            f32 v;
+        if(desc == NULL){
+            f32* v;
             //GXGetViewportv(&v);
             //fog_adj->xA_unk = v[1];
             //fog_adj->x8_unk = fog_adj->xA_unk >> 1;
@@ -128,7 +151,7 @@ void FogUpdateFunc(HSD_Fog* fog, u32 type, f32* fv){
 
             case 20:
                 if (fog->fog_adj != NULL) {
-                    fog->fog_adj->x8_unk = (short)(int)*fv;
+                    fog->fog_adj->x8_unk = (u16)*fv;
                 }
             break;
         }
@@ -138,19 +161,18 @@ void FogUpdateFunc(HSD_Fog* fog, u32 type, f32* fv){
 //8037E04C
 static void FogRelease(HSD_Class* o){
     HSD_Fog* fog = (HSD_Fog*)o;
-    HSD_FogAdj* fog_adj = fog->fog_adj;
-    if(fog_adj != NULL){
-        u16 ref_count = fog_adj->parent.ref_count;
+    if(fog != NULL){
+        u16 ref_count = fog->parent.ref_count;
 		u32 lz = __builtin_clz(0xFFFF - ref_count);
 		lz = lz >> 5;
 		if(lz == 0){
-			fog_adj->parent.ref_count -= 1;
+			fog->parent.ref_count -= 1;
             lz = __builtin_clz(-ref_count);
 			lz = lz >> 5;
 		}
         if(lz != 0){
-            HSD_OBJECT_METHOD(fog_adj)->release(o);
-            HSD_OBJECT_METHOD(fog_adj)->destroy(o);
+            HSD_OBJECT_METHOD(fog)->release(o);
+            HSD_OBJECT_METHOD(fog)->destroy(o);
         }
     }
     HSD_AObjRemove(fog->aobj);

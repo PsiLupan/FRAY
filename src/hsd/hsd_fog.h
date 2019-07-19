@@ -47,12 +47,16 @@ typedef struct _HSD_FogAdjInfo {
 } HSD_FogAdjInfo;
 
 typedef struct _HSD_FogDesc {
-    u32 unk;
+    u32 type;
     struct _HSD_FogAdjDesc* fogadjdesc; //0x04
+    f32 start;
+    f32 end;
+    GXColor color;
 } HSD_FogDesc;
 
 void HSD_FogSet(HSD_Fog *);
 HSD_Fog* HSD_FogLoadDesc(HSD_FogDesc *);
+void HSD_FogInit(HSD_Fog *, HSD_FogDesc *);
 HSD_FogAdj* HSD_FogAdjLoadDesc(HSD_FogAdjDesc *);
 void HSD_FogAdjInit(HSD_FogAdj *, HSD_FogAdjDesc *);
 void HSD_FogAddAnim(HSD_Fog *, HSD_AObjDesc *);
