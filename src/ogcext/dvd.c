@@ -3,7 +3,7 @@
 #include <ogc/lwp.h>
 #include <ogc/irq.h>
 
-static dvdcallback cb = NULL; //r13_43E4
+static dvdcbcallback cb = NULL; //r13_43E4
 static u32 status = 0; //r13_43E8
 static u32 total_entries = 0; //r13_441C
 static char (*string_table)[] = NULL; //r13_4420
@@ -11,14 +11,17 @@ static FSTEntry (*entry_table)[] = NULL; //r13_4424
 static u32* start_memory = NULL; //r13_4428
 static lwpq_t dvd_wait_queue;
 
+typedef FSTEntry (*TableP)[];
+typedef char (*STableP)[];
+
 static void __DVDFSInit(){
     start_memory = (u32*)(0x80000000);
-    entry_table = (FSTEntry*)start_memory[14]; //0x80000038 points to the start of the file system
+    entry_table = (TableP)start_memory[14]; //0x80000038 points to the start of the file system
     if(entry_table == NULL){
         return;
     }
     total_entries = (*entry_table)[0].len;
-    string_table = &(*entry_table)[total_entries];
+    string_table = (STableP)(&(*entry_table)[total_entries]);
 }
 
 void DVDInit(){
@@ -46,7 +49,7 @@ static void cbForCancelAsync(s32 result, dvdcmdblk* cmd){
     LWP_ThreadBroadcast(dvd_wait_queue);
 }
 
-BOOL DVDCancelAsync(dvdcmdblk* cmd, dvdcallback callback){
+BOOL DVDCancelAsync(dvdcmdblk* cmd, dvdcbcallback callback){
     u32 intr = IRQ_Disable();
     switch(cmd->state){
         case DVD_STATE_BUSY:{
@@ -158,11 +161,34 @@ BOOL DVDClose(dvdfileinfo* fileinfo){
     return TRUE;
 }
 
+typedef struct _entry { 
+    const char* name; 
+    s32 entrynum; 
+} entry;
+
+entry fst_files[] = {
+    {"/audio/opening.hps", 107},
+    {"/audio/us/kirby.ssm", 161},
+    {"/audio/us/link.ssm", 167},
+    {"/audio/us/luigi.ssm", 168},
+    {"/audio/us/main.ssm", 169},
+    {"/audio/us/smash2.sem", 190},
+    {"GmTtAll.usd", 381},
+    {"GmTtAll.usd", 382},
+    {"LbRb.dat", 492},
+    {"LbRf.dat", 493},
+    {"MnExtAll.dat", 494},
+    {"MnExtAll.usd", 495},
+    {"MnMaAll.dat", 496},
+    {"MnMaAll.usd", 497},
+    {"MvOpen.mth", 530}
+};
+
 /* 
 Cheater function where we have a lookup table to respond to every request
 */
 s32 DVDConvertFilenameToEntrynum(char* filename){
-    for(entry *p = files; files->name != NULL; ++p){
+    for(entry *p = fst_files; p->name != NULL; ++p){
         if(strcmp(p->name, filename) == 0){
             return p->entrynum;
         }

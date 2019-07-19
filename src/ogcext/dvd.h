@@ -4,8 +4,6 @@
 #include <gctypes.h>
 #include <ogc/dvd.h>
 
-#include "dvdlookup.h"
-
 #define T_FILE 0
 #define T_DIR 1
 
