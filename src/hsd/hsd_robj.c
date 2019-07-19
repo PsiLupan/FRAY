@@ -198,7 +198,7 @@ void HSD_RObjResolveRefsAll(HSD_RObj* robj, HSD_RObjDesc* robjdesc){
                 assert(ro->u.jobj->parent.ref_count_individual != 0);
             }else{
                 if(flags == 0){
-                    HSD_RvalueResolveRefsAll(ro->pos.x, rdesc->u.rvalue->x4_unk);
+                    HSD_RvalueResolveRefsAll((HSD_Rvalue*)ro->u.rvalue->data, (HSD_RvalueDesc*)rdesc->u.rvalue->data);
                 }
             }
         }

@@ -4,6 +4,7 @@
 #include <gctypes.h>
 
 #include "hsd_object.h"
+#include "hsd_util.h"
 
 #define TYPE_MASK 0x70000000
 #define REFTYPE_JOBJ 0x10000000
@@ -12,7 +13,7 @@ typedef struct _HSD_RObj {
     struct _HSD_RObj* next; //0x00
     u32 flags; //0x04
     union {
-        struct _HSD_Rvalue* rvalue;
+        HSD_SList* rvalue;
         f32 fv;
         struct _HSD_JObj* jobj;
     } u; //0x08
@@ -22,15 +23,22 @@ typedef struct _HSD_RObj {
 } HSD_RObj;
 
 typedef struct _HSD_Rvalue {
-    u32 unk;
+    struct _HSD_Rvalue* next; //0x00
     u32 x4_unk;
+    struct _HSD_JObj* jobj;
 } HSD_Rvalue;
+
+typedef struct _HSD_RvalueDesc {
+    u32 unk;
+    struct _HSD_JObjDesc* jobjdesc; //0x04
+    struct _HSD_RvalueDesc* next; //0x08
+} HSD_RvalueDesc;
 
 typedef struct _HSD_RObjDesc {
     struct _HSD_RObjDesc* next; //0x00
     u32 flags; //0x04
     union {
-        struct _HSD_Rvalue* rvalue;
+        HSD_SList* rvalue;
         f32 fv;
         struct _HSD_JObjDesc* jobjdesc;
     } u; //0x08
