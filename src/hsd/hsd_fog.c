@@ -4,9 +4,9 @@ static void FogInfoInit();
 static void FogAdjInfoInit();
 
 HSD_FogInfo hsdFog = { FogInfoInit }; //80407078
-HSD_ObjDef fog_init_alloc; //8040708C
+HSD_ObjAllocData fog_init_alloc; //8040708C
 
-HSD_ObjDef fogadj_init_alloc; //804070A8
+HSD_ObjAllocData fogadj_init_alloc; //804070A8
 HSD_FogAdjInfo hsdFogAdj = { FogAdjInfoInit }; //804070B4
 
 //8037D970

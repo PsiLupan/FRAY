@@ -5,7 +5,7 @@ static HSD_PtclCallback sptcl_callback = NULL;
 static GXColor hsd_background_color = {0, 0, 0, 0};
 static GXColor erase_color = {0x26, 0x26, 0x26, 0xFF}; //-0x58C8(r13)
 
-static HSD_ObjDef zlist_alloc_data;
+static HSD_ObjAllocData zlist_alloc_data;
 
 static int	 zsort_listing = 0;
 static int	 zsort_sorting = 0; //-0x4004(r13)

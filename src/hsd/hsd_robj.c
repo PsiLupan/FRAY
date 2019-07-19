@@ -5,8 +5,8 @@
 #include "hsd_jobj.h"
 #include "hsd_wobj.h"
 
-HSD_ObjDef robj_alloc_data;
-HSD_ObjDef rvalue_alloc_data;
+HSD_ObjAllocData robj_alloc_data;
+HSD_ObjAllocData rvalue_alloc_data;
 
 //8037AE34
 void HSD_RObjInitAllocData(){
@@ -15,12 +15,12 @@ void HSD_RObjInitAllocData(){
 }
 
 //8037AE78
-HSD_ObjDef* HSD_RObjGetAllocData(){
+HSD_ObjAllocData* HSD_RObjGetAllocData(){
     return &robj_alloc_data;
 }
 
 //8037AE84
-HSD_ObjDef* HSD_RvalueObjGetAllocData(){
+HSD_ObjAllocData* HSD_RvalueObjGetAllocData(){
     return &rvalue_alloc_data;
 }
 

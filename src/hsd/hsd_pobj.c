@@ -230,7 +230,7 @@ static void resolveEnvelope(HSD_SList *list, HSD_EnvelopeDesc **edesc_p){
         
         while (env && edesc->joint) {
             HSD_JObjUnrefThis(env->jobj);
-            env->jobj = HSD_IDGetDataFromTable((HSD_ID)edesc->joint, NULL);
+            env->jobj = HSD_IDGetDataFromTable(NULL, (HSD_ID)edesc->joint, NULL);
             assert(env->jobj);
             HSD_JObjRefThis(env->jobj);
             env = env->next;
@@ -251,7 +251,7 @@ void HSD_PObjResolveRefsAll(HSD_PObj *pobj, HSD_PObjDesc *pdesc){
                 HSD_JObjUnrefThis(pobj->u.jobj);
                 pobj->u.jobj = NULL;
                 if (pdesc->u.joint != NULL) {
-                    pobj->u.jobj = HSD_IDGetDataFromTable((HSD_ID)pdesc->u.joint, NULL);
+                    pobj->u.jobj = HSD_IDGetDataFromTable(NULL, (HSD_ID)pdesc->u.joint, NULL);
                     assert(pobj->u.jobj);
                     pobj->u.jobj->parent.ref_count_individual += 1;
                     assert(pobj->u.jobj->parent.ref_count_individual != 0);

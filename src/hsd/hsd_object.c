@@ -21,15 +21,15 @@ void HSD_ObjSetHeap(u32 size, void* start){
 	objheap.bytes_remaining = size;
 }
 
-static HSD_ObjDef* current_obj = NULL; //r13_3FC0
+static HSD_ObjAllocData* current_obj = NULL; //r13_3FC0
 
 //8037A968
-void HSD_ObjAllocAddFree(HSD_ObjDef* obj_def, u32 num){
+void HSD_ObjAllocAddFree(HSD_ObjAllocData* obj_def, u32 num){
 	assert(obj_def != NULL);
 }
 
 //8037ABC8
-void* HSD_ObjAlloc(HSD_ObjDef* obj_def){
+void* HSD_ObjAlloc(HSD_ObjAllocData* obj_def){
 	if( ((obj_def->flags >> 7) & 1) && (obj_def->used >= obj_def->num_limit) ){
 		return NULL;
 	}
@@ -73,7 +73,7 @@ void* HSD_ObjAlloc(HSD_ObjDef* obj_def){
 }
 
 //8037AD20
-void HSD_ObjFree(HSD_ObjDef* init_obj, HSD_ObjAllocLink* obj){
+void HSD_ObjFree(HSD_ObjAllocData* init_obj, HSD_ObjAllocLink* obj){
 	obj->next = init_obj->freehead->next;
 	init_obj->freehead = obj;
 	init_obj->free += 1;
@@ -81,9 +81,9 @@ void HSD_ObjFree(HSD_ObjDef* init_obj, HSD_ObjAllocLink* obj){
 }
 
 //8037AD48
-void HSD_ObjAllocInit(HSD_ObjDef* init_obj, u32 size, u32 align){
+void HSD_ObjAllocInit(HSD_ObjAllocData* init_obj, u32 size, u32 align){
 	assert(init_obj != NULL);
-	HSD_ObjDef* obj = current_obj;
+	HSD_ObjAllocData* obj = current_obj;
 	while(obj != NULL){
 		if(obj == init_obj){
 			current_obj = obj->next;

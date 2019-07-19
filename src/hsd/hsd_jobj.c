@@ -735,7 +735,7 @@ void HSD_JObjSetDefaultClass(HSD_JObjInfo* info){
 }
 
 //80370BEC
-static int JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* jobj_2){
+static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* jobj_2){
 	return 0;
 }
 
@@ -1321,8 +1321,8 @@ static void JObjReleaseChild(HSD_JObj* jobj){
 static void JObjRelease(HSD_Class* o){
 	HSD_JObj* jobj = HSD_JOBJ(o);
 	HSD_JOBJ_METHOD(jobj)->release_child(jobj);
-	if(HSD_IDGetDataFromTable(NULL, jobj->desc, NULL) == o){
-		HSD_IDRemoveByIDFromTable(NULL, jobj->desc);
+	if((HSD_JObj*)(HSD_IDGetDataFromTable(NULL, (u32)jobj->desc, NULL)) == jobj){
+		HSD_IDRemoveByIDFromTable(NULL, (u32)jobj->desc);
 	}
 	if(jobj->pvec != NULL){
 		HSD_Free(jobj->pvec);

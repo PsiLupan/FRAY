@@ -39,7 +39,7 @@ static s32 Archive_GetFileLoadStatus(){
 }
 
 //8001615C
-static void Archive_DVDCallback(s32 result, dvdfileinfo* fileInfo){
+static void Archive_DVDCallback(s32 result, dvdcmdblk* fileInfo){
     if(result >= 0){
         file_load_status = 1;
     }

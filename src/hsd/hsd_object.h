@@ -58,7 +58,7 @@ typedef struct _HSD_ObjAllocLink {
 	struct _HSD_ObjAllocLink* next;
 } HSD_ObjAllocLink;
 
-typedef struct _HSD_ObjDef {
+typedef struct _HSD_ObjAllocData {
 	u32 flags; //0x00 - Technically 2 diff flags
 	HSD_ObjAllocLink* freehead; //0x04
 	u32 used; //0x08
@@ -69,8 +69,8 @@ typedef struct _HSD_ObjDef {
 	u32 heap_limit_num; //0x1C
 	u32 size; //0x20
 	u32 align; //0x24
-	struct _HSD_ObjDef* next; //0x28
-} HSD_ObjDef;
+	struct _HSD_ObjAllocData* next; //0x28
+} HSD_ObjAllocData;
 
 struct unk_80406E48 {
 	void* unk00;
@@ -80,10 +80,10 @@ struct unk_80406E48 {
 extern HSD_ObjInfo objInfo;
 extern HSD_ClassInfo hsdClass;
 
-void HSD_ObjAllocAddFree(HSD_ObjDef *, u32);
-void* HSD_ObjAlloc(HSD_ObjDef *);
-void HSD_ObjFree(HSD_ObjDef *, HSD_ObjAllocLink *);
-void HSD_ObjAllocInit(HSD_ObjDef *, u32, u32);
+void HSD_ObjAllocAddFree(HSD_ObjAllocData *, u32);
+void* HSD_ObjAlloc(HSD_ObjAllocData *);
+void HSD_ObjFree(HSD_ObjAllocData *, HSD_ObjAllocLink *);
+void HSD_ObjAllocInit(HSD_ObjAllocData *, u32, u32);
 
 void hsdInitClassInfo(HSD_ClassInfo *, HSD_ClassInfo *, char *, char*, u64, u64);
 void* hsdNew(HSD_ClassInfo *);

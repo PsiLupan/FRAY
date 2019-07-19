@@ -2,10 +2,10 @@
 
 #include "hsd_util.h"
 
-HSD_ObjDef fobj_alloc_data;
+HSD_ObjAllocData fobj_alloc_data;
 
 //8036A938
-HSD_ObjDef* HSD_FObjGetAllocData(){
+HSD_ObjAllocData* HSD_FObjGetAllocData(){
     return &fobj_alloc_data;
 }
 

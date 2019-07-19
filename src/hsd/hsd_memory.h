@@ -7,7 +7,17 @@
 
 #include "hsd_object.h"
 
-typedef u32* HSD_ID;
+typedef u32 HSD_ID;
+
+typedef struct _IDEntry {
+    struct _IDEntry* next; //0x00
+    u32 id; // 0x04
+    void* data; // 0x08
+} IDEntry;
+
+typedef struct _HSD_IDTable {
+    struct _IDEntry table[101];
+} HSD_IDTable;
 
 typedef struct _HSD_FreeList {
     struct _HSD_FreeList* next;
@@ -21,6 +31,9 @@ typedef struct _HSD_MemoryEntry {
     struct _HSD_MemoryEntry* next; //0x10
 } HSD_MemoryEntry;
 
+void HSD_IDInsertToTable(HSD_IDTable *, u32, void *);
+void HSD_IDRemoveByIDFromTable(HSD_IDTable *, u32 id);
+void* HSD_IDGetDataFromTable(HSD_IDTable *, u32, u8 *);
 void HSD_Free(void* ptr);
 void* HSD_MemAlloc(u32);
 HSD_MemoryEntry* GetMemoryEntry(u32);

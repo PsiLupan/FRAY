@@ -6,12 +6,14 @@
 static HSD_MemoryEntry** memory_list;
 static u32 nb_memory_list = 0;
 
-static HSD_ObjDef hsd_iddata; //804C23C0
-static u32* hsd_idtable[101]; //804C23EC
+HSD_ObjAllocData free_alloc; //804C233C
+HSD_ObjAllocData hsd_iddata; //804C23C0
+
+HSD_IDTable default_table; //804C23EC
 
 //8037CD80
-u32* HSD_IDGetAllocData(){
-	return (u32*)&hsd_iddata;
+HSD_ObjAllocData* HSD_IDGetAllocData(){
+	return &hsd_iddata;
 }
 
 //8037CD8C
@@ -21,92 +23,94 @@ void HSD_IDInitAllocData(){
 
 //8037CDBC
 void* HSD_IDSetup(){
-	return memset(&hsd_idtable, 0, 404);
+	return memset(&default_table, 0, 404);
 }
 
 //8037CDEC
-void HSD_IDInsertToTable(u32** id_table, u32* id, u8** j){
+void HSD_IDInsertToTable(HSD_IDTable* id_table, u32 id, void* data){
 	if(id_table == NULL){
-		id_table = (u32**)&hsd_idtable;
+		id_table = &default_table;
 	}
-	u32* unk1 = (u32*)(id_table + ((uintptr_t)id % 101) * 4); 
-	u32* unk2 = (u32*)*unk1; 
-	while(unk2 != NULL && (u32*)unk2[1] == id){
-		unk2 = (u32*)*unk2;
+	IDEntry* t_entry = &id_table->table[id % 65]; 
+	IDEntry* entry = t_entry; 
+	while(entry != NULL && entry->id == id){
+		entry = entry->next;
 	}
-	if(unk2 == NULL){
-		unk2 = HSD_ObjAlloc(&hsd_iddata);
-		assert(unk2 != NULL);
-		memset(unk2, 0, 12);
-		unk2[1] = (u32)id;
-		unk2[2] = (u32)j;
-		unk2[0] = unk1[0];
-		unk1[0] = (u32)unk2;
+	if(entry == NULL){
+		entry = HSD_ObjAlloc(&hsd_iddata);
+		assert(entry != NULL);
+		memset(entry, 0, sizeof(IDEntry));
+		entry->id = id;
+		entry->data = data;
+		entry->next = t_entry->next;
+		t_entry->next = entry;
 
 	}else{
-		unk2[1] = (u32)id;
-		unk2[2] = (u32)j;
+		entry->id = id;
+		entry->data = data;
 	}
 }
 
 //8037CEE8
-void HSD_IDRemoveByIDFromTable(u32* id_table, u32* id){
+void HSD_IDRemoveByIDFromTable(HSD_IDTable* id_table, u32 id){
 	if(id_table == NULL){
-		id_table = (u32*)&hsd_idtable;
+		id_table = &default_table;
 	}
-	u32* unk1 = (id_table + ((uintptr_t)id % 101) * 4);
-	u32* unk2 = NULL;
-	u32* unk3 = NULL;
+	IDEntry* entry = &id_table->table[id % 65];
+	IDEntry* curr = NULL;
+	IDEntry* prev = NULL;
 	while(true) {
-		unk2 = unk1;
-		if (unk2 == NULL) {
+		curr = entry;
+		if (curr == NULL) {
 			return;
 		}
-		if ((u32*)unk2[1] == id) 
+		if (curr->id == id) 
 			break;
-		unk1 = (u32*)*unk2;
-		unk3 = unk2;
+		entry = curr->next;
+		prev = curr;
 	}
-	if (unk3 == NULL) {
-		*(u32*)(unk1 + ((uintptr_t)id % 101) * 4) = *unk2;
+	if (prev == NULL) {
+		entry = curr->next;
 	}else {
-		*unk3 = *unk2;
+		prev->next = curr->next;
 	}
-	HSD_ObjFree(&hsd_iddata, unk2);
+	HSD_ObjFree(&hsd_iddata, (HSD_ObjAllocLink*)curr);
 }
 
 //8037CF98
-u32 HSD_IDGetDataFromTable(u32* id_table, u32* id, u8* val){
+void* HSD_IDGetDataFromTable(HSD_IDTable* id_table, u32 id, u8* success){
 	if(id_table == NULL){
-		id_table = (u32*)&hsd_idtable;
+		id_table = &default_table;
 	}
-	u32* unk = (id_table + ((uintptr_t)id % 101) * 4);
+	IDEntry* entry = &id_table->table[id % 65];
 	while(true){
-		if(unk == NULL){
-			if(val != NULL){
-				*val = 0;
+		if(entry == NULL){
+			if(success != NULL){
+				*success = 0;
 			}
-			return 0;
+			return NULL;
 		}
-		if(unk[1] = id)
+		if(entry->id = id)
 			break;
-		unk = *unk;
+		entry = entry->next;
 	}
-	if(val != NULL){
-		*val = 1;
+	if(success != NULL){
+		*success = 1;
 	}
-	return unk[2];
+	return entry->data;
 }
 
 //8037D020
 void _HSD_IDForgetMemory(){
-	memset(&hsd_idtable, 0, 101*sizeof(u32));
+	memset(&default_table, 0, 101*sizeof(u32));
 }
 
 //8037F1B0
 void HSD_Free(void* ptr){
 	//OSFreeToHeap(HSD_GetHeap(), ptr);
-	free(ptr);
+	if(ptr != NULL){
+		HSD_ObjFree(&free_alloc, (HSD_ObjAllocLink*)ptr);
+	}
 }
 
 //8037F1E4

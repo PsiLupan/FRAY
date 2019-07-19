@@ -21,9 +21,9 @@ static void* hsd_destructors[14]; //r13_3E90 - Length is currently made up, TODO
 
 u32 flag_array[4] = {1, 4, 2, 0}; //804085F0
 
-HSD_ObjDef gobj_def; //804CE38C
-HSD_ObjDef gobj_proc_def; //804CE3B8
-HSD_ObjDef gobj_def_3; //804CE3E4
+HSD_ObjAllocData gobj_def; //804CE38C
+HSD_ObjAllocData gobj_proc_def; //804CE3B8
+HSD_ObjAllocData gobj_def_3; //804CE3E4
 
 //80086960
 BOOL GObj_IsPlayer(HSD_GObj* gobj){
@@ -374,7 +374,7 @@ void GObj_CallDestructor(HSD_GObj* gobj){
 
 //80390CFC
 void GObj_80390CFC(){
-	HSD_ObjDef* def;
+	HSD_ObjAllocData* def;
 	u32 unk;
 	/*if(unk_804CE380[2] == 0){
 		def = NULL;

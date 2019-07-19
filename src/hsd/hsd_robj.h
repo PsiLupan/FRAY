@@ -38,8 +38,8 @@ typedef struct _HSD_RObjDesc {
 } HSD_RObjDesc;
 
 void HSD_RObjInitAllocData();
-HSD_ObjDef* HSD_RObjGetAllocData();
-HSD_ObjDef* HSD_RvalueObjGetAllocData();
+HSD_ObjAllocData* HSD_RObjGetAllocData();
+HSD_ObjAllocData* HSD_RvalueObjGetAllocData();
 void HSD_RObjSetFlags(HSD_RObj *, u32);
 HSD_RObj* HSD_RObjGetByType(HSD_RObj *, u32, u32);
 void HSD_RObjAnimAll(HSD_RObj *);

@@ -7,7 +7,7 @@
 static u32 r13_4070 = 0; //frames elapsed
 static u32 r13_4074 = 0; //conditional frames elapsed
 
-HSD_ObjDef aobj_alloc_data; //804C0880
+HSD_ObjAllocData aobj_alloc_data; //804C0880
 
 typedef struct _callback {
 	u32 count;
@@ -22,7 +22,7 @@ void HSD_AObjInitAllocData(){
 }
 
 //80363FF8
-HSD_ObjDef* HSD_AObjGetAllocData(){
+HSD_ObjAllocData* HSD_AObjGetAllocData(){
 	return &aobj_alloc_data;
 }
 

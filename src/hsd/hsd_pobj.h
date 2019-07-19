@@ -37,7 +37,7 @@ typedef struct _HSD_PObj {
 	struct _HSD_VtxDescList* verts;
 	u16 flags;
 	u16 n_display;
-	struct _HSD_Display* display;
+	u8* display; //u8 primitive, u8 vtxcnt, u16* indices
 	union {
 		struct _HSD_JObj* jobj;
 		struct _HSD_ShapeSet* shape_set;
@@ -48,22 +48,16 @@ typedef struct _HSD_PObj {
 typedef struct _HSD_PObjDesc {
 	char* class_name;
 	struct _HSD_PObjDesc* next;
-	struct _HSD_VtxDescList** verts;
+	struct _HSD_VtxDescList* verts;
 	u16 flags;
 	u16 n_display;
-	struct _HSD_Display* display;
+	u8* display;
 	union {
 		struct _HSD_JObjDesc* joint;
 		struct _HSD_ShapeSetDesc* shape_set;
 		struct _HSD_EnvelopeDesc** envelope_p;
 	} u;
 } HSD_PObjDesc;
-
-typedef struct _HSD_Display {
-	u8 primitive;
-	u8 vtxcnt;
-	u16* indices;
-} HSD_Display;
 
 typedef struct _HSD_VtxDescList {
 	u32 attr;
@@ -92,10 +86,10 @@ typedef struct _HSD_ShapeSet {
 	u16 nb_shape;
 	u32 nb_vertex_index;
 	struct _HSD_VtxDescList* vertex_desc;
-	u8* vertex_idx_list;
+	u8** vertex_idx_list;
 	u32 nb_normal_index;
 	struct _HSD_VtxDescList* normal_desc;
-	u8* normal_idx_list;
+	u8** normal_idx_list;
 	struct {
 		f32* bp;
 		f32 bl;
@@ -108,11 +102,11 @@ typedef struct _HSD_ShapeSetDesc {
 	u16 flags;
 	u16 nb_shape;
 	u32 nb_vertex_index;
-	struct _HSD_VertexDesc* vertex_desc;
-	u8* vertex_idx_list;
+	struct _HSD_VtxDescList* vertex_desc;
+	u8** vertex_idx_list;
 	u32 nb_normal_index;
-	void* normal_desc;
-	u8* normal_idx_list;
+	struct _HSD_VtxDescList* normal_desc;
+	u8** normal_idx_list;
 } HSD_ShapeSetDesc;
 
 typedef struct _HSD_ShapeAnim {
@@ -130,7 +124,7 @@ typedef struct _HSD_PObjInfo {
 	HSD_ClassInfo parent;
 	void (*disp)(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermode);
 	void (*setup_mtx)(HSD_PObj *pobj, Mtx vmtx, Mtx pmtx, u32 rendermode);
-	void (*load)(HSD_PObj* pobj, HSD_PObjDesc *desc);
+	s32 (*load)(HSD_PObj* pobj, HSD_PObjDesc *desc);
 	void (*update)(void *obj, u32 type, FObjData* val);
 } HSD_PObjInfo;
 

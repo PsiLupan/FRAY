@@ -39,7 +39,7 @@ typedef struct _HSD_JObj {
 	MtxP vmtx; //0x78
 	struct _HSD_AObj* aobj; //0x7C
 	struct _HSD_RObj* robj; //0x80
-	struct _HSD_JObjDesc* desc;
+	struct _HSD_JObjDesc* desc; //0x84
 } HSD_JObj;
 
 typedef struct _HSD_JObjDesc {
@@ -57,7 +57,7 @@ typedef struct _HSD_JObjDesc {
 
 typedef struct _HSD_JObjInfo {
 	HSD_ObjInfo parent; 
-	int (*load)(HSD_JObj *jobj, HSD_JObjDesc *desc, HSD_JObj *jobj_2); //0x3C
+	s32 (*load)(HSD_JObj *jobj, HSD_JObjDesc *desc, HSD_JObj *jobj_2); //0x3C
 	void (*make_pmtx)(HSD_JObj *jobj); //0x40
 	void (*make_rmtx)(HSD_JObj* jobj, Mtx mtx, Mtx rmtx); //0x44
 	void (*disp)(HSD_JObj *jobj, Mtx vmtx, Mtx pmtx, HSD_TrspMask trsp_mask, u32 rendermode); //0x48
