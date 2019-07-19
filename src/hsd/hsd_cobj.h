@@ -79,7 +79,7 @@ typedef struct _HSD_CObjInfo {
 
 void HSD_CObjEraseScreen(HSD_CObj *, s32, s32, s32);
 void HSD_CObjRemoveAnim(HSD_CObj *);
-void HSD_CObjAddAnim(HSD_CObj *, HSD_WorldAnim *);
+void HSD_CObjAddAnim(HSD_CObj *, HSD_AObjDesc **);
 void CObjUpdateFunc(HSD_CObj *, u32, f32 *);
 void HSD_CObjAnim(HSD_CObj *);
 void HSD_CObjReqAnim(HSD_CObj *, f32);

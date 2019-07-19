@@ -51,7 +51,7 @@ extern HSD_WObjInfo hsdWObj;
 
 void HSD_WObjRemoveAnim(HSD_WObj *);
 void HSD_WObjReqAnim(HSD_WObj *, f32);
-void HSD_WObjAddAnim(HSD_WObj *, HSD_WorldAnim *);
+void HSD_WObjAddAnim(HSD_WObj *, HSD_AObjDesc **);
 void HSD_WObjInterpretAnim(HSD_WObj *);
 void HSD_WObjInit(HSD_WObj *, HSD_WObjDesc *);
 HSD_WObj* HSD_WObjLoadDesc(HSD_WObjDesc *);

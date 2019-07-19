@@ -22,6 +22,16 @@ void HSD_TObjRemoveAnimAll(HSD_TObj *tobj){
 	}
 }
 
+static HSD_TexAnim* lookupTextureAnim(s32 id, HSD_TexAnim *texanim){
+	HSD_TexAnim *ta;
+	for (ta = texanim; ta; ta = ta->next) {
+		if (ta->id == id) 
+			return ta;
+	}
+	return NULL;
+}
+
+
 //8035E5C0
 void HSD_TObjAddAnim(HSD_TObj *tobj, HSD_TexAnim *texanim){
 	HSD_TexAnim *ta;
@@ -42,7 +52,7 @@ void HSD_TObjAddAnim(HSD_TObj *tobj, HSD_TexAnim *texanim){
 			}
 			
 			if (ta->n_tluttbl) {
-				tobj->tluttbl = HSD_Alloc((int) sizeof(HSD_Tlut*) * (ta->n_tluttbl + 1));
+				tobj->tluttbl = HSD_MemAlloc((s32) sizeof(HSD_Tlut*) * (ta->n_tluttbl + 1));
 				for (i = 0; i < ta->n_tluttbl; i++) {
 					tobj->tluttbl[i] = HSD_TlutLoadDesc(ta->tluttbl[i]);
 				}
