@@ -65,7 +65,7 @@ void HSD_PObjReqAnimAllByFlags(HSD_PObj* pobj, f32 startframe, u32 flags){
     if(pobj != NULL){
         for (HSD_PObj* p = pobj; p != NULL && flags != 0; p = p->next){
             if(flags & POBJ_ANIM){
-                HSD_AObjReqAnim(pobj->u.shape_set, startframe);
+                HSD_AObjReqAnim(pobj->u.shape_set->aobj, startframe);
             }
         }
     }
