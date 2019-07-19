@@ -220,7 +220,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
     f32 v22 = 0;
 
     if(fobj != NULL)
-        result = FObjGetState(fobj);
+        result = HSD_FObjGetState(fobj);
     if(result == 0)
         return;
 
