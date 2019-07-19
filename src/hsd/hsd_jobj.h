@@ -84,7 +84,7 @@ void HSD_JObjReqAnimAll(HSD_JObj *, f32);
 void HSD_JObjReqAnim(HSD_JObj *, f32);
 void HSD_JObjAddAnim(HSD_JObj *, HSD_AnimJoint *, HSD_MatAnimJoint *, HSD_ShapeAnimJoint *);
 void HSD_JObjAddAnimAll(HSD_JObj *, HSD_AnimJoint *, HSD_MatAnimJoint *, HSD_ShapeAnimJoint *);
-void JObjUpdateFunc(HSD_JObj *, u32, f32*);
+void JObjUpdateFunc(void *, u32, f32*);
 void HSD_JObjAnim(HSD_JObj *);
 void HSD_JObjAnimAll(HSD_JObj *);
 void HSD_JObjSetDefaultClass(HSD_JObjInfo *);

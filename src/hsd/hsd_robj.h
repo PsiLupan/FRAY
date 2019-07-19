@@ -16,15 +16,14 @@ typedef struct _HSD_RObj {
         f32 fv;
         struct _HSD_JObj* jobj;
     } u; //0x08
-    f32 xC_unk; //0xC
-    u32 x10_unk;
-    u32 x14_unk;
+    guVector pos; //0xC
     struct _HSD_AObj* aobj; //0x18
     u32 x1C_unk;
 } HSD_RObj;
 
 typedef struct _HSD_Rvalue {
     u32 unk;
+    u32 x4_unk;
 } HSD_Rvalue;
 
 typedef struct _HSD_RObjDesc {
@@ -33,8 +32,9 @@ typedef struct _HSD_RObjDesc {
     union {
         struct _HSD_Rvalue* rvalue;
         f32 fv;
+        struct _HSD_JObjDesc* jobjdesc;
     } u; //0x08
-    f32 xC_unk; //0xC
+    guVector pos; //0xC
 } HSD_RObjDesc;
 
 void HSD_RObjInitAllocData();
@@ -49,6 +49,7 @@ void HSD_RObjReqAnimAllByFlags(HSD_RObj *, u32, f32);
 void HSD_RObjReqAnimAll(HSD_RObj *, f32);
 void HSD_RObjAddAnimAll(HSD_RObj *, void *);
 u32 HSD_RObjGetGlobalPosition(HSD_RObj *, u32, guVector *);
+void HSD_RObjUpdateAll(HSD_RObj *, void *, void (*)(void*, u32, guVector*));
 
 HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc *);
 void HSD_RObjRemove(HSD_RObj *);

@@ -161,6 +161,50 @@ u32 HSD_RObjGetGlobalPosition(HSD_RObj* robj, u32 flag, guVector* pos){
     return pos_count;
 }
 
+//8037BFB0
+void HSD_RObjUpdateAll(HSD_RObj* robj, void* jobj, void (*obj_update)(void*, u32, guVector*)){
+    if(robj != NULL){
+        guVector pos;
+        u32 pos_count = HSD_RObjGetGlobalPosition(robj, 1, &pos);
+        if(pos_count != 0){
+            (*obj_update)(jobj, 0x35, &pos);
+            (*obj_update)(jobj, 0x38, NULL);
+        }
+        /* sub_8037b648(robj, obj, obj_update);
+        resolveCnsDirUp(robj, obj, obj_update);
+        resolveLimits(robj, obj, obj_update);
+         */
+        for(HSD_RObj* r = robj; r != NULL; r = r->next){
+            if((r->flags & 0x70000000) == 0 && (r->flags & 0x80000000) != 0){
+                //expEvaluate(robj->u.rvalue, r->flags & 0xFFFFFFF, obj, obj_update);
+            }
+        }
+    }
+}
+
+//8037C0CC
+void HSD_RObjResolveRefsAll(HSD_RObj* robj, HSD_RObjDesc* robjdesc){
+    HSD_RObj* ro;
+    HSD_RObjDesc* rdesc;
+    for(ro = robj, rdesc = robjdesc; ro != NULL && rdesc != NULL; ro = ro->next, rdesc = rdesc->next){
+        if(ro != NULL && rdesc != NULL){
+            u32 flags = ro->flags & 0x70000000;
+            if(flags == 0x10000000){
+                HSD_JObjUnrefThis(ro->u.jobj);
+                HSD_JObj* jobj = HSD_IDGetDataFromTable(NULL, (u32)rdesc->u.jobjdesc, NULL);
+                ro->u.jobj = jobj;
+                assert(ro->u.jobj != NULL);
+                ro->u.jobj->parent.ref_count_individual += 1;
+                assert(ro->u.jobj->parent.ref_count_individual != 0);
+            }else{
+                if(flags == 0){
+                    HSD_RvalueResolveRefsAll(ro->pos.x, rdesc->u.rvalue->x4_unk);
+                }
+            }
+        }
+    }
+}
+
 //8037C1EC
 HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc){
     if(desc == NULL){
@@ -189,8 +233,8 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc){
                 robj->flags = robj->flags & 0x8fffffff;
                 break;
             case 0x40000000:
-                //bcexpLoadDesc(&robj->u.rvalue, desc->u.rvalue);
-                robj->xC_unk = desc->xC_unk;
+                //bcexpLoadDesc(robj->u.rvalue, desc->u.rvalue);
+                robj->pos = desc->pos;
                 break;
             default:
                 HSD_Halt("Unexpected type of RObj");

@@ -417,7 +417,8 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoin
 }
 
 //8036FDC0
-void JObjUpdateFunc(HSD_JObj* jobj, u32 type, f32* fval){
+void JObjUpdateFunc(void* obj, u32 type, f32* fval){
+	HSD_JObj* jobj = (HSD_JObj*)obj;
 	if(jobj != NULL){
 		Mtx mtx;
 		switch(type){
@@ -425,7 +426,7 @@ void JObjUpdateFunc(HSD_JObj* jobj, u32 type, f32* fval){
 				if((jobj->flags & 0x200000) != 0){
 					HSD_RObj* robj = HSD_RObjGetByType(jobj->robj, 0x40000000, 0);
 					if(robj != NULL){
-						robj->xC_unk = *fval;
+						robj->pos = *(guVector*)fval;
 					}
 				}
 				assert(JOBJ_USE_QUATERNION(jobj) == 0);
