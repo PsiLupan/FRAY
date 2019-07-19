@@ -108,7 +108,7 @@ void HSD_JObjClearFlagsAll(HSD_JObj *, u32);
 HSD_JObj* HSD_JObjAlloc();
 void HSD_JObjSetCurrent(HSD_JObj *);
 HSD_JObj* HSD_JObjGetCurrent();
-
+void HSD_JObjSetupMatrixSub(HSD_JObj *jobj);
 void HSD_JObjSetMtxDirtySub(HSD_JObj *);
 void HSD_JObjSetCallback(void (*)());
 

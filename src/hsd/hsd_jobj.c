@@ -1194,6 +1194,78 @@ HSD_JObj* HSD_JObjGetCurrent(){
 	return current_jobj;
 }
 
+//8037231C
+static void resolveIKJoint1(HSD_JObj* jobj){
+
+}
+
+//80372B08
+static void resolveIKJoint2(HSD_JObj* jobj){
+
+}
+
+//80373078
+void HSD_JObjSetupMatrixSub(HSD_JObj *jobj){
+	if(jobj != NULL){
+		HSD_JOBJ_METHOD(jobj)->make_pmtx(jobj);
+		jobj->flags &= 0xFFFFFFBF;
+		if((jobj->flags & 0x800000) != 0){
+			return;
+		}
+		u32 flags = jobj->flags & 0x600000;
+		switch(flags){
+			case 0x200000:{
+				resolveIKJoint1(jobj);
+				HSD_RObj* robj = jobj->robj;
+				if(robj != NULL){
+					HSD_RObjUpdateAll(robj, jobj, JObjUpdateFunc);
+					assert(jobj != NULL);
+					if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
+						HSD_JOBJ_METHOD(jobj)->make_pmtx(jobj);
+					}
+				}
+			}
+			break;
+
+			case 0x400000:{
+				resolveIKJoint2(jobj);
+			}
+			break;
+
+			case 0x600000:{
+				HSD_JObj* prev = jobj->prev;
+				HSD_RObj* robj = HSD_RObjGetByType(prev->robj, 0x40000000, 0);
+				if(prev != NULL && robj != NULL){
+					guVector w_vec = {prev->mtx[0][3] , prev->mtx[1][3], prev->mtx[2][3]};
+					guVector x_vec = {prev->mtx[0][0] , prev->mtx[1][0], prev->mtx[2][0]};
+					f32 dot = guVecDotProduct(&x_vec, &x_vec);
+					dot = 1.f / (1e-10f + dot);
+					if(0.f < dot){
+						f32 sval = 1.0f / sqrtf(dot);
+						sval = 1.75 * sval * -(dot * sval * sval - 2.125);
+						sval = 1.75 * sval * -(dot * sval * sval - 2.125);
+						dot = (f32)(dot * 1.75 * sval * -(dot * sval * sval - 2.125));
+					}
+					guVecScale(&x_vec, &x_vec, dot);
+					f32 val = 1.f;
+					if(prev->pvec != NULL){
+						val = prev->pvec->x;
+					}
+					guVecScale(&x_vec, &x_vec, robj->u.fv);
+					guVector res;
+					guVecAdd(&w_vec, &x_vec, &res);
+					jobj->mtx[0][3] = res.x;
+					jobj->mtx[1][3] = res.y;
+					jobj->mtx[2][3] = res.z;
+				}
+			}
+			break;
+		}
+		jobj->flags &= 0xFFFFFFBF;
+		return;
+	}
+}
+
 //803732E8
 void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj){
 	BOOL isDirty = FALSE;
@@ -1236,7 +1308,7 @@ void HSD_JObjSetCallback(void (*cb)()){
 
 //8037340C
 static void JObjInit(HSD_Class* o){
-	(*hsdJObj.parent.parent.init)(o);
+	HSD_OBJECT_INFO(&hsdJObj)->init(o);
 
 	if(o != NULL){
 		HSD_JObj* jobj = HSD_JOBJ(o);
