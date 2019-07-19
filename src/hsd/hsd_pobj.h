@@ -109,10 +109,10 @@ typedef struct _HSD_ShapeSetDesc {
 	u16 nb_shape;
 	u32 nb_vertex_index;
 	struct _HSD_VertexDesc* vertex_desc;
-	HSD_SList* vertex_idx_list;
+	u8* vertex_idx_list;
 	u32 nb_normal_index;
 	void* normal_desc;
-	HSD_SList* normal_idx_list;
+	u8* normal_idx_list;
 } HSD_ShapeSetDesc;
 
 typedef struct _HSD_ShapeAnim {

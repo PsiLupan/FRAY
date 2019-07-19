@@ -145,7 +145,6 @@ static HSD_ShapeSet* loadShapeSetDesc(HSD_ShapeSetDesc* sdesc){
     }else {
         shape_set->blend.bl = 0.0F;
     }
-    shape_set->aobj = NULL;
     return shape_set;
 }
 
