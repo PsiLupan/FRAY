@@ -163,8 +163,12 @@ HSD_DObj* HSD_DObjAlloc(){
 }
 
 //8035E31C
-void HSD_DObjResolveRefsAll(HSD_DObj* dobj){
-
+void HSD_DObjResolveRefsAll(HSD_DObj* dobj, HSD_DObjDesc* desc){
+    HSD_DObj* dj = dobj;
+    HSD_DObjDesc* dd = desc;
+    for(; dj != NULL && dd != NULL; dj = dj->next, dd = dd->next){
+        HSD_PObjResolveRefsAll(dj->pobj, dd->pobjdesc);
+    }
 }
 
 //8035E388

@@ -54,5 +54,6 @@ void HSD_DObjAnimAll(HSD_DObj *);
 HSD_DObj* HSD_DObjLoadDesc(HSD_DObjDesc *);
 void HSD_DObjRemoveAll(HSD_DObj *);
 HSD_DObj* HSD_DObjAlloc();
+void HSD_DObjResolveRefsAll(HSD_DObj *, HSD_DObjDesc *);
 
 #endif
