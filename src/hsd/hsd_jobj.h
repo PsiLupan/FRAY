@@ -89,6 +89,8 @@ void HSD_JObjAnim(HSD_JObj *);
 void HSD_JObjAnimAll(HSD_JObj *);
 void HSD_JObjSetDefaultClass(HSD_JObjInfo *);
 HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc *);
+void HSD_JObjUnref(HSD_JObj *);
+void HSD_JObjUnrefThis(HSD_JObj *);
 void HSD_JObjRemove(HSD_JObj *);
 void HSD_JObjRemoveAll(HSD_JObj *);
 void RecalcParentTrspBits(HSD_JObj *);
