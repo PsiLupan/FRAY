@@ -759,6 +759,35 @@ END:
 	return jobj;
 }
 
+//80370FF4
+void HSD_JObjResolveRefsAll(HSD_JObj* jobj, HSD_JObjDesc* desc){
+	HSD_JObj* jo = jobj;
+	HSD_JObjDesc* jdesc = desc;
+	for(; jo != NULL && jdesc != NULL; jo = jo->next, jdesc = jdesc->next){
+		HSD_RObjResolveRefsAll(jo->robj, jdesc->robj);
+		if(JOBJ_INSTANCE(jo)){
+			HSD_JObjDesc* dchild = jdesc->child;
+			HSD_JObj* child = jo->child;
+			for(; child != NULL && dchild != NULL; child = child->next, dchild = dchild->next){
+				HSD_JObjResolveRefs(child, dchild);
+				if(JOBJ_INSTANCE(child)){
+					HSD_JObjResolveRefsAll(child->child, dchild->child);
+				}
+			}
+		}else{
+			HSD_JObjUnref(jo->child);
+			HSD_JObj* child = (HSD_JObj*)HSD_IDGetDataFromTable(NULL, (u32)desc->child, NULL);
+			jo->child = child;
+			assert(jo->child != NULL);
+			jo->child->parent.ref_count += 1;
+			assert(jo->child->parent.ref_count != HSD_OBJ_NOREF);
+		}
+		if(union_type_dobj(jo)){
+			HSD_DObjResolveRefsAll(jobj->u.dobj, desc->dobj);
+		}
+	}
+}
+
 //8037115C
 void HSD_JObjUnref(HSD_JObj* jobj){
 	if(jobj != NULL){
