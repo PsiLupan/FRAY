@@ -253,7 +253,7 @@ static void HSD_WObjInfoInit(){
 void HSD_WObjUnref(HSD_WObj* wobj){
     if(wobj != NULL){
         u16 ref_count = wobj->parent.ref_count;
-		u32 lz = __builtin_clz(0xFFFF - ref_count);
+		u32 lz = __builtin_clz(-ref_count);
 		lz = lz >> 5;
 		if(lz == 0){
 			wobj->parent.ref_count -= 1;
