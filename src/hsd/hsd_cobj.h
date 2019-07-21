@@ -72,6 +72,11 @@ typedef struct _HSD_CObjInfo {
     int	(*load) (HSD_CObj *cobj, HSD_CObjDesc *desc);
 } HSD_CObjInfo;
 
+typedef struct _HSD_CameraAnim {
+    struct _HSD_AObjDesc* aobjdesc;
+    struct _HSD_WObjAnim* eye_anim;
+    struct _HSD_WObjAnim* interest_anim;
+} HSD_CameraAnim;
 
 #define HSD_COBJ(o)		((HSD_CObj *)(o))
 #define HSD_COBJ_INFO(i)	((HSD_CObjInfo *)(i))
@@ -79,7 +84,7 @@ typedef struct _HSD_CObjInfo {
 
 void HSD_CObjEraseScreen(HSD_CObj *, s32, s32, s32);
 void HSD_CObjRemoveAnim(HSD_CObj *);
-void HSD_CObjAddAnim(HSD_CObj *, HSD_AObjDesc **);
+void HSD_CObjAddAnim(HSD_CObj *, HSD_CameraAnim *);
 void CObjUpdateFunc(HSD_CObj *, u32, f32 *);
 void HSD_CObjAnim(HSD_CObj *);
 void HSD_CObjReqAnim(HSD_CObj *, f32);

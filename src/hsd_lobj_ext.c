@@ -1,7 +1,7 @@
 #include "hsd_lobj_ext.h"
 
 //80011AC4
-HSD_LObj* LObj_LoadLightDescs(HSD_LightDesc** lightdescs){
+/*HSD_LObj* LObj_LoadLightDescs(HSD_LightDesc** lightdescs){
     HSD_LObj* lobj = NULL;
     HSD_LObj* lobj_prev = NULL;
     u32 n = 0;
@@ -17,7 +17,7 @@ HSD_LObj* LObj_LoadLightDescs(HSD_LightDesc** lightdescs){
         n += 1;
     }
     return lobj;
-}
+} */
 
 //80391044
 void LObj_Setup_Callback(HSD_GObj* gobj){

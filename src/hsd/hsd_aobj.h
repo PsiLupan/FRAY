@@ -34,8 +34,8 @@ typedef struct _HSD_AObjDesc {
 typedef struct _HSD_AnimJoint {
 	struct _HSD_AnimJoint *child;
 	struct _HSD_AnimJoint *next;
-	struct _HSD_AObjDesc *anim;
-	struct _HSD_InterestAnim *interest_anim;
+	struct _HSD_AObjDesc *aobjdesc;
+	struct _HSD_RObjAnim *robj_anim;
 	u32 unk2;
 	u32 unk3;
 } HSD_AnimJoint;

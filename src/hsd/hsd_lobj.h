@@ -47,34 +47,60 @@
 
 #define HSD_LObjGetType(o) (o->flags & 0x3)
 
-struct spot {
+typedef struct _HSD_LightPoint {
+	f32 cutoff;
+	u8 point_func;
+	f32 ref_br;
+	f32 ref_dist;
+	u8 dist_func;
+} HSD_LightPoint;
+
+typedef struct _HSD_LightPointDesc {
+	f32 cutoff;
+	u8 point_func;
+	f32 ref_br;
+	f32 ref_dist;
+	u8 dist_func;
+} HSD_LightPointDesc;
+
+typedef struct _HSD_LightSpot {
 	f32 cutoff;
 	u8 spot_func;
 	f32 ref_br;
 	f32 ref_dist;
 	u8 dist_func;
-};
+} HSD_LightSpot;
 
-struct attn {
+typedef struct _HSD_LightSpotDesc {
+	f32 cutoff;
+	u8 spot_func;
+	f32 ref_br;
+	f32 ref_dist;
+	u8 dist_func;
+} HSD_LightSpotDesc;
+
+typedef struct _HSD_LightAttn {
 	f32 a0;
 	f32 a1;
 	f32 a2;
 	f32 k0;
 	f32 k1;
 	f32 k2;
-};
+} HSD_LightAttn;
 
 typedef struct _HSD_LObj {
-	HSD_Obj parent;
+	HSD_Obj parent; //0x00
 	u16 flags; //0x08
+	u16 priority; //0x0A
 	struct _HSD_LObj* next; //0x0C
 	GXColor color; //0x10
 	GXColor hw_color; //0x14
 	HSD_WObj* position; //0x18
 	HSD_WObj* interest; //0x1C
 	union {
-		struct spot spot;
-		struct attn attn;
+		HSD_LightPoint point;
+		HSD_LightSpot spot;
+		HSD_LightAttn attn;
 	} u;
 	f32 shininess;
 	guVector lvec;
@@ -87,25 +113,26 @@ typedef struct _HSD_LObj {
 
 typedef struct _HSD_LightDesc {
 	char* class_name; //0x00
-	struct _HSD_LightAnim* anim; //0x04
+	struct _HSD_LightDesc* next; //0x04
 	u16 flags; //0x08
+	u16 attnflags; //0x0A
 	GXColor color; //0x0C
-	struct _HSD_LightDesc* next;
-	u16 attnflags; //TODO: verify size
+	HSD_WObjDesc* position; //0x10
+	HSD_WObjDesc* interest; //0x14
 	union {
-		struct spot point;
-		struct spot spot;
-		struct attn attn;
+		void* p;
+		f32* shininess;
+		HSD_LightPointDesc* point;
+		HSD_LightSpotDesc* spot;
+		HSD_LightAttn* attn;
 	} u;
-	HSD_WObjDesc* position;
-	HSD_WObjDesc* interest;
 } HSD_LightDesc;
 
 typedef struct _HSD_LightAnim {
 	struct _HSD_LightAnim *next;
 	struct _HSD_AObjDesc* aobjdesc;
-	struct _HSD_AObjDesc** position_anim;
-	struct _HSD_AObjDesc** interest_anim;
+	struct _HSD_WObjAnim* position_anim;
+	struct _HSD_WObjAnim* interest_anim;
 } HSD_LightAnim;
 
 typedef struct _HSD_LObjInfo {

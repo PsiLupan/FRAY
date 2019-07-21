@@ -28,13 +28,13 @@ void HSD_WObjReqAnim(HSD_WObj* wobj, f32 frame){
 }
 
 //8037D0E4
-void HSD_WObjAddAnim(HSD_WObj* wobj, HSD_AObjDesc** aobjdesc){
-    if(wobj != NULL && aobjdesc != NULL){
+void HSD_WObjAddAnim(HSD_WObj* wobj, HSD_WObjAnim* anim){
+    if(wobj != NULL && anim != NULL){
         if(wobj->aobj != NULL){
             HSD_AObjRemove(wobj->aobj);
         }
-        wobj->aobj = HSD_AObjLoadDesc(*aobjdesc);
-        HSD_RObjAddAnimAll(wobj->robj, aobjdesc[1]);
+        wobj->aobj = HSD_AObjLoadDesc(anim->aobjdesc);
+        HSD_RObjAddAnimAll(wobj->robj, anim->robjanim);
     }
 }
 

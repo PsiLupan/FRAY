@@ -71,6 +71,8 @@ void HSD_SetMaterialShininess(f32);
 void HSD_StateSetLineWidth(u8, u8);
 
 void HSD_StateSetZMode(s32, u8, s32);
+void HSD_StateSetColorUpdate(s32);
+void HSD_StateSetAlphaUpdate(s32);
 void HSD_StateInvalidate(s32);
 void HSD_StateSetNumChans(u8);
 u32 HSD_StateGetNumTevStages();

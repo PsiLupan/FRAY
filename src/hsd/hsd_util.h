@@ -26,6 +26,11 @@ typedef struct _HSD_Spline {
     void* unk; //0x14
 } HSD_Spline;
 
+typedef union _update {
+	f32 fv;
+    s32 iv;
+    guVector p;
+} update;
 
 f32 HSD_ClampFloat(f32 val, f32 min, f32 max);
 f32 splGetHermite(f32, f32, f32, f32, f32, f32);

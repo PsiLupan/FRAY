@@ -29,19 +29,10 @@ typedef struct _HSD_WObjInfo {
     int (*load)(HSD_WObj *wobj, HSD_WObjDesc *desc); 
 } HSD_WObjInfo;
 
-typedef struct _HSD_InterestAnim {
-    struct _HSD_InterestAnim* next;
-    struct _HSD_AObjDesc* desc;
-    u32 unk;
-    u32 unk2;
-} HSD_InterestAnim;
-
-typedef struct _HSD_WorldAnim {
+typedef struct _HSD_WObjAnim {
     struct _HSD_AObjDesc* aobjdesc;
-    struct _HSD_AObjDesc* eye_anim;
-    struct _HSD_InterestAnim* interest_anim;
-    u32 flags;
-} HSD_WorldAnim;
+    struct _HSD_RObjAnim* robjanim;
+} HSD_WObjAnim;
 
 extern HSD_WObjInfo hsdWObj;
 
@@ -51,7 +42,7 @@ extern HSD_WObjInfo hsdWObj;
 
 void HSD_WObjRemoveAnim(HSD_WObj *);
 void HSD_WObjReqAnim(HSD_WObj *, f32);
-void HSD_WObjAddAnim(HSD_WObj *, HSD_AObjDesc **);
+void HSD_WObjAddAnim(HSD_WObj *, HSD_WObjAnim *);
 void HSD_WObjInterpretAnim(HSD_WObj *);
 void HSD_WObjInit(HSD_WObj *, HSD_WObjDesc *);
 HSD_WObj* HSD_WObjLoadDesc(HSD_WObjDesc *);

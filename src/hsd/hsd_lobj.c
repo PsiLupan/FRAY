@@ -747,15 +747,15 @@ static int LObjLoad(HSD_LObj *lobj, HSD_LightDesc *ldesc){
 		if (ldesc->attnflags & LOBJ_LIGHT_ATTN) {
 			HSD_LObjSetFlags(lobj, LOBJ_RAW_PARAM);
 			if(lobj){
-				lobj->u.attn.k0 = ldesc->u.attn.k0;
-				lobj->u.attn.k1 = ldesc->u.attn.k1;
-				lobj->u.attn.k2 = ldesc->u.attn.k2;
+				lobj->u.attn.k0 = ldesc->u.attn->k0;
+				lobj->u.attn.k1 = ldesc->u.attn->k1;
+				lobj->u.attn.k2 = ldesc->u.attn->k2;
 			}
 		} else {
 			if(lobj){
-				lobj->u.spot.ref_dist  = ldesc->u.point.ref_dist;
-				lobj->u.spot.ref_br    = ldesc->u.point.ref_br;
-				lobj->u.spot.dist_func = ldesc->u.point.dist_func;
+				lobj->u.spot.ref_dist  = ldesc->u.point->ref_dist;
+				lobj->u.spot.ref_br    = ldesc->u.point->ref_br;
+				lobj->u.spot.dist_func = ldesc->u.point->dist_func;
 			}
 		}
 		break;
@@ -771,21 +771,21 @@ static int LObjLoad(HSD_LObj *lobj, HSD_LightDesc *ldesc){
 		if (ldesc->attnflags & LOBJ_LIGHT_ATTN) {
 			HSD_LObjSetFlags(lobj, LOBJ_RAW_PARAM);
 			if(lobj){
-				lobj->u.attn.a0 = ldesc->u.attn.a0;
-				lobj->u.attn.a1 = ldesc->u.attn.a1;
-				lobj->u.attn.a2 = ldesc->u.attn.a2;
-				lobj->u.attn.k0 = ldesc->u.attn.k0;
-				lobj->u.attn.k1 = ldesc->u.attn.k1;
-				lobj->u.attn.k2 = ldesc->u.attn.k2;
+				lobj->u.attn.a0 = ldesc->u.attn->a0;
+				lobj->u.attn.a1 = ldesc->u.attn->a1;
+				lobj->u.attn.a2 = ldesc->u.attn->a2;
+				lobj->u.attn.k0 = ldesc->u.attn->k0;
+				lobj->u.attn.k1 = ldesc->u.attn->k1;
+				lobj->u.attn.k2 = ldesc->u.attn->k2;
 			}
 		} else {
 			if(lobj){
-				lobj->u.spot.ref_dist  = ldesc->u.spot.ref_dist;
-				lobj->u.spot.ref_br    = ldesc->u.spot.ref_br;
-				lobj->u.spot.dist_func = ldesc->u.spot.dist_func;
+				lobj->u.spot.ref_dist  = ldesc->u.spot->ref_dist;
+				lobj->u.spot.ref_br    = ldesc->u.spot->ref_br;
+				lobj->u.spot.dist_func = ldesc->u.spot->dist_func;
 				
-				lobj->u.spot.cutoff = ldesc->u.spot.cutoff;
-				lobj->u.spot.spot_func = ldesc->u.spot.spot_func;
+				lobj->u.spot.cutoff = ldesc->u.spot->cutoff;
+				lobj->u.spot.spot_func = ldesc->u.spot->spot_func;
 			}
 		}
 		break;

@@ -232,15 +232,15 @@ void* hsdAllocMemPiece(u32 size){
 					return NULL;
 				}
 				piece = i->data;
-				i->data = i->data->next;
+				i->data = piece->next;
 				i->nb_free -= 1;
 				i->nb_alloc -= 1;
 				
-				HSD_MemoryEntry* np = (HSD_MemoryEntry*)((u8*)piece + entry->total_bits);
+				HSD_FreeList* np = (HSD_FreeList*)((u8*)piece->next + entry->total_bits);
 				np->next = entry_2->data;
 				entry_2->data = np;
-				np->nb_alloc += 1;
-				np->nb_free += 1;
+				entry_2->nb_alloc += 1;
+				entry_2->nb_free += 1;
 				entry->nb_alloc += 1;
 				return (void*)piece;
 			}
@@ -250,11 +250,11 @@ void* hsdAllocMemPiece(u32 size){
 			piece = (HSD_FreeList*)HSD_MemAlloc(nb_memory_list * 32);
 			if(piece != NULL){
 				if(tmp_size >= 0){
-					HSD_MemoryEntry* np = (HSD_MemoryEntry*)((u8*)piece + entry->total_bits);
-					np->next = entry->data;
-					entry->data = np;
-					np->nb_alloc += 1;
-					np->nb_free += 1;
+					HSD_FreeList* np = (HSD_FreeList*)((u8*)piece->next + entry->total_bits);
+					np->next = entry_2->data;
+					entry_2->data = np;
+					entry_2->nb_alloc += 1;
+					entry_2->nb_free += 1;
 				}
 				entry->nb_alloc += 1;
 			}else{

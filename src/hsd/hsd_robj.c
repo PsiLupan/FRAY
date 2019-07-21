@@ -110,16 +110,15 @@ void HSD_RObjReqAnimAll(HSD_RObj* robj, f32 frame){
 }
 
 //8037B1A0
-void HSD_RObjAddAnimAll(HSD_RObj* robj, void* anim){ //The second parameter is assumed based on layout - It literally is never NULL in my experience
-    HSD_InterestAnim* ianim = (HSD_InterestAnim*)anim;
-    if(robj != NULL && ianim != NULL){
+void HSD_RObjAddAnimAll(HSD_RObj* robj, HSD_RObjAnim* anim){ //The second parameter is assumed based on layout - It literally is never NULL in my experience
+    if(robj != NULL && anim != NULL){
         HSD_RObj* i;
-        HSD_InterestAnim* j;
-        for(i = robj, j = ianim; i != NULL && j != NULL; i = i->next, j = j->next){
+        HSD_RObjAnim* j;
+        for(i = robj, j = anim; i != NULL && j != NULL; i = i->next, j = j->next){
             if(i->aobj != NULL){
                 HSD_AObjRemove(i->aobj);
             }
-            i->aobj = HSD_AObjLoadDesc(j->desc);
+            i->aobj = HSD_AObjLoadDesc(j->aobjdesc);
         }
     }
 }
@@ -162,12 +161,14 @@ u32 HSD_RObjGetGlobalPosition(HSD_RObj* robj, u32 flag, guVector* pos){
 }
 
 //8037BFB0
-void HSD_RObjUpdateAll(HSD_RObj* robj, void* jobj, void (*obj_update)(void*, u32, guVector*)){
+void HSD_RObjUpdateAll(HSD_RObj* robj, void* jobj, void (*obj_update)(void*, u32, update*)){
     if(robj != NULL){
         guVector pos;
         u32 pos_count = HSD_RObjGetGlobalPosition(robj, 1, &pos);
         if(pos_count != 0){
-            (*obj_update)(jobj, 0x35, &pos);
+            update up;
+            up.p = pos;
+            (*obj_update)(jobj, 0x35, &up);
             (*obj_update)(jobj, 0x38, NULL);
         }
         /* sub_8037b648(robj, obj, obj_update);

@@ -311,10 +311,10 @@ void HSD_JObjAddAnim(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoint* 
 			if(jobj->aobj != NULL){
 				HSD_AObjRemove(jobj->aobj);
 			}
-			HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->anim);
+			HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->aobjdesc);
 			jobj->aobj = aobj;
 			JObjSortAnim(jobj->aobj);
-			HSD_RObjAddAnimAll(jobj->robj, an_joint->interest_anim);
+			HSD_RObjAddAnimAll(jobj->robj, an_joint->robj_anim);
 			if((an_joint->unk2 & 1) == 0){
 				HSD_JObjClearFlags(jobj, 0x8);
 			}else{
@@ -342,10 +342,10 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoin
 			if(jobj->aobj != NULL){
 				HSD_AObjRemove(jobj->aobj);
 			}
-			HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->anim);
+			HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->aobjdesc);
 			jobj->aobj = aobj;
 			JObjSortAnim(jobj->aobj);
-			HSD_RObjAddAnimAll(jobj->robj, an_joint->interest_anim);
+			HSD_RObjAddAnimAll(jobj->robj, an_joint->robj_anim);
 			if((an_joint->unk2 & 1) == 0){
 				HSD_JObjClearFlags(jobj, 0x8);
 			}else{
@@ -417,7 +417,7 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj, HSD_AnimJoint* an_joint, HSD_MatAnimJoin
 }
 
 //8036FDC0
-void JObjUpdateFunc(void* obj, u32 type, f32* fval){
+void JObjUpdateFunc(void* obj, u32 type, update* val){
 	HSD_JObj* jobj = (HSD_JObj*)obj;
 	if(jobj != NULL){
 		Mtx mtx;
@@ -426,11 +426,11 @@ void JObjUpdateFunc(void* obj, u32 type, f32* fval){
 				if((jobj->flags & 0x200000) != 0){
 					HSD_RObj* robj = HSD_RObjGetByType(jobj->robj, 0x40000000, 0);
 					if(robj != NULL){
-						robj->pos = *(guVector*)fval;
+						robj->pos = val->p;
 					}
 				}
 				assert(JOBJ_USE_QUATERNION(jobj) == 0);
-				jobj->rotation.x = *fval;
+				jobj->rotation.x = val->fv;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
 					if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
@@ -443,7 +443,7 @@ void JObjUpdateFunc(void* obj, u32 type, f32* fval){
 				break;
 			case 2:
 				assert(JOBJ_USE_QUATERNION(jobj) == 0);
-				jobj->rotation.y = *fval;
+				jobj->rotation.y = val->fv;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
 					if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
@@ -456,7 +456,7 @@ void JObjUpdateFunc(void* obj, u32 type, f32* fval){
 				break;
 			case 3:
 				assert(JOBJ_USE_QUATERNION(jobj) == 0);
-				jobj->rotation.z = *fval;
+				jobj->rotation.z = val->fv;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
 					if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
@@ -468,17 +468,17 @@ void JObjUpdateFunc(void* obj, u32 type, f32* fval){
 				}
 				break;
 			case 4:
-				if(*fval < 0.f){
-					*fval = 0.f;
+				if(val->fv < 0.f){
+					val->fv = 0.f;
 				}
-				if(1.875f < *fval){
-					*fval = 1;
+				if(1.875f < val->fv){
+					val->fv = 1.f;
 				}
 				assert(jobj->aobj != NULL);
 				HSD_JObj* jp = (HSD_JObj*)jobj->aobj->hsd_obj;
 				assert(jp->u.spline != NULL);
 				guVector result;
-				splArcLengthPoint(jp->u.spline, *fval, &result);
+				splArcLengthPoint(jp->u.spline, val->fv, &result);
 				jobj->position = result;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
@@ -491,7 +491,7 @@ void JObjUpdateFunc(void* obj, u32 type, f32* fval){
 				}
 				break;
 			case 5:
-				jobj->position.x = *fval;
+				jobj->position.x = val->fv;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
 					if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
@@ -503,7 +503,7 @@ void JObjUpdateFunc(void* obj, u32 type, f32* fval){
 				}
 				break;
 			case 6:
-				jobj->position.y = *fval;
+				jobj->position.y = val->fv;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
 					if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
@@ -515,7 +515,7 @@ void JObjUpdateFunc(void* obj, u32 type, f32* fval){
 				}
 				break;
 			case 7:
-				jobj->position.z = *fval;
+				jobj->position.z = val->fv;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
 					if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
@@ -527,10 +527,10 @@ void JObjUpdateFunc(void* obj, u32 type, f32* fval){
 				}
 				break;
 			case 8:
-				if((f32)((u32)*fval & 0x7FFFFFFF) < 0.001f){
-					*fval = 0.001f;
+				if((f32)((u32)val->fv & 0x7FFFFFFF) < 0.001f){
+					val->fv = 0.001f;
 				}
-				jobj->scale.x = *fval;
+				jobj->scale.x = val->fv;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
 					if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
@@ -542,10 +542,10 @@ void JObjUpdateFunc(void* obj, u32 type, f32* fval){
 				}
 				break;
 			case 9:
-				if((f32)((u32)*fval & 0x7FFFFFFF) < 0.001f){
-					*fval = 0.001f;
+				if((f32)((u32)val->fv & 0x7FFFFFFF) < 0.001f){
+					val->fv = 0.001f;
 				}
-				jobj->scale.y = *fval;
+				jobj->scale.y = val->fv;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
 					if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
@@ -557,10 +557,10 @@ void JObjUpdateFunc(void* obj, u32 type, f32* fval){
 				}
 				break;
 			case 10:
-				if((f32)((u32)*fval & 0x7FFFFFFF) < 0.001f){
-					*fval = 0.001f;
+				if((f32)((u32)val->fv & 0x7FFFFFFF) < 0.001f){
+					val->fv = 0.001f;
 				}
-				jobj->scale.z = *fval;
+				jobj->scale.z = val->fv;
 				if((jobj->flags & 0x2000000) == 0){
 					BOOL already_dirty = FALSE;
 					if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
@@ -572,14 +572,14 @@ void JObjUpdateFunc(void* obj, u32 type, f32* fval){
 				}
 				break;
 			case 11:
-				if (*fval <= 1.75f) {
+				if (val->fv <= 1.75f) {
 					HSD_JObjSetFlags(jobj,0x10);
 				}else {
 					HSD_JObjClearFlags(jobj,0x10);
 				}
 				break;
 			case 12:
-				if(*fval <= 1.75f){
+				if(val->fv <= 1.75f){
 					HSD_JObjSetFlagsAll(jobj, 0x10);
 				}else{
 					HSD_JObjClearFlagsAll(jobj, 0x10);
@@ -621,38 +621,38 @@ void JObjUpdateFunc(void* obj, u32 type, f32* fval){
 				break;
 			case 40:
 				if(callback_4018 != NULL){
-					(*callback_4018)(0, (u32)*fval & 0x3f, (u32)*fval >> 6 & 0xffffff, jobj); //8005DB70 during gameplay
+					(*callback_4018)(0, val->iv & 0x3f, val->iv >> 6 & 0xffffff, jobj); //8005DB70 during gameplay
 				}
 				break;
 			case 41:
 				if(callback_4014 != NULL){
-					(*callback_4014)(*fval);
+					(*callback_4014)(val->iv);
 				}
 				break;
 			case 42:
 				if(callback_4010 != NULL){
-					(*callback_4010)(jobj, *fval);
+					(*callback_4010)(jobj, val->iv);
 				}
 				break;
 			case 50:
-				jobj->mtx[0][0] = fval[0];
-				jobj->mtx[1][0] = fval[1];
-				jobj->mtx[2][0] = fval[2];
+				jobj->mtx[0][0] = val->p.x;
+				jobj->mtx[1][0] = val->p.y;
+				jobj->mtx[2][0] = val->p.z;
 				break;
 			case 51:
-				jobj->mtx[0][1] = fval[0];
-				jobj->mtx[1][1] = fval[1];
-				jobj->mtx[2][1] = fval[2];
+				jobj->mtx[0][1] = val->p.x;
+				jobj->mtx[1][1] = val->p.y;
+				jobj->mtx[2][1] = val->p.z;
 				break;
 			case 52:
-				jobj->mtx[0][2] = fval[0];
-				jobj->mtx[1][2] = fval[1];
-				jobj->mtx[2][2] = fval[2];
+				jobj->mtx[0][2] = val->p.x;
+				jobj->mtx[1][2] = val->p.y;
+				jobj->mtx[2][2] = val->p.z;
 				break;
 			case 53:
-				jobj->mtx[0][3] = fval[0];
-				jobj->mtx[1][3] = fval[1];
-				jobj->mtx[2][3] = fval[2];
+				jobj->mtx[0][3] = val->p.x;
+				jobj->mtx[1][3] = val->p.y;
+				jobj->mtx[2][3] = val->p.z;
 				break;
 			case 54:
 			case 55:
