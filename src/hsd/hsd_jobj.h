@@ -47,19 +47,23 @@ typedef struct _HSD_JObjDesc {
 	u32 flags;
 	struct _HSD_JObjDesc* child;
 	struct _HSD_JObjDesc* next;
-	struct _HSD_DObjDesc* dobj;
+	union {
+		struct _HSD_DObjDesc* dobjdesc;
+		struct _HSD_Spline* spline;
+		struct _HSD_SList* ptcl;
+	} u;
 	guVector rotation;
 	guVector scale;
 	guVector position;
 	MtxP mtx;
-	struct _HSD_RObjDesc* robj;
+	struct _HSD_RObjDesc* robjdesc;
 } HSD_JObjDesc;
 
 typedef struct _HSD_JObjInfo {
 	HSD_ObjInfo parent; 
 	s32 (*load)(HSD_JObj *jobj, HSD_JObjDesc *desc, HSD_JObj *jobj_2); //0x3C
-	void (*make_pmtx)(HSD_JObj *jobj); //0x40
-	void (*make_rmtx)(HSD_JObj* jobj, Mtx mtx, Mtx rmtx); //0x44
+	void (*make_mtx)(HSD_JObj *jobj); //0x40
+	void (*make_pmtx)(HSD_JObj* jobj, Mtx mtx, Mtx rmtx); //0x44
 	void (*disp)(HSD_JObj *jobj, Mtx vmtx, Mtx pmtx, HSD_TrspMask trsp_mask, u32 rendermode); //0x48
 	void (*release_child)(HSD_JObj* jobj); //0x4C
 } HSD_JObjInfo;
@@ -71,8 +75,10 @@ extern HSD_JObjInfo hsdJObj;
 #define HSD_JOBJ_METHOD(o)	HSD_JOBJ_INFO(HSD_OBJECT_METHOD(o))
 
 void HSD_JObjCheckDepend(HSD_JObj *);
+void HSD_JObjMtxIsDirty(HSD_JObj *, HSD_JObjDesc*);
+void HSD_JObjSetMtxDirty(HSD_JObj *, HSD_JObjDesc*);
 
-void HSD_JObjWalkTree(HSD_JObj *, void (*)(), u32);
+void HSD_JObjWalkTree(HSD_JObj *, void (*cb)(HSD_JObj *, void *, u32), void *);
 
 void HSD_JObjRemoveAnimByFlags(HSD_JObj *, u32);
 void HSD_JObjRemoveAnimAllByFlags(HSD_JObj *, u32);
@@ -114,6 +120,6 @@ void HSD_JObjSetCurrent(HSD_JObj *);
 HSD_JObj* HSD_JObjGetCurrent();
 void HSD_JObjSetupMatrixSub(HSD_JObj *jobj);
 void HSD_JObjSetMtxDirtySub(HSD_JObj *);
-void HSD_JObjSetCallback(void (*)());
+void HSD_JObjSetDPtclCallback(void (*cb)(s32, s32, s32, HSD_JObj*));
 
 #endif

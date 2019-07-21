@@ -18,12 +18,12 @@ typedef struct _HSD_SList {
 
 typedef struct _HSD_Spline {
     u16 type; //0x00
-    u16 point_cnt; //0x02
+    u16 numcv; //0x02
     f32 tension; //0x04
-    guVector* points; //0x08
-    f32 total_length; //0x0C
-    f32* lengths; //0x10
-    void* unk; //0x14
+    guVector* cv; //0x08
+    f32 totalLength; //0x0C
+    f32* segLength; //0x10
+    f32* segPoly[5]; //0x14
 } HSD_Spline;
 
 typedef union _update {

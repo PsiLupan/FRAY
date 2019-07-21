@@ -16,4 +16,14 @@ typedef struct _HSD_RumbleQueue {
 
 extern s8 pad_queue[];
 
+s8 HSD_PadGetRawQueueCount();
+BOOL HSD_PadGetResetSwitch();
+
+void HSD_PadZeroQueue();
+void HSD_PadRenewStatus();
+void HSD_PadReset();
+
+void HSD_PadRumbleOn(u32);
+void HSD_PadRumbleOffH(u32);
+
 #endif

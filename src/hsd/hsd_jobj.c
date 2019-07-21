@@ -10,13 +10,14 @@ static void JObjInfoInit();
 
 HSD_JObjInfo hsdJObj = { JObjInfoInit };
 
-static HSD_JObj *current_jobj = NULL; //r13_400C
-static void (*callback_4010)(HSD_JObj*, f32); //r13_4010
-static void (*callback_4014)(f32); //r13_4014
-static void (*callback_4018)() = NULL; //r13_4018
-static HSD_JObj *r13_401C = NULL; //r13_401C
+static void (*ptcltgt_callback)(HSD_JObj*, s32) = NULL; //r13_4008
+static HSD_SList *ufc_callbacks = NULL; //r13_400C
+static void (*jsound_callback)(s32) = NULL; //r13_4014
+static void (*dptcl_callback)(s32, s32, s32, HSD_JObj* ) = NULL; //r13_4018
 
+static HSD_JObj *current_jobj = NULL; //r13_401C
 static HSD_JObjInfo* default_class = NULL; //r13_4020
+
 
 //8036EC10
 void HSD_JObjCheckDepend(HSD_JObj* jobj){
@@ -24,17 +25,52 @@ void HSD_JObjCheckDepend(HSD_JObj* jobj){
 }
 
 //8036ED3C
-void HSD_JObjMtxIsDirty(HSD_JObj* jobj){
+void HSD_JObjMtxIsDirty(HSD_JObj* jobj, HSD_JObjDesc* desc){ //This function doesn't have a desc ptr in later versions
+	if(jobj != NULL && desc != NULL){
+		jobj->rotation.x = desc->rotation.x;
+		jobj->rotation.y = desc->rotation.y;
+		jobj->rotation.z = desc->rotation.z;
 
+		jobj->scale.x = desc->scale.x;
+		jobj->scale.y = desc->scale.y;
+		jobj->scale.z = desc->scale.z;
+
+		jobj->position.x = desc->position.x;
+		jobj->position.y = desc->position.y;
+		jobj->position.z = desc->position.z;
+
+		if((jobj->flags & 0x2000000) == 0){
+			if ((jobj->flags & 0x800000) != 0 && (jobj->flags & 0x40) == 0) {
+				HSD_JObjSetMtxDirtySub(jobj);
+			}
+		}
+	}
 }
 
 //8036EE10
-void HSD_JObjSetMtxDirty(HSD_JObj* jobj, void* unk){
-
+void HSD_JObjSetMtxDirty(HSD_JObj* jobj, HSD_JObjDesc* desc){ //This function doesn't have a desc ptr in later versions
+	HSD_JObjMtxIsDirty(jobj, desc); //This is normally inlined
+	if(JOBJ_INSTANCE(jobj)){
+		HSD_JObj* child = jobj->child;
+		HSD_JObjDesc* dchild = desc->child;
+		while(child != NULL){
+			if(child != NULL && dchild != NULL && (HSD_JObjMtxIsDirty(child, dchild), JOBJ_INSTANCE(child))){
+				HSD_JObj* child_c = child->child;
+				HSD_JObjDesc* dchild_c = dchild->child;
+				while(child_c != NULL){
+					HSD_JObjMtxIsDirty(child_c, dchild_c);
+					child_c = child_c->next;
+					dchild_c = (dchild_c ? dchild_c->next : NULL);
+				}
+			}
+			child = child->next;
+			dchild = (dchild ? dchild->next : NULL);
+		}
+	}
 }
 
 //8036EFAC
-static void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb)(), u32 unk){
+static void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb)(HSD_JObj*, void*, u32), void* args){
 	if(jobj != NULL){
 		assert(jobj->prev != NULL);
 		u32 type = 0;
@@ -44,7 +80,7 @@ static void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb)(), u32 unk){
 			type = 2;
 		}
 		if(cb != NULL){
-			(*cb)(jobj, unk, type);
+			(*cb)(jobj, args, type);
 		}
 		if(JOBJ_INSTANCE(jobj)){
 			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
@@ -56,11 +92,11 @@ static void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb)(), u32 unk){
 					type = 2;
 				}
 				if(cb != NULL){
-					(*cb)(i, unk, type);
+					(*cb)(i, args, type);
 				}
 				if(JOBJ_INSTANCE(i)){
 					for(HSD_JObj* n = i->child; n != NULL; n = n->next){
-						HSD_JObjWalkTree0(n, cb, unk);
+						HSD_JObjWalkTree0(n, cb, args);
 					}
 				}
 			}
@@ -69,10 +105,10 @@ static void HSD_JObjWalkTree0(HSD_JObj* jobj, void (*cb)(), u32 unk){
 }
 
 //8036F0F0
-void HSD_JObjWalkTree(HSD_JObj* jobj, void (*cb)(), u32 unk){
+void HSD_JObjWalkTree(HSD_JObj* jobj, void (*cb)(HSD_JObj*, void*, u32), void* args){
 	if(jobj != NULL){
 		if(cb != NULL){
-			(*cb)(jobj, unk, 0);
+			(*cb)(jobj, args, 0);
 		}
 		if(JOBJ_INSTANCE(jobj)){
 			for(HSD_JObj* i = jobj->child; i != NULL; i = i->next){
@@ -84,11 +120,11 @@ void HSD_JObjWalkTree(HSD_JObj* jobj, void (*cb)(), u32 unk){
 					type = 2;
 				}
 				if(cb != NULL){
-					(*cb)(i, unk, type);
+					(*cb)(i, args, type);
 				}
 				if(JOBJ_INSTANCE(i)){
 					for(HSD_JObj* n = i->child; n != NULL; n = n->next){
-						HSD_JObjWalkTree0(n, cb, unk);
+						HSD_JObjWalkTree0(n, cb, args);
 					}
 				}
 			}
@@ -620,18 +656,18 @@ void JObjUpdateFunc(void* obj, u32 type, update* val){
 				}*/
 				break;
 			case 40:
-				if(callback_4018 != NULL){
-					(*callback_4018)(0, val->iv & 0x3f, val->iv >> 6 & 0xffffff, jobj); //8005DB70 during gameplay
+				if(dptcl_callback != NULL){
+					(*dptcl_callback)(0, val->iv & 0x3f, val->iv >> 6 & 0xffffff, jobj); //8005DB70 during gameplay
 				}
 				break;
 			case 41:
-				if(callback_4014 != NULL){
-					(*callback_4014)(val->iv);
+				if(jsound_callback != NULL){
+					(*jsound_callback)(val->iv);
 				}
 				break;
 			case 42:
-				if(callback_4010 != NULL){
-					(*callback_4010)(jobj, val->iv);
+				if(ptcltgt_callback != NULL){
+					(*ptcltgt_callback)(jobj, val->iv);
 				}
 				break;
 			case 50:
@@ -762,7 +798,7 @@ END:
 //80370EEC
 void HSD_JObjResolveRefs(HSD_JObj* jobj, HSD_JObjDesc* desc){
 	if(jobj != NULL && desc != NULL){
-		HSD_RObjResolveRefsAll(jobj->robj, desc->robj);
+		HSD_RObjResolveRefsAll(jobj->robj, desc->robjdesc);
 		if(JOBJ_INSTANCE(jobj)){
 			HSD_JObjUnref(jobj->child);
 			HSD_JObj* child = (HSD_JObj*)HSD_IDGetDataFromTable(NULL, (u32)desc->child, NULL);
@@ -772,7 +808,7 @@ void HSD_JObjResolveRefs(HSD_JObj* jobj, HSD_JObjDesc* desc){
 			assert(jobj->child->parent.ref_count != HSD_OBJ_NOREF);
 		}
 		if(union_type_dobj(jobj)){
-			HSD_DObjResolveRefsAll(jobj->u.dobj, desc->dobj);
+			HSD_DObjResolveRefsAll(jobj->u.dobj, desc->u.dobjdesc);
 		}
 	}
 }
@@ -782,7 +818,7 @@ void HSD_JObjResolveRefsAll(HSD_JObj* jobj, HSD_JObjDesc* desc){
 	HSD_JObj* jo = jobj;
 	HSD_JObjDesc* jdesc = desc;
 	for(; jo != NULL && jdesc != NULL; jo = jo->next, jdesc = jdesc->next){
-		HSD_RObjResolveRefsAll(jo->robj, jdesc->robj);
+		HSD_RObjResolveRefsAll(jo->robj, jdesc->robjdesc);
 		if(JOBJ_INSTANCE(jo)){
 			HSD_JObjDesc* dchild = jdesc->child;
 			HSD_JObj* child = jo->child;
@@ -801,7 +837,7 @@ void HSD_JObjResolveRefsAll(HSD_JObj* jobj, HSD_JObjDesc* desc){
 			assert(jo->child->parent.ref_count != HSD_OBJ_NOREF);
 		}
 		if(union_type_dobj(jo)){
-			HSD_DObjResolveRefsAll(jo->u.dobj, jdesc->dobj);
+			HSD_DObjResolveRefsAll(jo->u.dobj, jdesc->u.dobjdesc);
 		}
 	}
 }
@@ -1250,7 +1286,7 @@ static void resolveIKJoint2(HSD_JObj* jobj){
 //80373078
 void HSD_JObjSetupMatrixSub(HSD_JObj *jobj){
 	if(jobj != NULL){
-		HSD_JOBJ_METHOD(jobj)->make_pmtx(jobj);
+		HSD_JOBJ_METHOD(jobj)->make_mtx(jobj);
 		jobj->flags &= 0xFFFFFFBF;
 		if((jobj->flags & 0x800000) != 0){
 			return;
@@ -1264,7 +1300,7 @@ void HSD_JObjSetupMatrixSub(HSD_JObj *jobj){
 					HSD_RObjUpdateAll(robj, jobj, JObjUpdateFunc);
 					assert(jobj != NULL);
 					if((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0){
-						HSD_JOBJ_METHOD(jobj)->make_pmtx(jobj);
+						HSD_JOBJ_METHOD(jobj)->make_mtx(jobj);
 					}
 				}
 			}
@@ -1345,8 +1381,8 @@ void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj){
 }
 
 //80373404
-void HSD_JObjSetCallback(void (*cb)()){
-	callback_4018 = cb;
+void HSD_JObjSetDPtclCallback(void (*cb)(s32, s32, s32, HSD_JObj*)){
+	dptcl_callback = cb;
 }
 
 //8037340C
@@ -1425,7 +1461,7 @@ static void JObjAmnesia(HSD_ClassInfo* info){
 		default_class = NULL;
 	}
 	if(info == HSD_CLASS_INFO(&hsdJObj)){
-		r13_401C = NULL;
+		ufc_callbacks = NULL;
 		current_jobj = NULL;
 	}
 	HSD_OBJECT_INFO(&hsdJObj)->amnesia(info);
@@ -1438,9 +1474,13 @@ static void JObjInfoInit(){
 	HSD_CLASS_INFO(&hsdJObj)->release = JObjRelease;
 	HSD_CLASS_INFO(&hsdJObj)->amnesia = JObjAmnesia;
 	HSD_JOBJ_INFO(&hsdJObj)->disp = HSD_JObjDispSub;
-	HSD_JOBJ_INFO(&hsdJObj)->make_pmtx = HSD_JObjMakeMatrix;
-	HSD_JOBJ_INFO(&hsdJObj)->make_rmtx = mkRBillBoardMtx;
+	HSD_JOBJ_INFO(&hsdJObj)->make_mtx = HSD_JObjMakeMatrix;
+	HSD_JOBJ_INFO(&hsdJObj)->make_pmtx = mkRBillBoardMtx;
 	HSD_JOBJ_INFO(&hsdJObj)->load = JObjLoad;
 	HSD_JOBJ_INFO(&hsdJObj)->release_child = JObjReleaseChild;
 }
 
+//80374A80
+void HSD_JObjSetSPtclCallback(void (*cb)(HSD_JObj*, s32)){
+	ptcltgt_callback = cb;
+}

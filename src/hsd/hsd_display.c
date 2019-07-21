@@ -256,7 +256,7 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
 				}
 
 				Mtx mtx;
-				HSD_JOBJ_METHOD(jobj)->make_rmtx(jobj, vmtx, mtx);
+				HSD_JOBJ_METHOD(jobj)->make_pmtx(jobj, vmtx, mtx);
 				if((m_flags & JOBJ_OPA) != 0){
 					HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, mtx, HSD_TRSP_OPA, rendermode);
 				}
