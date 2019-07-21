@@ -10,8 +10,8 @@ static void JObjInfoInit();
 
 HSD_JObjInfo hsdJObj = { JObjInfoInit };
 
-static void (*ptcltgt_callback)(HSD_JObj*, s32) = NULL; //r13_4008
 static HSD_SList *ufc_callbacks = NULL; //r13_400C
+static void (*ptcltgt_callback)(HSD_JObj*, s32) = NULL;
 static void (*jsound_callback)(s32) = NULL; //r13_4014
 static void (*dptcl_callback)(s32, s32, s32, HSD_JObj* ) = NULL; //r13_4018
 
@@ -878,6 +878,13 @@ void HSD_JObjUnref(HSD_JObj* jobj){
 	}
 }
 
+void HSD_JObjRefThis(HSD_JObj* jobj){
+	if(jobj != NULL){
+		jobj->parent.ref_count_individual += 1;
+		assert(jobj->parent.ref_count_individual != 0);
+	}
+}
+
 //803712C0
 void HSD_JObjUnrefThis(HSD_JObj* jobj){
 	if(jobj != NULL){
@@ -1478,9 +1485,4 @@ static void JObjInfoInit(){
 	HSD_JOBJ_INFO(&hsdJObj)->make_pmtx = mkRBillBoardMtx;
 	HSD_JOBJ_INFO(&hsdJObj)->load = JObjLoad;
 	HSD_JOBJ_INFO(&hsdJObj)->release_child = JObjReleaseChild;
-}
-
-//80374A80
-void HSD_JObjSetSPtclCallback(void (*cb)(HSD_JObj*, s32)){
-	ptcltgt_callback = cb;
 }

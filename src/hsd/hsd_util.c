@@ -1,5 +1,7 @@
 #include "hsd_util.h"
 
+#include "hsd_memory.h"
+
 f32 HSD_ClampFloat(f32 val, f32 min, f32 max){
     if(val > max){
         return max;
@@ -7,6 +9,34 @@ f32 HSD_ClampFloat(f32 val, f32 min, f32 max){
         return min;
     }
     return val;
+}
+
+//8037E538
+HSD_SList* HSD_SListPrepend(HSD_SList* list, void* data){
+    HSD_SList* list_p = (HSD_SList*)HSD_MemAlloc(sizeof(HSD_SList)); //Normally ObjAlloc
+    assert(list_p != NULL);
+    memset(list_p, 0, sizeof(HSD_SList));
+    list_p->data = data;
+    return HSD_SListPrependList(list, list_p);
+}
+
+//8037E62C
+HSD_SList* HSD_SListPrependList(HSD_SList* list, HSD_SList* prev){
+    assert(prev != NULL);
+    prev->next = list;
+    return prev;
+}
+
+//8037E67C
+HSD_SList* HSD_SListRemove(HSD_SList* list){
+    HSD_SList* res;
+    if(list == NULL){
+        res = NULL;
+    }else{
+        res = list->next;
+        HSD_Free(list); //normally ObjFree
+    }
+    return res;
 }
 
 //80378A34

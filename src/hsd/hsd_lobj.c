@@ -523,9 +523,10 @@ void HSD_LObjAddCurrent(HSD_LObj *lobj){
 			}
 		}
 		
-		HSD_LObjRef(lobj); //lobj->obj.ref_count += 1; assert(lobj->obj.ref_count != 0xFFFF);
+		lobj->parent.ref_count += 1; 
+		assert(lobj->parent.ref_count != HSD_OBJ_NOREF);
 		for (listp = &current_lights; *listp; listp = &(*listp)->next) {
-			if (HSD_LObjGetPriority((*listp)->data) > HSD_LObjGetPriority(lobj)) {
+			if (((HSD_LObj*)((*listp)->data))->priority > lobj->priority) {
 				break;
 			}
 		}

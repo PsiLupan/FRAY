@@ -1,6 +1,6 @@
 #include "hsd_display.h"
 
-static HSD_PtclCallback sptcl_callback = NULL;
+static void (*sptcl_callback)(s32, s32, s32, HSD_JObj*) = NULL; //r13_4008
 
 static GXColor hsd_background_color = {0, 0, 0, 0};
 static GXColor erase_color = {0x26, 0x26, 0x26, 0xFF}; //-0x58C8(r13)
@@ -425,7 +425,7 @@ void HSD_JObjDisp(HSD_JObj *jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 renderm
 }
 
 //80374A80
-void HSD_JObjSetSPtclCallback(HSD_PtclCallback func){
+void HSD_JObjSetSPtclCallback(void (*func)(s32, s32, s32, HSD_JObj*)){
 	sptcl_callback = func;
 }
 

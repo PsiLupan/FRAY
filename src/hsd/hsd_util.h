@@ -33,6 +33,9 @@ typedef union _update {
 } update;
 
 f32 HSD_ClampFloat(f32 val, f32 min, f32 max);
+HSD_SList* HSD_SListPrepend(HSD_SList *, void *);
+HSD_SList* HSD_SListPrependList(HSD_SList *, HSD_SList *);
+HSD_SList* HSD_SListRemove(HSD_SList *);
 f32 splGetHermite(f32, f32, f32, f32, f32, f32);
 void splArcLengthPoint(HSD_Spline *, f32, guVector *);
 

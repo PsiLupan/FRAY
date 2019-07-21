@@ -34,8 +34,6 @@
 #define HSD_TRSP_XLU 0x2
 #define HSD_TRSP_TEXEDGE 0x4
 
-typedef void (*HSD_PtclCallback)(u32, u32, u32, HSD_JObj*);
-
 typedef struct _HSD_ZList {
 	Mtx pmtx;
 	MtxP vmtx;
