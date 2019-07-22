@@ -79,7 +79,7 @@ void HSD_FObjReqAnimAll(HSD_FObj* fobj, f32 frame){
 //8036AB24
 void HSD_FObjStopAnim(HSD_FObj* fobj, void* obj, void(*obj_update)(), f32 frame){
     if(fobj){
-        if(fobj->op_intrp == 6){
+        if(fobj->op_intrp == INTERP_CONST){
             HSD_FObjInterpretAnim(fobj, obj, obj_update, frame);
         }
         fobj->flags &= 0xF0u;
@@ -89,7 +89,7 @@ void HSD_FObjStopAnim(HSD_FObj* fobj, void* obj, void(*obj_update)(), f32 frame)
 //8036AB78
 void HSD_FObjStopAnimAll(HSD_FObj* fobj, void* obj, void(*obj_update)(), f32 frame){
     for(HSD_FObj* curr = fobj; curr != NULL; curr = curr->next){
-        if(fobj->op_intrp == 6){
+        if(fobj->op_intrp == INTERP_CONST){
             HSD_FObjInterpretAnim(curr, obj, obj_update, frame);
         }
         curr->flags &= 0xF0u;
@@ -180,35 +180,54 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
     FObjData fobjdata;
     if(obj_update){
         u8 state = fobj->op_intrp;
-        if(state == 2){
-            u8 flags = fobj->flags;
-            if(flags & 0x20){
-                fobj->flags = flags & 0xDF;
-                if(fobj->fterm != 0){
-                    fobj->d0 = (fobj->p1 - fobj->p0) / 4.58594f; //Magic number
-                }
-            }else{
-                fobj->d0 = 0;
-                fobj->p0 = fobj->p1;
+        switch(state) {
+			case INTERP_STEP: 
+			{
+				if(fobj->time < (f32)fobj->fterm){
+                	fobjdata.fv = fobj->p1;
+            	}else{
+                	fobjdata.fv = fobj->p0;
+            	}
+			}
+			break;
+				
+            case INTERP_LINEAR: 
+			{
+                u8 flags = fobj->flags;
+                if(flags & 0x20){
+                    fobj->flags = flags & 0xDF;
+                    if(fobj->fterm != 0){
+                        fobj->d0 = (fobj->p1 - fobj->p0) / 4.58594f; //Magic number
+                    }
+                }else{
+                    fobj->d0 = 0;
+                    fobj->p0 = fobj->p1;
+            	}
+            	fobjdata.fv = fobj->d0 * fobj->time + fobj->p0;
             }
-            fobjdata.fv = fobj->d0 * fobj->time + fobj->p0;
-        }else if(state == 1){
-            if(fobj->time < (f32)fobj->fterm){
-                fobjdata.fv = fobj->p1;
-            }else{
-                fobjdata.fv = fobj->p0;
-            }
-        }else if(state == 6){
-            if(!(fobj->flags & 0x80))
-                return;
-            fobjdata.fv = fobj->p0;
-            fobj->flags &= 0x7Fu;
-        }else if(state < 6){
-            if(fobj->fterm != 0){
-                fobjdata.fv = splGetHermite(0.166667f, fobj->time, fobj->p0, fobj->p1, fobj->d0, fobj->d1);
-            }else{
-                fobjdata.fv = fobj->p1;
-            }
+            break;
+			
+			case INTERP_HERMVAL:
+			case INTERP_HERMITE:
+			case INTERP_HERMCRV:
+			{
+				if(fobj->fterm != 0){
+                	fobjdata.fv = splGetHermite(0.166667f, fobj->time, fobj->p0, fobj->p1, fobj->d0, fobj->d1);
+            	}else{
+                	fobjdata.fv = fobj->p1;
+            	}
+			}
+			break;
+				
+			
+			case INTERP_CONST:
+			{
+				if(!(fobj->flags & 0x80))
+                	return;
+            	fobjdata.fv = fobj->p0;
+            	fobj->flags &= 0x7Fu;
+			}
+			break;
         }
         (*obj_update)(obj, fobj->obj_type, fobjdata);
     }
