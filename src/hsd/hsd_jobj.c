@@ -1301,7 +1301,133 @@ HSD_JObj* HSD_JObjGetCurrent(){
 
 //8037231C
 static void resolveIKJoint1(HSD_JObj* jobj){
+	HSD_JObj* child = jobj->child;
+	for(; child != NULL; child = child->next){
+		if((child->flags & EFFECTOR) == JOINT2){
+			break;
+		}
+	}
+	guVector* pvec = jobj->pvec;
+	guVector vec;
+	if(pvec != NULL){
+		vec.x = pvec->x;
+		vec.y = pvec->y;
+		vec.z = pvec->z;
+	}
+	HSD_RObj* robj = HSD_RObjGetByType(jobj->robj, 0x40000000, 0);
+	assert(robj != NULL);
 
+	guVector robj_pos = robj->pos;
+	f32 rx_scale = robj->u.fv * vec.x;
+
+	HSD_JObj* child_c;
+	f32 x_scale = 0.f;
+	if(child == NULL){
+		child_c = jobj->child; 
+	}else{
+		HSD_RObj* child_robj = HSD_RObjGetByType(child->robj, 0x40000000, 0);
+		assert(child_robj != NULL);
+		x_scale = vec.x * child_robj->u.fv * child->scale.x;
+		child_c = child->child;
+	}
+
+	for(; child_c != NULL; child_c = child_c->next){
+		if((child_c->flags & EFFECTOR) == EFFECTOR){
+			break;
+		}
+	}
+	assert(child_c != NULL);
+	HSD_RObj* child_robj = HSD_RObjGetByType(child_c->robj, 0x10000000, 1);
+	if(child_robj == NULL){
+		child_c = NULL;
+	}
+
+	if(child_c != NULL){
+		HSD_RObj* robj_t3 = HSD_RObjGetByType(jobj->robj, 0x10000000, 3);
+		if(robj_t3 == NULL && jobj->robj != NULL){
+			HSD_RObjUpdateAll(jobj->robj, jobj, JObjUpdateFunc);
+			assert(jobj != NULL);
+
+			if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
+				HSD_JOBJ_METHOD(jobj)->make_mtx(jobj);
+				jobj->flags &= 0xFFFFFFBF;
+			}
+		}
+
+		guVector trans = {0.f, 0.f, 0.f};
+		guVector ptran;
+		guVector c_scale;
+		guVector cvec;
+		guVector z_scale;
+		guVector zvec;
+
+		if(jobj->prev != NULL){
+			trans.x = jobj->prev->mtx[0][3];
+			trans.y = jobj->prev->mtx[1][3];
+			trans.z = jobj->prev->mtx[2][3];
+		}
+		HSD_RObjGetGlobalPosition(child_c->robj, 1, &child_c->position);
+		guVecSub(&child_c->position, &trans, &ptran);
+		f32 dot = guVecDotProduct(&ptran, &ptran);
+		if(dot <= 1.0e-8f){
+			dot = 0.f;
+		}else{
+			guVector trans_2 = trans;
+			u32 res = HSD_RObjGetGlobalPosition(jobj->robj, 3, &trans_2);
+			if(res == 0){
+				zvec.x = jobj->mtx[0][2];
+				zvec.y = jobj->mtx[1][2]; 
+				zvec.z = jobj->mtx[2][2];
+				guVecCross(&zvec, &trans_2, &cvec);
+				guVecCross(&trans_2, &cvec, &zvec);
+			}else{
+				guVecSub(&cvec, &trans, &cvec);
+				Mtx mtx;
+				if(robj_pos.x != 0){
+					guMtxRotAxisRad(&mtx, &trans, robj_pos.x); //THIS IS PROBABLY WRONG - PSMTXRotAxisRad(robj_pos,auStack232,&trans_2);
+					guVecMultiply(mtx, &cvec, &cvec);
+				}
+				guVecCross(&trans_2, &cvec, &zvec);
+				guVecCross(&zvec, &trans_2, &cvec);
+			}
+
+			f32 z_scalar = 1.0f / (1e-10f + guVecDotProduct(&zvec, &zvec));
+			if(0.f < z_scalar){
+
+			}
+			guVecScale(&zvec, &z_scale, z_scalar);
+
+			f32 c_scalar =  1.0f / (1e-10f + guVecDotProduct(&cvec, &cvec));
+			if(0.f < c_scalar){
+
+			}
+			guVecScale(&cvec, &c_scale, c_scalar);
+
+			f32 rx_squared = rx_scale * rx_scale;
+			f32 x_squared = x_scale * x_scale;
+			f32 n_val = 0.25f * (2.f * (rx_squared + x_squared) - dot) - (((rx_squared - x_squared) * (rx_squared - x_squared)) / dot);
+			if(n_val < 0.f){
+				n_val = 0.f;
+			}
+		}
+		
+		guVector fvec;
+
+		guVecScale(&fvec, &fvec, dot);
+		jobj->mtx[0][0] = fvec.x * vec.x;
+		jobj->mtx[1][0] = fvec.y * vec.x;
+		jobj->mtx[2][0] = fvec.z * vec.x;
+		guVecCross(&z_scale, &fvec, &cvec);
+		jobj->mtx[0][1] = cvec.x * vec.y;
+		jobj->mtx[1][1] = cvec.y * vec.y;
+		jobj->mtx[2][1] = cvec.z * vec.y;
+		jobj->mtx[0][2] = z_scale.x * vec.z;
+		jobj->mtx[1][2] = z_scale.y * vec.z;
+		jobj->mtx[2][2] = z_scale.z * vec.z;
+		jobj->mtx[0][3] = trans.x;
+		jobj->mtx[1][3] = trans.y;
+		jobj->mtx[2][3] = trans.z;
+	}
 }
 
 //80372B08
