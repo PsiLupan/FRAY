@@ -1302,6 +1302,9 @@ HSD_JObj* HSD_JObjGetCurrent(){
 //8037231C
 static void resolveIKJoint1(HSD_JObj* jobj){
 	HSD_JObj* child = jobj->child;
+	bool has_flag = false;
+	bool has_mtx = false;
+
 	for(; child != NULL; child = child->next){
 		if((child->flags & EFFECTOR) == JOINT2){
 			break;
@@ -1327,6 +1330,7 @@ static void resolveIKJoint1(HSD_JObj* jobj){
 	}else{
 		HSD_RObj* child_robj = HSD_RObjGetByType(child->robj, 0x40000000, 0);
 		assert(child_robj != NULL);
+		has_flag = (child_robj->flags & 4) != 0;
 		x_scale = vec.x * child_robj->u.fv * child->scale.x;
 		child_c = child->child;
 	}
@@ -1349,6 +1353,7 @@ static void resolveIKJoint1(HSD_JObj* jobj){
 			assert(jobj != NULL);
 
 			if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
+				has_mtx = true;
 				HSD_JOBJ_METHOD(jobj)->make_mtx(jobj);
 				jobj->flags &= 0xFFFFFFBF;
 			}
