@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "soundfx.h"
 
 GameState gamestate;
 
@@ -325,20 +326,20 @@ static void Scene_Minor_Class0_OnFrame(u32 unused, u32 inputs){
         sub_8002702C(0xC, res, 0);
         sub_80027168();
         sub_80027648();
-        SFX_Menu_CommonSound(1);
+        SFX_Menu_Common(1);
         *pVal = inputs;
         MatchController_ChangeScreen();
       }else if(debug_level >= 3){
         if(*pVal & 0x100){
-          SFX_Menu_CommonSound(1);
+          SFX_Menu_Common(1);
           *pVal = inputs;
           MatchController_ChangeScreen();
         }else if(*pVal & 0x400){
-          SFX_Menu_CommonSound(1);
+          SFX_Menu_Common(1);
           *pVal = inputs;
           MatchController_ChangeScreen();
         }else if(*pVal & 0x800){
-          SFX_Menu_CommonSound(1);
+          SFX_Menu_Common(1);
           *pVal = inputs;
           MatchController_ChangeScreen();
           }
