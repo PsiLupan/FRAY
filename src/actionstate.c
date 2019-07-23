@@ -4,9 +4,10 @@
 void ActionState_FallOrWait(HSD_GObj* gobj){
 	Player* ply = GOBJ_PLAYER(gobj);
 	if(ply->xE0_in_air == TRUE){
-		return ActionState_Fall(gobj);
+		ActionState_Fall(gobj);
+		return;
 	}
-	return ActionState_Wait_CheckPlayer(gobj);
+	ActionState_Wait_CheckPlayer(gobj);
 }
 
 //8008732C
@@ -71,17 +72,20 @@ BOOL ActionState_IsEntry(HSD_GObj* gobj){
 
 //8008A2BC
 void ActionState_Wait_CheckPlayer(HSD_GObj* gobj){
-	if(Player_GetInternalID(gobj) == INTERNAL_MASTERHAND)
-		return sub_80151018(gobj);
-	if(Player_GetInternalID(gobj) == INTERNAL_CRAZYHAND)
-		return sub_8015BC88(gobj);
-
-	return ActionState_Wait(gobj, 0.0f);
+	if(Player_GetInternalID(gobj) == INTERNAL_MASTERHAND){
+		sub_80151018(gobj);
+		return;
+	}
+	if(Player_GetInternalID(gobj) == INTERNAL_CRAZYHAND){
+		sub_8015BC88(gobj);
+		return;
+	}
+	ActionState_Wait(gobj, 0.0f);
 }
 
 //8008A324
 void ActionState_Wait_NoCheck(HSD_GObj* gobj){
-	return ActionState_Wait(gobj, -1.0f);
+	ActionState_Wait(gobj, -1.0f);
 }
 
 //8008A348
