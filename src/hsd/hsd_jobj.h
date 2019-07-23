@@ -103,9 +103,8 @@ extern HSD_JObjInfo hsdJObj;
 void HSD_JObjCheckDepend(HSD_JObj *);
 void HSD_JObjMtxIsDirty(HSD_JObj *, HSD_JObjDesc*);
 void HSD_JObjSetMtxDirty(HSD_JObj *, HSD_JObjDesc*);
-
 void HSD_JObjWalkTree(HSD_JObj *, void (*cb)(HSD_JObj *, void *, u32), void *);
-
+void HSD_JObjMakeMatrix(HSD_JObj* jobj);
 void HSD_JObjRemoveAnimByFlags(HSD_JObj *, u32);
 void HSD_JObjRemoveAnimAllByFlags(HSD_JObj *, u32);
 void HSD_JObjRemoveAnim(HSD_JObj *);
