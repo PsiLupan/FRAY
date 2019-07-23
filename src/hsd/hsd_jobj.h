@@ -12,10 +12,36 @@
 #include "hsd_mobj.h"
 #include "hsd_robj.h"
 
-#define JOBJ_INSTANCE(o) ((o->flags & 0x1000) == 0)
-#define JOBJ_USE_QUATERNION(o) ((o->flags & 0x20000))
+#define SKELETON (1 << 0)
+#define SKELETON_ROOT (1 << 0)
+#define ENVELOPE_MODEL (1 << 2)
+#define CLASSICAL_SCALE (1 << 3)
+#define HIDDEN (1 << 4)
+#define PTCL (1 << 5)
+#define MTX_DIRTY (1 << 6)
+#define LIGHTING (1 << 7)
+#define TEXGEN (1 << 8)
+#define INSTANCE (1 << 12)
+#define PBILLBOARD (1 << 13)
+#define SPLINE (1 << 14)
+#define FLIP_IK (1 << 15)
+#define SPECULAR (1 << 16)
+#define USE_QUATERNION (1 << 17)
+#define NULL_OBJ (0 << 21)
+#define JOINT1 (1 << 21)
+#define JOINT2 (2 << 21)
+#define EFFECTOR (3 << 21)
+#define USER_DEF_MTX (1 << 23)
+#define MTX_INDEP_PARENT (1 << 24)
+#define MTX_INDEP_SRT (1 << 25)
+#define ROOT_OPA (1 << 28)
+#define ROOT_XLU (1 << 29)
+#define ROOT_TEXEDGE (1 << 30)
+
+#define JOBJ_INSTANCE(o) ((o->flags & INSTANCE) == 0)
+#define JOBJ_USE_QUATERNION(o) ((o->flags & USE_QUATERNION))
 #define union_type_dobj(o) ((o->flags & 0x4020) == 0)
-#define union_type_ptcl(o) ((o->flags & 0x20) != 0)
+#define union_type_ptcl(o) ((o->flags & PTCL) != 0)
 
 #define HSD_TrspMask u32
 
