@@ -8,18 +8,23 @@
 
 #include "hsd/hsd_fog.h"
 #include "hsd/hsd_jobj.h"
+#include "hsd/hsd_pad.h"
 #include "hsd/hsd_video.h"
 
 #include "hsd_cobj_ext.h"
 #include "hsd_fog_ext.h"
 #include "hsd_jobj_ext.h"
 #include "hsd_lobj_ext.h"
+#include "hsd_pad_ext.h"
 
 #include "archive.h"
 #include "gobj.h"
 #include "match.h"
 #include "menu.h"
 #include "util.h"
+#include "soundfx.h"
+
+#include "ogcext/dvd.h"
 
 //Scenes
 #include "scGmRst.h"

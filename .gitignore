@@ -2,8 +2,8 @@ build/
 lib/
 include/
 
-boot.dol
-boot.elf
+main.dol
+main.elf
 ntsc102.c
 .vscode/
 .DS_Store

@@ -69,5 +69,6 @@ void HSD_RObjRemove(HSD_RObj *);
 void HSD_RObjRemoveAll(HSD_RObj *);
 HSD_RObj* HSD_RObjAlloc();
 void HSD_RObjFree(HSD_RObj *);
+void HSD_RvalueResolveRefsAll(HSD_Rvalue *, HSD_RvalueDesc *);
 
 #endif

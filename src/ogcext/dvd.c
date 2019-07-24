@@ -26,9 +26,15 @@ static void __DVDFSInit(){
 
 void DVDInit(){
     DVD_Init();
-    DVD_Mount();
+    //DVD_Mount();
     __DVDFSInit();
     LWP_InitQueue(&dvd_wait_queue);
+}
+
+//800195D0
+void DVD_CheckDisk(){
+    //DVD_DisplayDiskError(resetCallback);
+    //MemoryCard_CheckToSave();
 }
 
 BOOL DVDFastOpen(s32 entrynum, dvdfileinfo* fileinfo){

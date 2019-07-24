@@ -18,7 +18,7 @@ include $(DEVKITPPC)/gamecube_rules
 # SOURCES is a list of directories containing source code
 # INCLUDES is a list of directories containing extra header files
 #---------------------------------------------------------------------------------
-TARGET		:= boot
+TARGET		:= main
 BUILD		:= build
 SOURCES		:= asm src/ogcext/ src/hsd/ src
 INCLUDES	:= 

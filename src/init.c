@@ -74,7 +74,7 @@ int main(void){
 
 	//sub_8002838C(); Inits AR, ARQ, and AI - "Audio_Init"
 
-	Init_PadReader(Pad_InitCallback);
+	//Init_PadReader(Pad_InitCallback);
 
 	HSD_VISetUserPostRetraceCallback(stub);
 	HSD_VISetUserGXDrawDoneCallback(HSD_VIDrawDoneXFB);

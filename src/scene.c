@@ -1,5 +1,4 @@
 #include "scene.h"
-#include "soundfx.h"
 
 GameState gamestate;
 
@@ -35,7 +34,7 @@ MajorScene major_scenes[46] = {
 static void* scene_sobj_desc; //0x4EB0(r13)
 static u32 r13_4F80[3];
 static HSD_FogDesc* scene_fog_desc; // 0x4F90(r13)
-static HSD_LightDesc** scene_lights_desc; // -0x4F94(r13)
+static HSD_Light* scene_lights_desc; // -0x4F94(r13)
 static HSD_CObjDesc* scene_cobj_desc; //-0x4F98(r13)
 u32 debug_level = 0; //-0x6C98(r13)
 
@@ -51,8 +50,6 @@ s32 cache_base[24] = { //803BA638
 f32 title_frames[3] = {0.f, 1330.f, 130.f}; //803DA4FC
 
 s32 preload_cache[0x1000]; //80432078
-
-s32 scene_804337C4[55];
 
 unk_8046B0F0 dword_8046B0F0;
 
@@ -185,7 +182,7 @@ void Scene_80017700(s32 val){
   /*BOOL i = TRUE;
   while(i != FALSE){
     i = Scene_80017644(val);
-    Scene_800195D0();
+    DVD_CheckDisk();
   }*/
 }
 
@@ -236,72 +233,10 @@ void Scene_SetPreloadBool(BOOL preload){
   preload_cache[604] = preload;
 }
 
-//8001955C
-void Scene_8001955C(){
-  /*BOOL boolie = sub_803769D8();
-  if(boolie == TRUE){
-    sub_80027DBC();
-    u32 i = 0;
-    do {
-      i = sub_8001B6F8();
-    } while(i == 11);
-    sub_8034EBD0(0);
-    sub_8034EB8C(0);
-    sub_80350100(1);
-    sub_8034FF78();
-    sub_8034F314();
-    sub_8034844C(0, 0, 0);
-  }
-  sub_8001B6F8();
-  sub_8001CC84();*/
-}
-
-//800195D0
-void Scene_800195D0(){
-  sub_800192A8(Scene_8001955C);
-  sub_8001CC84();
-}
-
-//80026F2C
-void Scene_80026F2C(u32 flags){
-  u32* puVar3;
-  bool bVar4;
-  u64 uVar5;
-  
-  u32 uVar2 = 0;
-  u32 flag_out = 0;
-  if ((flags & 1) != 0) {
-    uVar2 = 3;
-    flag_out = 0x480000;
-  }
-  if ((flags & 2) != 0) {
-    bVar4 = 0xffffffc3 < uVar2;
-    uVar2 = uVar2 + 0x3c;
-    flag_out = flag_out + (u32)bVar4;
-  }
-  if ((flags & 4) != 0) {
-    bVar4 = 0x3f < uVar2;
-    uVar2 = uVar2 - 0x40;
-    flag_out = flag_out + (u32)bVar4 + 0x800003;
-  }
-  if ((flags & 8) != 0) {
-    flag_out = flag_out + 0x23fffc;
-  }
-  if ((flags & 0x10) != 0) {
-    flag_out = flag_out + 0x140000;
-  }
-  
-  uVar5 = concat_to_64(flag_out, uVar2);
-  puVar3 = &scene_804337C4[0];
-  flag_out = 0;
-  do {
-    if ((uVar5 & 1) != 0) {
-      *puVar3 = 0xffffffff;
-    }
-    uVar5 = __shr2u((uVar5 >> 32), uVar5, 1);
-    flag_out = flag_out + 1;
-    puVar3 = puVar3 + 1;
-  } while (flag_out < 55);
+//80019A30
+static u32 sub_80019A30(u32 idx){
+  //DAT_80432A00[idx * 6];
+  return 1;
 }
 
 //8015FBA4
@@ -327,10 +262,10 @@ static void Scene_Minor_Class0_OnFrame(u32 unused, u32 inputs){
     *pVal += 1;
     if(*pVal <= 0x258){
       if(*pVal & 0x1000){
-        u32 res = sub_80026F2C(0x1C);
-        sub_8002702C(0xC, res, 0);
-        sub_80027168();
-        sub_80027648();
+        SFX_80026F2C(0x1C);
+        SFX_RequestAudioLoad(0xC, 0, 0, 0);
+        SFX_AudioCacheUpdate();
+        SFX_80027648();
         SFX_Menu_Common(1);
         *pVal = inputs;
         MatchController_ChangeScreen();
@@ -358,7 +293,7 @@ static void Scene_Minor_Class0_OnFrame(u32 unused, u32 inputs){
 
 //801A1E20
 static void Scene_Minor_Class0_OnLoad(){
-  sub_800236DC();
+  SFX_StopMusic();
   *Scene_Load4F80_idx3() = 0x14;
   *Scene_Load4F80_idx2() = 0;
   char* filename = "GmTtAll.usd";
@@ -373,9 +308,9 @@ static void Scene_Minor_Class0_OnLoad(){
     title_ptrs.top_shapeanim_joint, "TtlMoji_Top_shapeanim_joint", scene_cobj_desc, "ScTitle_cam_int1_camera", scene_lights_desc, "ScTitle_scene_lights",
     scene_fog_desc, "ScTitle_fog", title_ptrs.bg_top_joint, "TtlBg_Top_joint", title_ptrs.bg_top_animjoint, "TtlBg_Top_animjoint",
     title_ptrs.bg_top_matanim_joint, "TtlBg_Top_matanim_joint", title_ptrs.bg_top_shapeanim_joint, "TtlBg_Top_shapeanim_joint", scene_sobj_desc, "TitleMark_sobjdesc");
-  Scene_80026F2C(0x12);
-  sub_8002702C(2, 0, 0, 4); //r4 is immediately set to 3 start of the function, so it doesn't actually matter what it is.
-  sub_80027168();
+  SFX_80026F2C(0x12);
+  SFX_RequestAudioLoad(2, 0, 0, 4);
+  SFX_AudioCacheUpdate();
   
   HSD_GObj* fog_gobj = GObj_Create(GOBJ_CLASS_HSD_FOG, 3, 0);
   HSD_Fog* fog = HSD_FogLoadDesc(scene_fog_desc);
@@ -402,8 +337,8 @@ static void Scene_Minor_Class0_OnLoad(){
   menu_gobj_2->x20_unk = 0;
 
   Menu_Title_SetupLogos();
-  sub_80027648();
-  sub_801BF3F8();
+  SFX_80027648();
+  Menu_Title_LoadDemo();
 
   HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
   HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.bg_top_joint);
@@ -728,6 +663,45 @@ JMP_PROCESS:
 	return result;
 }
 
+//801A48A4
+u64 sub_801A48A4(u32 uParm1){
+  /*u32 uVar1;
+  u32 *puVar2;
+  u32 uVar3;
+  s32 iVar4;
+  
+  iVar4 = 2;
+  puVar2 = &DAT_803da888;
+  uVar1 = 0;
+  uVar3 = 0;
+  do {
+    if ((uParm1 & 1) != 0) {
+      uVar3 = uVar3 | *puVar2;
+      uVar1 = uVar1 | puVar2[1];
+    }
+    uParm1 = (s32)(uParm1 & 0xff) >> 1;
+    if ((uParm1 & 1) != 0) {
+      uVar3 = uVar3 | puVar2[2];
+      uVar1 = uVar1 | puVar2[3];
+    }
+    uParm1 = (s32)uParm1 >> 1;
+    if ((uParm1 & 1) != 0) {
+      uVar3 = uVar3 | puVar2[4];
+      uVar1 = uVar1 | puVar2[5];
+    }
+    uParm1 = (s32)uParm1 >> 1;
+    if ((uParm1 & 1) != 0) {
+      uVar3 = uVar3 | puVar2[6];
+      uVar1 = uVar1 | puVar2[7];
+    }
+    uParm1 = (s32)uParm1 >> 1;
+    puVar2 = puVar2 + 8;
+    iVar4 = iVar4 + -1;
+  } while (iVar4 != 0);
+  return CONCAT44(uVar3,uVar1);*/
+  return 1;
+}
+
 //801A4B88
 void Scene_StoreClassID(u8 class_id){
 	r13_4F80[0] = class_id;
@@ -766,22 +740,22 @@ void Scene_PerFrameUpdate(void (*onframefunc)()){
   match_controller.timer2 = 0;
   match_controller.screen_ctrl = 0;
   HSD_PadFlushQueue(2);
-  sub_8001CF18();
+  //MemCard_DisplaySaveBanner(); 8001CF18
   do {
     if(match_controller.screen_ctrl != 0){
       HSD_VISetXFBDrawDone();
       return;
     }
     //sub_80392E80(); Something memory card related
-    u32 val;
+    s8 pad_queue_count;
     while(true){
-      val = sub_80019894(); //GetsPadRawQueueCount and does some stuff
-      if((val & 0xFF) != 0){
+      pad_queue_count = Pad_CheckQueue();
+      if(pad_queue_count != 0){
         break;
       }
-      sub_800195D0();
+      DVD_CheckDisk();
     }
-    sub_800195D0();
+    DVD_CheckDisk();
     BOOL reset = HSD_PadGetResetSwitch();
     if(reset == TRUE){
       dword_8046B0F0.unk04 = 1;
@@ -789,9 +763,9 @@ void Scene_PerFrameUpdate(void (*onframefunc)()){
       return;
     }
     u32 i = 0;
-    while (i < (val & 0xFF)){
+    while (i < pad_queue_count){
       //HSD_PerfSetStartTime();
-      sub_800198E0();
+      Pad_Renew();
       /*if(debug_level >= 3){
         DevelopMode_CPUStats(&match_controller.unk14);
       }*/
@@ -803,16 +777,16 @@ void Scene_PerFrameUpdate(void (*onframefunc)()){
       }
       if(match_controller.flags >> 7 != 0){      
         if(sub_80019A30(0) != 0){
-          sub_801A3A74();
+          Pad_CheckInputs();
           if(sub_80019A30(0) != 0 && onframefunc != NULL){
             (*onframefunc)();
           }
         }
       }
 
-      s32 res;
+      s64 res;
       if(match_controller.frozen != match_controller.unk11 || match_controller.pause != match_controller.unk13){
-        s32 res = sub_801A48A4(match_controller.frozen);
+        res = sub_801A48A4(match_controller.frozen);
         if(match_controller.flags >> 7 == 0){
           res = -1;
         }
@@ -834,7 +808,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)()){
         DevelopMode_USBScreenshot();
       }*/
 
-      sub_80027DF8();
+      SFX_ProcessVolume();
       if(match_controller.unk2C != NULL){
         (*match_controller.unk2C)();
       }
@@ -863,7 +837,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)()){
       HSD_VISetXFBDrawDone();
       return;
     }
-    //sub_800195D0(); //DiscCheck();
+    DVD_CheckDisk();
     GX_InvVtxCache();
     GX_InvalidateTexAll();
     HSD_StartRender(0);

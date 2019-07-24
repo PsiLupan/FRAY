@@ -14,6 +14,7 @@ typedef struct _FSTEntry {
 } FSTEntry;
 
 void DVDInit();
+void DVD_CheckDisk();
 BOOL DVDFastOpen(s32, dvdfileinfo *);
 BOOL DVDClose(dvdfileinfo* fileinfo);
 s32 DVDConvertFilenameToEntrynum(char* filename);

@@ -19,6 +19,7 @@ extern s8 pad_queue[];
 s8 HSD_PadGetRawQueueCount();
 BOOL HSD_PadGetResetSwitch();
 
+void HSD_PadRenewMasterStatus();
 void HSD_PadZeroQueue();
 void HSD_PadRenewStatus();
 void HSD_PadReset();

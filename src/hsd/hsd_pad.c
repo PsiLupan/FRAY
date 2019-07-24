@@ -61,6 +61,11 @@ void HSD_PadFlushQueue(u32 state){
     IRQ_Restore(intr);
 }
 
+//8037750C
+void HSD_PadRenewMasterStatus(){
+    
+}
+
 //80377B54
 void HSD_PadZeroQueue(){
 

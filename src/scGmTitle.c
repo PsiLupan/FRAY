@@ -113,3 +113,8 @@ void Menu_Title_Decide(void* state){
     }
     Scene_SetPendingTrue();
 }
+
+//801BF3F8
+void Menu_Title_LoadDemo(){
+    
+}

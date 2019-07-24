@@ -20,5 +20,6 @@ extern GmTitle_File title_ptrs;
 void Menu_Title_SetupLogos();
 void Menu_Title_Prep();
 void Menu_Title_Decide(void* state);
+void Menu_Title_LoadDemo();
 
 #endif

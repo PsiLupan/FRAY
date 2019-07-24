@@ -288,3 +288,20 @@ HSD_RObj* HSD_RObjAlloc(){
 void HSD_RObjFree(HSD_RObj* robj){
     HSD_ObjFree(&robj_alloc_data, (HSD_ObjAllocLink*)robj);
 }
+
+//8037CBA4
+void HSD_RvalueResolveRefsAll(HSD_Rvalue* rval, HSD_RvalueDesc* desc){
+    if(desc != NULL){
+        while(rval != NULL && desc->jobjdesc != NULL){
+            if(rval != NULL && desc != NULL){
+                HSD_JObjUnrefThis(rval->jobj);
+                HSD_JObj* jobj = HSD_IDGetDataFromTable(NULL, (u32)desc->jobjdesc, NULL);
+                rval->jobj = jobj;
+                assert(rval->jobj != NULL);
+                HSD_JObjRefThis(jobj);
+            }
+            rval = rval->next;
+            desc = desc->next;
+        }
+    }
+}
