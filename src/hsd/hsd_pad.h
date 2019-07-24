@@ -25,5 +25,6 @@ void HSD_PadReset();
 
 void HSD_PadRumbleOn(u32);
 void HSD_PadRumbleOffH(u32);
+void HSD_PadRumbleRemoveAll();
 
 #endif

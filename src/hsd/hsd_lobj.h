@@ -160,6 +160,7 @@ void HSD_LObjSetActive(HSD_LObj *);
 s32 HSD_LObjGetNbActive();
 HSD_LObj* HSD_LObjGetActiveByID(u32);
 HSD_LObj* HSD_LObjGetActiveByIndex(u8);
+void HSD_LObjClearActive();
 void HSD_LObjAnim(HSD_LObj *);
 void HSD_LObjAnimAll(HSD_LObj *);
 void HSD_LObjReqAnimAll(HSD_LObj *, f32);

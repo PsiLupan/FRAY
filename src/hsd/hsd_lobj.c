@@ -3,6 +3,7 @@
 #include "hsd_jobj.h"
 
 static void LObjInfoInit(void);
+static void LObjUnref(HSD_LObj *);
 
 HSD_LObjInfo hsdLObj = { LObjInfoInit };
 
@@ -92,6 +93,13 @@ HSD_LObj* HSD_LObjGetActiveByIndex(u8 idx){
 	} else {
 		return NULL;
 	}
+}
+
+void HSD_LObjClearActive(){
+	for (u32 i = 0; i < MAX_GXLIGHT; i++) {
+		active_lights[i] = NULL;
+	}
+	nb_active_lights = 0;
 }
 
 //80365488
@@ -550,7 +558,7 @@ void HSD_LObjDeleteCurrent(HSD_LObj *lobj){
 				}
 			}
 			(*p) = (HSD_SList*)HSD_SListRemove(*p);
-			HSD_LObjUnref(lobj);
+			LObjUnref(lobj);
 			return;
 		}
 	}
@@ -565,7 +573,7 @@ void HSD_LObjDeleteCurrentAll(HSD_LObj *lobj){
 	} else {
 		HSD_LObjClearActive();
 		while (current_lights) {
-			HSD_LObjUnref((HSD_LObj *)(current_lights->data));
+			LObjUnref((HSD_LObj *)(current_lights->data));
 			current_lights = (HSD_SList*)HSD_SListRemove(current_lights);
 		}
 	}
@@ -642,7 +650,7 @@ void HSD_LObjRemoveAll(HSD_LObj *lobj){
 	while (lobj != NULL) {
 		HSD_LObj *next = lobj->next;
 		HSD_LObjDeleteCurrent(lobj);
-		HSD_LObjUnref(lobj);
+		LObjUnref(lobj);
 		lobj = next;
 	}
 }
@@ -883,11 +891,12 @@ static void LObjUnref(HSD_LObj* lobj){
 		lz = lz >> 5;
 		if(lz == 0){
 			lobj->parent.ref_count -= 1;
-      lz = __builtin_clz(-ref_count);
+			lz = __builtin_clz(-ref_count);
 			lz = lz >> 5;
 		}
-    if(lz != 0){
-      HSD_OBJECT_METHOD(lobj)->release((HSD_Class*)lobj);
-    }
-  }
+		if(lz != 0){
+			HSD_OBJECT_METHOD(lobj)->release((HSD_Class*)lobj);
+			HSD_OBJECT_METHOD(lobj)->destroy((HSD_Class*)lobj);
+		}
+	}
 }

@@ -106,3 +106,12 @@ void HSD_PadRumbleOffH(u32 pad){
     rumble_queue[pad].rumble_on = 0;
     IRQ_Restore(intr);
 }
+
+//80378208
+void HSD_PadRumbleRemoveAll(){
+    for(u32 i = 0; i < 4; i++){
+        u32 intr = IRQ_Disable();
+        //TODO
+        IRQ_Restore(intr);
+    }
+}
