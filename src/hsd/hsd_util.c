@@ -61,7 +61,7 @@ void splArcLengthPoint(HSD_Spline* spline, f32 unkf, guVector* res){
 }
 
 //80379C24
-void HSD_MtxGetRotation(Mtx *mtx, guVector *rotation){
+void HSD_MtxGetRotation(Mtx mtx, guVector *rotation){
   float fVar1;
   float dVar2;
   float dVar3;
@@ -70,7 +70,7 @@ void HSD_MtxGetRotation(Mtx *mtx, guVector *rotation){
   float dVar6;
   float dVar7;
   
-  dVar2 = (guMtxRowCol(*mtx, 2, 0) * guMtxRowCol(*mtx, 2, 0) + guMtxRowCol(*mtx, 0, 0) * guMtxRowCol(*mtx, 0, 0) + guMtxRowCol(*mtx, 1, 0) * guMtxRowCol(*mtx, 1, 0));
+  dVar2 = (guMtxRowCol(mtx, 2, 0) * guMtxRowCol(mtx, 2, 0) + guMtxRowCol(mtx, 0, 0) * guMtxRowCol(mtx, 0, 0) + guMtxRowCol(mtx, 1, 0) * guMtxRowCol(mtx, 1, 0));
   if (0.f < dVar2) {
     dVar3 = 1.00000000 / sqrtf(dVar2);
     dVar5 = 1.75f;
@@ -80,7 +80,7 @@ void HSD_MtxGetRotation(Mtx *mtx, guVector *rotation){
     dVar2 =(dVar2 * dVar5 * dVar3 * -(dVar2 * dVar3 * dVar3 - dVar4));
   }
   if (1.17549e-38f <= dVar2) {
-    dVar3 = (guMtxRowCol(*mtx, 2, 1) * guMtxRowCol(*mtx, 2, 1) + guMtxRowCol(*mtx, 0, 1) * guMtxRowCol(*mtx, 0, 1) + guMtxRowCol(*mtx, 1, 1) * guMtxRowCol(*mtx, 1, 1));
+    dVar3 = (guMtxRowCol(mtx, 2, 1) * guMtxRowCol(mtx, 2, 1) + guMtxRowCol(mtx, 0, 1) * guMtxRowCol(mtx, 0, 1) + guMtxRowCol(mtx, 1, 1) * guMtxRowCol(mtx, 1, 1));
     if (0.f < dVar3) {
       dVar4 = 1.00000000 / sqrtf(dVar3);
       dVar6 = 1.75f;
@@ -90,7 +90,7 @@ void HSD_MtxGetRotation(Mtx *mtx, guVector *rotation){
       dVar3 = (dVar3 * dVar6 * dVar4 * -(dVar3 * dVar4 * dVar4 - dVar5));
     }
     if (1.17549e-38f <= dVar3) {
-      dVar4 = (guMtxRowCol(*mtx, 2, 2) * guMtxRowCol(*mtx, 2, 2) + guMtxRowCol(*mtx, 0, 2) * guMtxRowCol(*mtx, 0, 2) + guMtxRowCol(*mtx, 1, 2) * guMtxRowCol(*mtx, 1, 2));
+      dVar4 = (guMtxRowCol(mtx, 2, 2) * guMtxRowCol(mtx, 2, 2) + guMtxRowCol(mtx, 0, 2) * guMtxRowCol(mtx, 0, 2) + guMtxRowCol(mtx, 1, 2) * guMtxRowCol(mtx, 1, 2));
       if (0.f < dVar4) {
         dVar5 = 1.00000000 / sqrtf(dVar4);
         dVar7 = 1.75f;
@@ -100,7 +100,7 @@ void HSD_MtxGetRotation(Mtx *mtx, guVector *rotation){
         dVar4 = (dVar4 * dVar7 * dVar5 * -(dVar4 * dVar5 * dVar5 - dVar6));
       }
       if (1.17549e-38f <= dVar4) {
-        fVar1 = (-(guMtxRowCol(*mtx, 2, 0)) / dVar2);
+        fVar1 = (-(guMtxRowCol(mtx, 2, 0)) / dVar2);
         if (fVar1 < 1.f) {
           if (-1.f < fVar1) {
             dVar2 = asinf(fVar1);
@@ -116,11 +116,11 @@ void HSD_MtxGetRotation(Mtx *mtx, guVector *rotation){
         dVar2 = cosf(rotation->y);
         dVar5 = 1.17549e-38f;
         if (dVar5 <= dVar2) {
-          if (dVar5 < (float)((u32)(guMtxRowCol(*mtx, 2, 2) / dVar4) & 0x7fffffff)) {
-            dVar2 = atan2f((guMtxRowCol(*mtx, 2, 1) / dVar4), (guMtxRowCol(*mtx, 2, 2) / dVar4));
+          if (dVar5 < (float)((u32)(guMtxRowCol(mtx, 2, 2) / dVar4) & 0x7fffffff)) {
+            dVar2 = atan2f((guMtxRowCol(mtx, 2, 1) / dVar4), (guMtxRowCol(mtx, 2, 2) / dVar4));
           }
           else {
-            if ((guMtxRowCol(*mtx, 2, 1) / dVar3) < 0.f) {
+            if ((guMtxRowCol(mtx, 2, 1) / dVar3) < 0.f) {
               dVar2 = -1.5708f;
             }
             else {
@@ -128,11 +128,11 @@ void HSD_MtxGetRotation(Mtx *mtx, guVector *rotation){
             }
           }
           rotation->x = dVar2;
-          if (1.17549e-38f < (float)((u32)guMtxRowCol(*mtx, 0, 0) & 0x7fffffff)) {
-            dVar2 = atan2f(guMtxRowCol(*mtx, 1, 0), guMtxRowCol(*mtx, 0, 0));
+          if (1.17549e-38f < (float)((u32)guMtxRowCol(mtx, 0, 0) & 0x7fffffff)) {
+            dVar2 = atan2f(guMtxRowCol(mtx, 1, 0), guMtxRowCol(mtx, 0, 0));
           }
           else {
-            if (guMtxRowCol(*mtx, 1, 0) < 0.f) {
+            if (guMtxRowCol(mtx, 1, 0) < 0.f) {
               dVar2 = -1.5708f;
             }
             else {
@@ -142,11 +142,11 @@ void HSD_MtxGetRotation(Mtx *mtx, guVector *rotation){
           rotation->z = dVar2;
           return;
         }
-        if (dVar5 < (f32)((u32)guMtxRowCol(*mtx, 1, 1) & 0x7fffffff)) {
-          dVar2 = atan2f(guMtxRowCol(*mtx, 0, 1), guMtxRowCol(*mtx, 1, 1));
+        if (dVar5 < (f32)((u32)guMtxRowCol(mtx, 1, 1) & 0x7fffffff)) {
+          dVar2 = atan2f(guMtxRowCol(mtx, 0, 1), guMtxRowCol(mtx, 1, 1));
         }
         else {
-          if (guMtxRowCol(*mtx, 0, 1) < 0.f) {
+          if (guMtxRowCol(mtx, 0, 1) < 0.f) {
             dVar2 = -1.5708f;
           }
           else {
@@ -167,7 +167,7 @@ void HSD_MtxGetRotation(Mtx *mtx, guVector *rotation){
 }
 
 //8037A250
-void HSD_MtxSRT(Mtx *mtx, guVector *scale, guVector *rot, guVector *pos, guVector *pvec){
+void HSD_MtxSRT(Mtx mtx, guVector *scale, guVector *rot, guVector *pos, guVector *pvec){
   double dVar1;
   double cos_rot_z;
   double dVar2;
@@ -213,23 +213,23 @@ void HSD_MtxSRT(Mtx *mtx, guVector *scale, guVector *rot, guVector *pos, guVecto
     dVar5 = (scale_x * (dVar8 * (dVar4 / dVar5)));
     dVar4 = (scale_y * (dVar6 * (dVar4 / dVar5)));
   }
-  guMtxRowCol(*mtx, 0, 0) = (float)(cos_rot_z * (scale_x * cos_rot_y));
-  guMtxRowCol(*mtx, 1, 0) = (float)(sin_rot_z * (dVar7 * cos_rot_y));
-  guMtxRowCol(*mtx, 2, 0) = (float)((double)((unsigned long long)dVar5 & 0x7fffffffffffffff | ~(unsigned long long)dVar5 & 0x8000000000000000) * sin_rot_y);
-  guMtxRowCol(*mtx, 0, 1) = (float)(dVar1 * (cos_rot_z * (sin_rot_x * sin_rot_y) - (cos_rot_x * sin_rot_z)));
-  guMtxRowCol(*mtx, 1, 1) = (float)(scale_y * (sin_rot_z * (sin_rot_x * sin_rot_y) + (cos_rot_x * cos_rot_z)));
-  guMtxRowCol(*mtx, 2, 1) = (float)(cos_rot_y * (dVar4 * sin_rot_x));
-  guMtxRowCol(*mtx, 0, 2) = (float)(dVar2 * (cos_rot_z * (cos_rot_x * sin_rot_y) + (sin_rot_x * sin_rot_z)));
-  guMtxRowCol(*mtx, 1, 2) = (float)(dVar3 * (sin_rot_z * (cos_rot_x * sin_rot_y) - (sin_rot_x * cos_rot_z)));
-  guMtxRowCol(*mtx, 2, 2) = (float)(cos_rot_y * (scale_z * cos_rot_x));
-  guMtxRowCol(*mtx, 0, 3) = pos->x;
-  guMtxRowCol(*mtx, 1, 3) = pos->y;
-  guMtxRowCol(*mtx, 2, 3) = pos->z;
+  guMtxRowCol(mtx, 0, 0) = (float)(cos_rot_z * (scale_x * cos_rot_y));
+  guMtxRowCol(mtx, 1, 0) = (float)(sin_rot_z * (dVar7 * cos_rot_y));
+  guMtxRowCol(mtx, 2, 0) = (float)((double)((unsigned long long)dVar5 & 0x7fffffffffffffff | ~(unsigned long long)dVar5 & 0x8000000000000000) * sin_rot_y);
+  guMtxRowCol(mtx, 0, 1) = (float)(dVar1 * (cos_rot_z * (sin_rot_x * sin_rot_y) - (cos_rot_x * sin_rot_z)));
+  guMtxRowCol(mtx, 1, 1) = (float)(scale_y * (sin_rot_z * (sin_rot_x * sin_rot_y) + (cos_rot_x * cos_rot_z)));
+  guMtxRowCol(mtx, 2, 1) = (float)(cos_rot_y * (dVar4 * sin_rot_x));
+  guMtxRowCol(mtx, 0, 2) = (float)(dVar2 * (cos_rot_z * (cos_rot_x * sin_rot_y) + (sin_rot_x * sin_rot_z)));
+  guMtxRowCol(mtx, 1, 2) = (float)(dVar3 * (sin_rot_z * (cos_rot_x * sin_rot_y) - (sin_rot_x * cos_rot_z)));
+  guMtxRowCol(mtx, 2, 2) = (float)(cos_rot_y * (scale_z * cos_rot_x));
+  guMtxRowCol(mtx, 0, 3) = pos->x;
+  guMtxRowCol(mtx, 1, 3) = pos->y;
+  guMtxRowCol(mtx, 2, 3) = pos->z;
   return;
 }
 
 //8037A43C
-void HSD_MtxSRTQuat(Mtx *mtx,guVector *scale, guQuaternion *rot, guVector *pos, guVector *pvec){
+void HSD_MtxSRTQuat(Mtx mtx,guVector *scale, guQuaternion *rot, guVector *pos, guVector *pvec){
   Mtx pmtx;
 
   guMtxScale(mtx, scale->x, scale->y, scale->z);
