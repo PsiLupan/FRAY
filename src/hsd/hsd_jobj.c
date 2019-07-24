@@ -799,7 +799,8 @@ static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* jobj_2){
 HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc* desc){
 	HSD_JObj* jobj = NULL;
 	if(desc == NULL){
-		goto END;
+		HSD_JObjResolveRefsAll(jobj, desc);
+		return jobj;
 	}
 	HSD_ClassInfo* info;
 	if (!desc->class_name || !(info = hsdSearchClassInfo(desc->class_name))){
@@ -809,7 +810,6 @@ HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc* desc){
 		assert(jobj != NULL);
 	}
 	HSD_JOBJ_METHOD(jobj)->load(jobj, desc, 0);
-END:
 	HSD_JObjResolveRefsAll(jobj, desc);
 	return jobj;
 }
