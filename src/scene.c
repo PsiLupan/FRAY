@@ -292,7 +292,7 @@ void Scene_80026F2C(u32 flags){
   }
   
   uVar5 = concat_to_64(flag_out, uVar2);
-  puVar3 = &scene_804337C4;
+  puVar3 = &scene_804337C4[0];
   flag_out = 0;
   do {
     if ((uVar5 & 1) != 0) {
@@ -302,6 +302,11 @@ void Scene_80026F2C(u32 flags){
     flag_out = flag_out + 1;
     puVar3 = puVar3 + 1;
   } while (flag_out < 55);
+}
+
+//8015FBA4
+static void Scene_InitStaticMem(){
+
 }
 
 //801A146C
@@ -495,7 +500,7 @@ void Scene_ProcessMinor(MajorScene* scene){
   u8 v15; // r3@23
   
   curr_minor = gamestate.curr_minor;
-  minor_scenes = scene->minor_scenes;
+  minor_scenes = (MinorScene*)scene->minor_scenes;
   ctr = 255 - gamestate.curr_minor;
   if(gamestate.curr_minor != 255){
     do {
@@ -548,8 +553,8 @@ OUT:
       gamestate.unk05 = 0;
     } else {
       for(u32 i = 0; i < 255; i++){
-        if ( scene->minor_scenes[i].idx > gamestate.curr_minor ){
-          v15 = scene->minor_scenes[i].idx;
+        if ( minor_scenes[i].idx > gamestate.curr_minor ){
+          v15 = minor_scenes[i].idx;
           break;
         }
       }
@@ -575,7 +580,7 @@ OUT:
       //sub_8001F800(); Movie_Unload();
     /*SYS_ResetSystem(1, 0, 0);
     while (sub_8038EA50(1));*/
-    InitializeStaticMemRegions();
+    Scene_InitStaticMem();
     memset(&gamestate, 0, 20);
     Scene_RunStartupInit();
     dword_8046B0F0.unk00 = 1;

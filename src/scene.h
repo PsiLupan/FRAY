@@ -59,18 +59,6 @@ typedef struct _MinorSceneHandler {
 	void (*unk_func)();
 } MinorSceneHandler; //803DA920
 
-extern MinorSceneHandler scene_handlers[45];
-
-typedef struct _MajorScene {
-	u8 preload;
-	u8 idx;
-	u16 flags;
-	void (*Load)();
-	void (*Unload)();
-	void (*Init)();
-	struct _MinorScene* minor_scenes;
-} MajorScene; //803DACA4
-
 typedef struct _MinorScene {
 	u8 idx;
 	u8 preload;
@@ -88,7 +76,15 @@ typedef struct _MinorScene {
 	void* unk_struct_1;
 } MinorScene;
 
-extern MajorScene major_scenes[46];
+typedef struct _MajorScene {
+	u8 preload;
+	u8 idx;
+	u16 flags;
+	void (*Load)();
+	void (*Unload)();
+	void (*Init)();
+	void* minor_scenes;
+} MajorScene; //803DACA4
 
 typedef struct _unk_8046B0F0 {
 	u32 unk00;
@@ -139,5 +135,8 @@ MinorSceneHandler* Scene_GetClassHandler();
 MajorScene* Scene_GetMajorScenes();
 
 void Scene_ReqAnimAll(HSD_JObj *, f32 *);
+
+void Scene_80017700(s32);
+void Scene_80018254();
 
 #endif
