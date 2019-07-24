@@ -197,7 +197,7 @@ void HSD_JObjMakeMatrix(HSD_JObj* jobj){
 	if(JOBJ_USE_QUATERNION(jobj) != 0){
 		HSD_MtxSRTQuat(&jobj->mtx, &jobj->scale, &jobj->rotation, &jobj->position, vec);
 	}else{
-		HSD_MtxSRT(&jobj->mtx, &jobj->scale, &jobj->rotation, &jobj->position, vec);
+		HSD_MtxSRT(&jobj->mtx, &jobj->scale, (guVector*)&jobj->rotation, &jobj->position, vec);
 	}
 	if(parent != NULL){
 		guMtxConcat(parent->mtx, jobj->mtx, jobj->mtx);
@@ -726,7 +726,7 @@ void JObjUpdateFunc(void* obj, u32 type, update* val){
 					jobj->position.z = mtx[2][3];
 				}
 				if((type - 54) < 2){
-					//HSD_MtxGetRotation(mtx, &jobj->rotation)
+					HSD_MtxGetRotation(&mtx, (guVector*)&jobj->rotation);
 				}
 				if((type == 54) || type == 57){
 					//HSD_MtxGetScale(mtx, &jobj->scale);
