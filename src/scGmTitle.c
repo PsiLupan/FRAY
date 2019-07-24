@@ -4,7 +4,7 @@
 #include "hsd_jobj_ext.h"
 
 GmTitle_File title_ptrs; //80479B28
-f32 title_anim_speed = 0.0f; //803DA4F0
+f32 title_anim_speed[3] = {0.0f, 1600.f, 400.f}; //803DA4F0
 
 //801A1498
 static void Menu_Title_801A1498(HSD_GObj* gobj){
@@ -14,7 +14,7 @@ static void Menu_Title_801A1498(HSD_GObj* gobj){
 
 //801A1630
 static void Menu_Title_JObjAnimCallback(HSD_GObj* gobj){
-    sub_8022ED6C(gobj->data, &(title_anim_speed));
+    JObj_SetAnimSpeed((HSD_JObj*)gobj->data, title_anim_speed);
 }
 
 //801A165C

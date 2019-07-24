@@ -38,6 +38,31 @@ void JObj_AttachJoint_CopyPosRot(HSD_JObj* jobj_attach, HSD_JObj* jobj_bone){
     HSD_JObjPrependRObj(jobj_attach, robj_2);
 }
 
+//8022ED6C
+void JObj_SetAnimSpeed(HSD_JObj* jobj, f32 anim_speed[3]){
+    f32 frame = JObj_GetFrame(jobj);
+    if(frame < anim_speed[0] || anim_speed[1] < frame){
+        HSD_JObjReqAnimAll(jobj, anim_speed[0]);
+    }
+    if(-0.1f == anim_speed[2]){
+        if(JObj_GetFrame(jobj) < anim_speed[1]){
+            HSD_JObjAnimAll(jobj);
+            if(anim_speed[1] < JObj_GetFrame(jobj)){
+                HSD_JObjReqAnimAll(jobj, anim_speed[1]);
+                HSD_JObjAnimAll(jobj);
+            }
+        }
+    }else{
+        HSD_JObjAnimAll(jobj);
+        f32 curr_frame = JObj_GetFrame(jobj);
+        if(anim_speed[1] < curr_frame){
+            curr_frame = anim_speed[2] + (curr_frame - anim_speed[1]);
+            HSD_JObjReqAnimAll(jobj, curr_frame);
+            HSD_JObjAnimAll(jobj);
+        }
+    }
+}
+
 //8022F298
 f32 JObj_GetFrame(HSD_JObj* jobj){
     if(jobj->aobj != NULL){
