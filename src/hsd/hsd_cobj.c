@@ -223,9 +223,9 @@ BOOL HSD_CObjGetEyeVector(HSD_CObj* cobj, guVector* vec){
             guVecSub(&interest_pos, &eye_pos, vec);
 
             BOOL denormalized = TRUE;
-            if((u32)vec->x & 0x7FFFFFFF > __FLT_MIN__ 
-                    && (u32)vec->y & 0x7FFFFFFF > __FLT_MIN__
-                    && (u32)vec->z & 0x7FFFFFFF > __FLT_MIN__){
+            if((u32)vec->x & 0x7FFFFFFF > FLT_MIN 
+                    && (u32)vec->y & 0x7FFFFFFF > FLT_MIN
+                    && (u32)vec->z & 0x7FFFFFFF > FLT_MIN){
                 guVecNormalize(vec);
                 denormalized = FALSE;
             }else{
@@ -270,7 +270,7 @@ void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec){
             BOOL res = HSD_CObjGetEyeVector(cobj, &uvec);
             if(res == FALSE){
                 f32 val = guVecDotProduct(vec, &uvec);
-                if(__FLT_MIN__ <= 1.0f - abs(val)){
+                if(FLT_MIN <= 1.0f - abs(val)){
                     guVector zero = {0.f, 0.f, 0.f};
                     guVector upvec = {0.f, 1.f, 0.f};
                     MtxP mtx;
@@ -296,7 +296,7 @@ void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec){
             if(vec == NULL){
                 use_local = FALSE;
             }else{
-                f32 n = __FLT_MIN__;
+                f32 n = FLT_MIN;
                 if(n < vec->x || n < vec->y || n < vec->z){
                     use_local = TRUE;
                 }
@@ -318,6 +318,10 @@ void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec){
 //80369564
 void HSD_CObjSetMtxDirty(HSD_CObj* cobj){
     cobj->flags |= 0xC0000000;
+}
+
+MtxP HSD_CObjGetViewingMtxPtrDirect(HSD_CObj* cobj){
+    return cobj->view_mtx;
 }
 
 //80369624

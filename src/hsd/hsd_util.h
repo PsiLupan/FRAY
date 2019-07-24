@@ -5,6 +5,7 @@
 
 #include <ogc/gu.h>
 
+#define FLT_MIN 1.175494E-38F
 #define FLT_EPSILON 1.19209290E-07F
 
 #define max(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b; })
