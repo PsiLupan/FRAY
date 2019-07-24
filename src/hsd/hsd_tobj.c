@@ -46,7 +46,7 @@ void HSD_TObjAddAnim(HSD_TObj *tobj, HSD_TexAnim *texanim){
 			
 			if (tobj->tluttbl) {
 				for (i=0; tobj->tluttbl[i]; i++) {
-					HSD_TlutRemove(tobj->tluttbl[i]);
+					HSD_TlutFree(tobj->tluttbl[i]);
 				}
 				HSD_Free(tobj->tluttbl);
 			}
@@ -1290,12 +1290,12 @@ static void TObjRelease(HSD_Class *o){
 	HSD_TObj *tobj = HSD_TOBJ(o);
 	
 	HSD_AObjRemove(tobj->aobj);
-	HSD_TlutRemove(tobj->tlut);
+	HSD_TlutFree(tobj->tlut);
 	HSD_TObjTevRemove(tobj->tev);
 	if (tobj->tluttbl) {
 		int i;
 		for (i=0; tobj->tluttbl[i]; i++) {
-			HSD_TlutRemove(tobj->tluttbl[i]);
+			HSD_TlutFree(tobj->tluttbl[i]);
 		}
 		HSD_Free(tobj->tluttbl);
 	}
