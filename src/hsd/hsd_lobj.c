@@ -462,7 +462,7 @@ void HSD_LObjSetupInit(HSD_CObj *cobj){
 
     switch (type) {
     case LOBJ_INFINITE:
-      setup_infinite_lightobj(lobj, vmtx);
+      //setup_infinite_lightobj(lobj, vmtx); - UNUSED
       break;
     case LOBJ_POINT:
       setup_point_lightobj(lobj, vmtx);
