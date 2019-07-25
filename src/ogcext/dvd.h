@@ -8,10 +8,11 @@
 #define T_DIR 1
 
 typedef struct _FSTEntry {
-    u32 data; //00 - Flags (0: File, 1: Directory) - 01-03 - Pointer to name in String Table
+    u8 filetype; //00 - Flags (0: File, 1: Directory)
+    u8 offset[3]; //01-03 - Pointer to name in String Table
     u32 addr;
     u32 len;
-} FSTEntry;
+} __attribute__((packed)) FSTEntry;
 
 void DVDInit();
 void DVD_CheckDisk();

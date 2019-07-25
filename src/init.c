@@ -48,11 +48,9 @@ static void stub(){
 
 //8015FEB4
 int main(void){
-
-	SYS_Init();
 	VIDEO_Init();
-	DVDInit(); //Calls FRAY's custom OGCExt DVDInit
 	PAD_Init();
+	DVDInit(); //Calls FRAY's custom OGCExt DVDInit
 
 	arena_size = (u32)SYS_GetArena1Hi() - (u32)SYS_GetArena1Lo();
 
@@ -107,7 +105,7 @@ void Init_Game(){
 			major_scenes[i].Init();
 		}
 	}
-	if ( (VIDEO_HaveComponentCable() && (rmode->viTVMode & 0x02)) /*|| OS_GetProgressiveMode() == 1)*/ ){
+	if ( (VIDEO_HaveComponentCable() /* && (rmode->viTVMode & 0x02)*/) /*|| OS_GetProgressiveMode() == 1)*/ ){
 		gamestate.curr_major = 39;
 	}else {
 		gamestate.curr_major = 40;

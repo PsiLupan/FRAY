@@ -26,7 +26,7 @@ static void __DVDFSInit(){
 
 void DVDInit(){
     DVD_Init();
-    //DVD_Mount();
+    DVD_Mount();
     __DVDFSInit();
     LWP_InitQueue(&dvd_wait_queue);
 }
@@ -39,8 +39,8 @@ void DVD_CheckDisk(){
 
 BOOL DVDFastOpen(s32 entrynum, dvdfileinfo* fileinfo){
     if(entrynum >= 0 && entrynum < total_entries){
-        u32 data = (*entry_table)[entrynum].data;
-        if((data & 0xFF000000) == T_FILE){
+        u8 filetype = (*entry_table)[entrynum].filetype;
+        if(filetype == T_FILE){
             fileinfo->addr = (*entry_table)[entrynum].addr;
             fileinfo->len = (*entry_table)[entrynum].len;
             fileinfo->cb = NULL;
