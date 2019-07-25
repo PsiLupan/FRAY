@@ -1,5 +1,8 @@
 #include "dvd.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 #include <ogc/lwp.h>
 #include <ogc/irq.h>
 
@@ -11,17 +14,43 @@ static FSTEntry (*entry_table)[] = NULL; //r13_4424
 static u32* start_memory = NULL; //r13_4428
 static lwpq_t dvd_wait_queue;
 
+u8* fst;
+
+dvdcmdblk cmdblk;
+
 typedef FSTEntry (*TableP)[];
 typedef char (*STableP)[];
 
 static void __DVDFSInit(){
+    u32* dvd_boot;
     start_memory = (u32*)(0x80000000);
-    entry_table = (TableP)start_memory[14]; //0x80000038 points to the start of the file system
+
+    if(DVD_ReadPrio(&cmdblk, dvd_boot, 32, 0x41C, 2) <= 0){ //Reads occur at seemingly random locations and make me want to die
+        return;
+    }
+    
+    u32 fst_offset = dvd_boot[0];
+    u32 fst_size = dvd_boot[1];
+    start_memory[14] = fst_offset; //Setting this for debugging purposes
+    start_memory[15] = fst_size;
+
+    u32* dvd_fst;
+    if(DVD_ReadPrio(&cmdblk, dvd_fst, fst_size, fst_offset, 2) <= 0){
+        return;
+    }
+
+    fst = malloc(fst_size);
+    fst = memcpy(fst, dvd_fst, fst_size);
+
+    return;
+    /*entry_table = (TableP)dvd_fst;
+
+    start_memory[14] = (u32)entry_table; //0x80000038 points to the start of the file system
     if(entry_table == NULL){
         return;
     }
     total_entries = (*entry_table)[0].len;
-    string_table = (STableP)(&(*entry_table)[total_entries]);
+    string_table = (STableP)(&(*entry_table)[total_entries]);*/
 }
 
 void DVDInit(){
