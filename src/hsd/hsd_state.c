@@ -253,6 +253,23 @@ void HSD_StateSetNumTevStages(){
     state_num_tevstages = 0;
 }
 
+//80362548
+void HSD_SetupTevStage(HSD_TevDesc *desc){
+    GX_SetTevOrder(desc->stage, desc->coord, desc->map, desc->color);
+    if(desc->flags == 0){
+        GX_SetTevOp(desc->stage, desc->u.tevop.tevmode);
+        GX_SetTevSwapMode(desc->stage, 0, 0);
+    }else{
+        GX_SetTevColorOp(desc->stage, desc->u.tevop.op, desc->color_bias, desc->color_scale, desc->color_clamp, desc->color_reg);
+        GX_SetTevColorIn(desc->stage, desc->color_a, desc->color_b, desc->color_c, desc->color_d);
+        GX_SetTevAlphaOp(desc->stage, desc->alpha_op, desc->alpha_bias, desc->alpha_scale, desc->alpha_clamp, desc->alpha_reg);
+        GX_SetTevAlphaIn(desc->stage, desc->alpha_a, desc->alpha_b, desc->alpha_c, desc->alpha_d);
+        GX_SetTevSwapMode(desc->stage, desc->ras_sel, desc->tex_sel);
+        GX_SetTevKColorSel(desc->stage, desc->color_sel);
+        GX_SetTevKAlphaSel(desc->stage, desc->alpha_sel);
+    }
+}
+
 //80362768
 u8 HSD_Index2TevStage(u8 idx){
     switch(idx){

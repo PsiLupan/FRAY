@@ -1,5 +1,6 @@
 #include "hsd_texp.h"
 
+#include "hsd_state.h"
 #include "hsd_tobj.h"
 
 //80382C00
@@ -102,6 +103,25 @@ HSD_TExp* HSD_TExpCnst(void* color, u32 value, u32 type, HSD_TExp** list){
 //80384050
 void HSD_TExpOrder(HSD_TExp* texp, void* tobj, u8 chan){
 
+}
+
+//80384F28
+void HSD_TExpSetReg(HSD_TExp* texp){
+
+}
+
+//80385448
+void HSD_TExpSetupTev(HSD_TExpTevDesc* tevdesc, HSD_TExp* texp){
+    HSD_TExpSetReg(texp);
+    while(tevdesc != NULL){
+        if(tevdesc->x74_unk != NULL){
+            //tevdesc->map = (tevdesc->x74_unk + 0xc);
+            //tevdesc->coord = (tevdesc->x74_unk + 0xa4);
+        }
+        HSD_StateAssignTev();
+        HSD_SetupTevStage(tevdesc);
+        tevdesc = tevdesc ->next;
+    }
 }
 
 //803854B4

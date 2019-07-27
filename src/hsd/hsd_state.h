@@ -35,6 +35,8 @@
 
 typedef s32 HSD_StateMask;
 
+typedef HSD_TExpTevDesc HSD_TevDesc;
+
 typedef struct _HSD_Chan {
     void* unk;
     u8 light_mask;
@@ -48,19 +50,6 @@ typedef struct _HSD_Chan {
     u8 diffuse;
     u8 attn;
 } HSD_Chan;
-
-typedef struct _HSD_TevDesc {
-    u32 flags;
-    u8  stage;
-    u8  coord;
-    u8  map;
-    u8  color;
-    union {
-        struct {
-            u8 tevmode;
-        } tevop;
-    } u;
-} HSD_TevDesc;
 
 void HSD_SetupChannelMode(u32);
 void HSD_SetupPEMode(u32, HSD_PEDesc *);
@@ -78,6 +67,7 @@ void HSD_StateSetNumChans(u8);
 u32 HSD_StateGetNumTevStages();
 u8 HSD_StateAssignTev();
 void HSD_StateSetNumTevStages();
+void HSD_SetupTevStage(HSD_TevDesc *);
 u8 HSD_Index2TevStage(u8);
 u8 HSD_TevStage2Index(u8);
 
