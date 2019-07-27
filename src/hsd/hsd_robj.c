@@ -63,7 +63,7 @@ void HSD_RObjAnimAll(HSD_RObj* robj){
     }
 }
 
-//8037AFC4
+//8037AFC0
 void HSD_RObjRemoveAnimAllByFlags(HSD_RObj* robj, u32 flags){
     if(robj != NULL){
         for(HSD_RObj* i = robj; i != NULL; i = i->next){

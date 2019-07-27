@@ -177,6 +177,13 @@ void HSD_DObjDisp(HSD_DObj *dobj, Mtx vmtx, Mtx pmtx, u32 rendermode){
     if ((rendermode & 0x4000000) == 0) {
         HSD_MOBJ_METHOD(dobj->mobj)->setup(dobj->mobj, rendermode);
     }
+    for(HSD_PObj* p = dobj->pobj; p != NULL; p = p->next){
+        HSD_POBJ_METHOD(p)->disp(p, vmtx, pmtx, rendermode);
+    }
+    if ((rendermode & 0x4000000) == 0) {
+        HSD_MOBJ_METHOD(dobj->mobj)->unset(dobj->mobj, rendermode);
+    }
+    HSD_MObjSetCurrent(NULL);
 }
 
 //8035E440
@@ -204,6 +211,6 @@ static void DObjInfoInit(){
 
     HSD_PARENT_INFO(&hsdDObj)->release = DObjRelease;
     HSD_PARENT_INFO(&hsdDObj)->amnesia = DObjAmnesia;
-    //HSD_DOBJ_INFO(&hsdDObj)->disp = HSD_DObjDisp;
+    HSD_DOBJ_INFO(&hsdDObj)->disp = HSD_DObjDisp;
     HSD_DOBJ_INFO(&hsdDObj)->load = DObjLoad;
 }
