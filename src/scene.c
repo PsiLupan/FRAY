@@ -529,8 +529,8 @@ u32* Scene_Get10(GameState* state){
 }
 
 //801A4284
-void* Scene_Get14(GameState* state){
-  return state->unk14;
+u32* Scene_GetPadStatus(GameState* state){
+  return state->padstatus;
 }
 
 //801A428C

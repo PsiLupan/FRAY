@@ -49,7 +49,7 @@ typedef struct _GameState {
 	u8 unk0E;
 	u8 unk0F;
 	u8 (*unk10)();
-	void* unk14;
+	u32* padstatus;
 } GameState; //80479D30
 
 extern GameState gamestate;
@@ -118,6 +118,7 @@ static void Scene_RunStartupInit();
 void Scene_CompareCacheOnChange(MinorScene *);
 
 u32* Scene_Get10(GameState *);
+u32* Scene_GetPadStatus(GameState *);
 void Scene_Set05(u8);
 u8 Scene_Get04();
 u8 Scene_GetCurrentMinor();

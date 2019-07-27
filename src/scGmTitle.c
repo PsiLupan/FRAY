@@ -68,8 +68,7 @@ void Menu_Title_Prep(){
 
 //801B089C
 void Menu_Title_Decide(void* state){
-    u32* scene_ptr = (u32*)Scene_Get14((GameState*)state); //scene_ptr = 804D6878 from the Minors, so something there
-    u32 inputs = scene_ptr[0];
+    u32 inputs = *Scene_GetPadStatus((GameState*)state); //804D6878 from the Minors
     if(debug_level < 3){
         if((inputs & PAD_BUTTON_START) == 0){
             //sub_801BF708(1);
