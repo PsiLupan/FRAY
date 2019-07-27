@@ -87,17 +87,13 @@ void Mario_Special_Neutral_CollInterrupt(HSD_GObj* gobj){
 //800E0EE0
 void Mario_SpawnProjectile(HSD_GObj* gobj, guVector pos){
     Player* player = GOBJ_PLAYER(gobj);
-    BOOL new_fireball = FALSE;
     if((player->x2210_flags >> 7) & 1){
-        player->x2210_flags &= 0xFFFFFF7F;
-        new_fireball = TRUE;
-    }
-    if(new_fireball){
+        player->x2210_flags &= 0x7F;
         u32 index = Player_BoneID2Index(player, 0x17);
         HSD_JObj* spawn_bone = (HSD_JObj*)(*(player->x5E8_bone_lookup_table) + (index * BONE_LOOKUP_STRUCT_SIZE));
-        HSD_JObj* jobj = JObj_Spawn(spawn_bone, NULL, pos);
+        JObj_Spawn(spawn_bone, NULL, pos);
         if(player->x4_internal_id == INTERNAL_MARIO){
-            sub_8039B6F8(gobj, pos, ITEM_MARIO_FIREBALL, player->x2C_facedir);
+            sub_8029B6F8(gobj, pos, ITEM_MARIO_FIREBALL, player->x2C_facedir);
             sub_8005FDDC(0x47A, gobj, spawn_bone, &player->x2C_facedir);
         }else{ //IF DR. MARIO
             u32 values[9];            

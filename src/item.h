@@ -15,8 +15,7 @@
 
 #define GOBJ_ITEM(s) ((Item*)s->data)
 
-typedef struct _Item
-{
+typedef struct _Item {
 	struct _HSD_GObj* next;
 	struct _HSD_GObj* parent;
 	u32 x08_flags;

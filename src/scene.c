@@ -19,9 +19,10 @@ MinorScene GmOpening_Minors[2] = {
   END_MINOR
 }; //803DFDD8
 
-MinorSceneHandler scene_handlers[45] = {
+MinorSceneHandler scene_handlers[46] = {
   {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL},
-  {40, 0, 0, Scene_Minor_Class40_OnFrame, Scene_Minor_Class40_OnLoad, Scene_Minor_Class40_OnLeave, NULL}
+  {40, 0, 0, Scene_Minor_Class40_OnFrame, Scene_Minor_Class40_OnLoad, Scene_Minor_Class40_OnLeave, NULL},
+  {45, 0, 0, NULL, NULL, NULL, NULL}
 }; //803DA920 - 45 in length
 
 MajorScene major_scenes[46] = {
@@ -432,7 +433,7 @@ void Scene_ProcessMinor(MajorScene* scene){
   MinorScene* minor_scenes;
   MinorScene* minor_scene = NULL;
   MinorSceneHandler *scene_handler;
-  u8 v15; // r3@23
+  u8 minor_idx;
   
   curr_minor = gamestate.curr_minor;
   minor_scenes = (MinorScene*)scene->minor_scenes;
@@ -489,14 +490,14 @@ OUT:
     } else {
       for(u32 i = 0; i < 255; i++){
         if ( minor_scenes[i].idx > gamestate.curr_minor ){
-          v15 = minor_scenes[i].idx;
+          minor_idx = minor_scenes[i].idx;
           break;
         }
       }
-      if ( v15 == 255 ){
-        v15 = 0;
+      if ( minor_idx == 255 ){
+        minor_idx = 0;
       }
-      gamestate.curr_minor = v15;
+      gamestate.curr_minor = minor_idx;
     }
   }
 
@@ -726,8 +727,12 @@ void Scene_PrepCommon(){
 MinorSceneHandler* Scene_GetSceneHandlerByClass(u8 class_id){
   MinorSceneHandler* sh = Scene_GetClassHandler();
   for ( u32 i = 0; i < 45 ; i++ ){
-    if ( sh[0].class_id == class_id )
+    if ( sh[i].class_id == class_id ){
       return &sh[i];
+    }
+    if ( sh[i].class_id == 45){
+      break;
+    }
   }
   return NULL;
 }

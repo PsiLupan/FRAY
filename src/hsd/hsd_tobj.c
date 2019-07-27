@@ -627,7 +627,7 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj *tobj, HSD_TExp **c, HSD_TEx
 	HSD_TExpOrder(e0, tobj, GX_COLORNULL);
 
   if (tev->active & TOBJ_TEVREG_ACTIVE_COLOR_TEV) {
-    s32 sel[4];
+    HSD_TEInput sel[4];
     HSD_TExp *exp[4];
 
     in = &tev->color_a;

@@ -274,6 +274,8 @@ typedef struct _Player {
 	f32 x2344_flags;
 } Player;
 
+u32 Player_BoneID2Index(Player *, u32);
+
 void Player_CalculateHorzMobility(Player *, f32);
 
 u32 Player_GetSpawnCount(HSD_GObj *);

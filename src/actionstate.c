@@ -115,7 +115,7 @@ void ActionState_Wait(HSD_GObj* gobj, const f32 unk){
 	Player_ChangeActionState(gobj, ACTIONSTATE_WAIT, 0, NULL, 0.0f, 1.0f, unk);
 
 	if(sub_8008A6989(ply) != 0){
-		u32* unk_struct = Player_80085FD4(ply, 6);
+		u32* unk_struct = NULL; //Player_80085FD4(ply, 6);
 		if(unk_struct[2] != 0){
 			sub_8008A6D8(gobj, 6);
 		}
@@ -180,7 +180,7 @@ void ActionState_HammerFall(HSD_GObj* gobj){
 //800C8B74
 void ActionState_800C8B74(HSD_GObj* gobj){
 	Player* player = GOBJ_PLAYER(gobj);
-	u32* ustruct = Player_80085FD4(player, 0xBE);
+	u32* ustruct = NULL; //Player_80085FD4(player, 0xBE);
 
 	u32 state;
 	if((u8*)ustruct[0x14] == 0){

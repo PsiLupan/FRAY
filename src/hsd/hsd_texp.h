@@ -26,6 +26,8 @@
 #define HSD_TE_F32 3
 #define HSD_TE_ALL 7
 
+typedef u32 HSD_TEInput;
+
 typedef struct _HSD_TExpTevDesc {
     struct _HSD_TExpTevDesc* next;
     u32 x4_unk;
@@ -63,26 +65,32 @@ typedef struct _HSD_TExpTevDesc {
 typedef struct _HSD_TExp {
     u32 flags;
     struct _HSD_TExp* next;
-    u32 x8_unk;
+    u32 opt_ref_count;
     u32 xC_unk;
     u32 x10_unk;
-    u8 x14_unk;
+    u8 nopt_ref_count;
     u8 x15_unk;
-    u8 x16_unk;
+    u8 t4_ref_count;
     u8 x17_unk;
     u32 x18_unk;
     u32 x1C_unk;
     u32 x20_unk;
-    u32 x24_unk;
-    u32 x28_unk;
+    u8 x24_unk;
+    u8 texp2_opt;
+    u8 x26_unk;
+    u8 x27_unk;
+    struct _HSD_TExp* texp_2;
     u32 x2C_unk;
     u32 x30_unk;
     u32 x34_unk;
     u32 x38_unk;
     u32 x3C_unk;
     u32 x40_unk;
-    u32 x44_unk;
-    u32 x48_unk;
+    u8 x44_unk;
+    u8 texp3_opt;
+    u8 x46_unk;
+    u8 x47_unk;
+    struct _HSD_TExp* texp_3;
     u32 x4C_unk;
     u32 x50_unk;
     u32 x54_unk;
@@ -94,9 +102,9 @@ typedef struct _HSD_TExp {
     u32 x6C_unk;
 } HSD_TExp;
 
-u32 HSD_TExpGetType(u32 *);
-void HSD_TExpRef(u8 *, u8);
-void HSD_TExpUnref(u8 *, u8);
+u32 HSD_TExpGetType(HSD_TExp *);
+void HSD_TExpRef(HSD_TExp *, u8);
+void HSD_TExpUnref(HSD_TExp *, u8);
 void HSD_TExpFreeList(HSD_TExp *, u32, u8);
 HSD_TExp* HSD_TExpTev(HSD_TExp **);
 HSD_TExp* HSD_TExpCnst(void*, u32, u32, HSD_TExp**);

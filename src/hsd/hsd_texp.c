@@ -3,61 +3,58 @@
 #include "hsd_tobj.h"
 
 //80382C00
-u32 HSD_TExpGetType(u32* texp){
+u32 HSD_TExpGetType(HSD_TExp* texp){ //This is dead serious the fucking code, what the fuck
     if (texp == NULL) {
         return 0;
     }
-    //Having debugged this section, this is what the code actually does - Definitely seems suspect
-    u32* p = (u32*)(texp + 0x10000);
-    if (p == 0xFFFF) {
+    if ((u32)texp == 0xFFFF) {
         return 2;
     }
-    if (p == 0xFFFE) {
+    if ((u32)texp == 0xFFFE) {
         return 3;
     }
-    return *texp;
+    return texp->flags;
 }
 
 //80382C3C
-void HSD_TExpRef(u8* texp, u8 inc){
-    u32 type = HSD_TExpGetType((u32*)texp);
+void HSD_TExpRef(HSD_TExp* texp, u8 opt){
+    u32 type = HSD_TExpGetType(texp);
     if(type == 4){
-        texp[0x16] += 1;
+        texp->t4_ref_count += 1;
         return;
     }else if(type != 1){
         return;
     }
 
-    if(inc == TRUE){
-        texp[0x8] += 1;
-        return;
+    if(opt == TRUE){
+        texp->opt_ref_count += 1;
+    }else{
+        texp->nopt_ref_count += 1;
     }
-    texp[0x14] += 1;
 }
 
 //80382CC4
-void HSD_TExpUnref(u8* texp, u8 inc){
-    u32 type = HSD_TExpGetType((u32*)texp);
+void HSD_TExpUnref(HSD_TExp* texp, u8 opt){
+    u32 type = HSD_TExpGetType(texp);
     if(type == 4){
-        if(texp[0x16] != 0){
-            texp[0x16] -= 1;
+        if(texp->t4_ref_count != 0){
+            texp->t4_ref_count -= 1;
             return;
         }
     }else if (type == 1){
-        u32* texp_32 = (u32*)texp;
-        if(inc == TRUE){
-            if(texp_32[2] != 0){
-                texp_32[2] -= 1;
+        if(opt == TRUE){
+            if(texp->opt_ref_count != 0){
+                texp->opt_ref_count -= 1;
             }
-        }else if(texp_32[5] != 0){
-            texp_32[5] -= 1;
+        }else if(texp->nopt_ref_count != 0){
+            texp->nopt_ref_count -= 1;
         }
 
-        if(texp_32[2] == 0 && texp_32[5] == 0){
+        if(texp->opt_ref_count == 0 && texp->nopt_ref_count == 0){
             for(u32 i = 0; i < 4; i++){
-                HSD_TExpUnref((u8*)texp_32[10], texp[0x25]);
-                HSD_TExpUnref((u8*)texp_32[18], texp[0x45]);
-                texp += 2;
+                HSD_TExpUnref(texp->texp_2, texp->texp2_opt);
+                HSD_TExpUnref(texp->texp_3, texp->texp3_opt);
+                texp = (HSD_TExp*)texp->opt_ref_count;
             }
         }
     }
@@ -83,13 +80,13 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list){
     texp->flags = 1;
     texp->next = *list;
     *list = texp;
-    texp->x8_unk = 0;
-    texp->x14_unk = 0;
-    texp->x28_unk = 0;
+    texp->opt_ref_count = 0;
+    texp->nopt_ref_count = 0;
+    texp->texp_2 = NULL;
     texp->x30_unk = 0;
     texp->x38_unk = 0;
     texp->x40_unk = 0;
-    texp->x48_unk = 0;
+    texp->texp_3 = NULL;
     texp->x50_unk = 0;
     texp->x58_unk = 0;
     texp->x60_unk = 0;

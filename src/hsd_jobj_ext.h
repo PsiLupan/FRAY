@@ -10,6 +10,7 @@
 
 #define GOBJ_HSD_JOBJ(s) ((HSD_JObj*)s->data)
 
+void JObj_Spawn(HSD_JObj*, guVector*, guVector*);
 void JObj_SetAnimSpeed(HSD_JObj *, f32[3]);
 f32 JObj_GetFrame(HSD_JObj *);
 void JObj_SetupInstanceMtx(HSD_JObj *, MtxP, u32, u32);

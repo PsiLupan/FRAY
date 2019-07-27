@@ -38,6 +38,13 @@ void JObj_AttachJoint_CopyPosRot(HSD_JObj* jobj_attach, HSD_JObj* jobj_bone){
     HSD_JObjPrependRObj(jobj_attach, robj_2);
 }
 
+//800B1CC
+void JObj_Spawn(HSD_JObj* jobj, guVector* unk, guVector* pos){
+    if(jobj != NULL){
+
+    }
+}
+
 //8022ED6C
 void JObj_SetAnimSpeed(HSD_JObj* jobj, f32 anim_speed[3]){
     f32 frame = JObj_GetFrame(jobj);

@@ -35,7 +35,7 @@ void ActionState_HammerWait(HSD_GObj *);
 f32 ActionState_HammerFrameCount(Player *);
 BOOL ActionState_IsHammer(Player *);
 void ActionState_Hammer_ActivateHitbox(Player *);
-
+void ActionState_800C8B74(HSD_GObj *);
 void ActionState_Fall(HSD_GObj *);
 
 #endif
