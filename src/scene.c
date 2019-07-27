@@ -48,8 +48,6 @@ s32 cache_base[24] = { //803BA638
   0x00000000, 0x00000000, 0xff00ffff, 0x00000000
 };
 
-f32 title_frames[3] = {0.f, 1330.f, 130.f}; //803DA4FC
-
 s32 preload_cache[0x1000]; //80432078
 
 unk_8046B0F0 dword_8046B0F0;

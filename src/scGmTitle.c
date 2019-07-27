@@ -5,6 +5,7 @@
 
 GmTitle_File title_ptrs; //80479B28
 f32 title_anim_speed[3] = {0.0f, 1600.f, 400.f}; //803DA4F0
+f32 title_frames[3] = {0.f, 1330.f, 130.f}; //803DA4FC
 
 //801A1498
 static void Menu_Title_801A1498(HSD_GObj* gobj){
@@ -52,7 +53,7 @@ void Menu_Title_SetupLogos(){
     }*/
     if(showAddCopyright == FALSE){
         //TObj_ToggleActiveTexture(jobj, title_ptrs.bg_top_animjoint, 7, -1); //80011E24
-        HSD_JObjSetFlagsAll(jobj, 0x10); //JOBJ_HIDDEN
+        HSD_JObjSetFlagsAll(jobj, HIDDEN);
     }
     /* u32 unk = sub_8000AFBC();
     sub_801692E8(unk, local); //GetTimeAndDate( );
@@ -75,7 +76,7 @@ void Menu_Title_Decide(void* state){
     u32* scene_ptr = (u32*)Scene_Get14((GameState*)state); //scene_ptr = 804D6878 from the Minors, so something there
     u32 inputs = scene_ptr[0];
     if(debug_level < 3){
-        if((inputs & 0x1000) == 0){
+        if((inputs & PAD_BUTTON_START) == 0){
             //sub_801BF708(1);
             Scene_UpdatePendingMajor(0x18);
         }else{
@@ -87,10 +88,10 @@ void Menu_Title_Decide(void* state){
             }
         }
     }else{
-        if((inputs & 0x100) == 0){
-            if((inputs & 0x1000) == 0){
-                if((inputs & 0x400) == 0){
-                    if((inputs & 0x800) == 0){
+        if((inputs & PAD_BUTTON_A) == 0){
+            if((inputs & PAD_BUTTON_START) == 0){
+                if((inputs & PAD_BUTTON_X) == 0){
+                    if((inputs & PAD_BUTTON_Y) == 0){
                         //sub_801BF708(1);
                         Scene_UpdatePendingMajor(0x18);
                     }else{
