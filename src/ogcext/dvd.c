@@ -35,7 +35,7 @@ static void __DVDFSInit(){
     start_memory[14] = (u32)fst;
     assert(DVD_ReadPrio(&cmdblk, fst, fst_size, fst_offset, 2) > 0);
 
-    entry_table = (FSTEntry*)((u32)fst - 8);  //Incorrect, but there's some bug where the DVD Read is writing backwards by 8 bytes no matter what
+    entry_table = (FSTEntry*)fst;  //Incorrect, because there's some bug where the DVD Read is writing backwards by 8 bytes no matter what
     total_entries = entry_table[0].len;
     string_table = (char*)&(entry_table[total_entries]);
 }
