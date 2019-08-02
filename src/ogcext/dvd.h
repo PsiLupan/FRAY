@@ -8,7 +8,7 @@
 #define T_DIR 1
 
 typedef struct _FSTEntry {
-    u8 filetype; //00 - Flags (0: File, 1: Directory)
+    u8 filetype:1; //00 - Flags (0: File, 1: Directory)
     u8 offset[3]; //01-03 - Pointer to name in String Table
     u32 addr;
     u32 len;

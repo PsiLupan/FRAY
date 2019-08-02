@@ -708,12 +708,12 @@ void Scene_StoreClassID(u8 class_id){
 
 //801A4B90
 u32* Scene_Load4F80_idx2(){
-	return (u32*)r13_4F80[1];
+	return (u32*)&r13_4F80[1];
 }
 
 //801A4B9C
 u32* Scene_Load4F80_idx3(){
-	return (u32*)r13_4F80[2];
+	return (u32*)&r13_4F80[2];
 }
 
 //801A4BD4

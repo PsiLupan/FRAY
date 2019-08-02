@@ -18,24 +18,24 @@ static u32* start_memory = NULL; //r13_4428
 static lwpq_t dvd_wait_queue;
 
 u8* fst;
-u8 fst_info[32];
+u8* fst_info[32];
 
 dvdcmdblk cmdblk;
 
 static void __DVDFSInit(){
     start_memory = (u32*)(0x80000000);
 
-    assert(DVD_ReadPrio(&cmdblk, &fst_info, 32, 0x424/4<<2, 2) > 0); //Offset because DVD_ReadPrio seems to like specific sizes
+    assert(DVD_ReadPrio(&cmdblk, fst_info, 32, 0x424/4<<2, 2) > 0); //Offset because DVD_ReadPrio seems to like specific sizes
     
-    u32 fst_offset = ((u32*)fst_info)[0];
-    u32 fst_size = ((u32*)fst_info)[1];
+    s64 fst_offset = ((u32*)fst_info)[0];
+    u32 fst_size = ((u32*)(fst_info))[1];
     start_memory[15] = fst_size;
 
     fst = malloc(fst_size);
+    start_memory[14] = (u32)fst;
     assert(DVD_ReadPrio(&cmdblk, fst, fst_size, fst_offset, 2) > 0);
 
-    start_memory[14] = (u32)fst;
-    entry_table = (FSTEntry*)fst;
+    entry_table = (FSTEntry*)((u32)fst - 8);  //Incorrect, but there's some bug where the DVD Read is writing backwards by 8 bytes no matter what
     total_entries = entry_table[0].len;
     string_table = (char*)&(entry_table[total_entries]);
 }
