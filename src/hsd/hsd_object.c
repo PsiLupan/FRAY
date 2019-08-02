@@ -1,8 +1,13 @@
 #include "hsd_object.h"
 
+static void ObjInfoInit();
 static void _hsdInfoInit();
 
 HSD_ClassInfo hsdClass = { 
+	ObjInfoInit
+};
+
+HSD_ObjInfo hsdObj = {
 	_hsdInfoInit
 };
 
@@ -101,6 +106,11 @@ void HSD_ObjAllocInit(HSD_ObjAllocData* init_obj, u32 size, u32 align){
 	current_obj = init_obj;
 }
 
+//8037E6C4
+static void ObjInfoInit(){
+	hsdInitClassInfo(HSD_CLASS_INFO(&hsdClass), HSD_CLASS_INFO(&hsdObj), HSD_BASE_CLASS_LIBRARY, "has_class", sizeof(HSD_ClassInfo), 8);
+}
+
 //80381BE4
 static void hsdObjInfoInit(HSD_ClassInfo* info){
 	if((info->head.flags & 1) == 0){
@@ -109,11 +119,11 @@ static void hsdObjInfoInit(HSD_ClassInfo* info){
 }
 
 //80381C18
-void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, char* base_class_library, char* type, u64 info_size, u64 class_size){
+void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, char* base_class_library, char* type, s32 info_size, s32 class_size){
 	class_info->head.flags = 1;
 	class_info->head.library_name = base_class_library;
-	class_info->head.obj_size = (u16)class_size;
-	class_info->head.info_size = (u16)info_size;
+	class_info->head.obj_size = (s16)class_size;
+	class_info->head.info_size = (s16)info_size;
 	class_info->head.parent = parent_info;
 	class_info->head.next = NULL;
 	class_info->head.child = NULL;
@@ -121,15 +131,14 @@ void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, cha
 	class_info->head.nb_peak = 0;
 	
 	if(parent_info != NULL){
-		if((class_info->head.flags & 1) == 1){
-			assert(class_info->head.obj_size >= parent_info->head.obj_size);
-			assert(class_info->head.info_size >= parent_info->head.info_size);
-			memcpy(&class_info->alloc, &parent_info->alloc, parent_info->head.info_size - 0x28);
-			class_info->head.next = parent_info->head.child;
-			parent_info->head.child = class_info;
-		}else{
+		if((parent_info->head.flags & 1) == 0){
 			(*parent_info->head.info_init)();
 		}
+		assert(class_info->head.obj_size >= parent_info->head.obj_size);
+		assert(class_info->head.info_size >= parent_info->head.info_size);
+		memcpy(&class_info->alloc, &parent_info->alloc, parent_info->head.info_size - 0x28);
+		class_info->head.next = parent_info->head.child;
+		parent_info->head.child = class_info;
 	}
 }
 
@@ -193,7 +202,9 @@ static void _hsdInfoInit(){
 
 //80382344
 void* hsdNew(HSD_ClassInfo* info){
-	hsdObjInfoInit(info);
+	if((info->head.flags & 1) == 0){
+		(*info->head.info_init)();
+	}
 
 	HSD_Class* class = (*info->alloc)(info);
 	if(class == NULL){

@@ -26,8 +26,8 @@ typedef struct _HSD_ClassInfoHead {
 	u32 flags; //0x04
 	char* library_name; //0x08
 	char* class_name; //0x0C
-	u16 obj_size; //0x10
-	u16 info_size; //0x12
+	s16 obj_size; //0x10
+	s16 info_size; //0x12
 	struct _HSD_ClassInfo* parent; //0x14
 	struct _HSD_ClassInfo* next; //0x18
 	struct _HSD_ClassInfo* child; //0x1C
@@ -85,7 +85,7 @@ void* HSD_ObjAlloc(HSD_ObjAllocData *);
 void HSD_ObjFree(HSD_ObjAllocData *, HSD_ObjAllocLink *);
 void HSD_ObjAllocInit(HSD_ObjAllocData *, u32, u32);
 
-void hsdInitClassInfo(HSD_ClassInfo *, HSD_ClassInfo *, char *, char*, u64, u64);
+void hsdInitClassInfo(HSD_ClassInfo *, HSD_ClassInfo *, char *, char*, s32, s32);
 void* hsdNew(HSD_ClassInfo *);
 HSD_ClassInfo* hsdSearchClassInfo(char *);
 
