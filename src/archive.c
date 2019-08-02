@@ -1,6 +1,10 @@
 #include "archive.h"
 #include "hsd/hsd_memory.h"
 
+#include <malloc.h>
+
+#include <di/di.h>
+
 static s32 file_load_status = 0;
 
 Archive_Allocation alloc_data[6];
@@ -56,7 +60,6 @@ u32 Archive_GetDVDFileLengthByEntry(s32 entry){
         HSD_Halt("Archive_GetDVDFileLengthByEntry: Could not open file");
     }
     len = handle.len;
-    DVDClose(&handle);
     IRQ_Restore(intr);
     return len;
 }
@@ -75,38 +78,25 @@ u32 Archive_GetDVDFileLengthByName(char* filepath){
         HSD_Halt("Archive_GetDVDFileLengthByName: Could not open file");
     }
     len = handle.len;
-    DVDClose(&handle);
     IRQ_Restore(intr);
     return len;
 }
 
 //8001668C
-void Archive_LoadFileIntoMemory(char* filepath, void* mem, u32* filelength){
-    file_load_status = 0;
-    /*Archive_PathFromFilename(filename);*/
+void Archive_LoadFileIntoMemory(char* filepath, u8* mem, u32 filelength){
     s32 entry = DVDConvertPathToEntrynum(filepath);
     if(entry == -1){
         HSD_Halt("Archive_LoadFileIntoMemory: Could not locate file");
     }
-    *filelength = Archive_GetDVDFileLengthByEntry(entry);
-    /*u32 unk;
-    if((int)mem < 0x80000000) {
-        unk = 0x23;
-    }else {
-        unk = 0x21;
-    }
-    sub_8038FD64(entry, 0, mem, *filelength + 0x1fU & 0xffffffe0, unk, 1, Archive_8001615C, 0);*/
 
     /* The below is unique to Fray in order to accomplish the file loading */
     dvdfileinfo handle;
     if(!DVDFastOpen(entry, &handle)){
         HSD_Halt("Archive_LoadFileIntoMemory: Could not open file");
     }
-    DVD_ReadAbsAsyncForBS(&handle.block, mem, (*filelength + 0x1F) & 0xFFFFFFE0, handle.addr, Archive_DVDCallback);
-    s32 status = 0;
-    do {
-        status = Archive_GetFileLoadStatus();
-    } while (status == 0);
+    dvdcmdblk cmdblk;
+    u32 addr = handle.addr;
+    DVD_ReadPrio(&cmdblk, mem, filelength, addr, 2);
 }
 
 //80016A54
@@ -126,11 +116,10 @@ void Archive_LoadFileSections(char* filename, u32 sections, ...){
     va_list ap;
 
     u32 file_size = Archive_GetDVDFileLengthByName(filename);
-    void* dat_file = Archive_Alloc(0, (file_size + 0x1F) & 0xFFFFFFE0); //This (size + 0x1F) & 0xFFFFFFE0 aligns the file size along 0x20 sized boundaries, IE Anything from 0x74581 - 0x745A0 would become 0x745A0
-    HSD_Archive* archive = (HSD_Archive*)Archive_Alloc(0, sizeof(HSD_Archive));
-    u32 filelength;
-    Archive_LoadFileIntoMemory(filename, dat_file, &filelength);
-    Archive_InitializeDAT(archive, (u8*)dat_file, filelength);
+    u8* dat_file = memalign(32, file_size); //This (size + 0x1F) & 0xFFFFFFE0 aligns the file size along 0x20 sized boundaries, IE Anything from 0x74581 - 0x745A0 would become 0x745A0
+    HSD_Archive* archive = (HSD_Archive*)malloc(sizeof(HSD_Archive));
+    Archive_LoadFileIntoMemory(filename, dat_file, file_size);
+    Archive_InitializeDAT(archive, dat_file, file_size);
 
     va_start(ap, sections);
     while(sections > 0) {
