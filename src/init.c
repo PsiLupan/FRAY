@@ -110,6 +110,7 @@ void Init_Game(){
 	}else {
 		gamestate.curr_major = 40;
 	}
+	gamestate.curr_major = 0; //DEBUG
 	gamestate.prev_major = 45;
 	while ( 1 )
 	{

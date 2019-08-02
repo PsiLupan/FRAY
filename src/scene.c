@@ -20,9 +20,9 @@ MinorScene GmOpening_Minors[2] = {
 }; //803DFDD8
 
 MinorSceneHandler scene_handlers[46] = {
-  {0, 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL},
-  {40, 0, 0, Scene_Minor_Class40_OnFrame, Scene_Minor_Class40_OnLoad, Scene_Minor_Class40_OnLeave, NULL},
-  {45, 0, 0, NULL, NULL, NULL, NULL}
+  {0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL},
+  {40, 0, Scene_Minor_Class40_OnFrame, Scene_Minor_Class40_OnLoad, Scene_Minor_Class40_OnLeave, NULL},
+  {45, 0, NULL, NULL, NULL, NULL}
 }; //803DA920 - 45 in length
 
 MajorScene major_scenes[46] = {

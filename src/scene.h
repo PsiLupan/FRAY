@@ -56,8 +56,7 @@ extern GameState gamestate;
 
 typedef struct _MinorSceneHandler {
 	u8 class_id;
-	u16 pad;
-	u8 pad2;
+	u32 pad:3;
 	void (*OnFrame)();
 	void (*OnLoad)();
 	void (*OnLeave)();
