@@ -89,7 +89,7 @@ s32 HSD_ArchiveParse(HSD_Archive* archive, u8* src, u32 file_size){
             offset = 0;
             for(u32 i = 0; i < archive->header.nb_reloc; i++){
                 u8* data = archive->data;
-                u32 ptr = *((u32*)(archive->reloc_info->offset + offset));
+                u32 ptr = archive->reloc_info->offset + offset;
                 offset += 4;
                 *(u8**)(data + ptr) = data + *((u32*)(data + ptr)); 
             }
