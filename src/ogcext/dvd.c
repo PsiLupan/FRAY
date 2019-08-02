@@ -25,7 +25,7 @@ dvdcmdblk cmdblk;
 static void __DVDFSInit(){
     start_memory = (u32*)(0x80000000);
 
-    assert(DVD_ReadPrio(&cmdblk, fst_info, 32, 0x424/4<<2, 2) > 0); //Offset because DVD_ReadPrio seems to like specific sizes
+    assert(DVD_ReadPrio(&cmdblk, fst_info, 32, 0x424, 2) > 0);
     
     s64 fst_offset = ((u32*)fst_info)[0];
     u32 fst_size = ((u32*)(fst_info))[1];
