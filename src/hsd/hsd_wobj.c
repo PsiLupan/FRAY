@@ -4,9 +4,9 @@
 
 #include "hsd_jobj.h"
 
-static void HSD_WObjInfoInit();
+static void WObjInfoInit();
 
-HSD_WObjInfo hsdWObj = { HSD_WObjInfoInit };
+HSD_WObjInfo hsdWObj = { WObjInfoInit };
 
 static HSD_WObjInfo* default_class = NULL; 
 
@@ -243,8 +243,8 @@ static void WObjAmnesia(HSD_ClassInfo* info){
 }
 
 //8037D900
-static void HSD_WObjInfoInit(){
-    hsdInitClassInfo(HSD_CLASS_INFO(&hsdWObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_wobj", sizeof(HSD_WObjInfo), sizeof(HSD_WObj));
+static void WObjInfoInit(){
+    hsdInitClassInfo(HSD_CLASS_INFO(&hsdWObj), HSD_CLASS_INFO(&hsdObj), HSD_BASE_CLASS_LIBRARY, "hsd_wobj", sizeof(HSD_WObjInfo), sizeof(HSD_WObj));
     HSD_CLASS_INFO(&hsdWObj)->release = WObjRelease;
 	HSD_CLASS_INFO(&hsdWObj)->amnesia = WObjAmnesia;
     HSD_WOBJ_INFO(&hsdWObj)->load = WObjLoad;

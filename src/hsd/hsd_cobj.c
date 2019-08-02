@@ -812,7 +812,7 @@ static void CObjAmnesia(HSD_ClassInfo *info){
 
 //8036A8BC
 static void CObjInfoInit(){
-    hsdInitClassInfo(HSD_CLASS_INFO(&hsdCObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_cobj", sizeof(HSD_CObjInfo), sizeof(HSD_CObj));
+    hsdInitClassInfo(HSD_CLASS_INFO(&hsdCObj), HSD_CLASS_INFO(&hsdObj), HSD_BASE_CLASS_LIBRARY, "hsd_cobj", sizeof(HSD_CObjInfo), sizeof(HSD_CObj));
 
     HSD_OBJECT_INFO(&hsdCObj)->init = CObjInit;
     HSD_OBJECT_INFO(&hsdCObj)->release = CObjRelease;

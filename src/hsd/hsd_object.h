@@ -77,7 +77,7 @@ struct unk_80406E48 {
 	u32 unk0C;
 };
 
-extern HSD_ObjInfo objInfo;
+extern HSD_ObjInfo hsdObj;
 extern HSD_ClassInfo hsdClass;
 
 void HSD_ObjAllocAddFree(HSD_ObjAllocData *, u32);

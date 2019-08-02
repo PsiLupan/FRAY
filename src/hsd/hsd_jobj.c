@@ -1626,7 +1626,7 @@ static void JObjAmnesia(HSD_ClassInfo* info){
 
 //803737F4
 static void JObjInfoInit(){
-	hsdInitClassInfo(HSD_CLASS_INFO(&hsdJObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_jobj", sizeof(HSD_JObjInfo), sizeof(HSD_JObj));
+	hsdInitClassInfo(HSD_CLASS_INFO(&hsdJObj), HSD_CLASS_INFO(&hsdObj), HSD_BASE_CLASS_LIBRARY, "hsd_jobj", sizeof(HSD_JObjInfo), sizeof(HSD_JObj));
 	HSD_CLASS_INFO(&hsdJObj)->init = JObjInit;
 	HSD_CLASS_INFO(&hsdJObj)->release = JObjRelease;
 	HSD_CLASS_INFO(&hsdJObj)->amnesia = JObjAmnesia;

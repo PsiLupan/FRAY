@@ -871,7 +871,7 @@ static void LObjAmnesia(HSD_ClassInfo *info){
 //80367688
 static void LObjInfoInit(void){
 	hsdInitClassInfo(HSD_CLASS_INFO(&hsdLObj),
-		HSD_CLASS_INFO(&hsdClass),
+		HSD_CLASS_INFO(&hsdObj),
 		HSD_BASE_CLASS_LIBRARY,
 		"hsd_lobj",
 		sizeof(HSD_LObjInfo),
