@@ -1,5 +1,6 @@
 #include "dvd.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -17,35 +18,26 @@ static u32* start_memory = NULL; //r13_4428
 static lwpq_t dvd_wait_queue;
 
 u8* fst;
-u8* fst_info[32];
+u8 fst_info[32];
 
 dvdcmdblk cmdblk;
 
 static void __DVDFSInit(){
     start_memory = (u32*)(0x80000000);
 
-    if(DVD_ReadPrio(&cmdblk, fst_info, 32, 0x424/4<<2, 2) <= 0){ //Offset because DVD_ReadPrio seems to like specific sizes
-        return;
-    }
+    assert(DVD_ReadPrio(&cmdblk, &fst_info, 32, 0x424/4<<2, 2) > 0); //Offset because DVD_ReadPrio seems to like specific sizes
     
     u32 fst_offset = ((u32*)fst_info)[0];
     u32 fst_size = ((u32*)fst_info)[1];
-    start_memory[14] = fst_offset; //Setting this for debugging purposes
     start_memory[15] = fst_size;
 
-    u32* dvd_fst;
-    if(DVD_ReadPrio(&cmdblk, dvd_fst, fst_size, fst_offset, 2) <= 0){
-        return;
-    }
-
     fst = malloc(fst_size);
-    fst = memcpy(fst, dvd_fst, fst_size);
+    assert(DVD_ReadPrio(&cmdblk, fst, fst_size, fst_offset, 2) > 0);
 
     start_memory[14] = (u32)fst;
     entry_table = (FSTEntry*)fst;
     total_entries = entry_table[0].len;
     string_table = (char*)&(entry_table[total_entries]);
-    return;
 }
 
 void DVDInit(){

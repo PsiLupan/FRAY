@@ -99,7 +99,7 @@ void Init_Game(){
 	u8 curr_major;	
 	memset(&gamestate, 0, 20);
 	MajorScene* major_scenes = Scene_GetMajorScenes();
-	for (u32 i = 0; i < 45; i += 1 )
+	for (u32 i = 0; major_scenes[i].idx != 45; i += 1 )
 	{
 		if( major_scenes[i].Init ){ //For things such as VS, this points to a function that allocates the memory for StartMelee, etc..
 			major_scenes[i].Init();
