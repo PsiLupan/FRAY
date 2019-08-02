@@ -608,7 +608,7 @@ u8* Scene_ProcessMajor(u8 scene){
 	MajorScene* scene_ptr = NULL;
 	u8* result;
 
-	for (u32 i = 0; i < 45; i += 1 ){
+	for (u32 i = 0; major_scenes[i].idx != 45; i += 1 ){
 		if ( major_scenes[i].idx == scene )
 		{
 			scene_ptr = &major_scenes[i];
@@ -648,7 +648,7 @@ JMP_PROCESS:
     gamestate.pending = FALSE;
     gamestate.curr_major = 0;
     scene_ptr = NULL;
-    for(u32 i = 0; i < 45; i++){
+    for(u32 i = 0; major_scenes[i].idx != 45; i++){
       if(major_scenes[i].idx == major){
         scene_ptr = &major_scenes[i];
       }
@@ -724,12 +724,9 @@ void Scene_PrepCommon(){
 //801A4CE0
 MinorSceneHandler* Scene_GetSceneHandlerByClass(u8 class_id){
   MinorSceneHandler* sh = Scene_GetClassHandler();
-  for ( u32 i = 0; i < 45 ; i++ ){
+  for ( u32 i = 0; sh[i].class_id != 45 ; i++ ){
     if ( sh[i].class_id == class_id ){
       return &sh[i];
-    }
-    if ( sh[i].class_id == 45){
-      break;
     }
   }
   return NULL;
