@@ -65,11 +65,11 @@ typedef struct _Archive_Allocation {
 
 u32 Archive_GetDVDFileLengthByEntry(s32);
 u32 Archive_GetDVDFileLengthByName(char *);
-void Archive_InitializeDAT(s32 *, s32 *, u32);
+void Archive_InitializeDAT(HSD_Archive *, u8 *, u32);
 void Archive_LoadFileSections(char *, u32, ...);
-void* Archive_GetFileSection(void *, char *);
-char* Archive_GetString(s32 *, u32);
-void Archive_InitXrefs(s32 *, char *, u32);
-s32 HSD_ArchiveParse(s32 *, s32 *, u32);
+void* HSD_ArchiveGetPublicAddress(HSD_Archive *, char *);
+char* HSD_ArchiveGetExtern(HSD_Archive *, u32);
+void HSD_ArchiveLocateExtern(HSD_Archive *, char *, void*);
+s32 HSD_ArchiveParse(HSD_Archive *, u8 *, u32);
 
 #endif

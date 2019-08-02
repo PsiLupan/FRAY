@@ -53,7 +53,7 @@ u32 Archive_GetDVDFileLengthByEntry(s32 entry){
     u32 intr = IRQ_Disable();
     dvdfileinfo handle;
     if(!DVDFastOpen(entry, &handle)){
-        HSD_Halt("Archive_GetDVDFileLength: Could not open file");
+        HSD_Halt("Archive_GetDVDFileLengthByEntry: Could not open file");
     }
     len = handle.len;
     DVDClose(&handle);
@@ -62,18 +62,17 @@ u32 Archive_GetDVDFileLengthByEntry(s32 entry){
 }
 
 //800163D8
-u32 Archive_GetDVDFileLengthByName(char* filename){
+u32 Archive_GetDVDFileLengthByName(char* filepath){
     u32 len = 0;
-    /*char* file_path = sub_80016204(filename);
-    s32 entry = DVDConvertPathToEntrynum(file_path);*/
-    s32 entry = DVDConvertFilenameToEntrynum(filename);
+    /*char* file_path = Archive_PathFromFilename(filename);*/
+    s32 entry = DVDConvertPathToEntrynum(filepath);
     if(entry == -1){
-        HSD_Halt("Archive_GetFileSize: Could not locate file");
+        HSD_Halt("Archive_GetDVDFileLengthByName: Could not locate file");
     }
     u32 intr = IRQ_Disable();
     dvdfileinfo handle;
     if(!DVDFastOpen(entry, &handle)){
-        HSD_Halt("Archive_GetFileSize: Could not open file");
+        HSD_Halt("Archive_GetDVDFileLengthByName: Could not open file");
     }
     len = handle.len;
     DVDClose(&handle);
@@ -82,10 +81,10 @@ u32 Archive_GetDVDFileLengthByName(char* filename){
 }
 
 //8001668C
-void Archive_LoadFileIntoMemory(char* filename, void* mem, u32* filelength){
+void Archive_LoadFileIntoMemory(char* filepath, void* mem, u32* filelength){
     file_load_status = 0;
     /*Archive_PathFromFilename(filename);*/
-    s32 entry = DVDConvertPathToEntrynum(filename);
+    s32 entry = DVDConvertPathToEntrynum(filepath);
     if(entry == -1){
         HSD_Halt("Archive_LoadFileIntoMemory: Could not locate file");
     }
@@ -111,14 +110,14 @@ void Archive_LoadFileIntoMemory(char* filename, void* mem, u32* filelength){
 }
 
 //80016A54
-void Archive_InitializeDAT(s32* header_info, s32* dat_file, u32 file_size){
-    assert(HSD_ArchiveParse(header_info, dat_file, file_size) != -1);
+void Archive_InitializeDAT(HSD_Archive* archive, u8* dat_file, u32 file_size){
+    assert(HSD_ArchiveParse(archive, dat_file, file_size) != -1);
     u32 offset = 0;
     while(true){
-        char* str = Archive_GetString(header_info, offset++);
+        char* str = HSD_ArchiveGetExtern(archive, offset++);
         if ( str == NULL )
             break;
-        Archive_InitXrefs(header_info, str, 0);
+        HSD_ArchiveLocateExtern(archive, str, 0);
     }
 }
 
@@ -128,16 +127,16 @@ void Archive_LoadFileSections(char* filename, u32 sections, ...){
 
     u32 file_size = Archive_GetDVDFileLengthByName(filename);
     void* dat_file = Archive_Alloc(0, (file_size + 0x1F) & 0xFFFFFFE0); //This (size + 0x1F) & 0xFFFFFFE0 aligns the file size along 0x20 sized boundaries, IE Anything from 0x74581 - 0x745A0 would become 0x745A0
-    void* header_info = Archive_Alloc(0, 0x44);
+    HSD_Archive* archive = (HSD_Archive*)Archive_Alloc(0, sizeof(HSD_Archive));
     u32 filelength;
     Archive_LoadFileIntoMemory(filename, dat_file, &filelength);
-    Archive_InitializeDAT((s32*)header_info, (s32*)dat_file, filelength);
+    Archive_InitializeDAT(archive, (u8*)dat_file, filelength);
 
     va_start(ap, sections);
     while(sections > 0) {
         void* file_ptr = va_arg(ap, void *);
         char* section_name = va_arg(ap, char *);
-        file_ptr = Archive_GetFileSection(header_info, section_name);
+        file_ptr = HSD_ArchiveGetPublicAddress(archive, section_name);
         if(file_ptr == NULL){
             HSD_Halt("Could not find section");
         }
@@ -147,55 +146,57 @@ void Archive_LoadFileSections(char* filename, u32 sections, ...){
 }
 
 //80380358
-void* Archive_GetFileSection(void* dat_start, char* section_name){
+void* HSD_ArchiveGetPublicAddress(HSD_Archive* archive, char* symbols){
     u32 iters;
     u32 offset;
     
     iters = 0;
     offset = 0;
     while( true ) {
-        if (*(u32 *)((u32)dat_start + 0xc) <= iters) { //Number of root nodes < iterations
+        if (archive->header.nb_public <= iters) {
             return NULL;
         }
-        s32 cmp_result = strcmp((char *)(*(s32 *)((u32)dat_start + 0x30) + *(u32 *)(*(u32 *)((u32)dat_start + 0x28) + offset + 4)), section_name);
+        s32 cmp_result = strcmp(archive->symbols + *(s32 *)((s32)&archive->public_info->symbol + offset), symbols);
         if (cmp_result == 0) //If both strings are equal, we've found the node
             break;
-        offset = offset + 8;
+        offset += 8;
         iters += 1;
     }
-    return (void *)(*(u32 *)((u32)dat_start + 0x20) + *(u32 *)(*(u32 *)((u32)dat_start + 0x28) + iters * 8));
+    return archive->data + archive->public_info[iters].offset;
 }
 
 //803803FC
-char* Archive_GetString(s32* src, u32 offset){
-    if((offset > -1) && (offset < src[4])){
-        u32* string_ptr = (u32*)(src[12] + *(s32*)(src[11] + offset * 8 + 4));
-        return (char*)string_ptr;
+char* HSD_ArchiveGetExtern(HSD_Archive* archive, u32 offset){
+    if((offset > -1) && (offset < archive->header.nb_extern)){
+        return archive->symbols + archive->extern_info[offset].symbol;
     }
+    return NULL;
 }
 
 //80380434
-void Archive_InitXrefs(s32* header_info, char* str, u32 val){
+void HSD_ArchiveLocateExtern(HSD_Archive* archive, char* symbols, void* addr){
     u32 xref = 0;
     s32 n = -1;
     u32 offset = 0;
-    while(header_info[4] < xref){
-        s32 res = strcmp(str, (char*)(header_info[12] + *(u32*)(header_info[11] + offset + 4)));
+    do {
+        if(archive->header.nb_extern <= xref){
+TOP:
+            if(n != -1){
+                while ( n != -1 && n < archive->header.data_size){
+                    s32* data = (s32*)(archive->data + n);
+                    n = *data;
+                    data = addr;
+                }
+            }
+        }
+        s32 res = strcmp(symbols, archive->symbols + *(u32*)(archive->extern_info->symbol + offset));
         if(res == 0){
-            u32* addr = (u32*)header_info[11];
-            n = addr[2 * xref];
-            break;
+            n = archive->extern_info[xref].offset;
+            goto TOP;
         }
         offset += 8;
         ++xref;
-    }
-    if(n != -1){
-        while ( n != -1 && n < header_info[1] ){
-            u32* addr = (u32*)(header_info[8] + n);
-            n = *addr;
-            *addr = val;
-        }
-    }
+    } while (true);
 }
 
 //803810E4
