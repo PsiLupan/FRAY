@@ -12,7 +12,7 @@ typedef struct _FSTEntry {
     u8 offset[3]; //01-03 - Pointer to name in String Table
     u32 addr;
     u32 len;
-} __attribute__((packed)) FSTEntry;
+} FSTEntry;
 
 void DVDInit();
 void DVD_CheckDisk();

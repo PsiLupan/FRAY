@@ -84,9 +84,8 @@ u32 Archive_GetDVDFileLengthByName(char* filename){
 //8001668C
 void Archive_LoadFileIntoMemory(char* filename, void* mem, u32* filelength){
     file_load_status = 0;
-    /*Archive_PathFromFilename(filename);
-    s32 entry = DVDConvertPathToEntrynum(filename);*/
-    s32 entry = DVDConvertFilenameToEntrynum(filename);
+    /*Archive_PathFromFilename(filename);*/
+    s32 entry = DVDConvertPathToEntrynum(filename);
     if(entry == -1){
         HSD_Halt("Archive_LoadFileIntoMemory: Could not locate file");
     }

@@ -6,11 +6,13 @@
 #include <ogc/lwp.h>
 #include <ogc/irq.h>
 
+#define GET_OFFSET(o) ((u32)((o[0] << 16) | (o[1] << 8) | o[2]))
+
 static dvdcbcallback cb = NULL; //r13_43E4
 static u32 status = 0; //r13_43E8
 static u32 total_entries = 0; //r13_441C
-static char (*string_table)[] = NULL; //r13_4420
-static FSTEntry (*entry_table)[] = NULL; //r13_4424
+static char *string_table = NULL; //r13_4420
+static FSTEntry* entry_table = NULL; //r13_4424
 static u32* start_memory = NULL; //r13_4428
 static lwpq_t dvd_wait_queue;
 
@@ -19,18 +21,15 @@ u8* fst_info[32];
 
 dvdcmdblk cmdblk;
 
-typedef FSTEntry (*TableP)[];
-typedef char (*STableP)[];
-
 static void __DVDFSInit(){
     start_memory = (u32*)(0x80000000);
 
-    if(DVD_ReadPrio(&cmdblk, fst_info, 32, 0x418, 2) <= 0){ //Offset because DVD_ReadPrio seems to like specific sizes
+    if(DVD_ReadPrio(&cmdblk, fst_info, 32, 0x424/4<<2, 2) <= 0){ //Offset because DVD_ReadPrio seems to like specific sizes
         return;
     }
     
-    u32 fst_offset = ((u32*)fst_info)[1];
-    u32 fst_size = ((u32*)fst_info)[2];
+    u32 fst_offset = ((u32*)fst_info)[0];
+    u32 fst_size = ((u32*)fst_info)[1];
     start_memory[14] = fst_offset; //Setting this for debugging purposes
     start_memory[15] = fst_size;
 
@@ -43,9 +42,9 @@ static void __DVDFSInit(){
     fst = memcpy(fst, dvd_fst, fst_size);
 
     start_memory[14] = (u32)fst;
-    entry_table = (TableP)fst;
-    total_entries = (*entry_table)[0].len;
-    string_table = (STableP)(&(*entry_table)[total_entries]);
+    entry_table = (FSTEntry*)fst;
+    total_entries = entry_table[0].len;
+    string_table = (char*)&(entry_table[total_entries]);
     return;
 }
 
@@ -64,10 +63,10 @@ void DVD_CheckDisk(){
 
 BOOL DVDFastOpen(s32 entrynum, dvdfileinfo* fileinfo){
     if(entrynum >= 0 && entrynum < total_entries){
-        u8 filetype = (*entry_table)[entrynum].filetype;
+        u8 filetype = entry_table[entrynum].filetype;
         if(filetype == T_FILE){
-            fileinfo->addr = (*entry_table)[entrynum].addr;
-            fileinfo->len = (*entry_table)[entrynum].len;
+            fileinfo->addr = entry_table[entrynum].addr;
+            fileinfo->len = entry_table[entrynum].len;
             fileinfo->cb = NULL;
             fileinfo->block.state = 0;
             return TRUE;
@@ -192,41 +191,29 @@ BOOL DVDClose(dvdfileinfo* fileinfo){
     return TRUE;
 }
 
-typedef struct _entry { 
-    const char* name; 
-    s32 entrynum; 
-} entry;
-
-entry fst_files[] = {
-    {"/audio/opening.hps", 107},
-    {"/audio/us/kirby.ssm", 161},
-    {"/audio/us/link.ssm", 167},
-    {"/audio/us/luigi.ssm", 168},
-    {"/audio/us/main.ssm", 169},
-    {"/audio/us/smash2.sem", 190},
-    {"GmTtAll.dat", 381},
-    {"GmTtAll.usd", 382},
-    {"LbRb.dat", 492},
-    {"LbRf.dat", 493},
-    {"MnExtAll.dat", 494},
-    {"MnExtAll.usd", 495},
-    {"MnMaAll.dat", 496},
-    {"MnMaAll.usd", 497},
-    {"MvOpen.mth", 530}
-};
-
-/* 
-Cheater function where we have a lookup table to respond to every request
-*/
 s32 DVDConvertFilenameToEntrynum(char* filename){
-    for(entry *p = fst_files; p->name != NULL; ++p){
-        if(strcmp(p->name, filename) == 0){
-            return p->entrynum;
+    FSTEntry *p = entry_table;
+    for(u32 i = 1; i < total_entries; ++i){ //Start @ 1 to skip FST header
+        u32 string_offset = GET_OFFSET(p[i].offset);
+        u32 string = (u32)string_table + string_offset;
+        if(strcmp((char*)string, filename) == 0){
+            return i;
         }
     }
     return -1;
 }
 
 s32 DVDConvertPathToEntrynum(char* filepath){
-    
+    if(filepath == NULL){
+        return -1;
+    }
+    FSTEntry *p = entry_table;
+    char* file = NULL;
+
+    char* dir = strtok(filepath, "/");
+    while(dir != NULL){
+        file = dir;
+        dir = strtok(NULL, "/");
+    }
+    return DVDConvertFilenameToEntrynum(file);
 }
