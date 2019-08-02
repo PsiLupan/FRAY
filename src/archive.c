@@ -112,7 +112,7 @@ void Archive_LoadFileIntoMemory(char* filename, void* mem, u32* filelength){
 
 //80016A54
 void Archive_InitializeDAT(s32* header_info, s32* dat_file, u32 file_size){
-    assert(Archive_InitHeaderInfo(header_info, dat_file, file_size) != -1);
+    assert(HSD_ArchiveParse(header_info, dat_file, file_size) != -1);
     u32 offset = 0;
     while(true){
         char* str = Archive_GetString(header_info, offset++);
@@ -199,42 +199,41 @@ void Archive_InitXrefs(s32* header_info, char* str, u32 val){
 }
 
 //803810E4
-s32 Archive_InitHeaderInfo(s32* dst, s32* src, u32 file_size){
-    if(dst == NULL){
+s32 HSD_ArchiveParse(HSD_Archive* archive, u8* src, u32 file_size){
+    if(archive == NULL){
         return -1;
     }else{
-        memset(dst, 0, 0x44);
-        dst[0xF] = dst[0xF] | 1;
-        memcpy(dst, src, 0x20);
-        if(dst[0] == file_size){
-            u32 offset = 0x20;
-            if(dst[1] != 0){ //Body Size
-                dst[8] = src[8];
-                offset = src[1] + 0x20;
+        memset(archive, 0, sizeof(HSD_Archive));
+        archive->flags |= 1;
+        memcpy(archive, src, sizeof(HSD_ArchiveHeader));
+        if(archive->header.file_size == file_size){
+            u32 offset = sizeof(HSD_ArchiveHeader);
+            if(archive->header.data_size != 0){ //Body Size
+                archive->data = src + 0x20;
+                offset = archive->header.data_size + 0x20;
             }
-            if(dst[2] != 0){ //Relocation Size
-                dst[9] = (s32)src + offset;
-                offset = offset + dst[2] * 4;
+            if(archive->header.nb_reloc != 0){ //Relocation Size
+                archive->reloc_info = (HSD_ArchiveRelocationInfo*)((s32)src + offset);
+                offset = offset + archive->header.nb_reloc * 4;
             }
-            if(dst[3] != 0){ //Root Size
-                dst[10] = (s32)src + offset;
-                offset = offset + dst[3] * 8;
+            if(archive->header.nb_public != 0){ //Root Size
+                archive->public_info = (HSD_ArchivePublicInfo*)((s32)src + offset);
+                offset = offset + archive->header.nb_public * 8;
             }
-            if(dst[4] != 0){ //XRef Size
-                dst[11] = (s32)src + offset;
-                offset = offset + dst[4] * 8;
+            if(archive->header.nb_extern != 0){ //XRef Size
+                archive->extern_info = (HSD_ArchiveExternInfo*)((s32)src + offset);
+                offset = offset + archive->header.nb_extern * 8;
             }
-            if(offset < dst[0]){ //File Size
-                dst[12] = (s32)src + offset;
+            if(offset < archive->header.file_size){ //File Size
+                archive->symbols = (char*)((s32)src + offset);
             }
-            u32 iter = 0;
-            *(u32**)(dst + 0x10) = src;
+            archive->top_ptr = (void*)src;
             offset = 0;
-            for(u32 i = 0; i < dst[2]; i++){
-                u32 val = dst[8];
-                u32* ptr = (u32*)(dst[9] + offset);
+            for(u32 i = 0; i < archive->header.nb_reloc; i++){
+                u8* data = archive->data;
+                u32 ptr = *((u32*)(archive->reloc_info->offset + offset));
                 offset += 4;
-                *(u32*)(val + *ptr) = *(u32*)(val + *ptr) + val; 
+                *(u8**)(data + ptr) = data + *((u32*)(data + ptr)); 
             }
         }else{
             HSD_Panic("Archive_Parse: Byte-Order mismatch");
