@@ -1,7 +1,7 @@
 #include "dvd.h"
 
 #include <assert.h>
-#include <stdlib.h>
+#include <malloc.h>
 #include <string.h>
 
 #include <ogc/lwp.h>
@@ -25,17 +25,17 @@ dvdcmdblk cmdblk;
 static void __DVDFSInit(){
     start_memory = (u32*)(0x80000000);
 
-    assert(DVD_ReadPrio(&cmdblk, fst_info, 32, 0x424, 2) > 0);
+    assert(DVD_ReadPrio(&cmdblk, fst_info, 32, 0x424/4<<2, 2) > 0);
     
     s64 fst_offset = ((u32*)fst_info)[0];
     u32 fst_size = ((u32*)(fst_info))[1];
     start_memory[15] = fst_size;
 
-    fst = malloc(fst_size);
+    fst = memalign(32, fst_size);
     start_memory[14] = (u32)fst;
     assert(DVD_ReadPrio(&cmdblk, fst, fst_size, fst_offset, 2) > 0);
 
-    entry_table = (FSTEntry*)fst;  //Incorrect, because there's some bug where the DVD Read is writing backwards by 8 bytes no matter what
+    entry_table = (FSTEntry*)fst;
     total_entries = entry_table[0].len;
     string_table = (char*)&(entry_table[total_entries]);
 }
