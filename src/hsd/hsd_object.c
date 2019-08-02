@@ -3,11 +3,11 @@
 static void ObjInfoInit();
 static void _hsdInfoInit();
 
-HSD_ClassInfo hsdClass = { 
+HSD_ObjInfo hsdObj = { 
 	ObjInfoInit
 };
 
-HSD_ObjInfo hsdObj = {
+HSD_ClassInfo hsdClass = {
 	_hsdInfoInit
 };
 
@@ -108,7 +108,7 @@ void HSD_ObjAllocInit(HSD_ObjAllocData* init_obj, u32 size, u32 align){
 
 //8037E6C4
 static void ObjInfoInit(){
-	hsdInitClassInfo(HSD_CLASS_INFO(&hsdClass), HSD_CLASS_INFO(&hsdObj), HSD_BASE_CLASS_LIBRARY, "has_class", sizeof(HSD_ClassInfo), 8);
+	hsdInitClassInfo(HSD_CLASS_INFO(&hsdObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "has_obj", sizeof(HSD_ObjInfo), 8);
 }
 
 //80381BE4
