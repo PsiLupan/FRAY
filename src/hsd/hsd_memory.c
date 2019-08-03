@@ -227,7 +227,7 @@ void* hsdAllocMemPiece(u32 size){
 		entry->data = piece->next;
 		entry->nb_free -= 1;
 	}else{
-		for(HSD_MemoryEntry* i = entry->next; i != NULL; i = entry->next){
+		for(HSD_MemoryEntry* i = entry->next; i != NULL; i = i->next){
 			if(i->data != NULL){
 				adj_size = (i->total_bits - entry->total_bits) + 0x1F;
 				entry_2 = GetMemoryEntry(adj_size >> 5) + (u32)(adj_size < 0 && (adj_size & 0x1F) != 0) - 1;
