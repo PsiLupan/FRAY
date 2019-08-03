@@ -35,46 +35,65 @@ void HSD_ObjAllocAddFree(HSD_ObjAllocData* obj_def, u32 num){
 
 //8037ABC8
 void* HSD_ObjAlloc(HSD_ObjAllocData* obj_def){
-	if( ((obj_def->flags >> 7) & 1) && (obj_def->used >= obj_def->num_limit) ){
+	if (((obj_def->flags >> 7) & 1) == 0 || obj_def->used < obj_def->num_limit)
+	{
+		if ((obj_def->flags >> 6) & 1)
+		{
+			if (obj_def->heap_limit_num == -1)
+			{
+				u64 bytes_avail;
+				if (objheap.heap_start)
+				{
+					bytes_avail = objheap.bytes_remaining;
+				}
+				else
+				{
+					bytes_avail = SYS_GetArena1Size();
+				}
+				if (bytes_avail <= obj_def->heap_limit_size)
+				{
+					obj_def->heap_limit_num = obj_def->used + obj_def->free;
+				}
+			}
+			else
+			{
+				u64 bytes_avail;
+				if (objheap.heap_start)
+				{
+					bytes_avail = objheap.bytes_remaining;
+				}
+				else
+				{
+					bytes_avail = SYS_GetArena1Size();
+				}
+				if (bytes_avail > obj_def->heap_limit_size)
+				{
+					obj_def->heap_limit_num = -1;
+				}
+			}
+		}
+		if (obj_def->free == 0)
+		{
+			HSD_ObjAllocAddFree(obj_def, 1);
+			if (obj_def->free == 0)
+			{
+				return NULL;
+			}
+		}
+		HSD_ObjAllocLink *obj_ptr = obj_def->freehead->next;
+		obj_def->freehead = obj_ptr;
+		obj_def->used += 1;
+		obj_def->free -= 1;
+		if (obj_def->used > obj_def->peak)
+		{
+			obj_def->peak = obj_def->used;
+		}
+		return obj_ptr;
+	}
+	else
+	{
 		return NULL;
 	}
-	if( ((obj_def->flags >> 6) & 1) ){
-		if(obj_def->heap_limit_num == -1){
-			u64 bytes_avail;
-			if(objheap.heap_start){
-				bytes_avail = objheap.bytes_remaining;
-			}else{
-				bytes_avail = SYS_GetArena1Size();
-			}
-			if(bytes_avail <= obj_def->heap_limit_size){
-				obj_def->heap_limit_num = obj_def->used + obj_def->free;
-			}
-		}else{
-			u64 bytes_avail;
-			if(objheap.heap_start){
-				bytes_avail = objheap.bytes_remaining;
-			}else{
-				bytes_avail = SYS_GetArena1Size();
-			}
-			if(bytes_avail > obj_def->heap_limit_size){
-				obj_def->heap_limit_num = -1;
-			}
-		}
-	}
-	if(obj_def->free == 0){
-		HSD_ObjAllocAddFree(obj_def, 1);
-		if(obj_def->free == 0){
-			return NULL;
-		}
-	}
-	HSD_ObjAllocLink* obj_ptr = obj_def->freehead->next;
-	obj_def->freehead->next = obj_ptr;
-	obj_def->used += 1;
-	obj_def->free -= 1;
-	if(obj_def->used > obj_def->peak){
-		obj_def->peak = obj_def->used;
-	}
-	return obj_ptr;
 }
 
 //8037AD20
