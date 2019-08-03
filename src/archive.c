@@ -123,10 +123,10 @@ void Archive_LoadFileSections(char* filename, u32 sections, ...){
 
     va_start(ap, sections);
     while(sections > 0) {
-        void* file_ptr = va_arg(ap, void *);
+        void** file_ptr = va_arg(ap, void **);
         char* section_name = va_arg(ap, char *);
-        file_ptr = HSD_ArchiveGetPublicAddress(archive, section_name);
-        if(file_ptr == NULL){
+        *file_ptr = HSD_ArchiveGetPublicAddress(archive, section_name);
+        if(*file_ptr == NULL){
             HSD_Halt("Could not find section");
         }
         sections -= 2;
