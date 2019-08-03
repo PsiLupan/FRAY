@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-static HSD_MemoryEntry** memory_list;
+static HSD_MemoryEntry** memory_list = NULL;
 static u32 nb_memory_list = 0;
 
 HSD_ObjAllocData free_alloc; //804C233C
@@ -128,9 +128,21 @@ void* HSD_MemAlloc(u32 size){
 //80381D58
 HSD_MemoryEntry* GetMemoryEntry(u32 idx){
 	assert(idx >= 0);
-	if ( idx >= nb_memory_list )
+	if ( nb_memory_list <= idx )
 	{
-		if ( nb_memory_list > 0 ){ //Basically amounts to resizing the array by doubling the size and copying entries to a new array
+		if ( nb_memory_list == 0 ){ //In this case, it's uninitialized and allocs the array
+			u32 j = 32;
+			while(idx >= j){
+				j << 1;
+			}
+			HSD_MemoryEntry** entry = (HSD_MemoryEntry**)HSD_MemAlloc(4 * j);
+			memory_list = entry;
+			if ( memory_list == NULL ){
+				return NULL;
+			}
+			memset(memory_list, 0, j << 2);
+			nb_memory_list = j;
+		} else { //Resizes the array
 			u32 i;
 			u32 nb = nb_memory_list;
 			do {
@@ -152,40 +164,28 @@ HSD_MemoryEntry* GetMemoryEntry(u32 idx){
 			hsdFreeMemPiece(mem_list, i);
 			HSD_MemoryEntry* unk_entry = (HSD_MemoryEntry*)(*memory_list + (i + 31 >> 3 & 0x1FFFFFFC) - 4);
 			unk_entry->nb_alloc += 1;
-		} else { //In this case, it's uninitialized and allocs the array
-			u32 j = 32;
-			while(idx >= j){
-				j *= 2;
-			}
-			HSD_MemoryEntry* entry = (HSD_MemoryEntry*)HSD_MemAlloc(4 * j);
-			memory_list = &entry;
-			if ( entry == NULL ){
-				return NULL;
-			}
-			memset(entry, 0, 4 * j);
-			nb_memory_list = j;
 		}
 	}
 
-	s32 midx = idx;
-	if ( memory_list[midx] == NULL ) {
+	s32 midx = idx * 4;
+	if ( memory_list[idx * 4] == NULL ) {
 		HSD_MemoryEntry* t_entry = (HSD_MemoryEntry*)HSD_MemAlloc(0x14u);
 		if ( t_entry == NULL ){
 			return NULL;
 		}
 		memset(t_entry, 0, 0x14u);
-		t_entry->total_bits = 32 * (idx + 1);
-		memory_list[midx] = t_entry;
+		t_entry->total_bits =  (midx + 1) * 0x20;
+		memory_list[idx * 4] = t_entry;
 		
-		s32 i = idx - 1;
+		s32 i = midx - 1;
 		u32* entry = (u32*)memory_list[i];
-		u32 t_idx = idx;
+		u32 t_idx = midx;
 		if ( i >= 0 ){
 			do {
 				if ( *entry != 0){
 					t_entry->next = memory_list[i]->next;
 					memory_list[i]->next = t_entry->next;
-					return memory_list[midx];
+					return memory_list[midx * 4];
 				}
 				entry = entry - 4;
 				--i;
@@ -207,7 +207,7 @@ HSD_MemoryEntry* GetMemoryEntry(u32 idx){
 			} while(t_idx > 0);
 		}
 	}
-	return memory_list[midx];
+	return memory_list[midx * 4];
 }
 
 //80381FA8
@@ -239,7 +239,7 @@ void* hsdAllocMemPiece(u32 size){
 				i->nb_free -= 1;
 				i->nb_alloc -= 1;
 				
-				HSD_FreeList* np = (HSD_FreeList*)((u8*)piece->next + entry->total_bits);
+				HSD_FreeList* np = (HSD_FreeList*)((u32)&piece->next + entry->total_bits);
 				np->next = entry_2->data;
 				entry_2->data = np;
 				entry_2->nb_alloc += 1;
@@ -253,7 +253,7 @@ void* hsdAllocMemPiece(u32 size){
 			piece = (HSD_FreeList*)HSD_MemAlloc(nb_memory_list * 32);
 			if(piece != NULL){
 				if(tmp_size >= 0){
-					HSD_FreeList* np = (HSD_FreeList*)((u8*)piece->next + entry->total_bits);
+					HSD_FreeList* np = (HSD_FreeList*)((u32)&piece->next + entry->total_bits);
 					np->next = entry_2->data;
 					entry_2->data = np;
 					entry_2->nb_alloc += 1;
