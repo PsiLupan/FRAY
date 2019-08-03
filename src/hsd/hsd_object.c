@@ -3,6 +3,8 @@
 static void ObjInfoInit();
 static void _hsdInfoInit();
 
+HSD_ObjAllocData* alloc_datas;
+
 HSD_ObjInfo hsdObj = { 
 	ObjInfoInit
 };
@@ -12,16 +14,16 @@ HSD_ClassInfo hsdClass = {
 };
 
 static struct {
-	void* heap_start;
-	void* heap_pos;
+	u32 heap_start;
+	u32 heap_pos;
 	u32 size;
 	u32 bytes_remaining;
 } objheap; //80406E48
 
 //8037A94C
 void HSD_ObjSetHeap(u32 size, void* start){
-	objheap.heap_start = start;
-	objheap.heap_pos = start;
+	objheap.heap_start = (u32)start;
+	objheap.heap_pos = (u32)start;
 	objheap.size = size;
 	objheap.bytes_remaining = size;
 }
@@ -29,54 +31,100 @@ void HSD_ObjSetHeap(u32 size, void* start){
 static HSD_ObjAllocData* current_obj = NULL; //r13_3FC0
 
 //8037A968
-void HSD_ObjAllocAddFree(HSD_ObjAllocData* obj_def, u32 num){
+s32 HSD_ObjAllocAddFree(HSD_ObjAllocData* obj_def, u32 num){
 	assert(obj_def != NULL);
+	u32 size = obj_def->size * num;
+	u32 obj_pos;
+	if(objheap.heap_start == 0){
+		void* heap = HSD_MemAlloc(size);
+		if(heap == NULL){
+			return 0;
+		}
+		objheap.bytes_remaining -= size;
+	}else{
+		u32 heap_end = (objheap.heap_start + objheap.size);
+		obj_pos = (objheap.heap_pos + obj_def->align & ~obj_def->align);
+		if(heap_end < obj_pos){
+			return 0;
+		}
+		if((heap_end - obj_pos) < size){
+			size = ((heap_end - obj_pos) / objheap.size) * objheap.size;
+		}
+		num = size / objheap.size;
+		if(num == 0){
+			return 0;
+		}
+		objheap.heap_pos = obj_pos + size;
+		objheap.bytes_remaining = heap_end - objheap.heap_pos;
+	}
+
+	u32 inum = num - 1;
+	u32 offset = 0;
+	if(inum != 0){
+		u32 snum = inum >> 3;
+		if(snum != 0){
+			do {
+			    *(void **)(obj_pos + obj_def->size * offset) = (void *)(obj_pos + obj_def->size * (offset + 1));
+				*(void **)(obj_pos + obj_def->size * (offset + 1)) = (void *)(obj_pos + obj_def->size * (offset + 2));
+        		*(void **)(obj_pos + obj_def->size * (offset + 2)) = (void *)(obj_pos + obj_def->size * (offset + 3));
+        		*(void **)(obj_pos + obj_def->size * (offset + 3)) = (void *)(obj_pos + obj_def->size * (offset + 4));
+				*(void **)(obj_pos + obj_def->size * (offset + 4)) = (void *)(obj_pos + obj_def->size * (offset + 5));
+				*(void **)(obj_pos + obj_def->size * (offset + 5)) = (void *)(obj_pos + obj_def->size * (offset + 6));
+				*(void **)(obj_pos + obj_def->size * (offset + 6)) = (void *)(obj_pos + obj_def->size * (offset + 7));
+				*(void **)(obj_pos + obj_def->size * (offset + 7)) = (void *)(obj_pos + obj_def->size * (offset + 8));
+				offset += 8;
+				snum -= 1;
+			} while(snum > 0);
+			inum &= 7;
+			if(inum == 0){
+				*(void **)(obj_pos + obj_def->size * offset) = obj_def->freehead;
+				obj_def->freehead = (void*)obj_pos;
+				obj_def->free = obj_def->free + num;
+				return num;
+			}
+		}
+		do {
+			*(void **)(obj_pos + obj_def->size * offset) = (void *)(obj_pos + obj_def->size * (offset + 1));
+			offset += 1;
+			inum -= 1;
+		} while(inum > 0);
+	}
+	*(void **)(obj_pos + obj_def->size * offset) = obj_def->freehead;
+	obj_def->freehead = (void*)obj_pos;
+	obj_def->free = obj_def->free + num;
+	return num;
 }
 
 //8037ABC8
 void* HSD_ObjAlloc(HSD_ObjAllocData* obj_def){
-	if (((obj_def->flags >> 7) & 1) == 0 || obj_def->used < obj_def->num_limit)
-	{
-		if ((obj_def->flags >> 6) & 1)
-		{
-			if (obj_def->heap_limit_num == -1)
-			{
+	if (((obj_def->flags >> 7) & 1) == 0 || obj_def->used < obj_def->num_limit){
+		if ((obj_def->flags >> 6) & 1){
+			if (obj_def->heap_limit_num == -1){
 				u64 bytes_avail;
-				if (objheap.heap_start)
-				{
+				if (objheap.heap_start != 0){
 					bytes_avail = objheap.bytes_remaining;
-				}
-				else
-				{
+				}else{
 					bytes_avail = SYS_GetArena1Size();
 				}
-				if (bytes_avail <= obj_def->heap_limit_size)
-				{
+				if (bytes_avail <= obj_def->heap_limit_size){
 					obj_def->heap_limit_num = obj_def->used + obj_def->free;
 				}
-			}
-			else
-			{
+			}else{
 				u64 bytes_avail;
-				if (objheap.heap_start)
-				{
+				if (objheap.heap_start){
 					bytes_avail = objheap.bytes_remaining;
 				}
-				else
-				{
+				else{
 					bytes_avail = SYS_GetArena1Size();
 				}
-				if (bytes_avail > obj_def->heap_limit_size)
-				{
+				if (bytes_avail > obj_def->heap_limit_size){
 					obj_def->heap_limit_num = -1;
 				}
 			}
 		}
-		if (obj_def->free == 0)
-		{
+		if (obj_def->free == 0){
 			HSD_ObjAllocAddFree(obj_def, 1);
-			if (obj_def->free == 0)
-			{
+			if (obj_def->free == 0){
 				return NULL;
 			}
 		}
@@ -84,8 +132,7 @@ void* HSD_ObjAlloc(HSD_ObjAllocData* obj_def){
 		obj_def->freehead = obj_ptr;
 		obj_def->used += 1;
 		obj_def->free -= 1;
-		if (obj_def->used > obj_def->peak)
-		{
+		if (obj_def->used > obj_def->peak){
 			obj_def->peak = obj_def->used;
 		}
 		return obj_ptr;

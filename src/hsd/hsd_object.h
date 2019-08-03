@@ -80,7 +80,7 @@ struct unk_80406E48 {
 extern HSD_ObjInfo hsdObj;
 extern HSD_ClassInfo hsdClass;
 
-void HSD_ObjAllocAddFree(HSD_ObjAllocData *, u32);
+s32 HSD_ObjAllocAddFree(HSD_ObjAllocData *, u32);
 void* HSD_ObjAlloc(HSD_ObjAllocData *);
 void HSD_ObjFree(HSD_ObjAllocData *, HSD_ObjAllocLink *);
 void HSD_ObjAllocInit(HSD_ObjAllocData *, u32, u32);
