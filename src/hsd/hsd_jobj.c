@@ -791,7 +791,78 @@ void HSD_JObjSetDefaultClass(HSD_JObjInfo* info){
 }
 
 //80370BEC
-static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* jobj_2){
+static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev){
+	HSD_JObj* res_jobj;
+	if(JOBJ_INSTANCE(desc)){
+		HSD_JObjDesc* child = desc->child;
+    	if (child == NULL){
+      		res_jobj = NULL;
+    	}else{
+			HSD_ClassInfo* info;
+      		if (!child->class_name || !(info = hsdSearchClassInfo(child->class_name))){
+				res_jobj = (HSD_JObj *)HSD_JObjAlloc();
+			}else{
+        		res_jobj = (HSD_JObj *)hsdNew(info);
+        		assert(res_jobj != NULL);
+			}
+			HSD_JOBJ_METHOD(res_jobj)->load(res_jobj, child, jobj);
+		}
+		jobj->child = res_jobj;
+	}
+
+	HSD_JObjDesc* next = desc->next;
+	HSD_JObj* next_jobj;
+	if (next == NULL){
+		next_jobj = NULL;
+  	}else{
+		HSD_ClassInfo* info;
+		if (!next->class_name || !(info = hsdSearchClassInfo(next->class_name))) {
+			next_jobj = (HSD_JObj *)HSD_JObjAlloc();
+		}else{
+			next_jobj = (HSD_JObj *)hsdNew(info);
+			assert(next_jobj != NULL);
+		}
+		HSD_JOBJ_METHOD(next_jobj)->load(next_jobj, next, prev);
+	}
+	jobj->next = next_jobj;
+	jobj->prev = prev;
+	jobj->flags |= desc->flags;
+	if ((jobj->flags & 0x4000) == 0) {
+    	if ((jobj->flags & 0x20) == 0) {
+			jobj->u.dobj = HSD_DObjLoadDesc(desc->u.dobjdesc);
+		}else{
+			jobj->u.ptcl = desc->u.ptcl;
+			HSD_SList* slist = desc->u.ptcl;
+			while(slist != NULL){
+				slist->data = (void*)((u32)slist->data | 0x80000000);
+				slist = slist->next;
+			}
+		}
+	}else{
+		jobj->u.spline = desc->u.spline;
+	}
+	jobj->robj = HSD_RObjLoadDesc(desc->robjdesc);
+	
+	jobj->rotation.x = desc->rotation.x;
+	jobj->rotation.y = desc->rotation.y;
+	jobj->rotation.z = desc->rotation.z;
+	
+	jobj->scale.x = desc->scale.x;
+	jobj->scale.y = desc->scale.y;
+	jobj->scale.z = desc->scale.z;
+	
+	jobj->position.x = desc->position.x;
+	jobj->position.y = desc->position.y;
+	jobj->position.z = desc->position.z;
+	
+	guMtxIdentity(jobj->mtx);
+	jobj->pvec = NULL;
+	if (desc->mtx != NULL) {
+		jobj->vmtx = (MtxP)HSD_MemAlloc(0x30); //HSD_MtxAlloc();
+		memcpy(jobj->vmtx, desc->mtx, 0x30);
+	}
+	HSD_IDInsertToTable(NULL, (u32)desc, jobj);
+	jobj->desc = desc;
 	return 0;
 }
 
