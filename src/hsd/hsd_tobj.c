@@ -392,8 +392,8 @@ static void MakeTextureMtx(HSD_TObj *tobj){
 		guVector trans;
 		guQuaternion rot;
 		
-		scale.x = fabsf(tobj->scale.x) < FLT_EPSILON ? 0.0F : (float)tobj->repeat_s/tobj->scale.x;
-		scale.y = fabsf(tobj->scale.y) < FLT_EPSILON ? 0.0F : (float)tobj->repeat_t/tobj->scale.y;
+		scale.x = fabsf(tobj->scale.x) < FLT_EPSILON ? 0.0F : (f32)tobj->repeat_s/tobj->scale.x;
+		scale.y = fabsf(tobj->scale.y) < FLT_EPSILON ? 0.0F : (f32)tobj->repeat_t/tobj->scale.y;
 		scale.z = tobj->scale.z;
 		rot.x = tobj->rotate.x;
 		rot.y = tobj->rotate.y;
