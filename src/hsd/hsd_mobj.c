@@ -410,7 +410,7 @@ static void MObjRelease(HSD_Class *o){
 	HSD_MObj *mobj = HSD_MOBJ(o);
 	
 	HSD_AObjRemove(mobj->aobj);
-	HSD_MaterialRemove(mobj->mat); //hsdFreeMemPiece
+	hsdFreeMemPiece(mobj->mat, sizeof(HSD_Material)); //hsdFreeMemPiece
 	HSD_TObjRemoveAll(mobj->tobj);
 	
 	if (mobj->tevdesc)
@@ -418,7 +418,7 @@ static void MObjRelease(HSD_Class *o){
 	if (mobj->texp)
 		HSD_TExpFreeList(mobj->texp, HSD_TE_ALL, 1);
 	if (mobj->pe)
-		hsdFreeMemPiece((void*)mobj->pe, sizeof(HSD_PEDesc));
+		hsdFreeMemPiece(mobj->pe, sizeof(HSD_PEDesc));
 	
 	HSD_PARENT_INFO(&hsdMObj)->release(o);
 }
