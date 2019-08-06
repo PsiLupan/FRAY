@@ -1057,6 +1057,127 @@ s32 HSD_TObjAssignResources(HSD_TObj* tobj_top){
   return (s32) texcoord_no;
 }
 
+//80360950
+void HSD_TObjSetup(HSD_TObj *tobj){
+	GXTlutObj tlutobj;
+	GXTexObj texobj;
+	s32 num;
+	HSD_Tlut *tluts[8];
+	s32 nb_tluts = 0;
+	u32 tlut_name = GX_TLUT0;
+	u32 big_tlut_name = GX_BIGTLUT0;
+	s32 i;
+
+	tobj_head = tobj;
+
+	if (tobj == NULL){
+		return;
+	}
+
+	num = HSD_TObjAssignResources(tobj);
+	if (num > 0){
+		HSD_StateRegisterTexGen(HSD_Index2TexCoord(num - 1u));
+	}
+
+	for (; tobj; tobj = tobj->next)
+	{
+		static HSD_TexLODDesc default_lod = {
+			GX_LIN_MIP_LIN,
+			0.0F,
+			GX_FALSE,
+			GX_FALSE,
+			GX_ANISO_1,
+		};
+		HSD_TexLODDesc *lod;
+		HSD_ImageDesc *imagedesc = tobj->imagedesc;
+		u8 min_filter;
+
+		if (tobj->id == GX_TEXMAP_NULL)
+			continue;
+
+		TObjSetupMtx(tobj);
+		assert(imagedesc);
+		assert(imagedesc->img_ptr);
+
+		lod = tobj->lod != NULL ? tobj->lod : &default_lod;
+		min_filter = lod->minFilt;
+
+		switch (imagedesc->format){
+			case GX_TF_CI4:
+			case GX_TF_CI8:
+			case GX_TF_CI14:{
+				HSD_Tlut *tlut;
+
+				if (tobj->tlut_no != (u8)-1){
+					tlut = tobj->tluttbl[tobj->tlut_no];
+				}else{
+					tlut = tobj->tlut;
+				}
+
+				assert(tlut);
+
+				for (i = 0; i < nb_tluts; i++){
+					if (!DifferentTluts(tluts[i], tlut)){
+						break;
+					}
+				}
+
+				if (i < nb_tluts){
+					tlut->tlut_name = tluts[i]->tlut_name;
+				}else if (nb_tluts < 8){
+					if (tlut->n_entries > 256){
+						tlut->tlut_name = big_tlut_name++;
+					}else{
+						tlut->tlut_name = tlut_name++;
+					}
+					GX_InitTlutObj(&tlutobj, tlut->lut, tlut->fmt, tlut->n_entries);
+					GX_LoadTlut(&tlutobj, tlut->tlut_name);
+					tluts[nb_tluts++] = tlut;
+				}else{
+					tlut->tlut_name = GX_TLUT0;
+				}
+				
+				GX_InitTexObjCI(&texobj, imagedesc->img_ptr,
+						imagedesc->width, imagedesc->height,
+						imagedesc->format,
+						tobj->wrap_s, tobj->wrap_t,
+						imagedesc->mipmap ? GX_TRUE : GX_FALSE,
+						tlut->tlut_name);
+				
+				if (min_filter == GX_LIN_MIP_LIN){
+					min_filter = GX_LIN_MIP_NEAR;
+				}
+			}
+			break;
+
+			case GX_TF_I4:
+			case GX_TF_I8:
+			case GX_TF_IA4:
+			case GX_TF_IA8:
+			case GX_TF_RGB565:
+			case GX_TF_RGB5A3:
+			case GX_TF_RGBA8:
+			case GX_TF_CMPR:
+				GX_InitTexObj(&texobj, imagedesc->img_ptr,
+						imagedesc->width, imagedesc->height, imagedesc->format,
+						tobj->wrap_s, tobj->wrap_t,
+						imagedesc->mipmap ? GX_TRUE : GX_FALSE);
+			break;
+
+			default:
+				assert(0);
+		}
+
+		if (!imagedesc->mipmap)
+		{
+			min_filter &= 0x01;
+		}
+		GX_InitTexObjLOD(&texobj, min_filter, tobj->magFilt,
+						imagedesc->minLOD, imagedesc->maxLOD, lod->LODBias,
+						lod->bias_clamp, lod->edgeLODEnable, lod->max_anisotropy);
+	}
+}
+
 //80360C38
 u32 HSD_TGTex2Index(u32 tgtex){
 	switch (tgtex) {

@@ -298,7 +298,7 @@ void HSD_ImageDescFree(HSD_ImageDesc *idesc);
 void HSD_ImageDescCopyFromEFB(HSD_ImageDesc *idesc, u16 origx, u16 origy, u8 clear, s32 sync);
 void HSD_TObjSetupVolatileTev(HSD_TObj *tobj, u32 rendermode);
 s32 HSD_TObjAssignResources(HSD_TObj* tobj_top);
-
+void HSD_TObjSetup(HSD_TObj *tobj);
 u32 HSD_TGTex2Index(u32 tgtex);
 u32 HSD_TexCoordID2TexGenSrc(u16 coord);
 u32 HSD_TexCoord2Index(u16 coord_id);
