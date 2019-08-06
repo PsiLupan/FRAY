@@ -751,25 +751,27 @@ void HSD_CObjInit(HSD_CObj* cobj, HSD_CObjDesc* desc){
 
 //8036A590
 HSD_CObj* HSD_CObjLoadDesc(HSD_CObjDesc* desc){
-    HSD_CObj* cobj = NULL;
-    if(desc != NULL){
-        HSD_ClassInfo *info;
-        if (!desc->class_name || !(info = hsdSearchClassInfo(desc->class_name))){
-            info = HSD_CLASS_INFO(&hsdCObj);
-            if(info == NULL){
-                info = HSD_CLASS_INFO(default_class);
-            }
-        }
-        cobj = (HSD_CObj*)hsdNew(info);
-        assert(cobj != NULL);
-        HSD_COBJ_METHOD(cobj)->load(cobj, desc);
+    if(desc == NULL){
+        return NULL;
     }
+
+    HSD_CObj* cobj = NULL;
+    HSD_ClassInfo *info;
+    if (!desc->class_name || !(info = hsdSearchClassInfo(desc->class_name))){
+        info = HSD_CLASS_INFO(&hsdCObj);
+        if(info == NULL){
+            info = HSD_CLASS_INFO(default_class);
+        }
+    }
+    cobj = (HSD_CObj*)hsdNew(info);
+    assert(cobj != NULL);
+    HSD_COBJ_METHOD(cobj)->load(cobj, desc);
     return cobj;
 }
 
 //8036A654
 static void CObjInit(HSD_Class* o){
-    HSD_OBJECT_INFO(&hsdCObj)->init(o);
+    HSD_OBJECT_PARENT_INFO(hsdCObj)->init(o);
     
     if(o != NULL){
         HSD_CObj* cobj = HSD_COBJ(o);
