@@ -3,6 +3,14 @@
 #include "hsd_state.h"
 #include "hsd_tobj.h"
 
+static u32 num_texgens = 0; //r13_40A4
+
+//803624A8
+void HSD_StateSetNumTexGens(){
+    GX_SetNumTexGens(num_texgens);
+    num_texgens = 0;
+}
+
 //80382C00
 u32 HSD_TExpGetType(HSD_TExp* texp){ //This is dead serious the fucking code, what the fuck
     if (texp == NULL) {

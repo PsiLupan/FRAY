@@ -69,6 +69,7 @@ void HSD_StateSetZCompLoc(s32);
 void HSD_StateSetDither(s32);
 void HSD_StateInvalidate(s32);
 void HSD_StateSetNumChans(u8);
+void HSD_StateInitTev();
 u32 HSD_StateGetNumTevStages();
 u8 HSD_StateAssignTev();
 void HSD_StateSetNumTevStages();

@@ -1,7 +1,7 @@
 #include "hsd_state.h"
 
 static u8   state_num_chans = -1; //This variable is set but unused?
-static u8   state_num_tevstages;
+static u8   state_num_tevstages; //r13_40A8
 
 /* HSD_STATE_PRIMITIVE Group */
 static s8	state_line_width;
@@ -295,6 +295,11 @@ void HSD_StateSetNumChans(u8 num){
     if(num != state_num_chans){
         GX_SetNumChans(num);
     }
+}
+
+//803624D8
+void HSD_StateInitTev(){
+    state_num_tevstages = 0;
 }
 
 //803624E4

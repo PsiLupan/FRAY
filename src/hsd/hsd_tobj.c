@@ -1054,7 +1054,11 @@ s32 HSD_TObjAssignResources(HSD_TObj* tobj_top){
 		toon->coord = HSD_Index2TexCoord(texcoord_no ++);
 	}
 
-  return (s32) texcoord_no;
+  	return (s32) texcoord_no;
+}
+
+static int DifferentTluts(HSD_Tlut *t0, HSD_Tlut *t1) {
+	return (t0->lut != t0->lut) || (t0->fmt != t1->fmt) || (t0->n_entries != t1->n_entries);
 }
 
 //80360950
@@ -1413,7 +1417,9 @@ static void TObjRelease(HSD_Class *o){
 	
 	HSD_AObjRemove(tobj->aobj);
 	HSD_TlutFree(tobj->tlut);
-	HSD_TObjTevRemove(tobj->tev);
+	if(tobj->tev != NULL){
+		hsdFreeMemPiece(tobj->tev, sizeof(HSD_TObjTev));
+	}
 	if (tobj->tluttbl) {
 		int i;
 		for (i=0; tobj->tluttbl[i]; i++) {

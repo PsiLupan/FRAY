@@ -107,6 +107,7 @@ typedef struct _HSD_TExp {
     u32 x6C_unk;
 } HSD_TExp;
 
+void HSD_StateSetNumTexGens();
 u32 HSD_TExpGetType(HSD_TExp *);
 void HSD_TExpRef(HSD_TExp *, u8);
 void HSD_TExpUnref(HSD_TExp *, u8);
