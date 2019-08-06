@@ -116,7 +116,7 @@ JMPLABEL_1:
 HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj* gobj, void (*cb)(), u8 s_prio){
   HSD_GObjProc* proc;
   
-  proc = (HSD_GObjProc*)HSD_ObjAlloc(&gobj_proc_def);
+  proc = (HSD_GObjProc*)HSD_MemAlloc(sizeof(HSD_GObjProc)); //HSD_ObjAlloc(&gobj_proc_def);
   assert(proc != NULL);
   assert(s_prio <= S_LINK_MAX);
   proc->s_link = s_prio;
@@ -149,7 +149,7 @@ void GObj_PReorder(HSD_GObj* gobj, HSD_GObj* hiprio_gobj){
 //8038FFB8
 static HSD_GObj* CreateGObj(u32 order, u32 class, u32 p_link, u32 p_prio, HSD_GObj* p_gobj){
 	assert(p_link < P_LINK_MAX);
-	HSD_GObj* gobj = (HSD_GObj*)HSD_ObjAlloc(&gobj_def);
+	HSD_GObj* gobj = (HSD_GObj*)HSD_MemAlloc(sizeof(HSD_GObj)); //HSD_ObjAlloc(&gobj_def);
 	if(gobj != NULL){
 		gobj->classifier = class;
 		gobj->p_link = p_link;

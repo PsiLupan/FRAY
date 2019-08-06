@@ -1,5 +1,7 @@
 #include "hsd_object.h"
 
+#include <stdlib.h>
+
 static void ObjInfoInit();
 static void _hsdInfoInit();
 
@@ -137,18 +139,16 @@ void* HSD_ObjAlloc(HSD_ObjAllocData* obj_def){
 		}
 		return obj_ptr;
 	}
-	else
-	{
-		return NULL;
-	}
+	return NULL;
 }
 
 //8037AD20
 void HSD_ObjFree(HSD_ObjAllocData* init_obj, HSD_ObjAllocLink* obj){
-	obj->next = init_obj->freehead->next;
+	free(obj);
+	/*obj->next = init_obj->freehead->next;
 	init_obj->freehead = obj;
 	init_obj->free += 1;
-	init_obj->used -= 1;
+	init_obj->used -= 1;*/
 }
 
 //8037AD48
@@ -210,7 +210,7 @@ void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, cha
 
 //803821C4
 static HSD_Class* _hsdClassAlloc(HSD_ClassInfo* info){
-	HSD_FreeList* mem_piece = hsdAllocMemPiece(info->head.obj_size);
+	HSD_FreeList* mem_piece = HSD_MemAlloc(info->head.obj_size); //hsdAllocMemPiece(info->head.obj_size);
 	if(mem_piece != NULL){
 		info->head.nb_exist += 1;
 		if(info->head.nb_peak < info->head.nb_exist){
