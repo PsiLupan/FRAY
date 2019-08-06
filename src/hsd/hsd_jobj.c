@@ -1544,7 +1544,7 @@ void HSD_JObjSetDPtclCallback(void (*cb)(s32, s32, s32, HSD_JObj*)){
 
 //8037340C
 static void JObjInit(HSD_Class* o){
-	HSD_OBJECT_INFO(&hsdJObj)->init(o);
+	HSD_OBJECT_PARENT_INFO(hsdJObj)->init(o);
 
 	if(o != NULL){
 		HSD_JObj* jobj = HSD_JOBJ(o);
