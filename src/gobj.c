@@ -326,7 +326,7 @@ void GObj_GXLinkDestructor(HSD_GObj* gobj){
 
 //80390A70
 void GObj_InitKindObj(HSD_GObj* gobj, s8 obj_kind, void* obj_ptr){
-	assert(gobj->obj_kind == GOBJ_NOREF);
+	assert(gobj->obj_kind != GOBJ_NOREF);
 	gobj->obj_kind = obj_kind;
 	gobj->data = obj_ptr;
 }
