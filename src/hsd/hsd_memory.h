@@ -31,6 +31,8 @@ typedef struct _HSD_MemoryEntry {
     struct _HSD_MemoryEntry* next; //0x10
 } HSD_MemoryEntry;
 
+void HSD_IDInitAllocData();
+void* HSD_IDSetup();
 void HSD_IDInsertToTable(HSD_IDTable *, u32, void *);
 void HSD_IDRemoveByIDFromTable(HSD_IDTable *, u32 id);
 void* HSD_IDGetDataFromTable(HSD_IDTable *, u32, u8 *);

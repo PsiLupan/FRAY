@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <malloc.h>
 
 static HSD_MemoryEntry** memory_list = NULL;
 static u32 nb_memory_list = 0;
@@ -109,7 +110,8 @@ void _HSD_IDForgetMemory(){
 void HSD_Free(void* ptr){
 	//OSFreeToHeap(HSD_GetHeap(), ptr);
 	if(ptr != NULL){
-		HSD_ObjFree(&free_alloc, (HSD_ObjAllocLink*)ptr);
+		free(ptr);
+		//HSD_ObjFree(&free_alloc, (HSD_ObjAllocLink*)ptr);
 	}
 }
 
@@ -119,7 +121,7 @@ void* HSD_MemAlloc(u32 size){
 	
 	if(size > 0){	
 		//result = OSAllocFromHeap(HSD_GetHeap(), size);
-		result = malloc(size);
+		result = memalign(32, size);
 		assert(result != NULL);
 	}
 	return result;

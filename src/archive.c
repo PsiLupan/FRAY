@@ -116,8 +116,8 @@ void Archive_LoadFileSections(char* filename, u32 sections, ...){
     va_list ap;
 
     u32 file_size = Archive_GetDVDFileLengthByName(filename);
-    u8* dat_file = memalign(32, file_size); //This (size + 0x1F) & 0xFFFFFFE0 aligns the file size along 0x20 sized boundaries, IE Anything from 0x74581 - 0x745A0 would become 0x745A0
-    HSD_Archive* archive = (HSD_Archive*)malloc(sizeof(HSD_Archive));
+    u8* dat_file = HSD_MemAlloc(file_size); //This (size + 0x1F) & 0xFFFFFFE0 aligns the file size along 0x20 sized boundaries, IE Anything from 0x74581 - 0x745A0 would become 0x745A0
+    HSD_Archive* archive = (HSD_Archive*)HSD_MemAlloc(sizeof(HSD_Archive));
     Archive_LoadFileIntoMemory(filename, dat_file, file_size);
     Archive_InitializeDAT(archive, dat_file, file_size);
 

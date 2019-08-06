@@ -86,12 +86,10 @@ s32 HSD_ArchiveParse(HSD_Archive* archive, u8* src, u32 file_size){
                 archive->symbols = (char*)((s32)src + offset);
             }
             archive->top_ptr = (void*)src;
-            offset = 0;
             for(u32 i = 0; i < archive->header.nb_reloc; i++){
                 u8* data = archive->data;
-                u32 ptr = archive->reloc_info->offset + offset;
-                offset += 4;
-                *(u8**)(data + ptr) = data + *((u32*)(data + ptr)); 
+                u32 offset = archive->reloc_info[i].offset;
+                *(u8**)(data + offset) = data + *((u32*)(data + offset)); 
             }
         }else{
             HSD_Panic("Archive_Parse: Byte-Order mismatch");
