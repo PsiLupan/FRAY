@@ -12,6 +12,8 @@
 
 #define min(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })
 
+#define HSD_MTX_RIGID 1
+
 typedef struct _HSD_SList {
     struct _HSD_SList *next;
     void* data;

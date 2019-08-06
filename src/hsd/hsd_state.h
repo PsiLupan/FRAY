@@ -58,10 +58,15 @@ void HSD_SetupRenderMode(u32);
 void HSD_SetMaterialColor(GXColor, GXColor, GXColor, f32);
 void HSD_SetMaterialShininess(f32);
 void HSD_StateSetLineWidth(u8, u8);
-
+void HSD_StateSetCullMode(u8);
+void HSD_StateSetBlendMode(u8, u8, u8, u8);
 void HSD_StateSetZMode(s32, u8, s32);
+void HSD_StateSetAlphaCompare(u8, u8, u8, u8, u8);
 void HSD_StateSetColorUpdate(s32);
 void HSD_StateSetAlphaUpdate(s32);
+void HSD_StateSetDstAlpha(s32, u8);
+void HSD_StateSetZCompLoc(s32);
+void HSD_StateSetDither(s32);
 void HSD_StateInvalidate(s32);
 void HSD_StateSetNumChans(u8);
 u32 HSD_StateGetNumTevStages();

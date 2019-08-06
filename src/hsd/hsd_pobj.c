@@ -796,6 +796,51 @@ void HSD_PObjGetMtxMark(s32 idx,  void **obj, u32 *mark){
     }
 }
 
+static u32 GetSetupFlags(HSD_JObj *jobj){
+    u32 flags = SETUP_NONE;
+    if (jobj->flags & LIGHTING) {
+        flags |= SETUP_NORMAL;
+    }
+    if (_HSD_TObjGetCurrentByType(NULL, TEX_COORD_REFLECTION)) {
+        flags |= SETUP_NORMAL | SETUP_REFLECTION;
+    }
+    if (_HSD_TObjGetCurrentByType(NULL, TEX_COORD_HILIGHT)) {
+        flags |= SETUP_NORMAL | SETUP_HIGHLIGHT;
+    }
+    return flags;
+}
+
+//8036E12C
+static void SetupRigidModelMtx(HSD_PObj *pobj, Mtx vmtx, Mtx pmtx, u32 rendermode){
+    HSD_JObj *jobj;
+    Mtx n;
+    u32 flags;
+    
+    jobj = HSD_JObjGetCurrent();
+    void *obj;
+    u32 mark;
+        
+    HSD_PObjGetMtxMark(0, &obj, &mark);
+    if (obj == jobj && mark == HSD_MTX_RIGID)
+        return;
+    HSD_PObjSetMtxMark(0, jobj, HSD_MTX_RIGID);
+    
+    GX_SetCurrentMtx(GX_PNMTX0);
+    GX_LoadPosMtxImm(pmtx, GX_PNMTX0);
+    
+    flags = GetSetupFlags(jobj);
+    
+    if (flags & SETUP_NORMAL) {
+        guMtxInvXpose(pmtx, n);
+        if (jobj->flags & LIGHTING) {
+            GX_LoadNrmMtxImm(n, GX_PNMTX0);
+        }
+        if (flags & SETUP_NORMAL_PROJECTION) {
+            GX_LoadTexMtxImm(n, GX_TEXMTX0, GX_MTX3x4);
+        }
+    }
+}
+
 //8036E83C
 static void PObjSetupMtx(HSD_PObj *pobj, Mtx vmtx, Mtx pmtx, u32 rendermode){
     switch (pobj_type(pobj)) {
@@ -847,6 +892,7 @@ void HSD_PObjDisp(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermode){
 static void PObjRelease(HSD_Class* o){
     HSD_PObj *pobj = HSD_POBJ(o);
     HSD_ShapeSet* shape_set = NULL;
+    HSD_SList* list = NULL;
     switch (pobj_type(pobj)) {
         case POBJ_SHAPEANIM:
             shape_set = pobj->u.shape_set; 
@@ -859,7 +905,17 @@ static void PObjRelease(HSD_Class* o){
             }
             break;
         case POBJ_ENVELOPE:
-            HSD_EnvelopeListFree(pobj->u.envelope_list);
+            list = pobj->u.envelope_list;
+            while (list) {
+                HSD_Envelope *env = list->data;
+                while (env) {
+                    HSD_Envelope *next = env->next;
+                    HSD_JObjUnrefThis(env->jobj);
+                    hsdFreeMemPiece(env, sizeof(HSD_Envelope));
+                    env = next;
+                }
+                list = HSD_SListRemove(list);
+            }
             break;
         case POBJ_SKIN:
             HSD_JObjUnrefThis(pobj->u.jobj);
@@ -876,14 +932,12 @@ static void PObjAmnesia(HSD_ClassInfo* info){
         default_class = NULL;
     }
     if (info == HSD_CLASS_INFO(&hsdPObj)) {
-        if (_HSD_MemCheckOwn(vertex_buffer)) {
-            vertex_buffer = NULL;
-            vertex_buffer_size = 0;
-            normal_buffer = NULL;
-            normal_buffer_size = 0;
-    }
-    prev_vtxdesclist_array = NULL;
-    prev_vtxdesc = NULL;
+        vertex_buffer = NULL;
+        vertex_buffer_size = 0;
+        normal_buffer = NULL;
+        normal_buffer_size = 0;
+        prev_vtxdesclist_array = NULL;
+        prev_vtxdesc = NULL;
     }
     HSD_PARENT_INFO(&hsdPObj)->amnesia(info);
 }

@@ -133,6 +133,25 @@ void HSD_StateSetLineWidth(u8 width, u8 tex_offsets){
     }
 }
 
+//80361AD8
+void HSD_StateSetCullMode(u8 mode){
+    if (state_cull_mode != mode) {
+        GX_SetCullMode(mode);
+        state_cull_mode = mode;
+    }
+}
+
+//80361B18
+void HSD_StateSetBlendMode(u8 type, u8 src_factor, u8 dst_factor, u8 op){
+    if (state_blend_type != type || state_src_factor != src_factor || state_dst_factor != dst_factor || state_logic_op != op) {
+        GX_SetBlendMode(type, src_factor, dst_factor, op);
+        state_blend_type = type;
+        state_src_factor = src_factor;
+        state_dst_factor = dst_factor;
+        state_logic_op = op;
+    }
+}
+
 //80361BB8
 void HSD_StateSetZMode(s32 enable, u8 func, s32 update){
     u8 _enable = (enable) ? GX_ENABLE : GX_DISABLE;
@@ -143,6 +162,18 @@ void HSD_StateSetZMode(s32 enable, u8 func, s32 update){
         state_z_enable = _enable;
         state_z_func = func;
         state_z_update = _update;
+    }
+}
+
+//80361CC4
+void HSD_StateSetAlphaCompare(u8 comp0, u8 ref0, u8 op, u8 comp1, u8 ref1){
+    if (state_alpha_comp0 != comp0 || state_alpha_ref0 != ref0 || state_alpha_op != op || state_alpha_comp1 != comp1 || state_alpha_ref1 != ref1){
+        GX_SetAlphaCompare(comp0, ref0, op, comp1, ref1);
+        state_alpha_comp0 = comp0;
+        state_alpha_ref0 = ref0;
+        state_alpha_op = op;
+        state_alpha_comp1 = comp1;
+        state_alpha_ref1 = ref1;
     }
 }
 
@@ -163,6 +194,37 @@ void HSD_StateSetAlphaUpdate(s32 enable){
     if (state_alpha_update != _enable) {
         GX_SetAlphaUpdate(_enable);
         state_alpha_update = _enable;
+    }
+}
+
+//80361E14
+void HSD_StateSetDstAlpha(s32 enable, u8 alpha){
+    u8 _enable = (enable) ? GX_ENABLE : GX_DISABLE;
+    
+    if (state_enable_dst_alpha != _enable || state_dst_alpha != alpha){
+        GX_SetDstAlpha(_enable, alpha);
+        state_enable_dst_alpha = _enable;
+        state_dst_alpha = alpha;
+    }
+}
+
+//80361E8C
+void HSD_StateSetZCompLoc(s32 before_tex){
+    u8 _before_tex = (before_tex) ? GX_TRUE : GX_FALSE;
+    
+    if (state_before_tex != _before_tex) {
+        GX_SetZCompLoc(_before_tex);
+        state_before_tex = _before_tex;
+    }
+}
+
+//80361EE0
+void HSD_StateSetDither(s32 dither){
+    u8 _dither = (dither) ? GX_ENABLE : GX_DISABLE;
+    
+    if (state_dither != _dither) {
+        GX_SetDither(_dither);
+        state_dither = _dither;
     }
 }
 

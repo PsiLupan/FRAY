@@ -1317,7 +1317,8 @@ u32 HSD_TexMap2Index(u8 mapid){
 void HSD_TObjRemoveAll(HSD_TObj *tobj){
 	while (tobj) {
 		HSD_TObj *next = tobj->next;
-		hsdDelete(tobj);
+		HSD_CLASS_METHOD(tobj)->release(tobj);
+		HSD_CLASS_METHOD(tobj)->destroy(tobj);
 		tobj = next;
 	}
 }
