@@ -18,6 +18,9 @@ FRAY does not presently attempt to reimplement playing the movie files, creating
 
 The current decision to not implement those features was largely based on scope and the fact they're not reused portions of code throughout the game. Likewise, modders regularly remove these sections when attempting to free DOL space for mods. If they come back, I'd prefer to implement many "area-specific" features as REL files, which are essentially the GameCube/Wii equivalent of DLL files that can be loaded and unloaded at-will.
 
+## How can I test it?
+Currently, you'll need to pull down the source, have a copy of devkitPPC with the PATH variable set, then you can compile with the installed MSys using "make" to produce the output files. The Wiki contains more information on the process.
+
 ## How can I contribute?
 ### For reverse engineers without C experience
 Updating any document available at https://smashboards.com/threads/melee-hacks-and-you-new-hackers-start-here-in-the-op.247119/ is the biggest help for anyone not able to contribute code directly.
