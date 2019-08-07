@@ -17,6 +17,13 @@ void Player_ChangeActionState(HSD_GObj* gobj, u32 state, u32 flags, HSD_GObj* go
 
 }
 
+//80074A4C
+void Player_SetCharacterFlags(HSD_GObj* gobj, u32 offset, u32 flags){
+	Player* player = GOBJ_PLAYER(gobj);
+	*(u32*)(player + offset * 2 + 0x5F4) = flags; //TODO: Not rely on set offsets if possible
+	player->x221D_flags = player->x221D_flags & 0xDF | 0x20;
+}
+
 //8007500C
 u32 Player_BoneID2Index(Player* player, u32 bone_id){
 	/*u32* r3 = -0x515C(r13)*/

@@ -1,5 +1,17 @@
 #include "ftMario.h"
 
+//800E08CC
+void Mario_OnDeath(HSD_GObj* gobj){
+    Player* player = GOBJ_PLAYER(gobj);
+    Player_SetCharacterFlags(gobj, 0, 0);
+    player->x222C_flags = 9;
+    player->x2230_flags = 9;
+    player->x2234_flags = 0;
+    player->x2338_flags = 0;
+    player->x223C_pend_item = NULL;
+    player->x2240_flags = 0;
+}
+
 //800E0960
 void Mario_OnLoad(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
@@ -168,4 +180,14 @@ void Mario_Special_Neutral_Air_SetActionState_x157(HSD_GObj* gobj){
     Player_8007D7FC(player);
     Player_ChangeActionState(gobj, MARIO_ACTIONSTATE_SPECIAL_NEUTRAL_157, 0x5000, NULL, player->x894_action_state_frames, 1.0f, 0.0f);
     player->x21BC_Projectile_Spawn = Mario_SpawnProjectile;
+}
+
+//8014949C
+void DocMario_OnDeath(HSD_GObj* gobj){
+    Player* player = GOBJ_PLAYER(gobj);
+    Player_SetCharacterFlags(gobj, 0, 0);
+    player->x2234_flags = 0;
+    player->x2338_flags = 0;
+    player->x223C_pend_item = NULL;
+    player->x2240_flags = 0;
 }

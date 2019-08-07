@@ -262,17 +262,22 @@ typedef struct _Player {
 	u8 x2218_flags;
 	u8 x2219_flags;
 	u8 x221A_flags;
+	u8 x221D_flags;
 	u8 x221F_flags;
 
 	u8 x2224_flags;
 	u32 x222C_flags;
 	u32 x2230_flags;
+	u32 x2234_flags;
 	u32 x2238_flags;
 	HSD_GObj* x223C_pend_item;
+	u32 x2240_flags;
 
 	u32 x2340_flags;
 	f32 x2344_flags;
 } Player;
+
+void Player_SetCharacterFlags(HSD_GObj *, u32, u32);
 
 u32 Player_BoneID2Index(Player *, u32);
 
