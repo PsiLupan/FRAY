@@ -175,7 +175,7 @@ void HSD_TExpColorIn(HSD_TExp* texp, u8 te_num, u8 texp_num, u8 te_num2, u8 texp
     assert(HSD_TExpGetType(texp) == 1);
     HSD_TExpColorInSub(texp, te_num, texp_num, 0);
     HSD_TExpColorInSub(texp, te_num2, texp_num2, 1);
-    HSD_TExpColorInSub(texp, te_num3, texp_num3, 2)
+    HSD_TExpColorInSub(texp, te_num3, texp_num3, 2);
     HSD_TExpColorInSub(texp, type, texp_rgb, 3);
 }
 
