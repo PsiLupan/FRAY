@@ -291,7 +291,7 @@ static void Scene_Minor_Class0_OnFrame(u32 unused, u32 inputs){
 }
 
 //801A1E20
-static void Scene_Minor_Class0_OnLoad(){
+static void Scene_Minor_Class0_OnLoad(void* unk_struct){
   SFX_StopMusic();
   *Scene_Load4F80_idx3() = 0x14;
   *Scene_Load4F80_idx2() = 0;
@@ -875,8 +875,19 @@ static void Scene_Minor_Class40_OnFrame(){
 }
 
 //801AD874
-static void Scene_Minor_Class40_OnLoad(){
-
+static void Scene_Minor_Class40_OnLoad(void* unk_struct){
+  //sub_801AD088(); Does the DAT loading
+  //sub_801AD254();
+  /* if(*unk_struct == 1){
+    80480d84 = 0;
+  }else{
+    80480d84 = 2;
+  }
+  80480d80 = *unk_struct;
+  80480d88 = 0;
+  80480d8C = 0;
+  80480d90 = 0;
+  */
 }
 
 //801AD8EC

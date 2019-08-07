@@ -7,7 +7,7 @@ void Mario_OnDeath(HSD_GObj* gobj){
     player->x222C_flags = 9;
     player->x2230_flags = 9;
     player->x2234_flags = 0;
-    player->x2338_flags = 0;
+    player->x2238_flags = 0;
     player->x223C_pend_item = NULL;
     player->x2240_flags = 0;
 }
@@ -187,7 +187,7 @@ void DocMario_OnDeath(HSD_GObj* gobj){
     Player* player = GOBJ_PLAYER(gobj);
     Player_SetCharacterFlags(gobj, 0, 0);
     player->x2234_flags = 0;
-    player->x2338_flags = 0;
+    player->x2238_flags = 0;
     player->x223C_pend_item = NULL;
     player->x2240_flags = 0;
 }
