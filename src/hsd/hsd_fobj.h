@@ -8,12 +8,13 @@
 
 #include "hsd_object.h"
 
-#define INTERP_STEP 1
-#define INTERP_LINEAR 2
-#define INTERP_HERMVAL 3
-#define INTERP_HERMITE 4
-#define INTERP_HERMCRV 5
-#define INTERP_CONST 6
+#define HSD_A_OP_NONE 0
+#define HSD_A_OP_CON  1
+#define HSD_A_OP_LIN  2
+#define HSD_A_OP_SPL0 3
+#define HSD_A_OP_SPL  4
+#define HSD_A_OP_SLP  5
+#define HSD_A_OP_KEY  6
 
 #define TYPE_ROBJ 1
 #define TYPE_JOBJ 12
