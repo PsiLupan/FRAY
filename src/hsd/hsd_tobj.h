@@ -141,14 +141,14 @@ typedef struct _HSD_TObj {
 	guQuaternion rotate;
 	guVector scale;
 	guVector translate;
-	u8 wrap_s; //GXTexWrapMode
-	u8 wrap_t; //GXTexWrapMode
+	u32 wrap_s; //GXTexWrapMode
+	u32 wrap_t; //GXTexWrapMode
 	u8 repeat_s;
 	u8 repeat_t;
 	u16 anim_id;
 	u32 blend_flags;
 	f32 blending;
-	u8 magFilt; //GXTexFilter
+	u32 magFilt; //GXTexFilter
 	struct _HSD_ImageDesc* imagedesc;
 	struct _HSD_Tlut* tlut;
 	struct _HSD_TexLODDesc* lod;
@@ -169,13 +169,14 @@ typedef struct _HSD_TObjDesc {
 	guVector rotate;
 	guVector scale; 
 	guVector translate;
-	u8 wrap_s; //GXTexWrapMode
-	u8 wrap_t; //GXTexWrapMode
+	u32 wrap_s; //GXTexWrapMode
+	u32 wrap_t; //GXTexWrapMode
 	u8 repeat_s;
 	u8 repeat_t;
+	u16 pad;
 	u32 blend_flags;
 	f32 blending;
-	u8 magFilt; //GXTexFilter
+	u32 magFilt; //GXTexFilter
 	struct _HSD_ImageDesc* imagedesc;
 	struct _HSD_TlutDesc* tlutdesc;
 	struct _HSD_TexLODDesc* lod;
