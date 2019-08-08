@@ -1431,7 +1431,7 @@ void HSD_TObjRemoveAll(HSD_TObj *tobj){
 
 //80361174
 HSD_TObj* HSD_TObjGetNext(HSD_TObj *tobj){
-	if (tobj){
+	if (tobj != NULL){
 		return tobj->next;
 	}
 	return NULL;
@@ -1450,14 +1450,14 @@ HSD_TObjInfo* HSD_TObjGetDefaultClass(){
 
 //8036118C
 HSD_TObj* HSD_TObjAlloc(){
-	HSD_TObj *new = (HSD_TObj*)hsdNew((HSD_ClassInfo*)HSD_TObjGetDefaultClass());
-	assert(new);
-	return new;
+	HSD_TObj *tobj = (HSD_TObj*)hsdNew((HSD_ClassInfo*)HSD_TObjGetDefaultClass());
+	assert(tobj != NULL);
+	return tobj;
 }
 
 //803611E8
 void HSD_TObjFree(HSD_TObj *tobj){
-	if (tobj){
+	if (tobj != NULL){
 		HSD_CLASS_METHOD(tobj)->destroy((HSD_Class*)tobj);
 	}
 }
@@ -1465,21 +1465,21 @@ void HSD_TObjFree(HSD_TObj *tobj){
 //8036121C
 HSD_Tlut* HSD_TlutAlloc(){
 	HSD_Tlut *tlut = hsdAllocMemPiece(sizeof(HSD_Tlut));
-	assert(tlut);
+	assert(tlut != NULL);
 	memset(tlut, 0, sizeof(HSD_Tlut));
 	return tlut;
 }
 
 //80361274
 void HSD_TlutFree(HSD_Tlut *tlut){
-	if(tlut)
+	if(tlut != NULL)
 		hsdFreeMemPiece(tlut, sizeof(HSD_Tlut));
 }
 
 //803612A0
 HSD_TObjTev* HSD_TObjTevAlloc(){
 	HSD_TObjTev *tev = hsdAllocMemPiece(sizeof(HSD_TObjTev));
-	assert(tev);
+	assert(tev != NULL);
 	memset(tev, 0, sizeof(HSD_TObjTev));
 	return tev;
 }
@@ -1487,7 +1487,7 @@ HSD_TObjTev* HSD_TObjTevAlloc(){
 //803612F8
 HSD_ImageDesc* HSD_ImageDescAlloc(){
 	HSD_ImageDesc *idesc = hsdAllocMemPiece(sizeof(HSD_ImageDesc));
-	assert(idesc);
+	assert(idesc != NULL);
 	memset(idesc, 0, sizeof(HSD_ImageDesc));
 	return idesc;
 }
@@ -1499,7 +1499,7 @@ void HSD_ImageDescFree(HSD_ImageDesc *idesc){
 
 //80361374
 void HSD_ImageDescCopyFromEFB(HSD_ImageDesc *idesc, u16 origx, u16 origy, u8 clear, s32 sync){
-	if (idesc){
+	if (idesc != NULL){
 		GX_SetTexCopySrc(origx, origy, idesc->width, idesc->height);
 		GX_SetTexCopyDst(idesc->width, idesc->height, idesc->format, idesc->mipmap? GX_TRUE : GX_FALSE);
 		if (clear) {
