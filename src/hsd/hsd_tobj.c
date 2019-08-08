@@ -525,6 +525,30 @@ void HSD_TObjSetupTextureCoordGen(HSD_TObj *tobj){
 						GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX2x4, tobj->src, GX_IDENTITY, GX_FALSE, tobj->mtxid);
 					}
 			}
+
+			static u8 func[] = {
+				GX_TG_BUMP0,
+				GX_TG_BUMP1,
+				GX_TG_BUMP2,
+				GX_TG_BUMP3,
+				GX_TG_BUMP4,
+				GX_TG_BUMP5,
+				GX_TG_BUMP6,
+				GX_TG_BUMP7,
+			};
+
+			u32 mask = HSD_LObjGetLightMaskDiffuse();
+
+			u32 i;
+			for (i = 0; i < MAX_GXLIGHT-1; i++) {
+				if (mask & (1 << i)) {
+					break;
+				}
+			}
+			if (i >= MAX_GXLIGHT-1) {
+				i = 0;
+			}
+			GX_SetTexCoordGen((tobj->coord + 1), func[i], HSD_TexCoordID2TexGenSrc(tobj->coord), GX_IDENTITY);
 		}else{
 			switch (tobj_coord(tobj)) {
 				case TEX_COORD_SHADOW:
