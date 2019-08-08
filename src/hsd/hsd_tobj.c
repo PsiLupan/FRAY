@@ -503,23 +503,47 @@ static void TObjSetupMtx(HSD_TObj *tobj){
 }
 
 //8035F418
-static void HSD_TObjSetupTextureCoordGen(HSD_TObj *tobj){
-	switch (tobj_coord(tobj)) {
-		case TEX_COORD_SHADOW:
-			GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_DISABLE, tobj->mtxid);
-			break;
+void HSD_TObjSetupTextureCoordGen(HSD_TObj *tobj){
+	for (; tobj != NULL; tobj = tobj->next) {
+		if (tobj->id == GX_TEXMAP_NULL)
+      		continue;
+		if (tobj_bump(tobj)) {
+			switch (tobj_coord(tobj)) {
+				case TEX_COORD_SHADOW:
+					GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_DISABLE, tobj->mtxid);
+					break;
 		
-		case TEX_COORD_REFLECTION:
-		case TEX_COORD_HILIGHT:
-			GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_ENABLE, tobj->mtxid);
-			break;
+				case TEX_COORD_REFLECTION:
+				case TEX_COORD_HILIGHT:
+					GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_ENABLE, tobj->mtxid);
+					break;
 		
-		default:
-			if (tobj_bump(tobj)) {
-				GX_SetTexCoordGen(tobj->coord, GX_TG_MTX2x4, tobj->src, tobj->mtxid);
-			} else {
-				GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX2x4, tobj->src, GX_IDENTITY, GX_FALSE, tobj->mtxid);
+				default:
+					if (tobj_bump(tobj)) {
+						GX_SetTexCoordGen(tobj->coord, GX_TG_MTX2x4, tobj->src, tobj->mtxid);
+					} else {
+						GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX2x4, tobj->src, GX_IDENTITY, GX_FALSE, tobj->mtxid);
+					}
 			}
+		}else{
+			switch (tobj_coord(tobj)) {
+				case TEX_COORD_SHADOW:
+					GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_DISABLE, tobj->mtxid);
+					break;
+		
+				case TEX_COORD_REFLECTION:
+				case TEX_COORD_HILIGHT:
+					GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_ENABLE, tobj->mtxid);
+					break;
+		
+				default:
+					if (tobj_bump(tobj)) {
+						GX_SetTexCoordGen(tobj->coord, GX_TG_MTX2x4, tobj->src, tobj->mtxid);
+					} else {
+						GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX2x4, tobj->src, GX_IDENTITY, GX_FALSE, tobj->mtxid);
+					}
+			}
+		}
 	}
 }
 
