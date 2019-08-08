@@ -214,7 +214,8 @@ HSD_MemoryEntry* GetMemoryEntry(u32 idx){
 
 //80381FA8
 void* hsdAllocMemPiece(u32 size){
-	HSD_MemoryEntry* entry = NULL;
+	return HSD_MemAlloc(size);
+	/*HSD_MemoryEntry* entry = NULL;
 	HSD_MemoryEntry* entry_2 = NULL;
 	HSD_FreeList* piece = NULL;
 
@@ -269,12 +270,13 @@ void* hsdAllocMemPiece(u32 size){
 			return NULL;
 		}
 	}
-	return (void*)piece;
+	return (void*)piece;*/
 }
 
 //8038216C
 void hsdFreeMemPiece(void* mem, u32 size){
-	HSD_MemoryEntry* entry;
+	HSD_Free(mem);
+	/*HSD_MemoryEntry* entry;
 	HSD_FreeList* piece = (HSD_FreeList*)mem;
 
 	if ( mem != NULL ){
@@ -282,5 +284,5 @@ void hsdFreeMemPiece(void* mem, u32 size){
 		piece->next = entry->data;
 		entry->data = piece;
 		entry->nb_free += 1;
-	}
+	}*/
 }
