@@ -26,11 +26,6 @@
 #define ENABLE_ZUPDATE      1<<5
 #define ENABLE_DITHER       1<<6
 
-#define RENDER_DIFFUSE_BITS 0x00000008
-#define RENDER_ZMODE_ALWAYS 0x08000000
-#define RENDER_NO_ZUPDATE   0x20000000
-#define RENDER_XLU          0x40000000
-
 #define TEVOP_MODE          0
 
 typedef s32 HSD_StateMask;

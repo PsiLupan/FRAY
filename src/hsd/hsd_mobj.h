@@ -23,14 +23,52 @@
 #define	HSD_A_M_SPECULAR_R  7
 #define	HSD_A_M_SPECULAR_G  8
 #define	HSD_A_M_SPECULAR_B  9
-#define	HSD_A_M_ALPHA      10
+#define	HSD_A_M_ALPHA       10
 #define	HSD_A_M_PE_REF0    	11
 #define	HSD_A_M_PE_REF1    	12
 #define	HSD_A_M_PE_DSTALPHA	13
 
+#define RENDER_CONSTANT    (1<<0)
+#define RENDER_VERTEX      (1<<1)
+#define RENDER_DIFFUSE_BITS (3<<0)
+#define RENDER_DIFFUSE_SHIFT 0
+#define RENDER_DIFFUSE_MAT0 (0<<0)
+#define RENDER_DIFFUSE_MAT  (1<<0)
+#define RENDER_DIFFUSE_VTX  (2<<0)
+#define RENDER_DIFFUSE_BOTH (3<<0)
+#define RENDER_DIFFUSE     (1<<2)
+#define RENDER_SPECULAR    (1<<3)
+#define CHANNEL_FIELD      (RENDER_CONSTANT|\
+			     RENDER_VERTEX|\
+			     RENDER_DIFFUSE|\
+			     RENDER_SPECULAR)
+#define RENDER_TEX0        (1<<4)
+#define RENDER_TEX1        (1<<5)
+#define RENDER_TEX2        (1<<6)
+#define RENDER_TEX3        (1<<7)
+#define RENDER_TEX4        (1<<8)
+#define RENDER_TEX5        (1<<9)
+#define RENDER_TEX6        (1<<10)
+#define RENDER_TEX7        (1<<11)
+#define RENDER_TEXTURES    (RENDER_TEX0|\
+	 		     RENDER_TEX1|\
+			     RENDER_TEX2|\
+			     RENDER_TEX3|\
+			     RENDER_TEX4|\
+			     RENDER_TEX5|\
+			     RENDER_TEX6|\
+			     RENDER_TEX7)
 #define RENDER_TOON	(1<<12)
-#define RENDER_SPECULAR (1<<3)
-#define RENDER_SHADOW (1<<26)
+#define RENDER_ALPHA_BITS   (3<<13)
+#define RENDER_ALPHA_SHIFT  13
+#define RENDER_ALPHA_COMPAT (0<<13)
+#define RENDER_ALPHA_MAT    (1<<13)
+#define RENDER_ALPHA_VTX    (2<<13)
+#define RENDER_ALPHA_BOTH   (3<<13)
+#define RENDER_SHADOW 		(1<<26)
+#define RENDER_ZMODE_ALWAYS (1<<27)
+#define RENDER_NO_ZUPDATE   (1<<29)
+#define RENDER_XLU 	    	(1<<30)
 
 //Material Object
 typedef struct _HSD_MObj {

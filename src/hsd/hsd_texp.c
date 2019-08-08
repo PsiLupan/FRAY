@@ -46,10 +46,10 @@ u32 HSD_TExpGetType(HSD_TExp* texp){ //This is dead serious the fucking code, wh
     if (texp == NULL) {
         return 0;
     }
-    if ((u32)texp == 0xFFFF) {
+    if ((u32)texp == -1) {
         return 2;
     }
-    if ((u32)texp == 0xFFFE) {
+    if ((u32)texp == -2) {
         return 3;
     }
     return texp->flags;
@@ -165,13 +165,13 @@ void HSD_TExpAlphaOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 enable){
 }
 
 //80383488
-static void HSD_TExpColorInSub(HSD_TExp* texp, u8 te_num, u8 texp_num, u32 sel){
+static void HSD_TExpColorInSub(HSD_TExp* texp, u8 te_num, HSD_TExp * texp_num, u32 sel){
 
 }
 
 //80383A64
-void HSD_TExpColorIn(HSD_TExp* texp, u8 te_num, u8 texp_num, u8 te_num2, u8 texp_num2, 
-    u8 te_num3, u8 texp_num3, u8 type, HSD_TExp* texp_rgb){
+void HSD_TExpColorIn(HSD_TExp* texp, u32 te_num, HSD_TExp * texp_num, u32 te_num2, HSD_TExp * texp_num2, 
+    u32 te_num3, HSD_TExp * texp_num3, u32 type, HSD_TExp * texp_rgb){
     assert(HSD_TExpGetType(texp) == 1);
     HSD_TExpColorInSub(texp, te_num, texp_num, 0);
     HSD_TExpColorInSub(texp, te_num2, texp_num2, 1);
@@ -180,8 +180,8 @@ void HSD_TExpColorIn(HSD_TExp* texp, u8 te_num, u8 texp_num, u8 te_num2, u8 texp
 }
 
 //80383F50
-void HSD_TExpAlphaIn(HSD_TExp* texp, u8 te_num, u8 texp_num, u8 te_num2, u8 texp_num2, 
-    u8 te_num3, u8 texp_num3, u8 type, HSD_TExp* texp_alpha){
+void HSD_TExpAlphaIn(HSD_TExp* texp, u32 te_num, HSD_TExp * texp_num, u32 te_num2, HSD_TExp * texp_num2, 
+    u32 te_num3, HSD_TExp * texp_num3, u32 type, HSD_TExp * texp_alpha){
     assert(HSD_TExpGetType(texp) == 1);
 }
 
