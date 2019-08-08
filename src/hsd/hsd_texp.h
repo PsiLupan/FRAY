@@ -26,6 +26,8 @@
 #define HSD_TE_F32 3
 #define HSD_TE_ALL 7
 
+#define TEVCONF_MODE 1
+
 typedef u32 HSD_TEInput;
 
 typedef struct _HSD_TExpTevDesc {
@@ -40,6 +42,18 @@ typedef struct _HSD_TExpTevDesc {
             u32 op;
             u32 tevmode;
         } tevop;
+        struct {
+            u32 clr_op;
+            u32 clr_a;
+            u32 clr_b;
+            u32 clr_c;
+            u32 clr_d;
+            u32 clr_scale;
+            u32 clr_bias;
+            u32 clr_clamp;
+            u32 clr_reg;
+            u32 alpha_op;
+        } tevconf;
     } u;
     u32 color_a;
     u32 color_b;

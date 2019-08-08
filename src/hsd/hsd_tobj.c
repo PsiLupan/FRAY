@@ -1,6 +1,7 @@
 #include "hsd_tobj.h"
 
 #include "hsd_lobj.h"
+#include "hsd_state.h"
 
 static void TObjInfoInit();
 
@@ -403,7 +404,7 @@ static void MakeTextureMtx(HSD_TObj *tobj){
 		trans.z = tobj->translate.z;
 		
 		guMtxTrans(tobj->mtx, trans.x, trans.y, trans.z);
-		HSD_MkRotationMtx(m, &rot);
+		HSD_MkRotationMtx(m, (guVector*)&rot);
 		guMtxConcat(m, tobj->mtx, tobj->mtx);
 		guMtxScale(m, scale.x, scale.y, scale.z);
 		guMtxConcat(m, tobj->mtx, tobj->mtx);
@@ -574,11 +575,64 @@ void HSD_TObjSetupTextureCoordGen(HSD_TObj *tobj){
 //8035F6B4
 void HSD_TObjSetupVolatileTev(HSD_TObj *tobj, u32 rendermode){ //TODO: Verify - Very different from decompilation
 	#pragma unused(rendermode)
-	for (; tobj; tobj=tobj->next) {
+	for (; tobj != NULL; tobj = tobj->next) {
 		if (tobj->id == GX_TEXMAP_NULL)
 			continue;
-		if (tobj_lightmap(tobj) & TEX_LIGHTMAP_SHADOW) {
-			TObjSetupTevModulateShadow(tobj);
+			
+		if(tobj_bump(tobj)){
+			static HSD_TevDesc tevdesc = {
+				NULL, TEVCONF_MODE, -1,
+				GX_TEXCOORDNULL, GX_TEXMAP_NULL, GX_COLOR0A0,
+				GX_TEV_SUB,
+				GX_CC_ZERO,	GX_CC_TEXC, GX_CC_RASC, GX_CC_CPREV,
+				GX_CS_SCALE_1, GX_TB_ZERO, GX_ENABLE, GX_TEVPREV,
+				GX_TEV_SUB,
+				GX_CA_ZERO,	GX_CA_ZERO,	GX_CA_ZERO,	GX_CA_APREV,
+				GX_CS_SCALE_1, GX_TB_ZERO, GX_ENABLE, GX_TEVPREV,
+				GX_TC_LINEAR,
+				GX_TEV_SWAP0,
+				GX_TEV_SWAP0,
+				GX_TEV_KCSEL_1,
+				GX_TEV_KASEL_1
+			};
+			tevdesc.stage = HSD_StateAssignTev();
+			tevdesc.coord = tobj->coord;
+			tevdesc.map = tobj->id;
+			tevdesc.u.tevconf.clr_op = GX_TEV_ADD;
+			tevdesc.u.tevconf.alpha_op = GX_TEV_ADD;
+			tevdesc.u.tevconf.clr_clamp = GX_DISABLE;
+			HSD_SetupTevStage(&tevdesc);
+			tevdesc.stage = HSD_StateAssignTev();
+			tevdesc.coord = (tobj->coord + 1);
+			tevdesc.u.tevconf.clr_op = GX_TEV_SUB;
+			tevdesc.u.tevconf.alpha_op = GX_TEV_SUB;
+			tevdesc.u.tevconf.clr_clamp = GX_ENABLE;
+			HSD_SetupTevStage(&tevdesc);
+		}
+
+		if (tobj->flags & TEX_LIGHTMAP_SHADOW) {
+			static HSD_TevDesc tevdesc = {
+				NULL, TEVCONF_MODE, -1,
+				GX_TEXCOORDNULL, GX_TEXMAP_NULL, GX_COLORNULL,
+				GX_TEV_ADD,
+				GX_CC_ZERO,	GX_CC_CPREV, GX_CC_TEXC, GX_CC_ZERO,
+				GX_CS_SCALE_1, GX_TB_ZERO, GX_ENABLE, GX_TEVPREV,
+				GX_TEV_ADD,
+				GX_CA_ZERO,	GX_CA_ZERO,	GX_CA_ZERO,	GX_CA_APREV,
+				GX_CS_SCALE_1, GX_TB_ZERO, GX_ENABLE, GX_TEVPREV,
+				GX_TC_LINEAR,
+				GX_TEV_SWAP0,
+				GX_TEV_SWAP0,
+				GX_TEV_KCSEL_1,
+				GX_TEV_KASEL_1
+			};
+			for (; tobj != NULL && tobj_coord(tobj) == TEX_COORD_SHADOW; tobj = tobj->next) {
+				tevdesc.stage = HSD_StateAssignTev();
+				tevdesc.coord = tobj->coord;
+				tevdesc.map = tobj->id;
+				HSD_SetupTevStage(&tevdesc);
+				break;
+			}
 			break;
 		}
 	}

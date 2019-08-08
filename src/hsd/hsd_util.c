@@ -166,6 +166,36 @@ void HSD_MtxGetRotation(Mtx mtx, guVector *rotation){
   return;
 }
 
+//8037A120
+void HSD_MkRotationMtx(Mtx mtx, guVector* vec){
+  f32 fVar1;
+  f32 dVar2;
+  f32 dVar3;
+  f32 dVar4;
+  f32 dVar5;
+  f32 dVar6;
+  f32 dVar7;
+
+  dVar3 = sinf(vec->x);
+  dVar4 = cosf(vec->x);
+  dVar5 = sinf(vec->y);
+  dVar6 = cosf(vec->y);
+  dVar7 = sinf(vec->z);
+  dVar2 = cosf(vec->z);
+  guMtxRowCol(mtx, 0, 0) = dVar6 * dVar2;
+  guMtxRowCol(mtx, 1, 0) = dVar6 * dVar7;
+  guMtxRowCol(mtx, 2, 0) = -dVar5;
+  guMtxRowCol(mtx, 0, 1) = (dVar2 * (dVar3 * dVar5) - (dVar4 * dVar7));
+  guMtxRowCol(mtx, 1, 1) = (dVar7 * (dVar3 * dVar5) + (dVar4 * dVar2));
+  guMtxRowCol(mtx, 2, 1) = (dVar3 * dVar6);
+  guMtxRowCol(mtx, 0, 2) = (dVar2 * (dVar4 * dVar5) + (dVar3 * dVar7));
+  guMtxRowCol(mtx, 1, 2) = (dVar7 * (dVar4 * dVar5) - (dVar3 * dVar2));
+  guMtxRowCol(mtx, 2, 2) = (dVar4 * dVar6);
+  guMtxRowCol(mtx, 0, 3) = 0.f;
+  guMtxRowCol(mtx, 1, 3) = 0.f;
+  guMtxRowCol(mtx, 2, 3) = 0.f;
+}
+
 //8037A250
 void HSD_MtxSRT(Mtx mtx, guVector *scale, guVector *rot, guVector *pos, guVector *pvec){
   double dVar1;

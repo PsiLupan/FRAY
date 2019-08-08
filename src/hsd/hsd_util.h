@@ -42,6 +42,7 @@ HSD_SList* HSD_SListRemove(HSD_SList *);
 f32 splGetHermite(f32, f32, f32, f32, f32, f32);
 void splArcLengthPoint(HSD_Spline *, f32, guVector *);
 void HSD_MtxGetRotation(Mtx, guVector *);
+void HSD_MkRotationMtx(Mtx, guVector *);
 void HSD_MtxSRT(Mtx, guVector *, guVector *, guVector *, guVector *);
 void HSD_MtxSRTQuat(Mtx,guVector *, guQuaternion *, guVector *, guVector *);
 
