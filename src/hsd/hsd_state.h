@@ -26,8 +26,6 @@
 #define ENABLE_ZUPDATE      1<<5
 #define ENABLE_DITHER       1<<6
 
-#define TEVOP_MODE          0
-
 typedef s32 HSD_StateMask;
 
 typedef HSD_TExpTevDesc HSD_TevDesc;

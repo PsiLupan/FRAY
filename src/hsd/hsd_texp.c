@@ -43,13 +43,13 @@ u32 HSD_TexCoordID2Num(u32 coord){
 
 //80382C00
 u32 HSD_TExpGetType(HSD_TExp* texp){ //This is dead serious the fucking code, what the fuck
-    if (texp == NULL) {
+    if ((u32)texp == HSD_TEXP_ZERO) {
         return 0;
     }
-    if ((u32)texp == -1) {
+    if ((u32)texp == HSD_TEXP_TEX) {
         return 2;
     }
-    if ((u32)texp == -2) {
+    if ((u32)texp == HSD_TEXP_RAS) {
         return 3;
     }
     return texp->flags;

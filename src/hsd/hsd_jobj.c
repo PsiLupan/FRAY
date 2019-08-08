@@ -714,10 +714,9 @@ void JObjUpdateFunc(void* obj, u32 type, update* val){
 			case 56:
 			case 57:
 				if(jobj->prev == NULL){
-					c_guMtxCopy(jobj->mtx, mtx);
-				}else{ //InverseConcat
-					c_guMtxConcat(jobj->prev->mtx, jobj->mtx, mtx);
-					c_guMtxInverse(mtx, mtx);
+					guMtxCopy(jobj->mtx, mtx);
+				}else{
+					HSD_MtxInverseConcat(jobj->prev->mtx, jobj->mtx, mtx);
 				}
 				if(type == 54 || type == 56){
 					//HSD_MtxGetTranslate(mtx, &jobj->position);
@@ -730,7 +729,7 @@ void JObjUpdateFunc(void* obj, u32 type, update* val){
 				}
 				if((type == 54) || type == 57){
 					//HSD_MtxGetScale(mtx, &jobj->scale);
-					c_guMtxScale(mtx, jobj->scale.x, jobj->scale.y, jobj->scale.z);
+					guMtxScale(mtx, jobj->scale.x, jobj->scale.y, jobj->scale.z);
 				}
 				break;
 		}
@@ -1509,6 +1508,13 @@ static void resolveIKJoint1(HSD_JObj* jobj){
 //80372B08
 static void resolveIKJoint2(HSD_JObj* jobj){
 
+}
+
+void HSD_JObjSetupMatrix(HSD_JObj* jobj){
+	assert(jobj != NULL);
+    if (((jobj->flags & USER_DEF_MTX) == 0) && ((jobj->flags & MTX_DIRTY) != 0)) {
+        HSD_JObjSetupMatrixSub(jobj);
+    }
 }
 
 //80373078

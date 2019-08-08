@@ -2,9 +2,8 @@
 
 #include "hsd_memory.h"
 
-#include "hsd_aobj.h"
+#include "hsd_display.h"
 #include "hsd_jobj.h"
-#include "hsd_memory.h"
 #include "hsd_state.h"
 
 static void PObjInfoInit(void);
@@ -837,6 +836,127 @@ static void SetupRigidModelMtx(HSD_PObj *pobj, Mtx vmtx, Mtx pmtx, u32 rendermod
         }
         if (flags & SETUP_NORMAL_PROJECTION) {
             GX_LoadTexMtxImm(n, GX_TEXMTX0, GX_MTX3x4);
+        }
+    }
+}
+
+//8036E268
+static void SetupSharedVtxModelMtx(HSD_PObj *pobj, Mtx vmtx, Mtx pmtx, u32 rendermode){
+    HSD_JObj *jobj;
+    Mtx n0, n1, m;
+    u32 flags = SETUP_NONE;
+
+    jobj = HSD_JObjGetCurrent();
+    void *obj;
+    u32 mark;
+
+    HSD_PObjGetMtxMark(0, &obj, &mark);
+    if (obj != jobj && mark != HSD_MTX_RIGID){
+        flags |= SETUP_JOINT0;
+    }
+    HSD_PObjSetMtxMark(0, jobj, HSD_MTX_RIGID);
+
+    HSD_PObjGetMtxMark(1, &obj, &mark);
+    if (obj != pobj->u.jobj && mark != HSD_MTX_RIGID){
+        flags |= SETUP_JOINT1;
+    }
+    HSD_PObjSetMtxMark(1, pobj->u.jobj, HSD_MTX_RIGID);
+    if (flags == SETUP_NONE)
+        return;
+
+    flags |= GetSetupFlags(jobj);
+
+    if (flags | SETUP_JOINT0){
+        GX_SetCurrentMtx(GX_PNMTX0);
+        GX_LoadPosMtxImm(pmtx, GX_PNMTX0);
+
+        if (flags & SETUP_NORMAL){
+            guMtxInvXpose(pmtx, n0);
+            if (jobj->flags & LIGHTING){
+                GX_LoadNrmMtxImm(n0, GX_PNMTX0);
+            }
+            if (flags & SETUP_NORMAL_PROJECTION){
+                GX_LoadTexMtxImm(n0, GX_TEXMTX0, GX_MTX3x4);
+            }
+        }
+    }
+
+    if (flags | SETUP_JOINT1){
+        HSD_JObjSetupMatrix(pobj->u.jobj);
+        guMtxConcat(vmtx, pobj->u.jobj->mtx, m);
+        GX_LoadPosMtxImm(m, GX_PNMTX1);
+
+        if (flags & SETUP_NORMAL){
+            guMtxInvXpose(m, n1);
+            if (jobj->flags & LIGHTING){
+                GX_LoadNrmMtxImm(n1, GX_PNMTX1);
+            }
+            if (flags & SETUP_NORMAL_PROJECTION){
+                GX_LoadTexMtxImm(n1, GX_TEXMTX1, GX_MTX3x4);
+            }
+        }
+    }
+}
+
+//8036E4C4
+static void SetupEnvelopeModelMtx(HSD_PObj *pobj, Mtx vmtx, Mtx pmtx, u32 rendermode){
+    HSD_JObj *jobj;
+    HSD_SList *list;
+    s32 MtxIdx = 0;
+    MtxP right;
+    Mtx mtx;
+
+    jobj = HSD_JObjGetCurrent();
+    HSD_PObjClearMtxMark(NULL, HSD_MTX_ENVELOPE);
+    u32 flags = GetSetupFlags(jobj);
+    right = _HSD_mkEnvelopeModelNodeMtx(jobj, mtx);
+
+    for (MtxIdx = 0, list = pobj->u.envelope_list; MtxIdx < 10 && list; MtxIdx++, list = list->next){
+        Mtx mtx, tmp;
+        MtxP mtxp;
+        HSD_Envelope *envelope = list->data;
+        s32 mtx_no = HSD_Index2PosNrmMtx(MtxIdx);
+
+        assert(envelope);
+        if (envelope->weight >= (1.0f - FLT_EPSILON)){
+            HSD_JObjSetupMatrix(envelope->jobj);
+            if (right){
+                guMtxConcat(envelope->jobj->mtx, envelope->jobj->vmtx, mtx);
+                mtxp = mtx;
+            }else{
+                mtxp = envelope->jobj->mtx;
+            }
+        }else{
+            mtx[0][0] = mtx[0][1] = mtx[0][2] = mtx[0][3] = mtx[1][0] = mtx[1][1] = mtx[1][2] = mtx[1][3] = mtx[2][0] = mtx[2][1] = mtx[2][2] = mtx[2][3] = 0.0f;
+            while (envelope){
+                HSD_JObj *jp;
+
+                assert(envelope->jobj);
+                jp = envelope->jobj;
+                HSD_JObjSetupMatrix(jp);
+                assert(jp->mtx);
+                assert(jp->vmtx);
+
+                guMtxConcat(jp->mtx, jp->vmtx, tmp);
+                HSD_MtxScaledAdd(envelope->weight, tmp, mtx, mtx);
+                envelope = envelope->next;
+            }
+            mtxp = mtx;
+        }
+        if (right){
+            guMtxConcat(mtxp, right, mtx);
+        }
+        guMtxConcat(vmtx, mtxp, tmp);
+        GX_LoadPosMtxImm(tmp, mtx_no);
+
+        if (flags & SETUP_NORMAL){
+            guMtxInvXpose(tmp, mtx);
+            if (jobj->flags & LIGHTING){
+                GX_LoadNrmMtxImm(mtx, mtx_no);
+            }
+            if (flags & SETUP_NORMAL_PROJECTION){
+                GX_LoadTexMtxImm(mtx, HSD_Index2TexMtx(MtxIdx), GX_MTX3x4);
+            }
         }
     }
 }

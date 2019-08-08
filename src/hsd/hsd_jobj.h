@@ -103,8 +103,8 @@ extern HSD_JObjInfo hsdJObj;
 void HSD_JObjCheckDepend(HSD_JObj *);
 void HSD_JObjMtxIsDirty(HSD_JObj *, HSD_JObjDesc*);
 void HSD_JObjSetMtxDirty(HSD_JObj *, HSD_JObjDesc*);
-void HSD_JObjWalkTree(HSD_JObj *, void (*cb)(HSD_JObj *, void *, u32), void *);
-void HSD_JObjMakeMatrix(HSD_JObj* jobj);
+void HSD_JObjWalkTree(HSD_JObj *, void (*)(HSD_JObj *, void *, u32), void *);
+void HSD_JObjMakeMatrix(HSD_JObj *);
 void HSD_JObjRemoveAnimByFlags(HSD_JObj *, u32);
 void HSD_JObjRemoveAnimAllByFlags(HSD_JObj *, u32);
 void HSD_JObjRemoveAnim(HSD_JObj *);
@@ -144,8 +144,9 @@ void HSD_JObjClearFlagsAll(HSD_JObj *, u32);
 HSD_JObj* HSD_JObjAlloc();
 void HSD_JObjSetCurrent(HSD_JObj *);
 HSD_JObj* HSD_JObjGetCurrent();
-void HSD_JObjSetupMatrixSub(HSD_JObj *jobj);
+void HSD_JObjSetupMatrix(HSD_JObj *);
+void HSD_JObjSetupMatrixSub(HSD_JObj *);
 void HSD_JObjSetMtxDirtySub(HSD_JObj *);
-void HSD_JObjSetDPtclCallback(void (*cb)(s32, s32, s32, HSD_JObj*));
+void HSD_JObjSetDPtclCallback(void (*)(s32, s32, s32, HSD_JObj*));
 
 #endif

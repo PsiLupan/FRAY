@@ -216,6 +216,38 @@ void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx){
 	}
 }
 
+static HSD_JObj* HSD_JObjFindSkeleton(HSD_JObj *jobj){
+	assert(jobj != NULL);
+	for (; jobj; jobj = jobj->prev){
+	  	if (jobj->flags & (SKELETON|SKELETON_ROOT)){
+		  return jobj;
+		}
+	}
+	return NULL;
+}
+
+
+//803742AC
+MtxP _HSD_mkEnvelopeModelNodeMtx(HSD_JObj *m, MtxP mtx){
+	if (m->flags & SKELETON_ROOT){
+		return NULL;
+	}else{
+		HSD_JObj *x = HSD_JObjFindSkeleton(m);
+		assert(x != NULL);
+		
+		if (x == m){
+			guMtxInverse(x->vmtx, mtx);
+		}else if (x->flags & SKELETON_ROOT){ 
+			HSD_MtxInverseConcat(x->mtx, m->mtx, mtx);
+		}else{
+			Mtx n;
+			guMtxConcat(x->mtx, x->vmtx, n);
+			HSD_MtxInverseConcat(n, m->mtx, mtx);
+    	}
+    	return mtx;
+  	}
+}
+
 //803743B8
 void HSD_JObjDispSub(HSD_JObj *jobj, MtxP vmtx, MtxP pmtx, HSD_TrspMask trsp_mask, u32 rendermode){
 	HSD_JObjSetCurrent(jobj);

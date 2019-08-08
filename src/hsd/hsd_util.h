@@ -13,6 +13,7 @@
 #define min(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a < _b ? _a : _b; })
 
 #define HSD_MTX_RIGID 1
+#define HSD_MTX_ENVELOPE 2
 
 typedef struct _HSD_SList {
     struct _HSD_SList *next;
@@ -41,9 +42,12 @@ HSD_SList* HSD_SListPrependList(HSD_SList *, HSD_SList *);
 HSD_SList* HSD_SListRemove(HSD_SList *);
 f32 splGetHermite(f32, f32, f32, f32, f32, f32);
 void splArcLengthPoint(HSD_Spline *, f32, guVector *);
+void HSD_MtxInverseConcat(Mtx, Mtx, Mtx);
 void HSD_MtxGetRotation(Mtx, guVector *);
 void HSD_MkRotationMtx(Mtx, guVector *);
 void HSD_MtxSRT(Mtx, guVector *, guVector *, guVector *, guVector *);
 void HSD_MtxSRTQuat(Mtx,guVector *, guQuaternion *, guVector *, guVector *);
+void HSD_MtxScaledAdd(f32, Mtx, Mtx, Mtx);
+u32 HSD_Index2PosNrmMtx(u32);
 
 #endif
