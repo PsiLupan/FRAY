@@ -36,14 +36,15 @@
 #define LOBJ_ALPHA 7
 #define LOBJ_SPECULAR 8
 
+#define LOBJ_HIDDEN     (1<<5)
+#define LOBJ_RAW_PARAM  (1<<6)
+#define LOBJ_DIFF_DIRTY (1<<7)
+#define LOBJ_SPEC_DIRTY (1<<8)
+
 #define LOBJ_TYPE_MASK 3
 
-#define LOBJ_LIGHT_ATTN 1 //TODO: Figure this shit out
-
-#define LOBJ_HIDDEN 0x20
-#define LOBJ_RAW_PARAM 0x40
-#define LOBJ_DIFF_DIRTY 0x80
-#define LOBJ_SPEC_DIRTY 0x100
+#define LOBJ_LIGHT_ATTN_NONE 0
+#define LOBJ_LIGHT_ATTN      1
 
 #define HSD_LObjGetType(o) (o->flags & 0x3)
 
