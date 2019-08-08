@@ -210,7 +210,7 @@ void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, cha
 
 //803821C4
 static HSD_Class* _hsdClassAlloc(HSD_ClassInfo* info){
-	HSD_FreeList* mem_piece = HSD_MemAlloc(info->head.obj_size); //hsdAllocMemPiece(info->head.obj_size);
+	HSD_FreeList* mem_piece = hsdAllocMemPiece(info->head.obj_size);
 	if(mem_piece != NULL){
 		info->head.nb_exist += 1;
 		if(info->head.nb_peak < info->head.nb_exist){
@@ -232,7 +232,8 @@ static void _hsdClassRelease(HSD_Class* info){
 
 //80382228
 static void _hsdClassDestroy(HSD_Class* class){
-	HSD_ClassInfo* info = (class->class_info ? class->class_info : NULL);
+	free(class);
+	/*HSD_ClassInfo* info = (class->class_info ? class->class_info : NULL);
 	if(info != NULL){
 		info->head.nb_exist -= 1;
 		u32 size = info->head.obj_size + 0x1F;
@@ -240,7 +241,7 @@ static void _hsdClassDestroy(HSD_Class* class){
 		((HSD_FreeList*)info)->next = entry->data;
 		entry->data = (HSD_FreeList*)info;
 		entry->nb_free += 1;
-	}
+	}*/
 }
 
 //80382294
