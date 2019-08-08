@@ -55,8 +55,9 @@ BOOL GObj_IsItem(HSD_GObj* gobj){
 //8038FAA8
 void GObj_LinkProc(HSD_GObjProc* proc){
 	HSD_GObj* gobj = proc->gobj;
+	u32 s_link = proc->s_link;
 	u32 p_link = gobj->p_link;
-	u32 offset = (proc->s_link * (S_LINK_MAX + 1) + p_link);
+	u32 offset = (p_link + s_link * (S_LINK_MAX + 1));
 	HSD_GObjProc* prev = NULL;
 
 	if(slinklow_procs[offset] == NULL){
@@ -64,7 +65,7 @@ void GObj_LinkProc(HSD_GObjProc* proc){
 	}else{
 		for(HSD_GObj* i = proc->gobj; i != NULL; i->prev){
 			for(prev = i->proc; prev != NULL; prev->child){
-				if(prev->s_link == proc->s_link){
+				if(prev->s_link == s_link){
 					HSD_GObjProc* p = slinklow_procs[offset];
 					if(p->child == prev){
 						p->child = proc;
@@ -75,14 +76,15 @@ void GObj_LinkProc(HSD_GObjProc* proc){
 		}
 	}
 
-	offset = (proc->s_link * (S_LINK_MAX + 1) + p_link);
+	offset = (p_link + s_link * (S_LINK_MAX + 1));
 	BOOL no_entries = FALSE;
 	do {
+		BOOL isZero = p_link == 0;
 		offset -= 1;
 		p_link -= 1;
-		if(p_link == 0){
+		if(isZero){
 			proc->next = slinkhigh_procs[offset];
-			slinkhigh_procs[offset] = proc;
+			slinkhigh_procs[s_link] = proc;
 			proc->prev = NULL;
 			goto JMPLABEL_2;
 		}
@@ -93,7 +95,7 @@ JMPLABEL_1:
 	proc->next = prev->next;
 	prev->next = proc;
 	proc->prev = prev;
-	JMPLABEL_2:
+JMPLABEL_2:
 	if(proc->next != NULL){
 		proc->next->prev = proc;
 	}
@@ -106,7 +108,7 @@ JMPLABEL_1:
 		return;
 	}
 	if(proc->next == last_gobjproc){
-		if(proc->s_link == last_s_link){
+		if(s_link == last_s_link){
 			last_gobjproc = proc;
 		}
 	}

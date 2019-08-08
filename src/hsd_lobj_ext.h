@@ -10,13 +10,20 @@
 
 #define GOBJ_HSD_LOBJ(s) ((HSD_LObj*)s->data)
 
-typedef struct _HSD_Light {
-    HSD_LightDesc* desc;
-    struct _HSD_Light* next;
-    HSD_LightAnim* anim;
-} HSD_Light;
+typedef struct _AnimList {
+    HSD_LightAnim* lightanim;
+} AnimList;
 
-HSD_LObj* LObj_LoadLightDescs(HSD_Light*);
+typedef struct _LightList {
+    HSD_LightDesc* lightdesc;
+    AnimList* anims;
+} LightList;
+
+typedef struct _HSD_Lights {
+    LightList* list;
+} HSD_Lights;
+
+HSD_LObj* LObj_LoadLightDescs(HSD_Lights*);
 void LObj_Setup_Callback(HSD_GObj *);
 
 #endif

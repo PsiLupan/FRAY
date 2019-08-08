@@ -35,7 +35,7 @@ MajorScene major_scenes[46] = {
 static void* scene_sobj_desc; //0x4EB0(r13)
 static u32 r13_4F80[3];
 static HSD_FogDesc* scene_fog_desc; // 0x4F90(r13)
-static HSD_Light* scene_lights_desc; // -0x4F94(r13)
+static HSD_Lights* scene_lights_desc; // -0x4F94(r13)
 static HSD_CObjDesc* scene_cobj_desc; //-0x4F98(r13)
 u32 debug_level = 0; //-0x6C98(r13)
 

@@ -1,21 +1,26 @@
 #include "hsd_lobj_ext.h"
 
 //80011AC4
-HSD_LObj* LObj_LoadLightDescs(HSD_Light* light){
+HSD_LObj* LObj_LoadLightDescs(HSD_Lights* lights){
     HSD_LObj* lobj = NULL;
     HSD_LObj* prev = NULL;
-    for(HSD_Light* i = light; i != NULL; i = i->next){
-        lobj = HSD_LObjLoadDesc(i->desc);
-        HSD_LightDesc* next = i->desc->next;
-        if(i->anim != NULL){
-            HSD_LObjAddAnim(lobj, i->anim);
+    HSD_LObj* not_prev = NULL;
+    HSD_LObj* res = NULL;
+    for(HSD_Lights* i = lights; i != NULL && i->list != NULL; ++i){
+        lobj = HSD_LObjLoadDesc(i->list->lightdesc);
+        AnimList* alist = i->list->anims;
+        if(alist != NULL){
+            HSD_LObjAddAnim(lobj, alist->lightanim);
         }
+        not_prev = lobj;
         if(prev != NULL){
-            prev->next = lobj;   
+            prev->next = lobj;
+            not_prev = res;
         }
+        res = not_prev;
         prev = lobj;
     }
-    return lobj;
+    return res;
 }
 
 //80391044
