@@ -400,7 +400,7 @@ void HSD_JObjAddAnim(HSD_JObj* jobj,
             jobj->aobj = aobj;
             JObjSortAnim(jobj->aobj);
             HSD_RObjAddAnimAll(jobj->robj, an_joint->robj_anim);
-            if ((an_joint->unk2 & 1) == 0) {
+            if ((an_joint->flags & JOBJ_ANIM_CLASSICAL_SCALING) == 0) {
                 HSD_JObjClearFlags(jobj, CLASSICAL_SCALE);
             } else {
                 HSD_JObjSetFlags(jobj, CLASSICAL_SCALE);

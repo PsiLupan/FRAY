@@ -13,6 +13,8 @@
 #define AOBJ_LOOP (1 << 29)
 #define AOBJ_NO_ANIM (1 << 30)
 
+#define JOBJ_ANIM_CLASSICAL_SCALING 1
+
 //Animation Object
 typedef struct _HSD_AObj {
     u32 flags;
@@ -36,8 +38,7 @@ typedef struct _HSD_AnimJoint {
     struct _HSD_AnimJoint* next;
     struct _HSD_AObjDesc* aobjdesc;
     struct _HSD_RObjAnim* robj_anim;
-    u32 unk2;
-    u32 unk3;
+    u32 flags;
 } HSD_AnimJoint;
 
 #define HSD_AOBJ(o) ((HSD_AObj*)(o))
