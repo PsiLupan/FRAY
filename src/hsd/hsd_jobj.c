@@ -771,7 +771,7 @@ static void JObjAnimAll(HSD_JObj* jobj)
         HSD_JObjAnim(jobj);
         if (JOBJ_INSTANCE(jobj)) {
             for (HSD_JObj* i = jobj->child; i != NULL; i = i->next) {
-                JObjAnimAll(jobj);
+                JObjAnimAll(i);
             }
         }
     }
