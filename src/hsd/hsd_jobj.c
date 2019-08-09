@@ -768,12 +768,7 @@ void HSD_JObjAnim(HSD_JObj* jobj)
 static void JObjAnimAll(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
-        HSD_JObjCheckDepend(jobj);
-        HSD_AObjInterpretAnim(jobj->aobj, jobj, JObjUpdateFunc);
-        HSD_RObjAnimAll(jobj->robj);
-        if (union_type_dobj(jobj)) {
-            HSD_DObjAnimAll(jobj->u.dobj);
-        }
+        HSD_JObjAnim(jobj);
         if (JOBJ_INSTANCE(jobj)) {
             for (HSD_JObj* i = jobj->child; i != NULL; i = i->next) {
                 JObjAnimAll(jobj);
@@ -787,17 +782,7 @@ void HSD_JObjAnimAll(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
         HSD_AObjInitEndCallBack();
-        HSD_JObjCheckDepend(jobj);
-        HSD_AObjInterpretAnim(jobj->aobj, jobj, JObjUpdateFunc);
-        HSD_RObjAnimAll(jobj->robj);
-        if (union_type_dobj(jobj)) {
-            HSD_DObjAnimAll(jobj->u.dobj);
-        }
-        if (JOBJ_INSTANCE(jobj)) {
-            for (HSD_JObj* i = jobj->child; i != NULL; i = i->next) {
-                JObjAnimAll(jobj);
-            }
-        }
+        JObjAnimAll(jobj);
         HSD_AObjInvokeCallBacks();
     }
 }
