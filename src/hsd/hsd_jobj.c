@@ -444,8 +444,7 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj,
                 HSD_MatAnimJoint* i_mat_joint = NULL;
                 HSD_ShapeAnimJoint* i_sh_joint = NULL;
 
-                HSD_JObjAddAnim(i, an_joint, mat_joint, sh_joint);
-                if (JOBJ_INSTANCE(i)) {
+                if(i != NULL && (HSD_JObjAddAnim(i, an_joint, mat_joint, sh_joint), JOBJ_INSTANCE(i))){
                     HSD_JObj* j = i->child;
                     if (an_joint != NULL) {
                         i_an_joint = an_joint->child;

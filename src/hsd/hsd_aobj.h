@@ -41,8 +41,6 @@ typedef struct _HSD_AnimJoint {
     u32 flags;
 } HSD_AnimJoint;
 
-#define HSD_AOBJ(o) ((HSD_AObj*)(o))
-
 void HSD_AObjInitAllocData();
 HSD_ObjAllocData* HSD_AObjGetAllocData();
 u32 HSD_AObjGetFlags(HSD_AObj*);
