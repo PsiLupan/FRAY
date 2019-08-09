@@ -792,6 +792,43 @@ void HSD_JObjAnimAll(HSD_JObj* jobj)
     }
 }
 
+// 803709DC
+void JObj_SetupInstanceMtx(HSD_JObj* jobj, MtxP vmtx, u32 flags, u32 rendermode)
+{
+    if (jobj != NULL) {
+        if (JOBJ_INSTANCE(jobj)) {
+            if ((jobj->flags & flags << 18) != 0) {
+                HSD_JObjDisp(jobj, vmtx, flags, rendermode);
+            }
+            if ((jobj->flags & flags << 28) != 0) {
+                for (HSD_JObj* child = jobj->child; child != NULL; child = child->next) {
+                    JObj_SetupInstanceMtx(child, vmtx, flags, rendermode);
+                }
+            }
+        } else {
+            if ((jobj->flags & HIDDEN) == 0) {
+                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
+                    HSD_JObjSetupMatrixSub(jobj);
+                }
+            }
+
+            HSD_JObj* child = jobj->child;
+            if (child != NULL) {
+                if ((child->flags & USER_DEF_MTX) == 0 && (child->flags & MTX_DIRTY) != 0) {
+                    HSD_JObjSetupMatrixSub(child);
+                }
+            }
+            Mtx mtx;
+            guMtxInverse(child->mtx, mtx);
+            guMtxConcat(jobj->mtx, mtx, mtx);
+            HSD_CObj* cobj = HSD_CObjGetCurrent();
+            assert(cobj != NULL);
+            guMtxConcat(cobj->view_mtx, mtx, mtx);
+            JObj_SetupInstanceMtx(child, mtx, flags, rendermode);
+        }
+    }
+}
+
 // 80370B90
 void HSD_JObjSetDefaultClass(HSD_JObjInfo* info)
 {
