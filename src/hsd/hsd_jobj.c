@@ -375,8 +375,9 @@ static void JObjSortAnim(HSD_AObj* aobj)
         do {
             j = i;
             i = j->next;
-            if (i == NULL)
-                break;
+            if (i == NULL){
+                return;
+            }
         } while (i->obj_type != TYPE_JOBJ);
         j->next = i->next;
         i->next = aobj->fobj;
