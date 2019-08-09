@@ -176,7 +176,7 @@ static void FogRelease(HSD_Class* o){
         }
     }
     HSD_AObjRemove(fog->aobj);
-    HSD_OBJECT_INFO(&hsdFog)->release(o);
+    HSD_OBJECT_PARENT_INFO(&hsdFog)->release(o);
 }
 
 //8037E120

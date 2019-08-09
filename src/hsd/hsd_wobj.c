@@ -231,7 +231,7 @@ static void WObjRelease(HSD_Class* o){
     HSD_WObj* wobj = (HSD_WObj*)o;
     HSD_RObjRemoveAll(wobj->robj);
     HSD_AObjRemove(wobj->aobj);
-    HSD_OBJECT_INFO(&hsdWObj)->release(o);
+    HSD_OBJECT_PARENT_INFO(&hsdWObj)->release(o);
 }
 
 //8037D8B8
@@ -239,7 +239,7 @@ static void WObjAmnesia(HSD_ClassInfo* info){
     if(info == HSD_CLASS_INFO(default_class)){
         default_class = NULL;
     }
-    HSD_OBJECT_INFO(&hsdWObj)->amnesia(info);
+    HSD_OBJECT_PARENT_INFO(&hsdWObj)->amnesia(info);
 }
 
 //8037D900

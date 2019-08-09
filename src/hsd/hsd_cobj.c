@@ -771,7 +771,7 @@ HSD_CObj* HSD_CObjLoadDesc(HSD_CObjDesc* desc){
 
 //8036A654
 static void CObjInit(HSD_Class* o){
-    HSD_OBJECT_PARENT_INFO(hsdCObj)->init(o);
+    HSD_OBJECT_PARENT_INFO(&hsdCObj)->init(o);
     
     if(o != NULL){
         HSD_CObj* cobj = HSD_COBJ(o);

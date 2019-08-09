@@ -16,7 +16,7 @@
 #define HSD_PARENT_INFO(o) ((o)->parent.head.parent)
 #define HSD_OBJECT_INFO(o) (o.parent.parent)
 #define HSD_OBJECT_METHOD(o) (o->parent.parent.class_info)
-#define HSD_OBJECT_PARENT_INFO(o) (o.parent.parent.head.parent)
+#define HSD_OBJECT_PARENT_INFO(o) ((o)->parent.parent.head.parent)
 
 typedef struct _HSD_Class {
 	struct _HSD_ClassInfo* class_info;

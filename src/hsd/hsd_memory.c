@@ -57,7 +57,8 @@ void HSD_IDRemoveByIDFromTable(HSD_IDTable* id_table, u32 id){
 	if(id_table == NULL){
 		id_table = &default_table;
 	}
-	IDEntry* entry = &id_table->table[id % 65];
+	IDEntry** table = &id_table->table[0].next + id % 65;
+	IDEntry* entry = *table;
 	IDEntry* curr = NULL;
 	IDEntry* prev = NULL;
 	while(true) {
@@ -71,7 +72,7 @@ void HSD_IDRemoveByIDFromTable(HSD_IDTable* id_table, u32 id){
 		prev = curr;
 	}
 	if (prev == NULL) {
-		entry = curr->next;
+		*table = curr->next;
 	}else {
 		prev->next = curr->next;
 	}
