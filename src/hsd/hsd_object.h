@@ -13,7 +13,7 @@
 
 #define HSD_CLASS_INFO(o) ((HSD_ClassInfo*)o)
 #define HSD_CLASS_METHOD(o) (o->parent.class_info)
-#define HSD_PARENT_INFO(o) (o.parent)
+#define HSD_PARENT_INFO(o) ((o)->parent.head.parent)
 #define HSD_OBJECT_INFO(o) (o.parent.parent)
 #define HSD_OBJECT_METHOD(o) (o->parent.parent.class_info)
 #define HSD_OBJECT_PARENT_INFO(o) (o.parent.parent.head.parent)
