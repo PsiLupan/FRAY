@@ -26,7 +26,7 @@ typedef struct _HSD_WObjDesc {
 
 typedef struct _HSD_WObjInfo {
     HSD_ObjInfo parent;
-    int (*load)(HSD_WObj *wobj, HSD_WObjDesc *desc); 
+    int (*load)(HSD_WObj* wobj, HSD_WObjDesc* desc);
 } HSD_WObjInfo;
 
 typedef struct _HSD_WObjAnim {
@@ -36,21 +36,21 @@ typedef struct _HSD_WObjAnim {
 
 extern HSD_WObjInfo hsdWObj;
 
-#define HSD_WOBJ_INFO(i)	((HSD_WObjInfo *)(i))
+#define HSD_WOBJ_INFO(i) ((HSD_WObjInfo*)(i))
 
-#define HSD_WOBJ_METHOD(o)	HSD_WOBJ_INFO(HSD_OBJECT_METHOD(o))
+#define HSD_WOBJ_METHOD(o) HSD_WOBJ_INFO(HSD_OBJECT_METHOD(o))
 
-void HSD_WObjRemoveAnim(HSD_WObj *);
-void HSD_WObjReqAnim(HSD_WObj *, f32);
-void HSD_WObjAddAnim(HSD_WObj *, HSD_WObjAnim *);
-void HSD_WObjInterpretAnim(HSD_WObj *);
-void HSD_WObjInit(HSD_WObj *, HSD_WObjDesc *);
-HSD_WObj* HSD_WObjLoadDesc(HSD_WObjDesc *);
-void HSD_WObjSetPosition(HSD_WObj *, guVector *);
-void HSD_WObjSetPositionX(HSD_WObj *, f32);
-void HSD_WObjSetPositionY(HSD_WObj *, f32);
-void HSD_WObjSetPositionZ(HSD_WObj *, f32);
-void HSD_WObjGetPosition(HSD_WObj *, guVector *);
+void HSD_WObjRemoveAnim(HSD_WObj*);
+void HSD_WObjReqAnim(HSD_WObj*, f32);
+void HSD_WObjAddAnim(HSD_WObj*, HSD_WObjAnim*);
+void HSD_WObjInterpretAnim(HSD_WObj*);
+void HSD_WObjInit(HSD_WObj*, HSD_WObjDesc*);
+HSD_WObj* HSD_WObjLoadDesc(HSD_WObjDesc*);
+void HSD_WObjSetPosition(HSD_WObj*, guVector*);
+void HSD_WObjSetPositionX(HSD_WObj*, f32);
+void HSD_WObjSetPositionY(HSD_WObj*, f32);
+void HSD_WObjSetPositionZ(HSD_WObj*, f32);
+void HSD_WObjGetPosition(HSD_WObj*, guVector*);
 HSD_WObj* HSD_WObjAlloc();
 void HSD_WObjUnref(HSD_WObj* wobj);
 

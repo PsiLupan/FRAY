@@ -27,7 +27,7 @@
 #define HSD_TE_F32 3
 #define HSD_TE_ALL 7
 
-#define TEVOP_MODE   0
+#define TEVOP_MODE 0
 #define TEVCONF_MODE 1
 
 typedef u32 HSD_TEInput;
@@ -133,18 +133,18 @@ void HSD_StateRegisterTexGen(u32);
 void HSD_StateSetNumTexGens();
 void HSD_SetTevRegAll();
 u32 HSD_TexCoordID2Num(u32);
-u32 HSD_TExpGetType(HSD_TExp *);
-void HSD_TExpRef(HSD_TExp *, u8);
-void HSD_TExpUnref(HSD_TExp *, u8);
-void HSD_TExpFreeList(HSD_TExp *, u32, u8);
-HSD_TExp* HSD_TExpTev(HSD_TExp **);
+u32 HSD_TExpGetType(HSD_TExp*);
+void HSD_TExpRef(HSD_TExp*, u8);
+void HSD_TExpUnref(HSD_TExp*, u8);
+void HSD_TExpFreeList(HSD_TExp*, u32, u8);
+HSD_TExp* HSD_TExpTev(HSD_TExp**);
 HSD_TExp* HSD_TExpCnst(void*, u32, u32, HSD_TExp**);
-void HSD_TExpColorOp(HSD_TExp *, u8, u8, u8, u8);
-void HSD_TExpAlphaOp(HSD_TExp *, u8, u8, u8, u8);
-void HSD_TExpColorIn(HSD_TExp *, u32, HSD_TExp *, u32, HSD_TExp *, u32, HSD_TExp *, u32, HSD_TExp *);
-void HSD_TExpAlphaIn(HSD_TExp *, u32, HSD_TExp *, u32, HSD_TExp *, u32, HSD_TExp *, u32, HSD_TExp *);
-void HSD_TExpOrder(HSD_TExp *, void *, u8);
-void HSD_TExpCompile(HSD_TExp *, HSD_TExpTevDesc **, HSD_TExp **);
-void HSD_TExpFreeTevDesc(HSD_TExpTevDesc *);
+void HSD_TExpColorOp(HSD_TExp*, u8, u8, u8, u8);
+void HSD_TExpAlphaOp(HSD_TExp*, u8, u8, u8, u8);
+void HSD_TExpColorIn(HSD_TExp*, u32, HSD_TExp*, u32, HSD_TExp*, u32, HSD_TExp*, u32, HSD_TExp*);
+void HSD_TExpAlphaIn(HSD_TExp*, u32, HSD_TExp*, u32, HSD_TExp*, u32, HSD_TExp*, u32, HSD_TExp*);
+void HSD_TExpOrder(HSD_TExp*, void*, u8);
+void HSD_TExpCompile(HSD_TExp*, HSD_TExpTevDesc**, HSD_TExp**);
+void HSD_TExpFreeTevDesc(HSD_TExpTevDesc*);
 
 #endif

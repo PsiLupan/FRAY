@@ -4,7 +4,8 @@ s8 pad_queue[0x44 * 4]; //Length determined from 80377B54's loop
 HSD_RumbleQueue rumble_queue[4];
 
 //8037699C
-s8 HSD_PadGetRawQueueCount(){
+s8 HSD_PadGetRawQueueCount()
+{
     u32 intr = IRQ_Disable();
     s8 queue_count = pad_queue[3];
     IRQ_Restore(intr);
@@ -12,21 +13,23 @@ s8 HSD_PadGetRawQueueCount(){
 }
 
 //803769D8
-BOOL HSD_PadGetResetSwitch(){
+BOOL HSD_PadGetResetSwitch()
+{
     return (pad_queue[0x2B] != 0) ? TRUE : FALSE;
 }
 
 //803769FC
-void HSD_PadRenewRawStatus(u32 unk){
-
+void HSD_PadRenewRawStatus(u32 unk)
+{
 }
 
 //80376D04
-void HSD_PadFlushQueue(u32 state){
+void HSD_PadFlushQueue(u32 state)
+{
     u32 intr = IRQ_Disable();
-    switch(state){
-        case 0:
-        while(pad_queue[3] > 1){
+    switch (state) {
+    case 0:
+        while (pad_queue[3] > 1) {
             s8 t1 = pad_queue[1];
             s8 t2 = t1 + 1;
             pad_queue[1] = t2 - (t2 / pad_queue[0]) * pad_queue[0];
@@ -40,17 +43,17 @@ void HSD_PadFlushQueue(u32 state){
         }
         break;
 
-        case 1:
+    case 1:
         pad_queue[1] = pad_queue[2];
         pad_queue[3] = 0;
         break;
 
-        case 2:
-        if(pad_queue[3] > 1){
+    case 2:
+        if (pad_queue[3] > 1) {
             s8 num = 0;
-            if(pad_queue[2] > 0){
+            if (pad_queue[2] > 0) {
                 num = pad_queue[2] - 1;
-            }else{
+            } else {
                 num = pad_queue[0] - 1;
             }
             pad_queue[1] = num;
@@ -62,17 +65,18 @@ void HSD_PadFlushQueue(u32 state){
 }
 
 //8037750C
-void HSD_PadRenewMasterStatus(){
-    
+void HSD_PadRenewMasterStatus()
+{
 }
 
 //80377B54
-void HSD_PadZeroQueue(){
-
+void HSD_PadZeroQueue()
+{
 }
 
 //80377CE8
-void HSD_PadRenewStatus(){
+void HSD_PadRenewStatus()
+{
     HSD_PadRenewRawStatus(0);
     HSD_PadRenewMasterStatus();
     HSD_PadRenewCopyStatus();
@@ -80,7 +84,8 @@ void HSD_PadRenewStatus(){
 }
 
 //80377D18
-void HSD_PadReset(){
+void HSD_PadReset()
+{
     u32 intr = IRQ_Disable();
     HSD_PadRumbleRemoveAll();
     s32 count = 0;
@@ -94,27 +99,30 @@ void HSD_PadReset(){
 }
 
 //80377D98
-void HSD_PadInit(u32 size, u8 raw_queue[], u32 unk, void* unk_queue){ //raw_queue is normally HAD_PadRawQueue - Don't know specifics yet
-
+void HSD_PadInit(u32 size, u8 raw_queue[], u32 unk, void* unk_queue)
+{ //raw_queue is normally HAD_PadRawQueue - Don't know specifics yet
 }
 
 //80378090
-void HSD_PadRumbleOn(u32 pad){
+void HSD_PadRumbleOn(u32 pad)
+{
     u32 intr = IRQ_Disable();
     rumble_queue[pad].rumble_on = 1;
     IRQ_Restore(intr);
 }
 
 //803780DC
-void HSD_PadRumbleOffH(u32 pad){
+void HSD_PadRumbleOffH(u32 pad)
+{
     u32 intr = IRQ_Disable();
     rumble_queue[pad].rumble_on = 0;
     IRQ_Restore(intr);
 }
 
 //80378208
-void HSD_PadRumbleRemoveAll(){
-    for(u32 i = 0; i < 4; i++){
+void HSD_PadRumbleRemoveAll()
+{
+    for (u32 i = 0; i < 4; i++) {
         u32 intr = IRQ_Disable();
         //TODO
         IRQ_Restore(intr);

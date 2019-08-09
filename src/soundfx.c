@@ -3,20 +3,22 @@
 s32 sfx_804337C4[55];
 
 //800236DC
-void SFX_StopMusic(){
-  
+void SFX_StopMusic()
+{
 }
 
 //80024030
-void SFX_Menu_Common(u32 id){
-    if(id < 11){
+void SFX_Menu_Common(u32 id)
+{
+    if (id < 11) {
         //SFX_Play()
     }
 }
 
 //80026F2C
-void SFX_80026F2C(u32 flags){
-  /*u32* puVar3;
+void SFX_80026F2C(u32 flags)
+{
+    /*u32* puVar3;
   bool bVar4;
   u64 uVar5;
   
@@ -57,23 +59,23 @@ void SFX_80026F2C(u32 flags){
 }
 
 //8002702C
-void SFX_RequestAudioLoad(u8 id, u32 unused, u32 unk_r5, u32 unk_r6){
-    
+void SFX_RequestAudioLoad(u8 id, u32 unused, u32 unk_r5, u32 unk_r6)
+{
 }
 
 //80027618
-void SFX_AudioCacheUpdate(){
-
+void SFX_AudioCacheUpdate()
+{
 }
 
 //80027648
-void SFX_80027648(){
-  
+void SFX_80027648()
+{
 }
 
 //80027DF8
-void SFX_ProcessVolume(){
-
+void SFX_ProcessVolume()
+{
 }
 
 //8038CFF4

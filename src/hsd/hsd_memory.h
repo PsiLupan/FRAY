@@ -33,13 +33,13 @@ typedef struct _HSD_MemoryEntry {
 
 void HSD_IDInitAllocData();
 void* HSD_IDSetup();
-void HSD_IDInsertToTable(HSD_IDTable *, u32, void *);
-void HSD_IDRemoveByIDFromTable(HSD_IDTable *, u32 id);
-void* HSD_IDGetDataFromTable(HSD_IDTable *, u32, u8 *);
+void HSD_IDInsertToTable(HSD_IDTable*, u32, void*);
+void HSD_IDRemoveByIDFromTable(HSD_IDTable*, u32 id);
+void* HSD_IDGetDataFromTable(HSD_IDTable*, u32, u8*);
 void HSD_Free(void* ptr);
 void* HSD_MemAlloc(u32);
 HSD_MemoryEntry* GetMemoryEntry(u32);
 void* hsdAllocMemPiece(u32);
-void hsdFreeMemPiece(void *, u32);
+void hsdFreeMemPiece(void*, u32);
 
 #endif

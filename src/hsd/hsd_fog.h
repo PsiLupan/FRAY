@@ -54,15 +54,15 @@ typedef struct _HSD_FogDesc {
     GXColor color;
 } HSD_FogDesc;
 
-void HSD_FogSet(HSD_Fog *);
-HSD_Fog* HSD_FogLoadDesc(HSD_FogDesc *);
-void HSD_FogInit(HSD_Fog *, HSD_FogDesc *);
-HSD_FogAdj* HSD_FogAdjLoadDesc(HSD_FogAdjDesc *);
-void HSD_FogAdjInit(HSD_FogAdj *, HSD_FogAdjDesc *);
-void HSD_FogAddAnim(HSD_Fog *, HSD_AObjDesc *);
-void HSD_FogReqAnim(HSD_Fog *, f32);
-void HSD_FogReqAnimByFlags(HSD_Fog *, u32, f32);
-void HSD_FogInterpretAnim(HSD_Fog *);
-void FogUpdateFunc(HSD_Fog *, u32, f32 *);
+void HSD_FogSet(HSD_Fog*);
+HSD_Fog* HSD_FogLoadDesc(HSD_FogDesc*);
+void HSD_FogInit(HSD_Fog*, HSD_FogDesc*);
+HSD_FogAdj* HSD_FogAdjLoadDesc(HSD_FogAdjDesc*);
+void HSD_FogAdjInit(HSD_FogAdj*, HSD_FogAdjDesc*);
+void HSD_FogAddAnim(HSD_Fog*, HSD_AObjDesc*);
+void HSD_FogReqAnim(HSD_Fog*, f32);
+void HSD_FogReqAnimByFlags(HSD_Fog*, u32, f32);
+void HSD_FogInterpretAnim(HSD_Fog*);
+void FogUpdateFunc(HSD_Fog*, u32, f32*);
 
 #endif

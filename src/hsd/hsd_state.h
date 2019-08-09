@@ -19,12 +19,12 @@
 #define HSD_STATE_RENDER_MODE 0x40
 
 #define ENABLE_COLOR_UPDATE 1
-#define ENABLE_ALPHA_UPDATE 1<<1
-#define ENABLE_DST_ALPHA    1<<2
-#define BEFORE_TEX          1<<3
-#define ENABLE_COMPARE      1<<4
-#define ENABLE_ZUPDATE      1<<5
-#define ENABLE_DITHER       1<<6
+#define ENABLE_ALPHA_UPDATE 1 << 1
+#define ENABLE_DST_ALPHA 1 << 2
+#define BEFORE_TEX 1 << 3
+#define ENABLE_COMPARE 1 << 4
+#define ENABLE_ZUPDATE 1 << 5
+#define ENABLE_DITHER 1 << 6
 
 typedef s32 HSD_StateMask;
 
@@ -45,8 +45,8 @@ typedef struct _HSD_Chan {
 } HSD_Chan;
 
 void HSD_SetupChannelMode(u32);
-void HSD_SetupPEMode(u32, HSD_PEDesc *);
-void HSD_SetupRenderModeWithCustomPE(u32, HSD_PEDesc *);
+void HSD_SetupPEMode(u32, HSD_PEDesc*);
+void HSD_SetupRenderModeWithCustomPE(u32, HSD_PEDesc*);
 void HSD_SetupRenderMode(u32);
 void HSD_SetMaterialColor(GXColor, GXColor, GXColor, f32);
 void HSD_SetMaterialShininess(f32);
@@ -66,7 +66,7 @@ void HSD_StateInitTev();
 u32 HSD_StateGetNumTevStages();
 u8 HSD_StateAssignTev();
 void HSD_StateSetNumTevStages();
-void HSD_SetupTevStage(HSD_TevDesc *);
+void HSD_SetupTevStage(HSD_TevDesc*);
 u8 HSD_Index2TevStage(u8);
 u8 HSD_TevStage2Index(u8);
 

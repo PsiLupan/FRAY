@@ -24,6 +24,6 @@ typedef struct _HSD_Lights {
 } HSD_Lights;
 
 HSD_LObj* LObj_LoadLightDescs(HSD_Lights*);
-void LObj_Setup_Callback(HSD_GObj *);
+void LObj_Setup_Callback(HSD_GObj*);
 
 #endif

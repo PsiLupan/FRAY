@@ -4,77 +4,76 @@
 #include <gctypes.h>
 
 #include "gobj.h"
-#include "player.h"
 #include "match.h"
+#include "player.h"
 
 #define MAX_PLAYERS 6
 
-typedef struct _StaticPlayer
-{
-	s32 state;
-	u32 character_id;
-	u32 slot_type;
-	u16 transformed;
-	u16 unknown0E;
-	f32 nametag_pos[3];
-	f32 transformed_pos[3];
-	f32 spawnplat_final_pos[3];
-	f32 unk_pos[3];
-	f32 facedir;
-	u8 costume_id;
-	u8 unk45;
-	u8 controller_idx;
-	u8 team_id;
-	u8 player_id;
-	u8 cpu_level;
-	u8 cpu_type;
-	u8 handicap;
-	f32 unk4C;
-	f32 unk50;
-	f32 attack_ratio;
-	f32 dmgdef_ratio;
-	f32 model_scale;
-	u16 curr_lost_percent;
-	u16 start_alt_percent;
-	u16 stamina_hp;
-	u32 falls;
-	u32 nana_deaths;
-	u32 ko_counter[MAX_PLAYERS];
-	s32 match_frames;
-	u16 suicides;
-	u8 stocks;
-	u8 unk8F;
-	u32 curr_coins;
-	u32 total_coins;
-	u32 unk98;
-	u32 unk9C;
-	u32 joymov_count;
-	u32 unkA4;
-	u32 nametag_slotid;
-	u8 multi_spawn;
-	u8 unkAD;
-	u8 unkAE;
-	u8 unkAF;
-	HSD_GObj* player;
-	HSD_GObj* subchar;
-	u32 stale_writeidx;
-	u16 stale_moves[20]; //idx 0 move ID, idx 1 # of AS changes in match
-	u32 stats[48]; //Think this may be scoreboard stats
-	u32 xEC_unk;
-	u32 x4D0_unk; //This starts some type of stats as GetStat's offset 0 is this address, possibly hidden stats
-	u32 x66C_dash_fwd_count;
-	u32 x670_unk;
-	u32 x674_jump_count;
-	u32 x67C_unk;
-	u32 x680_unk;
-	u32 x684_unk;
-	u32 x688_unk;
-	u32 x68C_unk;
-	u32 x690_ledgegrab_count;
-	u32 x694_taunt_count;
-	u32 x698_unk;
-	u32 x69C_shield_count;
-	u32 x6A8_unk;
+typedef struct _StaticPlayer {
+    s32 state;
+    u32 character_id;
+    u32 slot_type;
+    u16 transformed;
+    u16 unknown0E;
+    f32 nametag_pos[3];
+    f32 transformed_pos[3];
+    f32 spawnplat_final_pos[3];
+    f32 unk_pos[3];
+    f32 facedir;
+    u8 costume_id;
+    u8 unk45;
+    u8 controller_idx;
+    u8 team_id;
+    u8 player_id;
+    u8 cpu_level;
+    u8 cpu_type;
+    u8 handicap;
+    f32 unk4C;
+    f32 unk50;
+    f32 attack_ratio;
+    f32 dmgdef_ratio;
+    f32 model_scale;
+    u16 curr_lost_percent;
+    u16 start_alt_percent;
+    u16 stamina_hp;
+    u32 falls;
+    u32 nana_deaths;
+    u32 ko_counter[MAX_PLAYERS];
+    s32 match_frames;
+    u16 suicides;
+    u8 stocks;
+    u8 unk8F;
+    u32 curr_coins;
+    u32 total_coins;
+    u32 unk98;
+    u32 unk9C;
+    u32 joymov_count;
+    u32 unkA4;
+    u32 nametag_slotid;
+    u8 multi_spawn;
+    u8 unkAD;
+    u8 unkAE;
+    u8 unkAF;
+    HSD_GObj* player;
+    HSD_GObj* subchar;
+    u32 stale_writeidx;
+    u16 stale_moves[20]; //idx 0 move ID, idx 1 # of AS changes in match
+    u32 stats[48]; //Think this may be scoreboard stats
+    u32 xEC_unk;
+    u32 x4D0_unk; //This starts some type of stats as GetStat's offset 0 is this address, possibly hidden stats
+    u32 x66C_dash_fwd_count;
+    u32 x670_unk;
+    u32 x674_jump_count;
+    u32 x67C_unk;
+    u32 x680_unk;
+    u32 x684_unk;
+    u32 x688_unk;
+    u32 x68C_unk;
+    u32 x690_ledgegrab_count;
+    u32 x694_taunt_count;
+    u32 x698_unk;
+    u32 x69C_shield_count;
+    u32 x6A8_unk;
 } StaticPlayer;
 
 extern StaticPlayer players[MAX_PLAYERS];
@@ -131,4 +130,4 @@ u32* StaticPlayer_GetTotalAttacks(u32);
 
 u32* StaticPlayer_Get6A8(u32);
 
-#endif 
+#endif

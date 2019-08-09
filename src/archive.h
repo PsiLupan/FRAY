@@ -26,8 +26,8 @@ typedef struct _Archive_Allocation {
 } Archive_Allocation;
 
 u32 Archive_GetDVDFileLengthByEntry(s32);
-u32 Archive_GetDVDFileLengthByName(char *);
-void Archive_InitializeDAT(HSD_Archive *, u8 *, u32);
-void Archive_LoadFileSections(char *, u32, ...);
+u32 Archive_GetDVDFileLengthByName(char*);
+void Archive_InitializeDAT(HSD_Archive*, u8*, u32);
+void Archive_LoadFileSections(char*, u32, ...);
 
 #endif

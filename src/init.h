@@ -1,7 +1,7 @@
 #ifndef __INIT_H__
 #define __INIT_H__
 
-#define DEFAULT_FIFO_SIZE	(256*1024)
+#define DEFAULT_FIFO_SIZE (256 * 1024)
 
 #define PAD_QUEUE_SIZE 5
 

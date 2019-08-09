@@ -9,6 +9,6 @@
 #include "item.h"
 #include "player.h"
 
-void Peach_RemoveParasol(HSD_GObj *);
+void Peach_RemoveParasol(HSD_GObj*);
 
 #endif

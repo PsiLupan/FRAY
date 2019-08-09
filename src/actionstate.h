@@ -19,23 +19,23 @@
 #define ACTIONSTATE_ENTRY 0x142
 #define ACTIONSTATE_ENTRYEND 0x144
 
-BOOL ActionState_IsDead(HSD_GObj *);
-BOOL ActionState_IsDeadUp(HSD_GObj *);
-BOOL ActionState_IsDeadStarUp(HSD_GObj *);
-BOOL ActionState_IsDeadUpFall(HSD_GObj *);
+BOOL ActionState_IsDead(HSD_GObj*);
+BOOL ActionState_IsDeadUp(HSD_GObj*);
+BOOL ActionState_IsDeadStarUp(HSD_GObj*);
+BOOL ActionState_IsDeadUpFall(HSD_GObj*);
 
-BOOL ActionState_IsRebirth(HSD_GObj *);
-BOOL ActionState_IsEntry(HSD_GObj *);
+BOOL ActionState_IsRebirth(HSD_GObj*);
+BOOL ActionState_IsEntry(HSD_GObj*);
 
-void ActionState_Wait_CheckPlayer(HSD_GObj *);
-void ActionState_Wait_NoCheck(HSD_GObj *);
-void ActionState_Wait(HSD_GObj *, const f32);
+void ActionState_Wait_CheckPlayer(HSD_GObj*);
+void ActionState_Wait_NoCheck(HSD_GObj*);
+void ActionState_Wait(HSD_GObj*, const f32);
 
-void ActionState_HammerWait(HSD_GObj *);
-f32 ActionState_HammerFrameCount(Player *);
-BOOL ActionState_IsHammer(Player *);
-void ActionState_Hammer_ActivateHitbox(Player *);
-void ActionState_800C8B74(HSD_GObj *);
-void ActionState_Fall(HSD_GObj *);
+void ActionState_HammerWait(HSD_GObj*);
+f32 ActionState_HammerFrameCount(Player*);
+BOOL ActionState_IsHammer(Player*);
+void ActionState_Hammer_ActivateHitbox(Player*);
+void ActionState_800C8B74(HSD_GObj*);
+void ActionState_Fall(HSD_GObj*);
 
 #endif

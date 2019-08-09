@@ -4,8 +4,8 @@
 #include <ogc/gx.h>
 
 #include "hsd_cobj.h"
-#include "hsd_state.h"
 #include "hsd_jobj.h"
+#include "hsd_state.h"
 
 #define JOBJ_PTCL_ACTIVE 0x7FFFFFFF
 #define JOBJ_PTCL_OFFSET_MASK 0xFFFFFF
@@ -35,16 +35,16 @@
 #define HSD_TRSP_TEXEDGE 0x4
 
 typedef struct _HSD_ZList {
-	Mtx pmtx;
-	MtxP vmtx;
-	struct _HSD_JObj *jobj;
-	u32 rendermode;
-	
-	struct {
-		struct _HSD_ZList *texedge;
-		struct _HSD_ZList *xlu;
-	} sort;
-	struct _HSD_ZList *next;
+    Mtx pmtx;
+    MtxP vmtx;
+    struct _HSD_JObj* jobj;
+    u32 rendermode;
+
+    struct {
+        struct _HSD_ZList* texedge;
+        struct _HSD_ZList* xlu;
+    } sort;
+    struct _HSD_ZList* next;
 } HSD_ZList;
 
 void _HSD_ZListSort();
@@ -52,7 +52,7 @@ void _HSD_ZListDisp();
 void _HSD_ZListClear();
 
 void mkRBillBoardMtx(HSD_JObj*, Mtx, Mtx);
-MtxP _HSD_mkEnvelopeModelNodeMtx(HSD_JObj *m, MtxP mtx);
+MtxP _HSD_mkEnvelopeModelNodeMtx(HSD_JObj* m, MtxP mtx);
 void HSD_JObjDispSub(HSD_JObj*, MtxP, MtxP, HSD_TrspMask, u32);
 void HSD_JObjDisp(HSD_JObj*, MtxP, HSD_TrspMask, u32);
 

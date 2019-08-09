@@ -7,14 +7,14 @@
 #include <gctypes.h>
 
 struct StartMelee {
-	u8 header[0x8];
-	u8 data_main[0x60];
-	u8 data1[0x24];
-	u8 data2[0x24];
-	u8 data3[0x24];
-	u8 data4[0x24];
-	u8 data5[0x24];
-	u8 data6[0x24];
+    u8 header[0x8];
+    u8 data_main[0x60];
+    u8 data1[0x24];
+    u8 data2[0x24];
+    u8 data3[0x24];
+    u8 data4[0x24];
+    u8 data5[0x24];
+    u8 data6[0x24];
 };
 
 extern struct StartMelee sm_regularvs;
@@ -25,33 +25,33 @@ extern struct StartMelee sm_train;
 **/
 
 struct MatchInfo {
-	u8 unk00;
-	u8 unk01;
-	u8 unk02;
-	u8 unk03;
-	u16 unk04;
-	bool unk06;
-	u8 unk07;
-	u16 unk08;
-	u8 unk0A;
-	u8 unk0B;
-	u32 unk0C;
-	u32 unk10;
-	u32 unk14;
-	u8 unk18;
-	u8 unk19;
-	u16 unk1A;
-	u32 unk1C;
-	u32 unk20;
-	u32 frame_count;
-	u32 seconds;
-	u16 sub_seconds;
-	u16 unk2E;
-	u32 unk30;
-	f32 unk34;
-	u32 unk38;
-	u16 unk3C;
-	u16 unk3E;
+    u8 unk00;
+    u8 unk01;
+    u8 unk02;
+    u8 unk03;
+    u16 unk04;
+    bool unk06;
+    u8 unk07;
+    u16 unk08;
+    u8 unk0A;
+    u8 unk0B;
+    u32 unk0C;
+    u32 unk10;
+    u32 unk14;
+    u8 unk18;
+    u8 unk19;
+    u16 unk1A;
+    u32 unk1C;
+    u32 unk20;
+    u32 frame_count;
+    u32 seconds;
+    u16 sub_seconds;
+    u16 unk2E;
+    u32 unk30;
+    f32 unk34;
+    u32 unk38;
+    u16 unk3C;
+    u16 unk3E;
 };
 
 extern struct MatchInfo MatchInfo;
@@ -76,24 +76,24 @@ extern f32 MatchInfo_Get34();
 **/
 
 typedef struct _MatchController {
-	u32 timer;
-	u32 unk04;
-	u32 timer2;
-	u32 screen_ctrl;
-	u8 frozen;
-	u8 unk11;
-	u8 pause;
-	u8 unk13;
-	u32* unk14;
-	u32* unk18;
-	u32* dev_togglefunc; //0x1C
-	s32 unk20;
-	s32 unk24;
-	u32 unk28;
-	void (*unk2C)();
-	u32 unk30;
-	u32 unk34; //0x80479D8C
-	u8 flags; //0x80479D90
+    u32 timer;
+    u32 unk04;
+    u32 timer2;
+    u32 screen_ctrl;
+    u8 frozen;
+    u8 unk11;
+    u8 pause;
+    u8 unk13;
+    u32* unk14;
+    u32* unk18;
+    u32* dev_togglefunc; //0x1C
+    s32 unk20;
+    s32 unk24;
+    u32 unk28;
+    void (*unk2C)();
+    u32 unk30;
+    u32 unk34; //0x80479D8C
+    u8 flags; //0x80479D90
 } MatchController;
 
 extern MatchController match_controller;
