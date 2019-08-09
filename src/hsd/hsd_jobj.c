@@ -425,31 +425,7 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj,
     HSD_ShapeAnimJoint* sh_joint)
 {
     if (jobj != NULL) {
-        if (an_joint != NULL) {
-            if (jobj->aobj != NULL) {
-                HSD_AObjRemove(jobj->aobj);
-            }
-            HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->aobjdesc);
-            jobj->aobj = aobj;
-            JObjSortAnim(jobj->aobj);
-            HSD_RObjAddAnimAll(jobj->robj, an_joint->robj_anim);
-            if ((an_joint->unk2 & 1) == 0) {
-                HSD_JObjClearFlags(jobj, CLASSICAL_SCALE);
-            } else {
-                HSD_JObjSetFlags(jobj, CLASSICAL_SCALE);
-            }
-        }
-        if (union_type_dobj(jobj)) {
-            HSD_ShapeAnim* sh_anim = NULL;
-            HSD_MatAnim* mat_anim = NULL;
-            if (sh_joint != NULL) {
-                sh_anim = sh_joint->shapeanim;
-            }
-            if (mat_joint != NULL) {
-                mat_anim = mat_joint->matanim;
-            }
-            HSD_DObjAddAnimAll(jobj->u.dobj, mat_anim, sh_anim);
-        }
+        HSD_JObjAddAnim(jobj, an_joint, mat_joint, sh_joint);
         if (JOBJ_INSTANCE(jobj)) {
             if (an_joint != NULL) {
                 an_joint = an_joint->child;
