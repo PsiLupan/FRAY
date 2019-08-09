@@ -370,16 +370,17 @@ void HSD_JObjReqAnim(HSD_JObj* jobj, f32 frame)
 static void JObjSortAnim(HSD_AObj* aobj)
 {
     if (aobj != NULL && aobj->fobj != NULL) {
-        for (HSD_FObj* i = aobj->fobj;; i = i->next) {
-            HSD_FObj* n_fobj = i->next;
+        HSD_FObj* i = aobj->fobj;
+        HSD_FObj* j = NULL;
+        do {
+            j = i;
+            i = j->next;
             if (i == NULL)
                 break;
-            if (n_fobj->obj_type == TYPE_JOBJ) { // This is the actual code, even if it's confusing
-                i->next = n_fobj->next;
-                n_fobj->next = aobj->fobj;
-                aobj->fobj = n_fobj;
-            }
-        }
+        } while (i->obj_type != TYPE_JOBJ);
+        j->next = i->next;
+        i->next = aobj->fobj;
+        aobj->fobj = i;
     }
 }
 
