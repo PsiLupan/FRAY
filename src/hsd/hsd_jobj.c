@@ -375,7 +375,7 @@ static void JObjSortAnim(HSD_AObj* aobj)
         do {
             j = i;
             i = j->next;
-            if (i == NULL){
+            if (i == NULL) {
                 return;
             }
         } while (i->obj_type != TYPE_JOBJ);
@@ -439,7 +439,7 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj,
             if (sh_joint != NULL) {
                 sh_joint = sh_joint->child;
             }
-            while(i != NULL){
+            while (i != NULL) {
                 HSD_AnimJoint* i_an_joint = NULL;
                 HSD_MatAnimJoint* i_mat_joint = NULL;
                 HSD_ShapeAnimJoint* i_sh_joint = NULL;
@@ -456,7 +456,7 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj,
                     if (sh_joint != NULL) {
                         i_sh_joint = sh_joint->child;
                     }
-                    while(j != NULL){
+                    while (j != NULL) {
                         HSD_JObjAddAnimAll(j, i_an_joint, i_mat_joint, i_sh_joint);
                         j = j->next;
                         if (i_an_joint != NULL) {
