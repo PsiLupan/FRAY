@@ -28,10 +28,10 @@
 #define HSD_A_L_REFBRIGHT 12
 #define HSD_A_L_LITC_A 13
 
-#define LOBJ_INFINITE 1
-#define LOBJ_POINT 2
-#define LOBJ_SPOT 3
-#define LOBJ_AMBIENT 4
+#define LOBJ_AMBIENT    (0<<0)
+#define LOBJ_INFINITE   (1<<0)
+#define LOBJ_POINT      (2<<0)
+#define LOBJ_SPOT       (3<<0)
 #define LOBJ_DIFFUSE 6
 #define LOBJ_ALPHA 7
 #define LOBJ_SPECULAR 8

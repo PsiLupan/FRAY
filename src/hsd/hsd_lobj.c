@@ -737,10 +737,10 @@ static int LObjLoad(HSD_LObj *lobj, HSD_LightDesc *ldesc){
 	HSD_LObjSetColor(lobj, ldesc->color);
 	HSD_LObjSetFlags(lobj, ldesc->flags);
 	
-	switch (ldesc->flags & LOBJ_TYPE_MASK) {
-		case GX_MAXLIGHT:
+	switch (ldesc->flags & LOBJ_TYPE_MASK) {		
+		case LOBJ_AMBIENT:
 		break;
-		
+
 		case LOBJ_INFINITE:
 		if(lobj){
 			HSD_WObjUnref(lobj->position);

@@ -14,9 +14,9 @@
 #define HSD_DEFAULT_MAX_SHAPE_NORMALS 2000
 
 #define POBJ_ANIM 1<<3
-#define POBJ_SKIN 3<<12
+#define POBJ_SKIN 0<<12
 #define POBJ_SHAPEANIM 1<<12
-#define POBJ_ENVELOPE 1<<13
+#define POBJ_ENVELOPE 2<<12
 
 #define pobj_type(o)	(o->flags & 0x3000)
 
