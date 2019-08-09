@@ -136,7 +136,7 @@ HSD_DObj* HSD_DObjLoadDesc(HSD_DObjDesc* desc){
             dobj = HSD_DObjAlloc();
         }else{
             dobj = (HSD_DObj*)hsdNew(info);
-            assert(dobj != NULL);
+            HSD_CheckAssert("DObjLoadDesc could not alloc DObj", dobj != NULL);
         }
         HSD_DOBJ_METHOD(dobj)->load(dobj, desc);
         return dobj;
@@ -158,7 +158,7 @@ void HSD_DObjRemoveAll(HSD_DObj* dobj){
 HSD_DObj* HSD_DObjAlloc(){
     HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class ? default_class : &hsdDObj);
     HSD_DObj* dobj = hsdNew(info);
-    assert(dobj != NULL);
+    HSD_CheckAssert("DObjAlloc could not alloc DObj",dobj != NULL);
     return dobj;
 }
 

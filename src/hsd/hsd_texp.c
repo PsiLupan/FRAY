@@ -200,8 +200,8 @@ void HSD_TExpSetupTev(HSD_TExpTevDesc* tevdesc, HSD_TExp* texp){
     HSD_TExpSetReg(texp);
     while(tevdesc != NULL){
         if(tevdesc->x74_unk != NULL){
-            //tevdesc->map = (tevdesc->x74_unk + 0xc);
-            //tevdesc->coord = (tevdesc->x74_unk + 0xa4);
+            //tevdesc->map = *((u32*)tevdesc->x74_unk + 0xC);
+            //tevdesc->coord = *((u32*)tevdesc->x74_unk + 0xA4);
         }
         HSD_StateAssignTev();
         HSD_SetupTevStage(tevdesc);

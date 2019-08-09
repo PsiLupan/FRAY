@@ -20,18 +20,18 @@ static u8 lightmask_alpha    = GX_LIGHTNULL;
 
 //8036539C
 u32 HSD_LObjGetFlags(HSD_LObj *lobj){
-	return (lobj) ? lobj->flags : 0;
+	return (lobj != NULL) ? lobj->flags : 0;
 }
 
 //803653B4
 void HSD_LObjSetFlags(HSD_LObj *lobj, u32 flags){
-	if (lobj) 
+	if (lobj != NULL) 
 		lobj->flags |= flags;
 }
 
 //803653CC
 void HSD_LObjClearFlags(HSD_LObj *lobj, u32 flags){
-	if (lobj) 
+	if (lobj != NULL) 
 		lobj->flags &= ~flags;
 }
 

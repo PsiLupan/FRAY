@@ -1053,14 +1053,14 @@ void HSD_JObjRemoveAll(HSD_JObj *jobj){
 //80371750
 void RecalcParentTrspBits(HSD_JObj *jobj){
 	if(jobj != NULL){
-		for(HSD_JObj* i = jobj; i; i->next){
-			u32 v2 = 0x8FFFFFFF;
-			for(HSD_JObj* j = jobj->child; j->next; j = j->next){
-				v2 |= (j->flags | (j->flags << 10)) & (ROOT_OPA | ROOT_TEXEDGE | ROOT_XLU);
+		for(HSD_JObj* i = jobj; i != NULL; i->next){
+			u32 mask = 0x8FFFFFFF;
+			for(HSD_JObj* child= jobj->child; child != NULL; child = child->next){
+				mask |= (child->flags | (child->flags << 10)) & (ROOT_OPA | ROOT_TEXEDGE | ROOT_XLU);
 			}
-			if(!(i->flags & ~v2))
+			if((i->flags & ~mask) == 0)
 				break;
-			i->flags = i->flags & v2;
+			i->flags = i->flags & mask;
 		}
 	}
 }

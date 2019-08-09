@@ -8,6 +8,7 @@
 #include <ogc/consol.h>
 
 void HSD_Halt(char[]);
+void HSD_CheckAssert(char[], bool);
 void HSD_Panic(char[]);
 void HSD_Report(char[]);
 

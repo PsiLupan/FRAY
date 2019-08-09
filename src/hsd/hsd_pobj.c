@@ -126,7 +126,7 @@ static HSD_SList* loadEnvelopeDesc(HSD_EnvelopeDesc** edesc_p){
 //8036BC9C
 static HSD_ShapeSet* loadShapeSetDesc(HSD_ShapeSetDesc* sdesc){
     HSD_ShapeSet* shape_set = hsdAllocMemPiece(sizeof(HSD_ShapeSet));
-    assert(shape_set);
+    HSD_CheckAssert("loadShapeSetDesc unexpected null", shape_set != NULL);
     memset(shape_set, 0, sizeof(HSD_ShapeSet));
     shape_set->flags = sdesc->flags;
     shape_set->nb_shape = sdesc->nb_shape;
@@ -182,7 +182,7 @@ HSD_PObj* HSD_PObjLoadDesc(HSD_PObjDesc* pobjdesc){
             pobj = HSD_PObjAlloc();
         }else {
             pobj = (HSD_PObj*)hsdNew(info);
-            assert(pobj);
+            HSD_CheckAssert("PObjLoadDesc could not alloc pobj", pobj != NULL);
         }
         HSD_POBJ_METHOD(pobj)->load(pobj, pobjdesc);
         return pobj;
@@ -214,7 +214,7 @@ void HSD_PObjSetDefaultClass(HSD_PObjInfo* info){
 HSD_PObj* HSD_PObjAlloc(){
     HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class ? default_class : &hsdPObj);
     HSD_PObj *pobj = (HSD_PObj*)hsdNew(info);
-    assert(pobj != NULL);
+    HSD_CheckAssert("PObjAlloc could not alloc pobj", pobj != NULL);
     return pobj;
 }
 
@@ -230,7 +230,7 @@ static void resolveEnvelope(HSD_SList *list, HSD_EnvelopeDesc **edesc_p){
         while (env && edesc->joint) {
             HSD_JObjUnrefThis(env->jobj);
             env->jobj = HSD_IDGetDataFromTable(NULL, (HSD_ID)edesc->joint, NULL);
-            assert(env->jobj);
+            HSD_CheckAssert("resolveEnvelope env->jobj is NULL", env->jobj != NULL);
             HSD_JObjRefThis(env->jobj);
             env = env->next;
             edesc++;
@@ -673,10 +673,10 @@ static void drawShapeAnim(HSD_PObj *pobj){
     
     if (shape_set->normal_desc) {
         if (shape_set->normal_desc->attr == GX_VA_NRM) {
-            assert (normal_buffer_size >= shape_set->nb_normal_index);
+            assert(normal_buffer_size >= shape_set->nb_normal_index);
             blend_nbt = 0;
         } else { // GX_VA_NBT
-            assert (normal_buffer_size >= shape_set->nb_normal_index * 3);
+            assert(normal_buffer_size >= shape_set->nb_normal_index * 3);
             blend_nbt = 1;
         }
     }
@@ -783,8 +783,8 @@ void HSD_PObjSetMtxMark(s32 idx,  void *obj, u32 mark){
 
 //8036E080
 void HSD_PObjGetMtxMark(s32 idx,  void **obj, u32 *mark){
-    assert(obj);
-    assert(mark);
+    assert(obj != NULL);
+    assert(mark != NULL);
     
     if (idx < 0 || 2 <= idx) {
         *obj  = NULL;
