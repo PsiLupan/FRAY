@@ -32,6 +32,7 @@ void** HSD_AllocateXFB(u32, GXRModeObj*);
 void* HSD_AllocateFIFO(u32);
 void HSD_GXInit();
 
+HSD_RenderPass HSD_GetCurrentRenderPass();
 void HSD_StartRender(HSD_RenderPass pass);
 
 void HSD_ObjInit();

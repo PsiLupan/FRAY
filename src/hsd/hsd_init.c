@@ -158,6 +158,12 @@ void HSD_SetNextArena(void* start, void* end)
     hsd_heap_next_arena_hi = end;
 }
 
+//80375530
+HSD_RenderPass HSD_GetCurrentRenderPass()
+{
+  return current_render_pass;
+}
+
 //80375538
 void HSD_StartRender(HSD_RenderPass pass)
 {

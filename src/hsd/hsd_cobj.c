@@ -9,7 +9,7 @@ static HSD_CObjInfo hsdCObj = { CObjInfoInit };
 
 static HSD_CObjInfo* default_class = NULL;
 
-static HSD_CObj* current_cobj = NULL;
+static HSD_CObj* current_cobj = NULL; //r13_4044
 
 //803676F8
 void HSD_CObjEraseScreen(HSD_CObj* cobj, s32 enable_color, s32 enable_alpha, s32 enable_depth)
@@ -147,22 +147,22 @@ void HSD_CObjReqAnim(HSD_CObj* cobj, f32 frame)
 }
 
 //80367B68
-BOOL makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx)
+u8 makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx)
 {
-    BOOL isOrtho;
+    u8 isOrtho;
     switch (cobj->projection_type) {
     case PROJ_PERSPECTIVE:
-        isOrtho = FALSE;
+        isOrtho = 0;
         guPerspective(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->near, cobj->far);
         break;
 
     case PROJ_FRUSTRUM:
-        isOrtho = FALSE;
+        isOrtho = 0;
         guFrustum(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->proj_left, cobj->proj_right, cobj->near, cobj->far);
         break;
 
     case PROJ_ORTHO:
-        isOrtho = TRUE;
+        isOrtho = 1;
         guOrtho(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->proj_left, cobj->proj_right, cobj->near, cobj->far);
         break;
 
@@ -173,9 +173,64 @@ BOOL makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx)
 }
 
 //80368458
-void HSD_CObjSetCurrent(HSD_CObj* cobj)
-{ //TODO: Write actual function
+BOOL HSD_CObjSetCurrent(HSD_CObj* cobj)
+{
+    if (cobj == NULL) {
+        return FALSE;
+    }
+    HSD_RenderPass pass = HSD_GetCurrentRenderPass();
     current_cobj = cobj;
+    _HSD_ZListClear();
+    switch (pass) {
+    case HSD_RP_SCREEN:
+        //setupNormalCamera(cobj);
+        break;
+
+    case HSD_RP_TOPHALF:
+        //setupTopHalfCamera(cobj);
+        break;
+
+    case HSD_RP_BOTTOMHALF:
+        //setupBottomHalfCamera(cobj);
+        break;
+
+    case HSD_RP_OFFSCREEN:
+        GX_SetViewport(cobj->viewport_left, cobj->viewport_top,
+            cobj->viewport_right - cobj->viewport_left,
+            cobj->viewport_bottom - cobj->viewport_top,
+            0.f, 1.f);
+        GX_SetScissor(cobj->scissor_left, cobj->scissor_top,
+            cobj->scissor_right - cobj->scissor_left,
+            cobj->scissor_bottom - cobj->scissor_top);
+        Mtx44 mtx;
+        u8 type = makeProjectionMtx(cobj, mtx);
+        GX_LoadProjectionMtx(mtx, type);
+        break;
+
+    default:
+        HSD_Halt("Unknown renderpass");
+    }
+
+    if(pass == HSD_RP_SCREEN){
+        return FALSE;
+    }else{
+        if ((cobj->flags & 2) == 0){
+            if(HSD_CObjMtxIsDirty(cobj)){
+                guVector eye_pos;
+                guVector up;
+                guVector interest;
+                HSD_CObjGetEyePosition(cobj, eye_pos);
+                HSD_CObjGetUpVector(cobj, up);
+                HSD_CObjGetInterest(cobj, interest);
+                guLookAt(cobj->view_mtx, &eye_pos, &up, &interest);
+                cobj->eye_position->flags = cobj->eye_position->flags & 0xFFFFFFFD;
+                cobj->interest->flags = cobj->interest->flags & 0xFFFFFFFD;
+                HSD_CObjClearFlags(cobj, 0x40000000);
+                HSD_CObjSetFlags(cobj, 0x80000000);
+            }
+        }
+    }
+    return TRUE;
 }
 
 //80368608
