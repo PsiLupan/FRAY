@@ -4,8 +4,8 @@
 #define GX_LINK_MAX 63
 #define S_LINK_MAX 63
 
-static HSD_GObjProc* slinklow_procs[S_LINK_MAX * S_LINK_MAX]; //r13_3E5C
-static HSD_GObjProc* slinkhigh_procs[S_LINK_MAX * S_LINK_MAX]; //r13_3E60
+static HSD_GObjProc* slinklow_procs[S_LINK_MAX + 2]; //r13_3E5C
+static HSD_GObjProc* slinkhigh_procs[S_LINK_MAX + 2]; //r13_3E60
 static u32 r13_3E64 = 0; //r13_3E64
 static HSD_GObjProc* first_gobjproc; //r13_3E68
 static u32 last_s_link = 0; //r13_3E6C
@@ -21,6 +21,9 @@ static void* hsd_destructors[14]; //r13_3E90 - Length is currently made up, TODO
 
 u32 flag_array[4] = { 1, 4, 2, 0 }; //804085F0
 
+u32 gobj_prep[3] = {0x3F3F0200, 0, 0}; //DAT_80408620
+
+u8 curr_slink = 24; //804CE382
 HSD_ObjAllocData gobj_def; //804CE38C
 HSD_ObjAllocData gobj_proc_def; //804CE3B8
 HSD_ObjAllocData gobj_def_3; //804CE3E4
@@ -67,8 +70,8 @@ void GObj_LinkProc(HSD_GObjProc* proc)
     if (slinklow_procs[offset] == NULL) {
         slinklow_procs[offset] = proc;
     } else {
-        for (HSD_GObj* i = proc->gobj; i != NULL; i->prev) {
-            for (prev = i->proc; prev != NULL; prev->child) {
+        for (HSD_GObj* i = proc->gobj; i != NULL; i = i->prev) {
+            for (prev = i->proc; prev != NULL; prev = prev->child) {
                 if (prev->s_link == s_link) {
                     HSD_GObjProc* p = slinklow_procs[offset];
                     if (p->child == prev) {
@@ -124,8 +127,8 @@ HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj* gobj, void (*cb)(), u8 s_pri
     HSD_GObjProc* proc;
 
     proc = (HSD_GObjProc*)HSD_MemAlloc(sizeof(HSD_GObjProc)); //HSD_ObjAlloc(&gobj_proc_def);
-    assert(proc != NULL);
-    assert(s_prio <= S_LINK_MAX);
+    HSD_CheckAssert("Proc == NULL", proc != NULL);
+    HSD_CheckAssert("SPrio > curr_slink ", s_prio <= curr_slink);
     proc->s_link = s_prio;
     proc->flags = proc->flags & 0xbf;
     proc->flags = proc->flags & 0x7f;
@@ -428,4 +431,39 @@ void GObj_RunGXLinkMaxCallbacks()
             active_gx_gobj = last_active;
         }
     }
+}
+
+//80391260
+/*void FUN_80391260(int iParm1)
+{
+    int iVar1;
+    char cVar2;
+    int in_r13;
+  
+    iVar1 = GObj_803912A8(iParm1,(int *)&DAT_80408610);
+    cVar2 = (char)iVar1;
+    *(char *)(in_r13 + -0x3e55) = cVar2;
+    *(char *)(in_r13 + -0x3e56) = cVar2 + '\x01';
+    *(char *)(in_r13 + -0x3e57) = cVar2 + '\x02';
+    *(char *)(in_r13 + -0x3e58) = cVar2 + '\x03';
+    return;
+}*/
+
+//803912A8
+u32 GObj_803912A8(u32 array[], u32* unk){
+
+}
+
+//803912E0
+void GObj_CallbackPrep(void** cb)
+{
+    cb[0] = (void*)gobj_prep[0];
+    cb[1] = (void*)gobj_prep[1];
+    cb[2] = (void*)gobj_prep[2];
+}
+
+//80391304
+void GObj_Setup()
+{
+
 }

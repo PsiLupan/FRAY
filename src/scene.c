@@ -35,6 +35,7 @@ MajorScene major_scenes[46] = {
     { 0, 45, 0, NULL, NULL, NULL, NULL }
 }; //803DACA4
 
+static u8 r13_3D40; //0x3D40(r13)
 static void* scene_sobj_desc; //0x4EB0(r13)
 static u32 r13_4F80[3];
 static HSD_FogDesc* scene_fog_desc; // 0x4F90(r13)
@@ -56,6 +57,10 @@ s32 preload_cache[0x1000]; //80432078
 unk_8046B0F0 dword_8046B0F0;
 
 u32 scene_80479C38[14][4]; //80479C38 - Length made up but currently assumed based on layout in memory
+
+GameState gamestate; //80479D30
+
+void* unk_cb[19]; //80479D48
 
 u8 menu_804D6730[6];
 
@@ -694,6 +699,18 @@ u8* Scene_ProcessMajor(u8 scene)
     return result;
 }
 
+//801A46F4
+void sub_801A46F4()
+{
+
+}
+
+//801A47E4
+void sub_801A47E4()
+{
+
+}
+
 //801A48A4
 u64 sub_801A48A4(u32 uParm1)
 {
@@ -755,6 +772,18 @@ u32* Scene_Load4F80_idx3()
 //801A4BD4
 void Scene_PrepCommon()
 {
+    unk_cb[10] = sub_801A46F4;
+    unk_cb[11] = sub_801A47E4;
+    unk_cb[17] = NULL;
+    unk_cb[18] = NULL;
+    //sub_80322E54(0.0166667 * - 4.5036e15)
+    //sub_80019880();
+    GObj_CallbackPrep(&unk_cb);
+    //DAT_80479d4a = 0x18;
+    //u32 res = GObj_803912A8(&unk_cb, &DAT_8040C3A4);
+    //r13_3D40 = res;
+    //sub_803A44A4();
+    //unk_cb[14] = &unk_cb[3];
 }
 
 //801A4CE0
