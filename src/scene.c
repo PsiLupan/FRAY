@@ -8,7 +8,7 @@ GameState gamestate;
     }
 
 MinorScene GmTitle_Minors[2] = {
-    { 0, 3, 0, Menu_Title_Prep, Menu_Title_Decide, 0, 0, 0, 0, NULL, NULL /*struct 804D6878*/ },
+    { 0, 3, 0, Menu_Title_Prep, Menu_Title_Decide, 0, 0, 0, 0, NULL, &title_inputs },
     END_MINOR
 }; //803DD6A0
 
@@ -322,10 +322,10 @@ static void Scene_Minor_Class0_OnLoad(void* unk_struct)
     *Scene_Load4F80_idx2() = 0;
     char* filename = "GmTtAll.usd";
     /*if(sub_8000ADD4() == TRUE){ //CheckLanguage
-    filename = "GmTtAll.usd";
-  }else{
-    filename = "GmTtAll.dat";
-  }*/
+        filename = "GmTtAll.usd";
+    }else{
+        filename = "GmTtAll.dat";
+    }*/
 
     Archive_LoadFileSections(filename, 24, &title_ptrs.top_joint, "TtlMoji_Top_joint",
         &title_ptrs.top_animjoint, "TtlMoji_Top_animjoint", &title_ptrs.top_matanim_joint, "TtlMoji_Top_matanim_joint",
@@ -891,9 +891,9 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
             }
 
             /*HSD_PerfSetCPUTime();
-      if(debug_level >= 3){
-        OSCheckActiveThreads();
-      }*/
+            if(debug_level >= 3){
+                OSCheckActiveThreads();
+            }*/
             dword_8046B0F0.unk0C = 0;
             if (match_controller.screen_ctrl != 0) {
                 break;
