@@ -4,6 +4,7 @@
 #include "scene.h"
 
 GmTitle_File title_ptrs; //80479B28
+u32 title_inputs; //804D6878
 f32 title_anim_speed[3] = { 0.0f, 1600.f, 400.f }; //803DA4F0
 f32 title_frames[3] = { 0.f, 1330.f, 130.f }; //803DA4FC
 
@@ -71,7 +72,11 @@ void Menu_Title_Prep()
 //801B089C
 void Menu_Title_Decide(void* state)
 {
-    u32 inputs = *Scene_GetPadStatus((GameState*)state); //804D6878 from the Minors
+    u32* status = Scene_GetPadStatus((GameState*)state); //804D6878 from the Minors
+    if(status == NULL){
+        return;
+    }
+    u32 inputs = *status;
     if (debug_level < 3) {
         if ((inputs & PAD_BUTTON_START) == 0) {
             //sub_801BF708(1);

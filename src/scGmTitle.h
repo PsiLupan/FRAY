@@ -16,7 +16,7 @@ typedef struct _GmTitle_File {
 } GmTitle_File;
 
 extern GmTitle_File title_ptrs;
-
+extern u32 title_inputs;
 extern f32 title_frames[3];
 
 void Menu_Title_SetupLogos();
