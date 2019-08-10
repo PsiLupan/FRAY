@@ -95,8 +95,10 @@ static void PObjUpdateFunc(void* obj, u32 type, FObjData* val)
 void HSD_PObjAnimAll(HSD_PObj* pobj)
 {
     if (pobj != NULL) {
-        for (HSD_PObj* pp = pobj; pp; pp = pp->next) {
-            HSD_AObjInterpretAnim(pp->u.shape_set->aobj, pp, PObjUpdateFunc);
+        for (HSD_PObj* pp = pobj; pp != NULL; pp = pp->next) {
+            if (pobj_type(pobj) == POBJ_SHAPEANIM) {
+                HSD_AObjInterpretAnim(pp->u.shape_set->aobj, pp, PObjUpdateFunc);
+            }
         }
     }
 }
