@@ -1,5 +1,6 @@
 #include "hsd_cobj.h"
 
+#include "hsd_display.h"
 #include "hsd_memory.h"
 
 static void CObjInfoInit();
