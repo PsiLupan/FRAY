@@ -36,7 +36,7 @@ void HSD_CObjEraseScreen(HSD_CObj* cobj, s32 enable_color, s32 enable_alpha, s32
             bottom_res = -top_res;
             right_res = cobj->aspect_bottom * top_res;
             left_res = -right_res;
-        } else {
+        } else if (proj_type == PROJ_ORTHO) {
             right_res = cobj->proj_right;
             left_res = cobj->proj_left;
             top_res = cobj->fov_top;

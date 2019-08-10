@@ -113,9 +113,9 @@ void HSD_MtxInverseConcat(Mtx inv, Mtx src, Mtx dst)
         fVar4 = fVar13 * (fVar6 * fVar5 - fVar1 * fVar2);
         fVar2 = fVar13 * -(fVar9 * fVar5 - fVar7 * fVar2);
         fVar13 = fVar13 * (fVar9 * fVar1 - fVar7 * fVar6);
-        local_54 = -(fVar4 * fVar11 - ((f64)((u64)dVar14 & 0x7fffffffffffffff | ~(u64)dVar14 & 0x8000000000000000) * dVar15 - (fVar12 * fVar10)));
-        local_44 = -(fVar2 * fVar11 - ((f64)((u64)dVar16 & 0x7fffffffffffffff | ~(u64)dVar16 & 0x8000000000000000) * dVar15 - (fVar8 * fVar10)));
-        local_34 = -(fVar13 * fVar11 - ((f64)((u64)dVar17 & 0x7fffffffffffffff | ~(u64)dVar17 & 0x8000000000000000) * dVar15 - (fVar3 * fVar10)));
+        local_54 = -(fVar4 * fVar11 - -dVar14 * dVar15 - (fVar12 * fVar10));
+        local_44 = -(fVar2 * fVar11 - -dVar16 * dVar15 - (fVar8 * fVar10));
+        local_34 = -(fVar13 * fVar11 - -dVar17 * dVar15 - (fVar3 * fVar10));
         if ((inv == dst) || (src == dst)) {
             Mtx m;
             guMtxRowCol(m, 0, 0) = fVar4 * guMtxRowCol(src, 2, 0) + (dVar14 * guMtxRowCol(src, 0, 0) + (fVar12 * guMtxRowCol(src, 1, 0)));
@@ -332,7 +332,7 @@ void HSD_MtxSRT(Mtx mtx, guVector* scale, guVector* rot, guVector* pos, guVector
     }
     guMtxRowCol(mtx, 0, 0) = (f32)(cos_rot_z * (scale_x * cos_rot_y));
     guMtxRowCol(mtx, 1, 0) = (f32)(sin_rot_z * (dVar7 * cos_rot_y));
-    guMtxRowCol(mtx, 2, 0) = (f32)((f64)((unsigned long long)dVar5 & 0x7fffffffffffffff | ~(unsigned long long)dVar5 & 0x8000000000000000) * sin_rot_y);
+    guMtxRowCol(mtx, 2, 0) = (f32)(-dVar5) * sin_rot_y;
     guMtxRowCol(mtx, 0, 1) = (f32)(dVar1 * (cos_rot_z * (sin_rot_x * sin_rot_y) - (cos_rot_x * sin_rot_z)));
     guMtxRowCol(mtx, 1, 1) = (f32)(scale_y * (sin_rot_z * (sin_rot_x * sin_rot_y) + (cos_rot_x * cos_rot_z)));
     guMtxRowCol(mtx, 2, 1) = (f32)(cos_rot_y * (dVar4 * sin_rot_x));
