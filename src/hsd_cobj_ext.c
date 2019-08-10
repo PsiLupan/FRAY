@@ -23,16 +23,19 @@ HSD_CObj* CObj_Create(HSD_CObjDesc* cdesc)
 }
 
 //801A1814
-void CObj_SetCurrent_Callback(HSD_GObj* gobj)
+void CObj_Texture_Callback(HSD_GObj* gobj)
 {
+    if(HSD_CObjSetCurrent(GOBJ_HSD_COBJ(gobj))){
+        GObj_SetTextureCamera(gobj, 7);
+        HSD_CObjEndCurrent();
+    }
 }
 
 //801A18D4
 void CObj_SetErase_Callback(HSD_GObj* gobj)
 {
     HSD_CObj* cobj = GOBJ_HSD_COBJ(gobj);
-    HSD_CObjSetCurrent(cobj);
-    if (cobj != NULL) {
+    if (HSD_CObjSetCurrent(cobj)) {
         HSD_SetEraseColor(0x26, 0x26, 0x26, 0xFF); //This actually uses some stack allocated values, but I'm hard coding for now
         HSD_CObjEraseScreen(cobj, 1, 0, 1);
         HSD_CObjEndCurrent();

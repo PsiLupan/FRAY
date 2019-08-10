@@ -355,7 +355,7 @@ static void Scene_Minor_Class0_OnLoad(void* unk_struct)
     HSD_GObj* menu_gobj_2 = GObj_Create(GOBJ_CLASS_HSD_COBJ_TITLE, 0x14, 0);
     HSD_CObj* menu_cobj_2 = CObj_Create(scene_cobj_desc);
     GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_MENU_COBJ, menu_cobj_2);
-    GObj_SetupGXLink_Max(menu_gobj_2, CObj_SetCurrent_Callback, 0xC);
+    GObj_SetupGXLink_Max(menu_gobj_2, CObj_Texture_Callback, 0xC);
 
     menu_gobj_2->x24_unk = 0x209;
     menu_gobj_2->x20_unk = 0;
@@ -834,8 +834,8 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
             //HSD_PerfSetStartTime();
             Pad_Renew();
             /*if(debug_level >= 3){
-        DevelopMode_CPUStats(&match_controller.unk14);
-      }*/
+                DevelopMode_CPUStats(&match_controller.unk14);
+            }*/
 
             if ((match_controller.pause & 1) == 0 && (match_controller.frozen & 1) != 0) {
                 match_controller.flags &= 0x7F;
@@ -872,8 +872,8 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
                 match_controller.unk24 = match_controller.unk24 | match_controller.unk28;
             }
             /*if(debug_level >= 3){
-        DevelopMode_USBScreenshot();
-      }*/
+                DevelopMode_USBScreenshot();
+            }*/
 
             SFX_ProcessVolume();
             if (match_controller.unk2C != NULL) {

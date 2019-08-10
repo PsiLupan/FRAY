@@ -1,5 +1,7 @@
 #include "gobj.h"
 
+#include "hsd/hsd_cobj.h"
+
 #define P_LINK_MAX 63
 #define GX_LINK_MAX 63
 #define S_LINK_MAX 63
@@ -419,6 +421,11 @@ u32 GObj_GetFlagFromArray(u32 offset)
     return flag_array[offset];
 }
 
+//80390ED0
+void GObj_SetTextureCamera(HSD_GObj* gobj, u32 iters){
+
+}
+
 //80390FC0
 void GObj_RunGXLinkMaxCallbacks()
 {
@@ -430,6 +437,15 @@ void GObj_RunGXLinkMaxCallbacks()
             gobj->render_cb(gobj, 0);
             active_gx_gobj = last_active;
         }
+    }
+}
+
+//803910D8
+void GObj_SetCamera(HSD_GObj* gobj){
+    BOOL res = HSD_CObjSetCurrent((HSD_CObj*)gobj->data);
+    if (res == FALSE) {
+        //sub_80390ed0(gobj,7);
+        //sub_80368608();
     }
 }
 
