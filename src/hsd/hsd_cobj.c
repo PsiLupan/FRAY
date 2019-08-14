@@ -344,7 +344,7 @@ s32 HSD_CObjGetUpVector(HSD_CObj* cobj, guVector* vec){
         guVector eye;
         s32 eye_res = HSD_CObjGetEyeVector(cobj, &eye);
         if(eye_res == 0){
-
+            //TODO
         }
         return 0;
     }
