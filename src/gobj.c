@@ -462,10 +462,10 @@ void GObj_RunGXLinkMaxCallbacks()
 {
     HSD_GObj* gobj = highestprio_gobjs[GX_LINK_MAX + 1];
     for (HSD_GObj* i = gobj; i != NULL; i = i->next_gx) {
-        if (gobj->render_cb != NULL) {
+        if (i->render_cb != NULL) {
             HSD_GObj* last_active = active_gx_gobj;
-            active_gx_gobj = gobj;
-            gobj->render_cb(gobj, 0);
+            active_gx_gobj = i;
+            i->render_cb(i, 0);
             active_gx_gobj = last_active;
         }
     }
