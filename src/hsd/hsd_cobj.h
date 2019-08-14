@@ -92,16 +92,18 @@ BOOL HSD_CObjSetCurrent(HSD_CObj*);
 void HSD_CObjEndCurrent();
 HSD_WObj* HSD_CObjGetInterestWObj(HSD_CObj*);
 HSD_WObj* HSD_CObjGetEyePositionWObj(HSD_CObj*);
-void HSD_CObjGetInterest(HSD_CObj*, guVector);
+void HSD_CObjGetInterest(HSD_CObj*, guVector*);
 void HSD_CObjSetInterest(HSD_CObj*, guVector);
-void HSD_CObjGetEyePosition(HSD_CObj*, guVector);
+void HSD_CObjGetEyePosition(HSD_CObj*, guVector*);
 void HSD_CObjSetEyePosition(HSD_CObj*, guVector);
-BOOL HSD_CObjGetEyeVector(HSD_CObj*, guVector*);
+s32 HSD_CObjGetEyeVector(HSD_CObj*, guVector*);
 f32 HSD_CObjGetEyeDistance(HSD_CObj*);
+s32 HSD_CObjGetUpVector(HSD_CObj*, guVector*);
 void HSD_CObjSetUpVector(HSD_CObj*, guVector*);
 void HSD_CObjSetMtxDirty(HSD_CObj*);
-MtxP HSD_CObjGetViewingMtxPtrDirect(HSD_CObj* cobj);
-MtxP HSD_CObjGetInvViewingMtxPtrDirect(HSD_CObj* cobj);
+MtxP HSD_CObjGetViewingMtxPtrDirect(HSD_CObj*);
+BOOL HSD_CObjMtxIsDirty(HSD_CObj*);
+MtxP HSD_CObjGetInvViewingMtxPtrDirect(HSD_CObj*);
 
 void HSD_CObjSetRoll(HSD_CObj*, f32);
 

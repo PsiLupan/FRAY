@@ -79,19 +79,19 @@ void CObjUpdateFunc(HSD_CObj* cobj, u32 type, f32* val)
         guVector vec;
         switch (type) {
         case 1:
-            HSD_CObjGetEyePosition(cobj, vec);
+            HSD_CObjGetEyePosition(cobj, &vec);
             vec.x = *val;
             HSD_CObjSetEyePosition(cobj, vec);
             break;
 
         case 2:
-            HSD_CObjGetEyePosition(cobj, vec);
+            HSD_CObjGetEyePosition(cobj, &vec);
             vec.y = *val;
             HSD_CObjSetEyePosition(cobj, vec);
             break;
 
         case 3:
-            HSD_CObjGetEyePosition(cobj, vec);
+            HSD_CObjGetEyePosition(cobj, &vec);
             vec.z = *val;
             HSD_CObjSetEyePosition(cobj, vec);
             break;
@@ -99,7 +99,7 @@ void CObjUpdateFunc(HSD_CObj* cobj, u32 type, f32* val)
         case 5:
         case 6:
         case 7:
-            HSD_CObjGetInterest(cobj, vec);
+            HSD_CObjGetInterest(cobj, &vec);
             vec.x = *val;
             HSD_CObjSetInterest(cobj, vec);
             break;
@@ -219,9 +219,9 @@ BOOL HSD_CObjSetCurrent(HSD_CObj* cobj)
                 guVector eye_pos;
                 guVector up;
                 guVector interest;
-                HSD_CObjGetEyePosition(cobj, eye_pos);
-                HSD_CObjGetUpVector(cobj, up);
-                HSD_CObjGetInterest(cobj, interest);
+                HSD_CObjGetEyePosition(cobj, &eye_pos);
+                HSD_CObjGetUpVector(cobj, &up);
+                HSD_CObjGetInterest(cobj, &interest);
                 guLookAt(cobj->view_mtx, &eye_pos, &up, &interest);
                 cobj->eye_position->flags = cobj->eye_position->flags & 0xFFFFFFFD;
                 cobj->interest->flags = cobj->interest->flags & 0xFFFFFFFD;
@@ -255,10 +255,10 @@ HSD_WObj* HSD_CObjGetEyePositionWObj(HSD_CObj* cobj)
 }
 
 //803686AC
-void HSD_CObjGetInterest(HSD_CObj* cobj, guVector interest)
+void HSD_CObjGetInterest(HSD_CObj* cobj, guVector* interest)
 {
     assert(cobj != NULL);
-    HSD_WObjGetPosition(cobj->interest, &interest);
+    HSD_WObjGetPosition(cobj->interest, interest);
 }
 
 //80368718
@@ -269,10 +269,10 @@ void HSD_CObjSetInterest(HSD_CObj* cobj, guVector interest)
 }
 
 //80368784
-void HSD_CObjGetEyePosition(HSD_CObj* cobj, guVector pos)
+void HSD_CObjGetEyePosition(HSD_CObj* cobj, guVector* pos)
 {
     assert(cobj != NULL);
-    HSD_WObjGetPosition(cobj->eye_position, &pos);
+    HSD_WObjGetPosition(cobj->eye_position, pos);
 }
 
 //803687F0
@@ -283,36 +283,34 @@ void HSD_CObjSetEyePosition(HSD_CObj* cobj, guVector pos)
 }
 
 //8036885C
-BOOL HSD_CObjGetEyeVector(HSD_CObj* cobj, guVector* vec)
+s32 HSD_CObjGetEyeVector(HSD_CObj* cobj, guVector* vec)
 {
-    if (cobj != NULL) {
-        if (cobj->eye_position != NULL && cobj->interest != NULL && vec != NULL) {
-            guVector eye_pos;
-            guVector interest_pos;
-            HSD_WObjGetPosition(cobj->eye_position, &eye_pos);
-            HSD_WObjGetPosition(cobj->interest, &interest_pos);
+    if (cobj != NULL && cobj->eye_position != NULL && cobj->interest != NULL && vec != NULL) {
+        guVector eye_pos;
+        guVector interest_pos;
+        HSD_WObjGetPosition(cobj->eye_position, &eye_pos);
+        HSD_WObjGetPosition(cobj->interest, &interest_pos);
 
-            guVecSub(&interest_pos, &eye_pos, vec);
+        guVecSub(&interest_pos, &eye_pos, vec);
 
-            BOOL denormalized = TRUE;
-            if ((u32)vec->x & 0x7FFFFFFF > FLT_MIN
-                && (u32)vec->y & 0x7FFFFFFF > FLT_MIN
-                && (u32)vec->z & 0x7FFFFFFF > FLT_MIN) {
-                guVecNormalize(vec);
-                denormalized = FALSE;
-            } else {
-                denormalized = TRUE;
-            }
-
-            if (denormalized == TRUE) {
-                vec->x = 0.0f;
-                vec->y = 0.0f;
-                vec->z = -1.0f;
-            }
-            return denormalized;
+        if(vec == NULL){
+            return -1;
+        }
+        if ((f32)((u32)vec->x & 0x7FFFFFFF) > FLT_MIN
+            && (f32)((u32)vec->y & 0x7FFFFFFF) > FLT_MIN
+            && (f32)((u32)vec->z & 0x7FFFFFFF) > FLT_MIN) {
+            guVecNormalize(vec);
+            return 0;
+        } else {
+            return -1;
         }
     }
-    return FALSE;
+    if (vec != NULL) {
+        vec->x = 0.0f;
+        vec->y = 0.0f;
+        vec->z = -1.0f;
+    }
+    return -1;
 }
 
 //80368A08
@@ -332,6 +330,30 @@ f32 HSD_CObjGetEyeDistance(HSD_CObj* cobj)
         res = sqrtf(dist.x * dist.x + dist.y * dist.y + dist.z * dist.z);
     }
     return res;
+}
+
+//80378E70
+s32 HSD_CObjGetUpVector(HSD_CObj* cobj, guVector* vec){
+    if(cobj != NULL && vec != NULL){
+        if ((cobj->flags & 1) != 0) {
+            vec->x = cobj->roll;
+            vec->y = cobj->pitch;
+            vec->z = cobj->yaw;
+            return 0;
+        }
+        guVector eye;
+        s32 eye_res = HSD_CObjGetEyeVector(cobj, &eye);
+        if(eye_res == 0){
+
+        }
+        return 0;
+    }
+    if(vec != NULL){
+        vec->x = 0.f;
+        vec->y = 1.f;
+        vec->z = 0.f;
+    }
+    return -1;
 }
 
 //803690B4
@@ -398,6 +420,20 @@ void HSD_CObjSetMtxDirty(HSD_CObj* cobj)
 MtxP HSD_CObjGetViewingMtxPtrDirect(HSD_CObj* cobj)
 {
     return cobj->view_mtx;
+}
+
+//80369574
+BOOL HSD_CObjMtxIsDirty(HSD_CObj* cobj){
+    if ((cobj->flags & 0x40000000) == 0) {
+        if (cobj->eye_position != NULL && (cobj->eye_position->flags & 2) != 0) {
+            return TRUE;
+        }
+        if (cobj->interest != NULL && (cobj->interest->flags & 2) != 0) {
+            return TRUE;
+        }
+        return FALSE;
+    }
+    return TRUE;
 }
 
 //80369624

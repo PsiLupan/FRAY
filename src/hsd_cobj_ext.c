@@ -25,7 +25,8 @@ HSD_CObj* CObj_Create(HSD_CObjDesc* cdesc)
 //801A1814
 void CObj_Texture_Callback(HSD_GObj* gobj)
 {
-    if(HSD_CObjSetCurrent(GOBJ_HSD_COBJ(gobj))){
+    HSD_CObj* cobj = GOBJ_HSD_COBJ(gobj);
+    if(HSD_CObjSetCurrent(cobj)){
         GObj_SetTextureCamera(gobj, 7);
         HSD_CObjEndCurrent();
     }

@@ -18,7 +18,7 @@ static HSD_GObj* highestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E7C
 static HSD_GObj* lowestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E80
 static HSD_GObj* current_gobj = NULL; //r13_3E84 - Really just a guess
 static HSD_GObj* active_gx_gobj = NULL; //r13_3E88
-static void* r13_3E8C = NULL;
+static HSD_GObj* prev_gobj = NULL;
 static void* hsd_destructors[14]; //r13_3E90 - Length is currently made up, TODO: need to explictly assign the functions to this at some point
 
 u32 flag_array[4] = { 1, 4, 2, 0 }; //804085F0
@@ -303,7 +303,7 @@ void GObj_SetupGXLink(HSD_GObj* gobj, void* render_cb, u32 gx_link, u32 priority
     gobj->render_priority = priority;
 
     HSD_GObj* i = NULL;
-    for (i = lowestprio_gobjs[gx_link]; i != NULL && (i->render_priority > gobj->render_priority); i = gobj->prev_gx) {
+    for (i = lowestprio_gobjs[gx_link]; i != NULL && (i->render_priority > gobj->render_priority); i = i->prev_gx) {
         //Works backwards from lowest to highest priority till it finds the highest priority to be it's parent obj
         //Returns null if nothing is a higher priority than the current object or if there is none of that type
     }
@@ -317,7 +317,7 @@ void GObj_SetupGXLink_Max(HSD_GObj* gobj, void* render_cb, u32 priority)
     gobj->gx_link = GX_LINK_MAX + 1;
     gobj->render_priority = priority;
     HSD_GObj* i = NULL;
-    for (i = lowestprio_gobjs[gobj->gx_link]; i != NULL && (i->render_priority > gobj->render_priority); i = gobj->prev_gx) {
+    for (i = lowestprio_gobjs[gobj->gx_link]; i != NULL && (i->render_priority > gobj->render_priority); i = i->prev_gx) {
         //Works backwards from lowest to highest priority till it finds the highest priority to be it's parent obj
         //Returns null if nothing is a higher priority than the current object or if there is none of that type
     }
@@ -423,7 +423,38 @@ u32 GObj_GetFlagFromArray(u32 offset)
 
 //80390ED0
 void GObj_SetTextureCamera(HSD_GObj* gobj, u32 iters){
+    HSD_GObj* curr;
+    u64 uVar5;
 
+    u32 i = 0;
+    while (true) {
+        if (iters == 0)
+            break;
+        if ((iters & 1) != 0) {
+            u32 j = 0;
+            uVar5 = *(u64*)&gobj->x20_unk;
+            while (true) {
+                if (uVar5 == 0)
+                    break;
+                if ((uVar5 & 1) != 0) {
+                    curr = highestprio_gobjs[j];
+                    while (curr != NULL) {
+                        if (gobj->render_cb != NULL) {
+                            HSD_GObj* temp = prev_gobj;
+                            prev_gobj = curr;
+                            gobj->render_cb(curr, i);
+                            prev_gobj = temp;
+                        }
+                        curr = curr->next_gx;
+                    }
+                }
+                ++j;
+                uVar5 = __shr2u((s32)(uVar5 >> 0x20), (s32)uVar5, 1);
+            }
+        }
+        iters = iters >> 1;
+        ++i;
+    }
 }
 
 //80390FC0
