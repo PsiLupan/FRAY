@@ -181,17 +181,18 @@ BOOL HSD_CObjSetCurrent(HSD_CObj* cobj)
     HSD_RenderPass pass = HSD_GetCurrentRenderPass();
     current_cobj = cobj;
     _HSD_ZListClear();
+    BOOL res = FALSE;
     switch (pass) {
     case HSD_RP_SCREEN:
-        //setupNormalCamera(cobj);
+        //res = setupNormalCamera(cobj);
         break;
 
     case HSD_RP_TOPHALF:
-        //setupTopHalfCamera(cobj);
+        //res = setupTopHalfCamera(cobj);
         break;
 
     case HSD_RP_BOTTOMHALF:
-        //setupBottomHalfCamera(cobj);
+        //res = setupBottomHalfCamera(cobj);
         break;
 
     case HSD_RP_OFFSCREEN:
@@ -205,13 +206,14 @@ BOOL HSD_CObjSetCurrent(HSD_CObj* cobj)
         Mtx44 mtx;
         u8 type = makeProjectionMtx(cobj, mtx);
         GX_LoadProjectionMtx(mtx, type);
+        res = TRUE;
         break;
 
     default:
         HSD_Halt("Unknown renderpass");
     }
 
-    if(pass == HSD_RP_SCREEN){
+    if(res == FALSE){
         return FALSE;
     }else{
         if ((cobj->flags & 2) == 0){
