@@ -429,13 +429,15 @@ void _HSD_ZListDisp()
 //80374910
 void _HSD_ZListClear()
 {
-    HSD_ZList* list;
+    HSD_ZList* list = zlist_top;
 
-    for (list = zlist_top; list; list = list->next) {
+    while(list != NULL) {
+        HSD_ZList* next = list->next;
         if (list->vmtx) {
             HSD_Free(list->vmtx);
         }
         HSD_Free(list);
+        list = next;
     }
     zlist_top = NULL;
     zlist_bottom = &zlist_top;
