@@ -106,9 +106,9 @@ typedef struct _HSD_LObj {
     guVector lvec;
     struct _HSD_AObj* aobj;
     u8 id; //GXLightID
-    GXLightObj* lightobj; //0x50
+    GXLightObj lightobj; //0x50
     u8 spec_id; //0x90 GXLightID
-    GXLightObj* spec_lightobj;
+    GXLightObj spec_lightobj; //0x94
 } HSD_LObj;
 
 typedef struct _HSD_LightDesc {
