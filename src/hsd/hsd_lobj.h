@@ -32,10 +32,9 @@
 #define LOBJ_INFINITE (1 << 0)
 #define LOBJ_POINT (2 << 0)
 #define LOBJ_SPOT (3 << 0)
-#define LOBJ_DIFFUSE 6
-#define LOBJ_ALPHA 7
-#define LOBJ_SPECULAR 8
-
+#define LOBJ_DIFFUSE (1 << 2)
+#define LOBJ_SPECULAR (1 << 3)
+#define LOBJ_ALPHA (1 << 4)
 #define LOBJ_HIDDEN (1 << 5)
 #define LOBJ_RAW_PARAM (1 << 6)
 #define LOBJ_DIFF_DIRTY (1 << 7)
