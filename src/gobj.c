@@ -439,10 +439,10 @@ void GObj_SetTextureCamera(HSD_GObj* gobj, u32 iters){
                 if ((uVar5 & 1) != 0) {
                     curr = highestprio_gobjs[j];
                     while (curr != NULL) {
-                        if (gobj->render_cb != NULL) {
+                        if (curr->render_cb != NULL) {
                             HSD_GObj* temp = prev_gobj;
                             prev_gobj = curr;
-                            gobj->render_cb(curr, i);
+                            curr->render_cb(curr, i);
                             prev_gobj = temp;
                         }
                         curr = curr->next_gx;
