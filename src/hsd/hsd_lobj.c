@@ -246,13 +246,13 @@ void HSD_LObjSetup(HSD_LObj* lobj, GXColor color, f32 shininess)
             || lobj->hw_color.g != color.g
             || lobj->hw_color.b != color.b
             || lobj->hw_color.a != color.a) {
-            GX_InitLightColor(lobj->lightobj, color);
+            GX_InitLightColor(&lobj->lightobj, color);
             lobj->hw_color = color;
             lobj->flags |= LOBJ_DIFF_DIRTY;
         }
 
         if (lobj->flags & LOBJ_DIFF_DIRTY) {
-            GX_LoadLightObj(lobj->lightobj, lobj->id);
+            GX_LoadLightObj(&lobj->lightobj, lobj->id);
             lobj->flags &= ~LOBJ_DIFF_DIRTY;
         }
     }
@@ -260,12 +260,12 @@ void HSD_LObjSetup(HSD_LObj* lobj, GXColor color, f32 shininess)
     if (lobj->spec_id != GX_LIGHTNULL) {
         if (lobj->shininess != shininess) {
             lobj->shininess = shininess;
-            GX_InitLightShininess(lobj->spec_lightobj, shininess);
+            GX_InitLightShininess(&lobj->spec_lightobj, shininess);
             lobj->flags |= LOBJ_SPEC_DIRTY;
         }
 
         if (lobj->flags & LOBJ_SPEC_DIRTY) {
-            GX_LoadLightObj(lobj->spec_lightobj, lobj->spec_id);
+            GX_LoadLightObj(&lobj->spec_lightobj, lobj->spec_id);
             lobj->flags &= ~LOBJ_SPEC_DIRTY;
         }
     }
@@ -305,14 +305,14 @@ void HSD_LObjSetupSpecularInit(MtxP pmtx)
             assert(0);
         }
         guVecNormalize(&half);
-        GX_InitLightDirv(lobj->spec_lightobj, &half);
+        GX_InitLightDirv(&lobj->spec_lightobj, &half);
         lobj->flags |= LOBJ_SPEC_DIRTY;
     }
 }
 
 static void setup_diffuse_lightobj(HSD_LObj* lobj)
 {
-    GX_InitLightColor(lobj->lightobj, lobj->color);
+    GX_InitLightColor(&lobj->lightobj, lobj->color);
     lobj->hw_color = lobj->color;
     lobj->flags |= LOBJ_DIFF_DIRTY;
 
@@ -342,9 +342,9 @@ static void setup_spec_lightobj(HSD_LObj* lobj, Mtx vmtx, u8 spec_id)
 {
     lobj->spec_id = spec_id;
     if (spec_id != GX_LIGHTNULL) {
-        GX_InitLightColor(lobj->spec_lightobj, lobj->color);
+        GX_InitLightColor(&lobj->spec_lightobj, lobj->color);
         lobj->shininess = 50.0F;
-        GX_InitLightShininess(lobj->spec_lightobj, lobj->shininess);
+        GX_InitLightShininess(&lobj->spec_lightobj, lobj->shininess);
 
         switch (HSD_LObjGetType(lobj)) {
         case LOBJ_POINT:
@@ -373,15 +373,15 @@ static void setup_point_lightobj(HSD_LObj* l, MtxP vmtx)
 {
     guVector lpos;
 
-    GX_InitLightColor(l->lightobj, l->color);
+    GX_InitLightColor(&l->lightobj, l->color);
     l->hw_color = l->color;
     HSD_LObjGetPosition(l, &lpos);
     guVecMultiply(vmtx, &lpos, &lpos);
-    GX_InitLightPosv(l->lightobj, &lpos);
-    GX_InitLightPosv(l->spec_lightobj, &lpos);
+    GX_InitLightPosv(&l->lightobj, &lpos);
+    GX_InitLightPosv(&l->spec_lightobj, &lpos);
 
     if (l->flags & LOBJ_RAW_PARAM) {
-        GX_InitLightAttn(l->lightobj,
+        GX_InitLightAttn(&l->lightobj,
             1.0F, 0.0F, 0.0F,
             l->u.attn.k0,
             l->u.attn.k1,
@@ -398,9 +398,9 @@ static void setup_point_lightobj(HSD_LObj* l, MtxP vmtx)
             ref_br = FLT_EPSILON;
         }
 
-        GX_InitLightDistAttn(l->lightobj, ref_dist, ref_br, dist_func);
-        GX_InitLightSpot(l->lightobj, 0.0F, GX_SP_OFF);
-        GX_InitLightDistAttn(l->spec_lightobj, ref_dist, ref_br, dist_func);
+        GX_InitLightDistAttn(&l->lightobj, ref_dist, ref_br, dist_func);
+        GX_InitLightSpot(&l->lightobj, 0.0F, GX_SP_OFF);
+        GX_InitLightDistAttn(&l->spec_lightobj, ref_dist, ref_br, dist_func);
     }
 }
 
@@ -414,11 +414,11 @@ static void setup_spot_lightobj(HSD_LObj* l, MtxP vmtx)
     HSD_LObjGetLightVector(l, &ldir);
     guVecMultiplySR(vmtx, &ldir, &ldir);
     guVecNormalize(&ldir);
-    GX_InitLightPosv(l->lightobj, &lpos);
-    GX_InitLightPosv(l->spec_lightobj, &lpos);
-    GX_InitLightDirv(l->lightobj, &ldir);
+    GX_InitLightPosv(&l->lightobj, &lpos);
+    GX_InitLightPosv(&l->spec_lightobj, &lpos);
+    GX_InitLightDirv(&l->lightobj, &ldir);
     if (l->flags & LOBJ_RAW_PARAM) {
-        GX_InitLightAttn(l->lightobj,
+        GX_InitLightAttn(&l->lightobj,
             l->u.attn.a0,
             l->u.attn.a1,
             l->u.attn.a2,
@@ -439,9 +439,9 @@ static void setup_spot_lightobj(HSD_LObj* l, MtxP vmtx)
             ref_br = FLT_EPSILON;
         }
 
-        GX_InitLightDistAttn(l->lightobj, ref_dist, ref_br, dist_func);
-        GX_InitLightDistAttn(l->spec_lightobj, ref_dist, ref_br, dist_func);
-        GX_InitLightSpot(l->lightobj, cutoff, spot_func);
+        GX_InitLightDistAttn(&l->lightobj, ref_dist, ref_br, dist_func);
+        GX_InitLightDistAttn(&l->spec_lightobj, ref_dist, ref_br, dist_func);
+        GX_InitLightSpot(&l->lightobj, cutoff, spot_func);
     }
 }
 
