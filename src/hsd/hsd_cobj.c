@@ -365,8 +365,8 @@ void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec)
         if ((cobj->flags & 1) == 0) {
             guVector uvec;
             f32 val;
-            BOOL res = HSD_CObjGetEyeVector(cobj, &uvec);
-            if (res == FALSE) {
+            s32 res = HSD_CObjGetEyeVector(cobj, &uvec);
+            if (res == 0) {
                 f32 val = guVecDotProduct(vec, &uvec);
                 if (FLT_MIN <= 1.0f - abs(val)) {
                     guVector zero = { 0.f, 0.f, 0.f };

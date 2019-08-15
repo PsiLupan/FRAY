@@ -475,8 +475,8 @@ void GObj_RunGXLinkMaxCallbacks()
 void GObj_SetCamera(HSD_GObj* gobj){
     BOOL res = HSD_CObjSetCurrent((HSD_CObj*)gobj->data);
     if (res == FALSE) {
-        //sub_80390ed0(gobj,7);
-        //sub_80368608();
+        GObj_SetTextureCamera(gobj, 7);
+        HSD_CObjEndCurrent();
     }
 }
 
