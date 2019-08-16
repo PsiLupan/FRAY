@@ -73,16 +73,16 @@ void HSD_TExpRef(HSD_TExp* texp, u8 sel)
 {
     u32 type = HSD_TExpGetType(texp);
     if (type == 4) {
-        texp->tev.c_clamp += 1;
+        texp->cnst.ref += 1;
         return;
     } else if (type != 1) {
         return;
     }
 
     if (sel == GX_ENABLE) {
-        texp->tev.type += 1;
+        texp->tev.c_ref += 1;
     } else {
-        texp->tev.c_dst += 1;
+        texp->tev.a_ref += 1;
     }
 }
 
@@ -91,8 +91,8 @@ void HSD_TExpUnref(HSD_TExp* texp, u8 sel)
 {
     u32 type = HSD_TExpGetType(texp);
     if (type == 4) {
-        if (texp->tev.c_clamp != 0) {
-            texp->tev.c_clamp -= 1;
+        if (texp->cnst.ref != 0) {
+            texp->cnst.ref -= 1;
             return;
         }
     } else if (type == 1) {
@@ -106,9 +106,8 @@ void HSD_TExpUnref(HSD_TExp* texp, u8 sel)
 
         if (texp->tev.c_ref == 0 && texp->tev.a_ref == 0) {
             for (u32 i = 0; i < 4; i++) {
-                HSD_TExpUnref(texp->tev.c_in->exp, texp->tev.c_in[0].sel);
-                HSD_TExpUnref(texp->tev.a_in->exp, texp->tev.a_in[0].sel);
-                texp = texp->tev.next;
+                HSD_TExpUnref(texp->tev.c_in[i].exp, texp->tev.c_in[i].sel);
+                HSD_TExpUnref(texp->tev.a_in[i].exp, texp->tev.a_in[i].sel);
             }
         }
     }
@@ -136,16 +135,12 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list)
     texp->tev.next = *list;
     *list = texp;
     texp->tev.c_ref = 0;
-    texp->nopt_ref_count = 0;
-    texp->texp_2 = NULL;
-    texp->x30_unk = 0;
-    texp->x38_unk = 0;
-    texp->x40_unk = 0;
-    texp->texp_3 = NULL;
-    texp->x50_unk = 0;
-    texp->x58_unk = 0;
-    texp->x60_unk = 0;
-    texp->x64_unk = 0;
+    texp->tev.a_ref = 0;
+    texp->tev.tex = NULL;
+    for(u32 i = 0; i < 4; i++){
+        texp->tev.c_in[i].exp = NULL;
+        texp->tev.a_in[i].exp = NULL;
+    }
     return texp;
 }
 
@@ -158,28 +153,28 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** 
 void HSD_TExpColorOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 clamp)
 {
     assert(HSD_TExpGetType(texp) == 1);
-    texp->color_op = op;
-    texp->color_clamp = (clamp ? GX_ENABLE : GX_DISABLE);
+    texp->tev.c_op = op;
+    texp->tev.c_clamp = (clamp ? GX_ENABLE : GX_DISABLE);
     if (op < 2) {
-        texp->color_bias = bias;
-        texp->color_scale = scale;
+        texp->tev.c_bias = bias;
+        texp->tev.c_scale = scale;
     }
-    texp->color_bias = 0;
-    texp->color_scale = 0;
+    texp->tev.c_bias = 0;
+    texp->tev.c_scale = 0;
 }
 
 //803833AC
 void HSD_TExpAlphaOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 clamp)
 {
     assert(HSD_TExpGetType(texp) == 1);
-    texp->alpha_op = op;
-    texp->alpha_clamp = (clamp ? GX_ENABLE : GX_DISABLE);
+    texp->tev.a_op = op;
+    texp->tev.a_clamp = (clamp ? GX_ENABLE : GX_DISABLE);
     if (op < 2) {
-        texp->alpha_bias = bias;
-        texp->alpha_scale = scale;
+        texp->tev.a_bias = bias;
+        texp->tev.a_scale = scale;
     }
-    texp->alpha_bias = 0;
-    texp->alpha_scale = 0;
+    texp->tev.a_bias = 0;
+    texp->tev.a_scale = 0;
 }
 
 //80383488

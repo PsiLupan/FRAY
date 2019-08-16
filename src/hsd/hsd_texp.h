@@ -42,7 +42,7 @@ typedef enum _HSD_TEType {
     HSD_TE_COMP_TYPE_MAX = 5
 } HSD_TEType;
 
-typedef enum _HSD_TECombType {
+typedef enum _HSD_TExpType {
     HSD_TE_ZERO = 0,
     HSD_TE_TEV = 1,
     HSD_TE_TEX = 2,
@@ -52,7 +52,7 @@ typedef enum _HSD_TECombType {
     HSD_TE_KONST = 6,
     HSD_TE_ALL = 7,
     HSD_TE_TYPE_MAX = 8
-} HSD_TECombType;
+} HSD_TExpType;
 
 typedef struct _HSD_TExpTevDesc {
     struct _HSD_TExpTevDesc* next;
@@ -106,12 +106,12 @@ typedef struct _HSD_TExpTevDesc {
 } HSD_TExpTevDesc;
 
 typedef struct _HSD_TECommon {
-    HSD_TECombType type;
+    HSD_TExpType type;
     union _HSD_TExp* next;
 } HSD_TECommon;
 
 typedef struct _HSD_TECnst {
-    HSD_TECombType type;
+    HSD_TExpType type;
     union _HSD_TExp* next;
     void* val;
     u8 comp;
@@ -134,7 +134,7 @@ typedef struct _HSD_TExpDag {
 } HSD_TExpDag;
 
 typedef struct _HSD_TETev {
-    HSD_TECombType type;
+    HSD_TExpType type;
     union _HSD_TExp* next;
     u32 c_ref;
     u8 c_dst;
@@ -171,7 +171,7 @@ typedef struct _HSD_TETev {
 } HSD_TETev;
 
 typedef union _HSD_TExp {
-    HSD_TECombType type;
+    HSD_TExpType type;
     struct _HSD_TECommon* comm;
     struct _HSD_TETev tev;
     struct _HSD_TECnst cnst;
@@ -186,7 +186,7 @@ void HSD_TExpRef(HSD_TExp*, u8);
 void HSD_TExpUnref(HSD_TExp*, u8);
 void HSD_TExpFreeList(HSD_TExp*, u32, u8);
 HSD_TExp* HSD_TExpTev(HSD_TExp**);
-HSD_TExp* HSD_TExpCnst(void*, u32, u32, HSD_TExp**);
+HSD_TExp* HSD_TExpCnst(void*, HSD_TEInput, HSD_TEType, HSD_TExp**);
 void HSD_TExpColorOp(HSD_TExp*, u8, u8, u8, u8);
 void HSD_TExpAlphaOp(HSD_TExp*, u8, u8, u8, u8);
 void HSD_TExpColorIn(HSD_TExp*, HSD_TEInput, HSD_TExp*, HSD_TEInput, HSD_TExp*, HSD_TEInput, HSD_TExp*, HSD_TEInput, HSD_TExp*);
