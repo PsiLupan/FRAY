@@ -168,7 +168,6 @@ typedef struct _HSD_TETev {
     } a_in[4];
     void* tex; //HSD_TObj*
     u8 chan;
-    struct _HSD_TExpDag* dag[7];
 } HSD_TETev;
 
 typedef union _HSD_TExp {
