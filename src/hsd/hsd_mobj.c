@@ -527,7 +527,7 @@ void HSD_MObjCompileTev(HSD_MObj* mobj)
 //803639AC
 static void MObjSetupTev(HSD_MObj* mobj, HSD_TObj* tobj, u32 rendermode)
 {
-    assert(mobj->tevdesc);
+    HSD_CheckAssert("MObjSetupTev: tevdesc is NULL", mobj->tevdesc != NULL);
     HSD_TExpSetupTev(mobj->tevdesc, mobj->texp);
     HSD_TObjSetupVolatileTev(tobj, rendermode);
 }
