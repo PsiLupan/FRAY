@@ -492,25 +492,25 @@ void HSD_MObjCompileTev(HSD_MObj* mobj)
     HSD_TObj *tobj, **tail = NULL;
     HSD_TExp* texp;
 
-    if (mobj) {
-        if (mobj->tevdesc) {
+    if (mobj != NULL) {
+        if (mobj->tevdesc != NULL) {
             HSD_TExpFreeTevDesc(mobj->tevdesc);
             mobj->tevdesc = NULL;
         }
-        if (mobj->texp) {
+        if (mobj->texp != NULL) {
             HSD_TExpFreeList(mobj->texp, HSD_TE_ALL, 1);
             mobj->texp = NULL;
         }
 
         tobj = mobj->tobj;
 
-        if ((mobj->rendermode & RENDER_SHADOW) && tobj_shadows) {
+        if ((mobj->rendermode & RENDER_SHADOW) != 0 && tobj_shadows != NULL) {
             for (tail = &tobj; *tail; tail = &(*tail)->next) {
             }
             *tail = tobj_shadows;
         }
 
-        if ((mobj->rendermode & RENDER_TOON) && tobj_toon && tobj_toon->imagedesc) {
+        if ((mobj->rendermode & RENDER_TOON) != 0 && tobj_toon != NULL && tobj_toon->imagedesc != NULL) {
             tobj_toon->next = tobj;
             tobj = tobj_toon;
         }

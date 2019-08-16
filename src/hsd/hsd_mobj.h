@@ -68,8 +68,10 @@ typedef struct _HSD_MObj {
     struct _HSD_Material* mat;
     struct _HSD_PEDesc* pe;
     struct _HSD_AObj* aobj;
+    #ifdef USE_TEXTURE_MATERIAL
     struct _HSD_TObj* ambient_tobj;
     struct _HSD_TObj* specular_tobj;
+    #endif
     struct _HSD_TExpTevDesc* tevdesc;
     union _HSD_TExp* texp;
 
