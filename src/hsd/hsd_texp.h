@@ -101,8 +101,7 @@ typedef struct _HSD_TExpTevDesc {
     u32 tex_sel;
     u32 color_sel;
     u32 alpha_sel;
-    void* x74_unk;
-    u32 x78_unk;
+    void* tobj;
 } HSD_TExpTevDesc;
 
 typedef struct _HSD_TECommon {

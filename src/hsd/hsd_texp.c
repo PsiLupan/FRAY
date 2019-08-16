@@ -1,5 +1,6 @@
 #include "hsd_texp.h"
 
+#include "hsd_tobj.h"
 #include "hsd_state.h"
 
 static u32 num_texgens = 0; //r13_40A4
@@ -215,9 +216,9 @@ void HSD_TExpSetupTev(HSD_TExpTevDesc* tevdesc, HSD_TExp* texp)
 {
     HSD_TExpSetReg(texp);
     while (tevdesc != NULL) {
-        if (tevdesc->x74_unk != NULL) {
-            //tevdesc->map = *((u32*)tevdesc->x74_unk + 0xC);
-            //tevdesc->coord = *((u32*)tevdesc->x74_unk + 0xA4);
+        if (tevdesc->tobj != NULL) {
+            tevdesc->map = ((HSD_TObj*)tevdesc->tobj)->id;
+            tevdesc->coord = ((HSD_TObj*)tevdesc->tobj)->coord;
         }
         HSD_StateAssignTev();
         HSD_SetupTevStage(tevdesc);
