@@ -28,8 +28,6 @@
 
 typedef s32 HSD_StateMask;
 
-typedef HSD_TExpTevDesc HSD_TevDesc;
-
 typedef struct _HSD_Chan {
     void* unk;
     u8 light_mask;

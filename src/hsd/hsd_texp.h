@@ -54,8 +54,8 @@ typedef enum _HSD_TExpType {
     HSD_TE_TYPE_MAX = 8
 } HSD_TExpType;
 
-typedef struct _HSD_TExpTevDesc {
-    struct _HSD_TExpTevDesc* next;
+typedef struct _HSD_TevDesc {
+    struct _HSD_TevDesc* next;
     u32 flags;
     u32 stage;
     u32 coord;
@@ -101,6 +101,10 @@ typedef struct _HSD_TExpTevDesc {
     u32 tex_sel;
     u32 color_sel;
     u32 alpha_sel;
+} HSD_TevDesc;
+
+typedef struct _HSD_TExpTevDesc {
+    struct _HSD_TevDesc desc;
     void* tobj;
 } HSD_TExpTevDesc;
 
