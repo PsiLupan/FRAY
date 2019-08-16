@@ -6,8 +6,8 @@
 
 #include "hsd_object.h"
 
-#include "hsd_texp.h"
 #include "hsd_tobj.h"
+#include "hsd_texp.h"
 #include "hsd_util.h"
 
 #define MOBJ_ANIM 0x4

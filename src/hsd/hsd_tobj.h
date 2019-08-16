@@ -9,8 +9,8 @@
 
 #include "hsd_object.h"
 
-#include "hsd_fobj.h"
 #include "hsd_texp.h"
+#include "hsd_fobj.h"
 
 #define TOBJ_ANIM 0x10
 

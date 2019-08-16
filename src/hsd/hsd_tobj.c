@@ -2,6 +2,7 @@
 
 #include "hsd_lobj.h"
 #include "hsd_state.h"
+#include "hsd_texp.h"
 
 static void TObjInfoInit();
 

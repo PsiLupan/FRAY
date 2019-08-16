@@ -1,7 +1,6 @@
 #include "hsd_texp.h"
 
 #include "hsd_state.h"
-#include "hsd_tobj.h"
 
 static u32 num_texgens = 0; //r13_40A4
 
@@ -66,50 +65,50 @@ u32 HSD_TExpGetType(HSD_TExp* texp)
     if ((u32)texp == HSD_TEXP_RAS) {
         return 3;
     }
-    return texp->flags;
+    return texp->type;
 }
 
 //80382C3C
-void HSD_TExpRef(HSD_TExp* texp, u8 opt)
+void HSD_TExpRef(HSD_TExp* texp, u8 sel)
 {
     u32 type = HSD_TExpGetType(texp);
     if (type == 4) {
-        texp->t4_ref_count += 1;
+        texp->tev.c_clamp += 1;
         return;
     } else if (type != 1) {
         return;
     }
 
-    if (opt == TRUE) {
-        texp->opt_ref_count += 1;
+    if (sel == GX_ENABLE) {
+        texp->tev.type += 1;
     } else {
-        texp->nopt_ref_count += 1;
+        texp->tev.c_dst += 1;
     }
 }
 
 //80382CC4
-void HSD_TExpUnref(HSD_TExp* texp, u8 opt)
+void HSD_TExpUnref(HSD_TExp* texp, u8 sel)
 {
     u32 type = HSD_TExpGetType(texp);
     if (type == 4) {
-        if (texp->t4_ref_count != 0) {
-            texp->t4_ref_count -= 1;
+        if (texp->tev.c_clamp != 0) {
+            texp->tev.c_clamp -= 1;
             return;
         }
     } else if (type == 1) {
-        if (opt == TRUE) {
-            if (texp->opt_ref_count != 0) {
-                texp->opt_ref_count -= 1;
+        if (sel == GX_ENABLE) {
+            if (texp->tev.c_ref != 0) {
+                texp->tev.c_ref -= 1;
             }
-        } else if (texp->nopt_ref_count != 0) {
-            texp->nopt_ref_count -= 1;
+        } else if (texp->tev.a_ref != 0) {
+            texp->tev.a_ref -= 1;
         }
 
-        if (texp->opt_ref_count == 0 && texp->nopt_ref_count == 0) {
+        if (texp->tev.c_ref == 0 && texp->tev.a_ref == 0) {
             for (u32 i = 0; i < 4; i++) {
-                HSD_TExpUnref(texp->texp_2, texp->texp2_opt);
-                HSD_TExpUnref(texp->texp_3, texp->texp3_opt);
-                texp = (HSD_TExp*)texp->opt_ref_count;
+                HSD_TExpUnref(texp->tev.c_in->exp, texp->tev.c_in[0].sel);
+                HSD_TExpUnref(texp->tev.a_in->exp, texp->tev.a_in[0].sel);
+                texp = texp->tev.next;
             }
         }
     }
@@ -127,16 +126,16 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list)
         HSD_Halt("HSD_TExpTev: List is NULL");
     }
 
-    HSD_TExp* texp = (HSD_TExp*)hsdAllocMemPiece(sizeof(HSD_TExp));
+    HSD_TExp* texp = (HSD_TExp*)hsdAllocMemPiece(sizeof(HSD_TETev));
     if (texp == NULL) {
         HSD_Halt("HSD_TExpTev: No free memory");
     }
 
     memset(texp, 0xFF, sizeof(HSD_TExp));
-    texp->flags = 1;
-    texp->next = *list;
+    texp->type = 1;
+    texp->tev.next = *list;
     *list = texp;
-    texp->opt_ref_count = 0;
+    texp->tev.c_ref = 0;
     texp->nopt_ref_count = 0;
     texp->texp_2 = NULL;
     texp->x30_unk = 0;
@@ -151,16 +150,16 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list)
 }
 
 //803831BC
-HSD_TExp* HSD_TExpCnst(void* color, u32 value, u32 type, HSD_TExp** list)
+HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** texp_list)
 {
 }
 
 //803832D0
-void HSD_TExpColorOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 enable)
+void HSD_TExpColorOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 clamp)
 {
     assert(HSD_TExpGetType(texp) == 1);
     texp->color_op = op;
-    texp->color_enable = (enable ? GX_ENABLE : GX_DISABLE);
+    texp->color_clamp = (clamp ? GX_ENABLE : GX_DISABLE);
     if (op < 2) {
         texp->color_bias = bias;
         texp->color_scale = scale;
@@ -170,11 +169,11 @@ void HSD_TExpColorOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 enable)
 }
 
 //803833AC
-void HSD_TExpAlphaOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 enable)
+void HSD_TExpAlphaOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 clamp)
 {
     assert(HSD_TExpGetType(texp) == 1);
     texp->alpha_op = op;
-    texp->alpha_enable = (enable ? GX_ENABLE : GX_DISABLE);
+    texp->alpha_clamp = (clamp ? GX_ENABLE : GX_DISABLE);
     if (op < 2) {
         texp->alpha_bias = bias;
         texp->alpha_scale = scale;
@@ -184,30 +183,30 @@ void HSD_TExpAlphaOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 enable)
 }
 
 //80383488
-static void HSD_TExpColorInSub(HSD_TExp* texp, u8 te_num, HSD_TExp* texp_num, u32 sel)
+static void HSD_TExpColorInSub(HSD_TExp* tev, HSD_TEInput sel, HSD_TExp* exp, u32 idx)
 {
 }
 
 //80383A64
-void HSD_TExpColorIn(HSD_TExp* texp, u32 te_num, HSD_TExp* texp_num, u32 te_num2, HSD_TExp* texp_num2,
-    u32 te_num3, HSD_TExp* texp_num3, u32 type, HSD_TExp* texp_rgb)
+void HSD_TExpColorIn(HSD_TExp* texp, HSD_TEInput sel_a, HSD_TExp* exp_a, HSD_TEInput sel_b, HSD_TExp* exp_b,
+    HSD_TEInput sel_c, HSD_TExp* exp_c, HSD_TEInput sel_d, HSD_TExp* exp_d)
 {
     assert(HSD_TExpGetType(texp) == 1);
-    HSD_TExpColorInSub(texp, te_num, texp_num, 0);
-    HSD_TExpColorInSub(texp, te_num2, texp_num2, 1);
-    HSD_TExpColorInSub(texp, te_num3, texp_num3, 2);
-    HSD_TExpColorInSub(texp, type, texp_rgb, 3);
+    HSD_TExpColorInSub(texp, sel_a, exp_a, 0);
+    HSD_TExpColorInSub(texp, sel_b, exp_b, 1);
+    HSD_TExpColorInSub(texp, sel_c, exp_c, 2);
+    HSD_TExpColorInSub(texp, sel_d, exp_d, 3);
 }
 
 //80383F50
-void HSD_TExpAlphaIn(HSD_TExp* texp, u32 te_num, HSD_TExp* texp_num, u32 te_num2, HSD_TExp* texp_num2,
-    u32 te_num3, HSD_TExp* texp_num3, u32 type, HSD_TExp* texp_alpha)
+void HSD_TExpAlphaIn(HSD_TExp* texp, HSD_TEInput sel_a, HSD_TExp* exp_a, HSD_TEInput sel_b, HSD_TExp* exp_b,
+    HSD_TEInput sel_c, HSD_TExp* exp_c, HSD_TEInput sel_d, HSD_TExp* exp_d)
 {
     assert(HSD_TExpGetType(texp) == 1);
 }
 
 //80384050
-void HSD_TExpOrder(HSD_TExp* texp, void* tobj, u8 chan)
+void HSD_TExpOrder(HSD_TExp* texp, void* tex, u8 chan)
 {
 }
 
