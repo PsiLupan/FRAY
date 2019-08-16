@@ -57,13 +57,13 @@ u32 HSD_TexCoordID2Num(u32 coord)
 //80382C00
 u32 HSD_TExpGetType(HSD_TExp* texp)
 { //This is dead serious the fucking code, what the fuck
-    if ((u32)texp == HSD_TEXP_ZERO) {
+    if ((s32)texp == HSD_TEXP_ZERO) {
         return 0;
     }
-    if ((u32)texp == HSD_TEXP_TEX) {
+    if ((s32)texp == HSD_TEXP_TEX) {
         return 2;
     }
-    if ((u32)texp == HSD_TEXP_RAS) {
+    if ((s32)texp == HSD_TEXP_RAS) {
         return 3;
     }
     return texp->type;
@@ -229,6 +229,15 @@ void HSD_TExpSetupTev(HSD_TExpTevDesc* tevdesc, HSD_TExp* texp)
 //803854B4
 void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tdesc, HSD_TExp** list)
 {
+    assert(tdesc != NULL);
+    assert(list != NULL);
+    u32 type = HSD_TExpGetType(texp);
+    if(type == 4){
+        texp->cnst.ref += 2;
+    }else if(type == 1){
+        texp->tev.c_ref += 1;
+        texp->tev.a_ref += 1;
+    }
 }
 
 //80385758
