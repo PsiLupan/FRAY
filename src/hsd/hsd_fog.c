@@ -17,7 +17,7 @@ void HSD_FogSet(HSD_Fog* fog)
         GX_SetFog(0, 0.f, 0.f, 0.f, 0.f, color);
     } else {
         HSD_CObj* cobj = HSD_CObjGetCurrent();
-        HSD_Halt("You must specify a CObj for fog first");
+        HSD_CheckAssert("You must specify a CObj for fog first", cobj != NULL);
         GXColor color = fog->color;
         f32 far = HSD_CObjGetFar(cobj);
         f32 near = HSD_CObjGetNear(cobj);
