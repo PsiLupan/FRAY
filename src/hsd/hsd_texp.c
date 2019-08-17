@@ -3,10 +3,6 @@
 #include "hsd_tobj.h"
 #include "hsd_state.h"
 
-HSD_TExp texp_ras = {-2};
-HSD_TExp texp_tex = {-1};
-HSD_TExp texp_zero = {0};
-
 static u32 num_texgens = 0; //r13_40A4
 
 //80362478
@@ -61,13 +57,13 @@ u32 HSD_TexCoordID2Num(u32 coord)
 //80382C00
 u32 HSD_TExpGetType(HSD_TExp* texp)
 {
-    if (texp->type == 0) {
+    if ((s32)texp == HSD_TEXP_ZERO) {
         return HSD_TE_ZERO;
     }
-    if (texp->type == -1) {
+    if ((s32)texp == HSD_TEXP_TEX) {
         return HSD_TE_TEX;
     }
-    if (texp->type == -2) {
+    if ((s32)texp == HSD_TEXP_RAS) {
         return HSD_TE_RAS;
     }
     return texp->type;

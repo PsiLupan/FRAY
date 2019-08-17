@@ -168,13 +168,9 @@ typedef union _HSD_TExp {
     struct _HSD_TECnst cnst;
 } HSD_TExp;
 
-extern HSD_TExp texp_ras;
-extern HSD_TExp texp_tex;
-extern HSD_TExp texp_zero;
-
-#define HSD_TEXP_RAS (&texp_ras)
-#define HSD_TEXP_TEX (&texp_tex)
-#define HSD_TEXP_ZERO (&texp_zero)
+#define HSD_TEXP_RAS (-2)
+#define HSD_TEXP_TEX (-1)
+#define HSD_TEXP_ZERO (0)
 
 void HSD_StateRegisterTexGen(u32);
 void HSD_StateSetNumTexGens();
