@@ -593,7 +593,7 @@ void HSD_MObjSetToonTextureImage(HSD_ImageDesc* toonimage)
             TEX_COORD_TOON,
             1.0F,
             GX_LINEAR,
-            NULL,
+            0,
             NULL,
             NULL
         };

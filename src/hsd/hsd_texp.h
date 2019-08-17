@@ -6,10 +6,6 @@
 #include "hsd_debug.h"
 #include "hsd_memory.h"
 
-#define HSD_TEXP_RAS -2
-#define HSD_TEXP_TEX -1
-#define HSD_TEXP_ZERO 0
-
 #define TEVOP_MODE 0
 #define TEVCONF_MODE 1
 
@@ -54,39 +50,16 @@ typedef enum _HSD_TExpType {
     HSD_TE_TYPE_MAX = 8
 } HSD_TExpType;
 
-typedef struct _HSD_TevDesc {
-    struct _HSD_TevDesc* next;
-    u32 flags;
-    u32 stage;
-    u32 coord;
-    u32 map;
-    u32 color;
-    union {
-        struct {
-            u32 op;
-            u32 tevmode;
-        } tevop;
-        struct {
-            u32 clr_op;
-            u32 clr_a;
-            u32 clr_b;
-            u32 clr_c;
-            u32 clr_d;
-            u32 clr_scale;
-            u32 clr_bias;
-            u32 clr_clamp;
-            u32 clr_reg;
-            u32 alpha_op;
-        } tevconf;
-    } u;
-    u32 color_a;
-    u32 color_b;
-    u32 color_c;
-    u32 color_d;
-    u32 color_scale;
-    u32 color_bias;
-    u32 color_clamp;
-    u32 color_reg;
+typedef struct _HSD_TevConf {
+    u32 clr_op;
+    u32 clr_a;
+    u32 clr_b;
+    u32 clr_c;
+    u32 clr_d;
+    u32 clr_scale;
+    u32 clr_bias;
+    u32 clr_clamp;
+    u32 clr_out_reg;
     u32 alpha_op;
     u32 alpha_a;
     u32 alpha_b;
@@ -95,12 +68,27 @@ typedef struct _HSD_TevDesc {
     u32 alpha_scale;
     u32 alpha_bias;
     u32 alpha_clamp;
-    u32 alpha_reg;
-    u32 x60_unk;
-    u32 ras_sel;
-    u32 tex_sel;
-    u32 color_sel;
-    u32 alpha_sel;
+    u32 alpha_out_reg;
+    u32 mode;
+    u32 ras_swap;
+    u32 tex_swap;
+    u32 kcsel;
+    u32 kasel;
+} HSD_TevConf;
+
+typedef struct _HSD_TevDesc {
+    struct _HSD_TevDesc* next;
+    u32 flags;
+    u32 stage;
+    u32 coord;
+    u32 map;
+    u32 color;
+    union {
+        HSD_TevConf tevconf;
+        struct {
+            u32 tevmode;
+        } tevop;
+    } u;
 } HSD_TevDesc;
 
 typedef struct _HSD_TExpTevDesc {
@@ -179,6 +167,14 @@ typedef union _HSD_TExp {
     struct _HSD_TETev tev;
     struct _HSD_TECnst cnst;
 } HSD_TExp;
+
+extern HSD_TExp texp_ras;
+extern HSD_TExp texp_tex;
+extern HSD_TExp texp_zero;
+
+#define HSD_TEXP_RAS (&texp_ras)
+#define HSD_TEXP_TEX (&texp_tex)
+#define HSD_TEXP_ZERO (&texp_zero)
 
 void HSD_StateRegisterTexGen(u32);
 void HSD_StateSetNumTexGens();

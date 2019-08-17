@@ -352,13 +352,13 @@ void HSD_SetupTevStage(HSD_TevDesc* desc)
         GX_SetTevOp(desc->stage, desc->u.tevop.tevmode);
         GX_SetTevSwapMode(desc->stage, 0, 0);
     } else {
-        GX_SetTevColorOp(desc->stage, desc->u.tevop.op, desc->color_bias, desc->color_scale, desc->color_clamp, desc->color_reg);
-        GX_SetTevColorIn(desc->stage, desc->color_a, desc->color_b, desc->color_c, desc->color_d);
-        GX_SetTevAlphaOp(desc->stage, desc->alpha_op, desc->alpha_bias, desc->alpha_scale, desc->alpha_clamp, desc->alpha_reg);
-        GX_SetTevAlphaIn(desc->stage, desc->alpha_a, desc->alpha_b, desc->alpha_c, desc->alpha_d);
-        GX_SetTevSwapMode(desc->stage, desc->ras_sel, desc->tex_sel);
-        GX_SetTevKColorSel(desc->stage, desc->color_sel);
-        GX_SetTevKAlphaSel(desc->stage, desc->alpha_sel);
+        GX_SetTevColorOp(desc->stage, desc->u.tevconf.clr_op, desc->u.tevconf.clr_bias, desc->u.tevconf.clr_scale, desc->u.tevconf.clr_clamp, desc->u.tevconf.clr_out_reg);
+        GX_SetTevColorIn(desc->stage, desc->u.tevconf.clr_a, desc->u.tevconf.clr_b, desc->u.tevconf.clr_c, desc->u.tevconf.clr_d);
+        GX_SetTevAlphaOp(desc->stage, desc->u.tevconf.alpha_op, desc->u.tevconf.alpha_bias, desc->u.tevconf.alpha_scale, desc->u.tevconf.alpha_clamp, desc->u.tevconf.alpha_out_reg);
+        GX_SetTevAlphaIn(desc->stage, desc->u.tevconf.alpha_a, desc->u.tevconf.alpha_b, desc->u.tevconf.alpha_c, desc->u.tevconf.alpha_d);
+        GX_SetTevSwapMode(desc->stage, desc->u.tevconf.ras_swap, desc->u.tevconf.tex_swap);
+        GX_SetTevKColorSel(desc->stage, desc->u.tevconf.kcsel);
+        GX_SetTevKAlphaSel(desc->stage, desc->u.tevconf.kasel);
     }
 }
 

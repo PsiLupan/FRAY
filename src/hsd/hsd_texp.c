@@ -3,6 +3,10 @@
 #include "hsd_tobj.h"
 #include "hsd_state.h"
 
+HSD_TExp texp_ras = {-2};
+HSD_TExp texp_tex = {-1};
+HSD_TExp texp_zero = {0};
+
 static u32 num_texgens = 0; //r13_40A4
 
 //80362478
@@ -56,15 +60,15 @@ u32 HSD_TexCoordID2Num(u32 coord)
 
 //80382C00
 u32 HSD_TExpGetType(HSD_TExp* texp)
-{ //This is dead serious the fucking code, what the fuck
-    if ((s32)texp == HSD_TEXP_ZERO) {
-        return 0;
+{
+    if (texp->type == 0) {
+        return HSD_TE_ZERO;
     }
-    if ((s32)texp == HSD_TEXP_TEX) {
-        return 2;
+    if (texp->type == -1) {
+        return HSD_TE_TEX;
     }
-    if ((s32)texp == HSD_TEXP_RAS) {
-        return 3;
+    if (texp->type == -2) {
+        return HSD_TE_RAS;
     }
     return texp->type;
 }
