@@ -6,6 +6,10 @@
 #include "hsd_debug.h"
 #include "hsd_memory.h"
 
+#define HSD_TEXP_RAS (-2)
+#define HSD_TEXP_TEX (-1)
+#define HSD_TEXP_ZERO (0)
+
 #define TEVOP_MODE 0
 #define TEVCONF_MODE 1
 
@@ -167,10 +171,6 @@ typedef union _HSD_TExp {
     struct _HSD_TETev tev;
     struct _HSD_TECnst cnst;
 } HSD_TExp;
-
-#define HSD_TEXP_RAS (-2)
-#define HSD_TEXP_TEX (-1)
-#define HSD_TEXP_ZERO (0)
 
 void HSD_StateRegisterTexGen(u32);
 void HSD_StateSetNumTexGens();
