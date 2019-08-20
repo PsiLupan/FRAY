@@ -80,7 +80,7 @@ void HSD_TExpRef(HSD_TExp* texp, u8 sel)
         return;
     }
 
-    if (sel == GX_ENABLE) {
+    if (sel == TRUE) {
         texp->tev.c_ref += 1;
     } else {
         texp->tev.a_ref += 1;
@@ -351,8 +351,9 @@ void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tdesc)
 {
     HSD_TExpTevDesc* next = tdesc;
     while (next != NULL) {
+        HSD_TExpTevDesc* temp = (HSD_TExpTevDesc*)next->desc.next;
         hsdFreeMemPiece(next, sizeof(HSD_TExpTevDesc));
-        next = (HSD_TExpTevDesc*)next->desc.next;
+        next = temp;
     }
 }
 
@@ -375,17 +376,20 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
 }
 
 //80386470
-static u32 SimplifySrc(HSD_TExp* texp){
+static u32 SimplifySrc(HSD_TExp* texp)
+{
 
 }
 
 //8038687C
-static u32 SimplifyThis(HSD_TExp* texp){
+static u32 SimplifyThis(HSD_TExp* texp)
+{
 
 }
 
 //803870E4
-static u32 SimplifyByMerge(HSD_TExp* texp){
+static u32 SimplifyByMerge(HSD_TExp* texp)
+{
 
 }
 
@@ -402,6 +406,7 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
 }
 
 //80387BA4
-u32 HSD_TExpSimplify2(HSD_TExp* texp){
+u32 HSD_TExpSimplify2(HSD_TExp* texp)
+{
 
 }
