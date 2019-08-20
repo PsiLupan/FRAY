@@ -306,14 +306,17 @@ void HSD_TExpSetupTev(HSD_TExpTevDesc* tevdesc, HSD_TExp* texp)
 //803854B4
 void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tdesc, HSD_TExp** list)
 {
+    HSD_TExpRes res;
+    u32 num;
+    
     assert(tdesc != NULL);
     assert(list != NULL);
     HSD_TExpRef(texp, 1);
     HSD_TExpRef(texp, 5);
     HSD_TExpSimplify(texp);
 
-    HSD_TExpRes res;
-    u32 num = HSD_TExpMakeDag(texp, &res);
+    
+    num = HSD_TExpMakeDag(texp, &res);
     HSD_TExpSchedule(num, &res, auStack208 + 1, auStack76);
     puVar5 = auStack208;
     for (u32 i = 0; i < num; ++i) {
@@ -325,7 +328,6 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tdesc, HSD_TExp** list)
         HSD_TExpSimplify2(puVar5[num]);
     }
     
-    HSD_TExpRes res;
     num = HSD_TExpMakeDag(texp, &res);
     HSD_TExpSchedule(num, &res, auStack208 + 1, auStack76);
     *tdesc = NULL;
