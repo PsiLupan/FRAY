@@ -57,13 +57,13 @@ u32 HSD_TexCoordID2Num(u32 coord)
 //80382C00
 u32 HSD_TExpGetType(HSD_TExp* texp)
 {
-    if ((s32)texp == HSD_TEXP_ZERO) {
+    if (texp->type == 0) {
         return HSD_TE_ZERO;
     }
-    if ((s32)texp == HSD_TEXP_TEX) {
+    if (texp->type == -1) {
         return HSD_TE_TEX;
     }
-    if ((s32)texp == HSD_TEXP_RAS) {
+    if (texp->type == -2) {
         return HSD_TE_RAS;
     }
     return texp->type;
