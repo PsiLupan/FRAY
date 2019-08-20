@@ -41,8 +41,8 @@ void HSD_PadFlushQueue(HSD_FlushType ftype)
             u8 t1 = p->qread;
             u8 t2 = t1 + 1;
             p->qread = t2 - (t2 / p->qnum) * p->qnum;
-            HSD_PadStatus* pad = p->queue[t1];
-            HSD_PadStatus* pad_2 = (p->queue[p->qread]);
+            HSD_PadStatus pad = p->queue[t1];
+            HSD_PadStatus pad_2 = p->queue[p->qread];
             pad_2[0] = ptr[0] | ptr_2[0];
             pad_2[6] = ptr[6] | ptr_2[6];
             pad_2[0xc] = ptr[0xc] | ptr_2[0xc];
