@@ -1,13 +1,14 @@
 #include "hsd_pad.h"
 
-HSD_PadStatus pad_queue[4];
-HSD_PadRumbleListData rumble_queue;
+HSD_PadLibData pad_data;
+HSD_PadRumbleListData rumble_data;
 
 //8037699C
 u8 HSD_PadGetRawQueueCount()
 {
+    HSD_PadLibData* p = &pad_data;
     u32 intr = IRQ_Disable();
-    s8 queue_count = pad_queue[3];
+    u8 queue_count = p->qcount;
     IRQ_Restore(intr);
     return queue_count;
 }
@@ -15,7 +16,8 @@ u8 HSD_PadGetRawQueueCount()
 //803769D8
 s32 HSD_PadGetResetSwitch()
 {
-    return (pad_queue[0x2B] != 0) ? TRUE : FALSE;
+    HSD_PadLibData* p = &pad_data;
+    return (p->reset_switch != 0) ? TRUE : FALSE;
 }
 
 void HSD_PadRawMerge(HSD_PadStatus* src1, HSD_PadStatus* src2, HSD_PadStatus* dst)
@@ -31,38 +33,39 @@ void HSD_PadRenewRawStatus()
 //80376D04
 void HSD_PadFlushQueue(HSD_FlushType ftype)
 {
+    HSD_PadLibData* p = &pad_data;
     u32 intr = IRQ_Disable();
-    switch (state) {
+    switch (ftype) {
     case HSD_PAD_FLUSH_QUEUE_MERGE:
-        while (pad_queue[3] > 1) {
-            s8 t1 = pad_queue[1];
-            s8 t2 = t1 + 1;
-            pad_queue[1] = t2 - (t2 / pad_queue[0]) * pad_queue[0];
-            s16* ptr = (s16*)(&pad_queue[8] + t1 * 0x30);
-            s16* ptr_2 = (s16*)(&pad_queue[8] + pad_queue[1] * 0x30);
-            ptr_2[0] = ptr[0] | ptr_2[0];
-            ptr_2[6] = ptr[6] | ptr_2[6];
-            ptr_2[0xc] = ptr[0xc] | ptr_2[0xc];
-            ptr_2[0x12] = ptr[0x12] | ptr_2[0x12];
-            pad_queue[3] -= 1;
+        while (p->qcount > 1) {
+            u8 t1 = p->qread;
+            u8 t2 = t1 + 1;
+            p->qread = t2 - (t2 / p->qnum) * p->qnum;
+            HSD_PadStatus* pad = p->queue[t1];
+            HSD_PadStatus* pad_2 = (p->queue[p->qread]);
+            pad_2[0] = ptr[0] | ptr_2[0];
+            pad_2[6] = ptr[6] | ptr_2[6];
+            pad_2[0xc] = ptr[0xc] | ptr_2[0xc];
+            pad_2[0x12] = ptr[0x12] | ptr_2[0x12];
+            p->qcount -= 1;
         }
         break;
 
     case HSD_PAD_FLUSH_QUEUE_THROWAWAY:
-        pad_queue[1] = pad_queue[2];
-        pad_queue[3] = 0;
+        p->qread = p->qwrite;
+        p->qcount = 0;
         break;
 
     case HSD_PAD_FLUSH_QUEUE_LEAVE1:
-        if (pad_queue[3] > 1) {
-            s8 num = 0;
-            if (pad_queue[2] > 0) {
-                num = pad_queue[2] - 1;
+        if (p->qcount > 1) {
+            u8 num = 0;
+            if (p->qwrite > 0) {
+                num = p->qwrite - 1;
             } else {
-                num = pad_queue[0] - 1;
+                num = p->qnum - 1;
             }
-            pad_queue[1] = num;
-            pad_queue[3] = 1;
+            p->qread = num;
+            p->qcount = 1;
         }
         break;
     }
@@ -91,15 +94,19 @@ void HSD_PadRenewStatus()
 //80377D18
 void HSD_PadReset()
 {
+    HSD_PadLibData* p = &pad_data;
     u32 intr = IRQ_Disable();
+    
     HSD_PadRumbleRemoveAll();
-    s32 count = 0;
-    do {
-        HSD_PadRumbleOffH(count++);
-    } while (count < 4);
-    HSD_PadFlushQueue(1);
+    
+    for (u8 i = 0; i < 4; ++i) {
+        HSD_PadRumbleOffH(i);
+    }
+    
+    HSD_PadFlushQueue(HSD_PAD_FLUSH_QUEUE_THROWAWAY);
     PAD_Recalibrate(0xF0000000);
-    pad_queue[43] = 0;
+    p->reset_switch = 0;
+    
     IRQ_Restore(intr);
 }
 
