@@ -117,6 +117,10 @@ void HSD_PadRumbleOn(u8 pad)
     IRQ_Restore(intr);
 }
 
+void HSD_PadRumbleOffN(u8 pad)
+{
+}
+
 //803780DC
 void HSD_PadRumbleOffH(u8 pad)
 {
