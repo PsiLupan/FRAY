@@ -424,7 +424,7 @@ static void MakeTextureMtx(HSD_TObj* tobj)
     }
 }
 
-//3035F0EC
+//8035F0EC
 static void TObjSetupMtx(HSD_TObj* tobj)
 {
     if (tobj_coord(tobj) == TEX_COORD_TOON)
