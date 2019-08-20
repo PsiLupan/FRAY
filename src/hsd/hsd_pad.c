@@ -33,7 +33,7 @@ void HSD_PadFlushQueue(HSD_FlushType ftype)
 {
     u32 intr = IRQ_Disable();
     switch (state) {
-    case 0:
+    case HSD_PAD_FLUSH_QUEUE_MERGE:
         while (pad_queue[3] > 1) {
             s8 t1 = pad_queue[1];
             s8 t2 = t1 + 1;
@@ -48,12 +48,12 @@ void HSD_PadFlushQueue(HSD_FlushType ftype)
         }
         break;
 
-    case 1:
+    case HSD_PAD_FLUSH_QUEUE_THROWAWAY:
         pad_queue[1] = pad_queue[2];
         pad_queue[3] = 0;
         break;
 
-    case 2:
+    case HSD_PAD_FLUSH_QUEUE_LEAVE1:
         if (pad_queue[3] > 1) {
             s8 num = 0;
             if (pad_queue[2] > 0) {
