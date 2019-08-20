@@ -99,7 +99,7 @@ void HSD_PadReset()
 }
 
 //80377D98
-void HSD_PadInit(u32 size, u8 raw_queue[], u32 unk, void* unk_queue)
+void HSD_PadInit(u8 qnum, HSD_PadStatus* queue, u16 nb_list, HSD_PadRumbleListData* listdatap)
 { //raw_queue is normally HAD_PadRawQueue - Don't know specifics yet
 }
 
