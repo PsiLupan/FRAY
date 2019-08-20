@@ -1,7 +1,7 @@
 #include "hsd_pad.h"
 
 HSD_PadLibData pad_data;
-HSD_PadRumbleListData rumble_data;
+HSD_RumbleData rumble_data[4];
 
 //8037699C
 u8 HSD_PadGetRawQueueCount()
@@ -120,7 +120,7 @@ void HSD_PadInit(u8 qnum, HSD_PadStatus* queue, u16 nb_list, HSD_PadRumbleListDa
 void HSD_PadRumbleOn(u8 pad)
 {
     u32 intr = IRQ_Disable();
-    rumble_queue[pad].rumble_on = 1;
+    rumble_data[pad].rumble_on = 1;
     IRQ_Restore(intr);
 }
 
@@ -132,7 +132,7 @@ void HSD_PadRumbleOffN(u8 pad)
 void HSD_PadRumbleOffH(u8 pad)
 {
     u32 intr = IRQ_Disable();
-    rumble_queue[pad].rumble_on = 0;
+    rumble_data[pad].rumble_on = 0;
     IRQ_Restore(intr);
 }
 
