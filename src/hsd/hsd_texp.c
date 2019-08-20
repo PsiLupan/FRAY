@@ -303,20 +303,6 @@ void HSD_TExpSetupTev(HSD_TExpTevDesc* tevdesc, HSD_TExp* texp)
     }
 }
 
-static void HSD_TExpRef(HSD_TExp* texp, u8 sel)
-{
-    u32 type = HSD_TExpGetType(texp);
-    if (type == 4) {
-        texp->cnst.ref += 2;
-    } else if (type == 1) {
-        if (sel == 1) {
-            texp->tev.c_ref += 1;
-        } else {
-            texp->tev.a_ref += 1;
-        }
-    }
-}
-
 //803854B4
 void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tdesc, HSD_TExp** list)
 {
