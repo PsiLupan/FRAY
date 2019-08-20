@@ -168,7 +168,7 @@ typedef struct _HSD_TExpRes {
     struct {
         u8 color;
         u8 alpha;
-    } reg[7];
+    } reg[8];
     u8 c_ref[4];
     u8 a_ref[4];
     u8 c_use[4];
@@ -181,7 +181,7 @@ typedef struct _HSD_TExpDag {
     u8 nb_dep;
     u8 nb_ref;
     u8 dist;
-    struct _HSD_TExpDag* dag[7];
+    struct _HSD_TExpDag* dag[8];
 } HSD_TExpDag;
 
 void HSD_StateRegisterTexGen(u32);
