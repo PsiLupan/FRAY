@@ -6,9 +6,9 @@
 #include "hsd_debug.h"
 #include "hsd_memory.h"
 
-#define HSD_TEXP_RAS (-2)
-#define HSD_TEXP_TEX (-1)
-#define HSD_TEXP_ZERO (0)
+#define HSD_TEXP_RAS (&(struct _HSD_TExp){-2})
+#define HSD_TEXP_TEX (&(struct _HSD_TExp){-1})
+#define HSD_TEXP_ZERO (&(struct _HSD_TExp){0})
 
 #define TEVOP_MODE 0
 #define TEVCONF_MODE 1
