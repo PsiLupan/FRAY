@@ -96,6 +96,7 @@ typedef struct _Attributes {
     u32 unk0xD0;
     f32 unk0xD4; //0xD8
     u32 unk0xD8; //0xD8
+    u32 unk0xDC;
     u32 kirbyStarDmg; //0xE0
     u32 normLandFrames; //0xE4
     u32 nAirLandFrames; //0xE8
