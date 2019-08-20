@@ -117,17 +117,6 @@ typedef struct _HSD_TECnst {
     u8 range;
 } HSD_TECnst;
 
-typedef struct _HSD_TExpDag {
-    struct _HSD_TETev* tev;
-    u8 idx;
-    u8 nb_dep;
-    u8 nb_ref;
-    u8 dist;
-    struct _HSD_TExpDag* dag[7];
-    u8 unk[4];
-    u8 unk_2[4];
-} HSD_TExpDag;
-
 typedef struct _HSD_TETev {
     HSD_TExpType type;
     union _HSD_TExp* next;
@@ -172,6 +161,29 @@ typedef union _HSD_TExp {
     struct _HSD_TECnst cnst;
 } HSD_TExp;
 
+typedef struct _HSD_TExpRes {
+    s32 failed;
+    s32 texmap;
+    s32 cnst_remain;
+    struct {
+        u8 color;
+        u8 alpha;
+    } reg[7];
+    u8 c_ref[4];
+    u8 a_ref[4];
+    u8 c_use[4];
+    u8 a_use[4];
+} HSD_TExpRes;
+
+typedef struct _HSD_TExpDag {
+    struct _HSD_TETev* tev;
+    u8 idx;
+    u8 nb_dep;
+    u8 nb_ref;
+    u8 dist;
+    struct _HSD_TExpDag* dag[7];
+} HSD_TExpDag;
+
 void HSD_StateRegisterTexGen(u32);
 void HSD_StateSetNumTexGens();
 void HSD_SetTevRegAll();
@@ -179,7 +191,7 @@ u32 HSD_TexCoordID2Num(u32);
 u32 HSD_TExpGetType(HSD_TExp*);
 void HSD_TExpRef(HSD_TExp*, u8);
 void HSD_TExpUnref(HSD_TExp*, u8);
-void HSD_TExpFreeList(HSD_TExp*, u32, u8);
+HSD_TExp* HSD_TExpFreeList(HSD_TExp*, u32, u8);
 HSD_TExp* HSD_TExpTev(HSD_TExp**);
 HSD_TExp* HSD_TExpCnst(void*, HSD_TEInput, HSD_TEType, HSD_TExp**);
 void HSD_TExpColorOp(HSD_TExp*, u8, u8, u8, u8);
@@ -189,5 +201,9 @@ void HSD_TExpAlphaIn(HSD_TExp*, HSD_TEInput, HSD_TExp*, HSD_TEInput, HSD_TExp*, 
 void HSD_TExpOrder(HSD_TExp*, void*, u8);
 void HSD_TExpCompile(HSD_TExp*, HSD_TExpTevDesc**, HSD_TExp**);
 void HSD_TExpFreeTevDesc(HSD_TExpTevDesc*);
+u32 HSD_TExpMakeDag(HSD_TExp*, HSD_TExpRes*);
+void HSD_TExpSchedule(u32, HSD_TExpDag*, HSD_TExp**, HSD_TExpRes*);
+u32 HSD_TExpSimplify(HSD_TExp*);
+u32 HSD_TExpSimplify2(HSD_TExp*);
 
 #endif
