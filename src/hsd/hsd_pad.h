@@ -32,18 +32,16 @@ typedef struct _HSD_PadRumbleListData {
     HSD_Rumble* headp;
 } HSD_PadRumbleListData;
 
-extern s8 pad_queue[];
-
-s8 HSD_PadGetRawQueueCount();
-BOOL HSD_PadGetResetSwitch();
+u8 HSD_PadGetRawQueueCount();
+s32 HSD_PadGetResetSwitch();
 
 void HSD_PadRenewMasterStatus();
 void HSD_PadZeroQueue();
 void HSD_PadRenewStatus();
 void HSD_PadReset();
 void HSD_PadInit(u8, HSD_PadStatus*, u16, HSD_PadRumbleListData*);
-void HSD_PadRumbleOn(u32);
-void HSD_PadRumbleOffH(u32);
+void HSD_PadRumbleOn(u8);
+void HSD_PadRumbleOffH(u8);
 void HSD_PadRumbleRemoveAll();
 
 #endif
