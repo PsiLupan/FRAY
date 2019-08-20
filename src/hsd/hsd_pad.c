@@ -29,7 +29,7 @@ void HSD_PadRenewRawStatus()
 }
 
 //80376D04
-void HSD_PadFlushQueue(u32 state)
+void HSD_PadFlushQueue(HSD_FlushType ftype)
 {
     u32 intr = IRQ_Disable();
     switch (state) {
