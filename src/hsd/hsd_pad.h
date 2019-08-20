@@ -5,14 +5,32 @@
 #include <ogc/irq.h>
 #include <ogc/pad.h>
 
-typedef struct _HSD_RumbleQueue {
-    u8 unk00;
-    u8 unk01;
-    u8 rumble_on;
-    u8 unk03;
-    u32 unk04;
-    u32 unk08;
-} HSD_RumbleQueue;
+typedef struct _HSD_PadStatus {
+    PADStatus stat[4];
+    u32 rumble_mask;
+} HSD_PadStatus;
+
+typedef union _HSD_Rumble {
+    u16 def;
+    struct {
+        u16 op;
+        u16 frame;
+    } command;
+} HSD_Rumble;
+
+typedef struct _HSD_PadRumbleListData {
+    struct _HSD_PadRumbleListData* next;
+    u32 id;
+    u8 pause;
+    u8 pri;
+    u8 status;
+    u16 loop_count;
+    u16 wait;
+    s32 frame;
+    HSD_Rumble* stack;
+    HSD_Rumble* listp;
+    HSD_Rumble* headp;
+} HSD_PadRumbleListData;
 
 extern s8 pad_queue[];
 
@@ -23,7 +41,7 @@ void HSD_PadRenewMasterStatus();
 void HSD_PadZeroQueue();
 void HSD_PadRenewStatus();
 void HSD_PadReset();
-
+void HSD_PadInit(u8, HSD_PadStatus*, u16, HSD_PadRumbleListData*);
 void HSD_PadRumbleOn(u32);
 void HSD_PadRumbleOffH(u32);
 void HSD_PadRumbleRemoveAll();
