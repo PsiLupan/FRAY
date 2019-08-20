@@ -5,6 +5,13 @@
 #include <ogc/irq.h>
 #include <ogc/pad.h>
 
+typedef enum _HSD_FlushType {
+    HSD_PAD_FLUSH_QUEUE_MERGE = 0,
+    HSD_PAD_FLUSH_QUEUE_THROWAWAY = 1,
+    HSD_PAD_FLUSH_QUEUE_LEAVE1 = 2,
+    HSD_PAD_FLUSH_QUEUE_TERMINATE = 3
+} HSD_FlushType;
+
 typedef struct _HSD_PadStatus {
     PADStatus stat[4];
     u32 rumble_mask;
@@ -34,7 +41,7 @@ typedef struct _HSD_PadRumbleListData {
 
 u8 HSD_PadGetRawQueueCount();
 s32 HSD_PadGetResetSwitch();
-
+void HSD_PadFlushQueue(HSD_FlushType);
 void HSD_PadRenewMasterStatus();
 void HSD_PadZeroQueue();
 void HSD_PadRenewStatus();
