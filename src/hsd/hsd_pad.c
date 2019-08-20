@@ -1,10 +1,10 @@
 #include "hsd_pad.h"
 
-s8 pad_queue[0x44 * 4]; //Length determined from 80377B54's loop
-HSD_RumbleQueue rumble_queue[4];
+HSD_PadStatus pad_queue[4];
+HSD_PadRumbleListData rumble_queue;
 
 //8037699C
-s8 HSD_PadGetRawQueueCount()
+u8 HSD_PadGetRawQueueCount()
 {
     u32 intr = IRQ_Disable();
     s8 queue_count = pad_queue[3];
@@ -13,14 +13,19 @@ s8 HSD_PadGetRawQueueCount()
 }
 
 //803769D8
-BOOL HSD_PadGetResetSwitch()
+s32 HSD_PadGetResetSwitch()
 {
     return (pad_queue[0x2B] != 0) ? TRUE : FALSE;
 }
 
-//803769FC
-void HSD_PadRenewRawStatus(u32 unk)
+void HSD_PadRawMerge(HSD_PadStatus* src1, HSD_PadStatus* src2, HSD_PadStatus* dst)
 {
+}
+
+//803769FC
+void HSD_PadRenewRawStatus()
+{
+    
 }
 
 //80376D04
@@ -100,11 +105,12 @@ void HSD_PadReset()
 
 //80377D98
 void HSD_PadInit(u8 qnum, HSD_PadStatus* queue, u16 nb_list, HSD_PadRumbleListData* listdatap)
-{ //raw_queue is normally HAD_PadRawQueue - Don't know specifics yet
+{
+    
 }
 
 //80378090
-void HSD_PadRumbleOn(u32 pad)
+void HSD_PadRumbleOn(u8 pad)
 {
     u32 intr = IRQ_Disable();
     rumble_queue[pad].rumble_on = 1;
@@ -112,7 +118,7 @@ void HSD_PadRumbleOn(u32 pad)
 }
 
 //803780DC
-void HSD_PadRumbleOffH(u32 pad)
+void HSD_PadRumbleOffH(u8 pad)
 {
     u32 intr = IRQ_Disable();
     rumble_queue[pad].rumble_on = 0;
