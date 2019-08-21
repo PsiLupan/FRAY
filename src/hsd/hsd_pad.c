@@ -29,6 +29,7 @@ void HSD_PadRenewRawStatus()
     This occurs after the PAD_Read by checking err != 0 on each status and incrementing the controller number by 1. If every controller is err'd, it returns.
     */
     PADStatus status[4];
+    u32 mask = 0;
 
     HSD_PadRumbleInterpret();
     PAD_Read(status);
@@ -62,7 +63,6 @@ void HSD_PadRenewRawStatus()
     }
     HSD_PadLibData.qwrite = (HSD_PadLibData.qwrite + 1) - (HSD_PadLibData.qwrite + 1) / HSD_PadLibData.qnum * HSD_PadLibData.qnum;
 JMP:
-    u32 mask = 0;
     if(status[0].err == PAD_ERR_NO_CONTROLLER){
         mask |= PAD_CHAN0_BIT;
     }
@@ -180,7 +180,7 @@ static HSD_PadScale(HSD_PadStatus* mp)
 }
 
 //80377450
-static HSD_PadCrossDir(HSD_PadStatus* mp)
+static void HSD_PadCrossDir(HSD_PadStatus* mp)
 {
     switch (HSD_PadLibData.cross_dir) {
     case 0:
