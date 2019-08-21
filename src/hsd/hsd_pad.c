@@ -1,6 +1,6 @@
 #include "hsd_pad.h"
 
-PadLibData HSD_PadLibData;//804C1F78
+PadLibData HSD_PadLibData; //804C1F78
 HSD_PadStatus HSD_PadMasterStatus[4]; //804C1FAC
 HSD_PadStatus HSD_PadCopyStatus[4]; //804C20BC
 HSD_RumbleData HSD_PadRumbleData[4]; //804C22E0
@@ -400,7 +400,7 @@ void HSD_PadRumbleRemoveAll()
     for (u32 i = 0; i < 4; i++) {
         u32 intr = IRQ_Disable();
         HSD_PadRumbleListData* data = HSD_PadRumbleData[i].listdatap;
-        while(data != NULL){
+        while (data != NULL) {
             HSD_PadRumbleListData* next = data->next;
             HSD_PadRumbleFree(&HSD_PadRumbleData[i], data);
             data = next;
@@ -412,4 +412,44 @@ void HSD_PadRumbleRemoveAll()
 //80378828
 void HSD_PadRumbleInit(u16 nb_list, HSD_PadRumbleListData* listdatap)
 {
+    HSD_PadLibData.rumble_info.max_list = nb_list;
+    HSD_PadLibData.rumble_info.listdatap = listdatap;
+
+    if (nb_list != 0) {
+        u32 idx = nb_list - 1;
+        u32 z_idx = 0;
+        if (idx > 0) {
+            u32 loop_count = nb_list - 2 >> 3;
+            if (idx > 8 && (nb_list - 9) > 0) {
+                do {
+                    HSD_PadLibData.rumble_info.listdatap[0].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 1].next;
+                    HSD_PadLibData.rumble_info.listdatap[z_idx + 1].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 2];
+                    HSD_PadLibData.rumble_info.listdatap[z_idx + 2].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 3];
+                    HSD_PadLibData.rumble_info.listdatap[z_idx + 3].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 4];
+                    HSD_PadLibData.rumble_info.listdatap[z_idx + 4].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 5];
+                    HSD_PadLibData.rumble_info.listdatap[z_idx + 5].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 6];
+                    HSD_PadLibData.rumble_info.listdatap[z_idx + 6].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 7];
+                    HSD_PadLibData.rumble_info.listdatap[z_idx + 7].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 8];
+
+                    z_idx = z_idx + 8;
+                    loop_count -= 1;
+                } while (loop_count > 0);
+            }
+            if (z_idx < idx) {
+                u32 offset = z_idx + 1;
+                for (u32 i = idx - z_idx; i > 0; --i, ++z_idx, ++offset) {
+                    HSD_PadLibData.rumble_info.listdatap[offset].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 1];
+                }
+            }
+        }
+        HSD_PadLibData.rumble_info.listdatap[z_idx].next = NULL;
+    }
+
+    for (u8 i = 0; i < 4; i++) {
+        HSD_PadRumbleData[i].last_status = 0;
+        HSD_PadRumbleData[i].status = 0;
+        HSD_PadRumbleData[i].direct_status = 0;
+        HSD_PadRumbleData[i].nb_list = 0;
+        HSD_PadRumbleData[i].listdatap = NULL;
+    }
 }
