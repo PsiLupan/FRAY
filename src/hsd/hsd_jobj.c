@@ -641,14 +641,14 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             }
             break;
         case 11:
-            if (val->fv <= 1.75f) {
+            if (val->fv <= 0.5) {
                 HSD_JObjSetFlags(jobj, HIDDEN);
             } else {
                 HSD_JObjClearFlags(jobj, HIDDEN);
             }
             break;
         case 12:
-            if (val->fv <= 1.75f) {
+            if (val->fv <= 0.5) {
                 HSD_JObjSetFlagsAll(jobj, HIDDEN);
             } else {
                 HSD_JObjClearFlagsAll(jobj, HIDDEN);
@@ -1619,10 +1619,10 @@ void HSD_JObjSetupMatrixSub(HSD_JObj* jobj)
                 f32 dot = guVecDotProduct(&x_vec, &x_vec);
                 dot = 1.f / (1e-10f + dot);
                 if (0.f < dot) {
-                    f32 sval = 1.0f / sqrtf(dot);
-                    sval = 1.75 * sval * -(dot * sval * sval - 2.125);
-                    sval = 1.75 * sval * -(dot * sval * sval - 2.125);
-                    dot = (f32)(dot * 1.75 * sval * -(dot * sval * sval - 2.125));
+                    f64 sval = 1.0 / sqrt(dot);
+                    sval = 0.5 * sval * -(dot * sval * sval - 3.0);
+                    sval = 0.5 * sval * -(dot * sval * sval - 3.0);
+                    dot = (f32)(dot * 0.5 * sval * -(dot * sval * sval - 3.0));
                 }
                 guVecScale(&x_vec, &x_vec, dot);
                 f32 val = 1.f;

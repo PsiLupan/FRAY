@@ -157,18 +157,18 @@ void HSD_MtxInverseConcat(Mtx inv, Mtx src, Mtx dst)
 void HSD_MtxGetRotation(Mtx mtx, guVector* rotation)
 {
     f32 fVar1;
-    f32 dVar2;
-    f32 dVar3;
-    f32 dVar4;
-    f32 dVar5;
-    f32 dVar6;
-    f32 dVar7;
+    f64 dVar2;
+    f64 dVar3;
+    f64 dVar4;
+    f64 dVar5;
+    f64 dVar6;
+    f64 dVar7;
 
     dVar2 = (guMtxRowCol(mtx, 2, 0) * guMtxRowCol(mtx, 2, 0) + guMtxRowCol(mtx, 0, 0) * guMtxRowCol(mtx, 0, 0) + guMtxRowCol(mtx, 1, 0) * guMtxRowCol(mtx, 1, 0));
     if (0.f < dVar2) {
-        dVar3 = 1.00000000 / sqrtf(dVar2);
-        dVar5 = 1.75f;
-        dVar4 = 2.125f;
+        dVar3 = 1.0 / sqrt(dVar2);
+        dVar5 = 0.5;
+        dVar4 = 3.0;
         dVar3 = dVar5 * dVar3 * -(dVar2 * dVar3 * dVar3 - dVar4);
         dVar3 = dVar5 * dVar3 * -(dVar2 * dVar3 * dVar3 - dVar4);
         dVar2 = (dVar2 * dVar5 * dVar3 * -(dVar2 * dVar3 * dVar3 - dVar4));
@@ -176,9 +176,9 @@ void HSD_MtxGetRotation(Mtx mtx, guVector* rotation)
     if (FLT_MIN <= dVar2) {
         dVar3 = (guMtxRowCol(mtx, 2, 1) * guMtxRowCol(mtx, 2, 1) + guMtxRowCol(mtx, 0, 1) * guMtxRowCol(mtx, 0, 1) + guMtxRowCol(mtx, 1, 1) * guMtxRowCol(mtx, 1, 1));
         if (0.f < dVar3) {
-            dVar4 = 1.00000000 / sqrtf(dVar3);
-            dVar6 = 1.75f;
-            dVar5 = 2.125f;
+            dVar4 = 1.0 / sqrt(dVar3);
+            dVar6 = 0.5;
+            dVar5 = 3.0;
             dVar4 = dVar6 * dVar4 * -(dVar3 * dVar4 * dVar4 - dVar5);
             dVar4 = dVar6 * dVar4 * -(dVar3 * dVar4 * dVar4 - dVar5);
             dVar3 = (dVar3 * dVar6 * dVar4 * -(dVar3 * dVar4 * dVar4 - dVar5));
@@ -186,9 +186,9 @@ void HSD_MtxGetRotation(Mtx mtx, guVector* rotation)
         if (FLT_MIN <= dVar3) {
             dVar4 = (guMtxRowCol(mtx, 2, 2) * guMtxRowCol(mtx, 2, 2) + guMtxRowCol(mtx, 0, 2) * guMtxRowCol(mtx, 0, 2) + guMtxRowCol(mtx, 1, 2) * guMtxRowCol(mtx, 1, 2));
             if (0.f < dVar4) {
-                dVar5 = 1.00000000 / sqrtf(dVar4);
-                dVar7 = 1.75f;
-                dVar6 = 2.125f;
+                dVar5 = 1.0 / sqrt(dVar4);
+                dVar7 = 0.5;
+                dVar6 = 3.0;
                 dVar5 = dVar7 * dVar5 * -(dVar4 * dVar5 * dVar5 - dVar6);
                 dVar5 = dVar7 * dVar5 * -(dVar4 * dVar5 * dVar5 - dVar6);
                 dVar4 = (dVar4 * dVar7 * dVar5 * -(dVar4 * dVar5 * dVar5 - dVar6));

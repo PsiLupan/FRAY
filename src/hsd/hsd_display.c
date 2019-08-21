@@ -487,7 +487,7 @@ void HSD_SetEraseColor(u8 r, u8 g, u8 b, u8 a)
 }
 
 //80374AA0
-void HSD_EraseRect(float top, float bottom, float left, float right, float z, int enable_color, int enable_alpha, int enable_depth)
+void HSD_EraseRect(f32 top, f32 bottom, f32 left, f32 right, f32 z, s32 enable_color, s32 enable_alpha, s32 enable_depth)
 {
     GXTexObj texobj;
     static u8 depth_image[] ATTRIBUTE_ALIGN(32) = {

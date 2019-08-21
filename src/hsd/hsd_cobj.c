@@ -17,8 +17,8 @@ void HSD_CObjEraseScreen(HSD_CObj* cobj, s32 enable_color, s32 enable_alpha, s32
     if (cobj != NULL && (enable_color != 0 || enable_alpha != 0 || enable_depth != 0)) {
         f32 far = HSD_CObjGetFar(cobj);
         f32 near = HSD_CObjGetNear(cobj);
-        f64 constant = 1.75;
-        f32 z_val = roundf(constant * (near + far));
+        f64 constant = 0.5;
+        f64 z_val = (constant * (near + far));
 
         f32 right_res; //f29
         f32 left_res; //f30
