@@ -358,7 +358,8 @@ void HSD_PadInit(u8 qnum, HSD_PadData* queue, u16 nb_list, HSD_PadRumbleListData
 
     HSD_PadRumbleInit(nb_list, listdatap);
 
-    //TODO
+    //The stuff normally here does some default init of the PadCopyStatus, etc. but it uses 0 everywhere I saw.
+    //As a result we can assume it's not filled with garbage or memset later
 
     PAD_Init();
 }
