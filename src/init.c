@@ -18,7 +18,8 @@ static u64 sys_time;
 
 GXRModeObj* rmode = &TVNtsc480IntDf;
 
-u8* pad_raw_queue[PAD_QUEUE_SIZE * 0x44]; //8046B108
+HSD_PadData pad_queue[PAD_QUEUE_SIZE]; //8046B108
+HSD_PadRumbleListData rumble_list[PAD_RUMBLE_LIST_SIZE]; //8036B1F8
 
 //80019AAC
 void Init_PadReader(void (*init_func)(void))
@@ -30,17 +31,17 @@ void Init_PadReader(void (*init_func)(void))
 //8015FD24
 void Pad_InitCallback()
 {
-    PAD_SetSpec(5);
-    HSD_PadInit(PAD_QUEUE_SIZE, pad_raw_queue, 0xc, NULL); //Technically the last param isn't NULL, but K7 does it, so it's probably nbd
-    *pad_raw_queue[0x1C] = 0;
-    *pad_raw_queue[0x1D] = 1;
-    *pad_raw_queue[0x1E] = 0x50;
-    *pad_raw_queue[0x1F] = 0;
-    *pad_raw_queue[0x20] = 1;
-    *pad_raw_queue[0x21] = 0x8C;
-    *pad_raw_queue[0x22] = 0;
-    *pad_raw_queue[0x26] = 0x50;
-    *pad_raw_queue[0x27] = 0x8C;
+    PAD_SetSpec(PAD_QUEUE_SIZE);
+    HSD_PadInit(PAD_QUEUE_SIZE, pad_queue, PAD_RUMBLE_LIST_SIZE, rumble_list);
+    HSD_PadLibData.clamp_stickType = 0;
+    HSD_PadLibData.clamp_stickShift = 1;
+    HSD_PadLibData.clamp_stickMax = 80;
+    HSD_PadLibData.clamp_stickMin = 0;
+    HSD_PadLibData.clamp_analogLRShift = 1;
+    HSD_PadLibData.clamp_analogLRMax = 140;
+    HSD_PadLibData.clamp_analogLRMin = 0;
+    HSD_PadLibData.scale_stick = 80;
+    HSD_PadLibData.scale_analogLR = 140;
 }
 
 //8015FDA0
@@ -53,7 +54,6 @@ static void stub()
 int main(void)
 {
     VIDEO_Init();
-    PAD_Init();
     DVDInit(); //Calls FRAY's custom OGCExt DVDInit
 
     arena_size = (u32)SYS_GetArena1Hi() - (u32)SYS_GetArena1Lo();
@@ -76,7 +76,7 @@ int main(void)
 
     //sub_8002838C(); Inits AR, ARQ, and AI - "Audio_Init"
 
-    //Init_PadReader(Pad_InitCallback);
+    Init_PadReader(Pad_InitCallback);
 
     HSD_VISetUserPostRetraceCallback(stub);
     HSD_VISetUserGXDrawDoneCallback(HSD_VIDrawDoneXFB);
@@ -91,7 +91,7 @@ int main(void)
     //sub_8015FCC0();
     //sub_8001F87C();
 
-    //sub_803A6048(); FirstHeapAlloc
+    //sub_803A6048(0xC000); FirstHeapAlloc
     //InitializeStaticMemRegions();
 
     Init_Game();

@@ -67,6 +67,42 @@ typedef struct _HSD_PadStatus {
     s8 err;
 } HSD_PadStatus;
 
+typedef struct _PadLibData {
+    u8 qnum;
+    u8 qread;
+    u8 qwrite;
+    u8 qcount;
+    u8 qtype;
+    struct _HSD_PadData* queue;
+    s32 repeat_start;
+    s32 repeat_interval;
+    u8 adc_type;
+    s8 adc_th;
+    f32 adc_angle;
+    u8 clamp_stickType;
+    u8 clamp_stickShift;
+    s8 clamp_stickMax;
+    s8 clamp_stickMin;
+    u8 clamp_analogLRShift;
+    u8 clamp_analogLRMax;
+    u8 clamp_analogLRMin;
+    u8 clamp_analogABShift;
+    u8 clamp_analogABMax;
+    u8 clamp_analogABMin;
+    s8 scale_stick;
+    u8 scale_analogLR;
+    u8 scale_analogAB;
+    u8 cross_dir;
+    u8 reset_switch_status;
+    u8 reset_switch;
+    struct {
+        u16 max_list;
+        struct _HSD_PadRumbleListData* listdatap
+    } rumble_info;
+} PadLibData;
+
+extern PadLibData HSD_PadLibData;
+
 u8 HSD_PadGetRawQueueCount();
 s32 HSD_PadGetResetSwitch();
 void HSD_PadRenewRawStatus();
