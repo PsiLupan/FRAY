@@ -6,7 +6,7 @@ struct {
     u8 qwrite;
     u8 qcount;
     u8 qtype;
-    struct _HSD_PadStatus* queue;
+    struct _HSD_PadData* queue;
     s32 repeat_start;
     s32 repeat_interval;
     u8 adc_type;
@@ -34,61 +34,8 @@ struct {
     } rumble_info;
 } HSD_PadLibData; //804C1F78
 
-struct {
-    u32 button;
-    u32 last_button;
-    u32 trigger;
-    u32 repeat;
-    u32 release;
-    s32 repeat_count;
-    s8 stickX;
-    s8 stickY;
-    s8 subStickX;
-    s8 subStickY;
-    u8 analogL;
-    u8 analogR;
-    u8 analogA;
-    u8 analogB;
-    f32 nml_stickX;
-    f32 nml_stickY;
-    f32 nml_subStickX;
-    f32 nml_subStickY;
-    f32 nml_analogL;
-    f32 nml_analogR;
-    f32 nml_analogA;
-    f32 nml_analogB;
-    u8 cross_dir;
-    u8 support_rumble;
-    s8 err;
-} HSD_PadMasterStatus[4]; //804C1FAC
-
-struct {
-    u32 button;
-    u32 last_button;
-    u32 trigger;
-    u32 repeat;
-    u32 release;
-    s32 repeat_count;
-    s8 stickX;
-    s8 stickY;
-    s8 subStickX;
-    s8 subStickY;
-    u8 analogL;
-    u8 analogR;
-    u8 analogA;
-    u8 analogB;
-    f32 nml_stickX;
-    f32 nml_stickY;
-    f32 nml_subStickX;
-    f32 nml_subStickY;
-    f32 nml_analogL;
-    f32 nml_analogR;
-    f32 nml_analogA;
-    f32 nml_analogB;
-    u8 cross_dir;
-    u8 support_rumble;
-    s8 err;
-} HSD_PadCopyStatus[4]; //804C20BC
+HSD_PadStatus HSD_PadMasterStatus[4]; //804C1FAC
+HSD_PadStatus HSD_PadCopyStatus[4]; //804C20BC
 
 struct {
     u8 last_status;
@@ -113,29 +60,9 @@ s32 HSD_PadGetResetSwitch()
     return (HSD_PadLibData.reset_switch != 0) ? TRUE : FALSE;
 }
 
-void HSD_PadRawMerge(HSD_PadStatus* src1, HSD_PadStatus* src2, HSD_PadStatus* dst)
-{
-}
-
 //803769FC
 void HSD_PadRenewRawStatus() //This is based on a newer version - Melee's actually has a param that's checked
 {
-}
-
-//80376E48
-void HSD_PadClampCheck1(u8* val, u8 shift, u8 min, u8 max)
-{
-    if (*val < min) {
-        *val = 0;
-        return;
-    }
-    if (max < *val) {
-        *val = max;
-    }
-    if (shift != 1) {
-        return;
-    }
-    *val = *val - min;
 }
 
 //80376D04
@@ -176,6 +103,100 @@ void HSD_PadFlushQueue(HSD_FlushType ftype)
     IRQ_Restore(intr);
 }
 
+//80376E48
+void HSD_PadClampCheck1(u8* val, u8 shift, u8 min, u8 max)
+{
+    if (*val < min) {
+        *val = 0;
+        return;
+    }
+    if (max < *val) {
+        *val = max;
+    }
+    if (shift != 1) {
+        return;
+    }
+    *val = *val - min;
+}
+
+//80376E90
+void HSD_PadClampCheck3(s8* x, s8* y, u8 shift, s8 min, s8 max)
+{
+}
+
+//803771D4
+void HSD_PadADConvertCheck1(HSD_PadStatus* mp, s8 x, s8 y, u32 up, u32 down, u32 left, u32 right)
+{
+}
+
+static HSD_PadClamp(HSD_PadStatus* mp)
+{
+    if (HSD_PadLibData.clamp_stickType == 0) {
+        HSD_PadClampCheck3(&mp->stickX, &mp->stickY, HSD_PadLibData.clamp_stickShift, HSD_PadLibData.clamp_stickMin, HSD_PadLibData.clamp_stickMax);
+        HSD_PadClampCheck3(&mp->subStickX, &mp->subStickY, HSD_PadLibData.clamp_stickShift, HSD_PadLibData.clamp_stickMin, HSD_PadLibData.clamp_stickMax);
+    }
+
+    HSD_PadClampCheck1(&mp->analogL, HSD_PadLibData.clamp_analogLRShift, HSD_PadLibData.clamp_analogLRMin, HSD_PadLibData.clamp_analogLRMax);
+    HSD_PadClampCheck1(&mp->analogR, HSD_PadLibData.clamp_analogLRShift, HSD_PadLibData.clamp_analogLRMin, HSD_PadLibData.clamp_analogLRMax);
+    HSD_PadClampCheck1(&mp->analogA, HSD_PadLibData.clamp_analogABShift, HSD_PadLibData.clamp_analogABMin, HSD_PadLibData.clamp_analogABMax);
+    HSD_PadClampCheck1(&mp->analogB, HSD_PadLibData.clamp_analogABShift, HSD_PadLibData.clamp_analogABMin, HSD_PadLibData.clamp_analogABMax);
+}
+
+static HSD_PadADConvert(HSD_PadStatus* mp)
+{
+    if (HSD_PadLibData.adc_type == 0) {
+        HSD_PadADConvertCheck1(mp, mp->stickX, mp->stickY, 0x10000, 0x20000, 0x40000, 0x80000);
+        HSD_PadADConvertCheck1(mp, mp->subStickX, mp->subStickY, 0x100000, 0x200000, 0x400000, 0x800000);
+    }
+}
+
+static HSD_PadScale(HSD_PadStatus* mp)
+{
+}
+
+//80377450
+static HSD_PadCrossDir(HSD_PadStatus* mp)
+{
+    switch (HSD_PadLibData.cross_dir) {
+    case 0:
+        return;
+
+    case 1:
+        if ((mp->button & 0xC) == 0) {
+            return;
+        }
+        mp->button = mp->button & 0xFFFFFFFC;
+        return;
+        ;
+
+    case 2:
+        if ((mp->button & 0x3) == 0) {
+            return;
+        }
+        mp->button = mp->button & 0xFFFFFFF3;
+        return;
+
+    case 3:
+        if ((mp->button & 0xC) == 0) {
+            if ((mp->button & 0x3) == 0) {
+                return;
+            }
+            mp->cross_dir = 2;
+            return;
+        }
+        if ((mp->button & 3) == 0) {
+            mp->cross_dir = 1;
+            return;
+        }
+        if (mp->cross_dir == 1) {
+            mp->button = mp->button & 0xFFFFFFFC;
+            return;
+        }
+        mp->button = mp->button & 0xFFFFFFF3;
+        return;
+    }
+}
+
 //8037750C
 void HSD_PadRenewMasterStatus()
 {
@@ -184,7 +205,7 @@ void HSD_PadRenewMasterStatus()
         u8 qread = HSD_PadLibData.qread;
         u8 qwrite = qread + 1;
         HSD_PadLibData.qread = qwrite - (qwrite / HSD_PadLibData.qnum) * HSD_PadLibData.qnum;
-        PADStatus* pad_status = (HSD_PadStatus*)(HSD_PadLibData.queue->stat + qread * 4);
+        PADStatus* pad_status = (HSD_PadData*)(HSD_PadLibData.queue->stat + qread * 4);
         HSD_PadLibData.qcount -= 1;
 
         for (u8 i = 0; i < 4; ++i) {
@@ -202,11 +223,10 @@ void HSD_PadRenewMasterStatus()
                 HSD_PadMasterStatus[i].analogA = pad_status->analogA;
                 HSD_PadMasterStatus[i].analogB = pad_status->analogB;
 
-                if (HSD_PadLibData.clamp_stickType == 0) {
-                }
-
-                if (HSD_PadLibData.adc_type == 0) {
-                }
+                HSD_PadClamp(&HSD_PadMasterStatus[i]);
+                HSD_PadADConvert(&HSD_PadMasterStatus[i]);
+                HSD_PadScale(&HSD_PadMasterStatus[i]);
+                HSD_PadCrossDir(&HSD_PadMasterStatus[i]);
 
             } else if (HSD_PadMasterStatus[i].support_rumble == -3) {
                 HSD_PadMasterStatus[i].support_rumble = 0;
@@ -247,7 +267,7 @@ void HSD_PadRenewMasterStatus()
             }
 
             qread += 1;
-            pad_status = (HSD_PadStatus*)(HSD_PadLibData.queue->stat + qread * 4);
+            pad_status = (HSD_PadData*)(HSD_PadLibData.queue->stat + qread * 4);
         }
     }
     IRQ_Restore(intr);
@@ -348,7 +368,7 @@ void HSD_PadReset()
 }
 
 //80377D98
-void HSD_PadInit(u8 qnum, HSD_PadStatus* queue, u16 nb_list, HSD_PadRumbleListData* listdatap)
+void HSD_PadInit(u8 qnum, HSD_PadData* queue, u16 nb_list, HSD_PadRumbleListData* listdatap)
 {
 }
 
