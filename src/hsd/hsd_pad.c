@@ -386,7 +386,7 @@ void HSD_PadRumbleFree(HSD_RumbleData* rdp, HSD_PadRumbleListData* p)
     HSD_PadRumbleListData* temp;
     do {
         temp = data;
-        data = data->next;
+        data = temp->next;
     } while (data != p);
     temp->next = p->next;
     rdp->nb_list -= 1;
