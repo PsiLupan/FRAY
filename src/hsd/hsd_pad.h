@@ -107,7 +107,7 @@ typedef struct _PadLibData {
     u8 reset_switch;
     struct {
         u16 max_list;
-        struct _HSD_PadRumbleListData* listdatap
+        struct _HSD_PadRumbleListData* listdatap;
     } rumble_info;
 } PadLibData;
 
