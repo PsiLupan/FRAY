@@ -127,6 +127,7 @@ void HSD_PadRumbleOn(u8);
 void HSD_PadRumbleOffH(u8);
 void HSD_PadRumbleFree(HSD_RumbleData*, HSD_PadRumbleListData*);
 void HSD_PadRumbleRemoveAll();
+void HSD_PadRumbleInterpret();
 void HSD_PadRumbleInit(u16, HSD_PadRumbleListData*);
 
 #endif

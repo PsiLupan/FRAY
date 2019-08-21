@@ -1,5 +1,7 @@
 #include "hsd_pad.h"
 
+#include <ogc/system.h>
+
 PadLibData HSD_PadLibData; //804C1F78
 HSD_PadStatus HSD_PadMasterStatus[4]; //804C1FAC
 HSD_PadStatus HSD_PadCopyStatus[4]; //804C20BC
@@ -21,8 +23,71 @@ s32 HSD_PadGetResetSwitch()
 }
 
 //803769FC
-void HSD_PadRenewRawStatus() //This is based on a newer version - Melee's actually has a param that's checked
+void HSD_PadRenewRawStatus()
 {
+    /* This is based on a newer version - Melee's actually has a BOOL param that's checked and will read how many controllers there are err'd
+    This occurs after the PAD_Read by checking err != 0 on each status and incrementing the controller number by 1. If every controller is err'd, it returns.
+    */
+    PADStatus status[4];
+
+    HSD_PadRumbleInterpret();
+    PAD_Read(status);
+
+    PADStatus* queue = (PADStatus*)(HSD_PadLibData.queue->stat + HSD_PadLibData.qwrite * 4);
+    if(HSD_PadLibData.qcount == HSD_PadLibData.qnum){
+        if(HSD_PadLibData.qtype == 1){
+
+        }else if(HSD_PadLibData.qtype == 0){
+            HSD_PadLibData.qread = (HSD_PadLibData.qread + 1) - (HSD_PadLibData.qread + 1) / HSD_PadLibData.qnum * HSD_PadLibData.qnum;
+            PADStatus* rqueue = (PADStatus*)(HSD_PadLibData.queue->stat + HSD_PadLibData.qread * 4);
+            if(HSD_PadLibData.qnum == 1){
+                status[0].button = status[0].button | rqueue[0].button;
+                status[1].button = status[1].button | rqueue[1].button;
+                status[2].button = status[2].button | rqueue[2].button;
+                status[3].button = status[3].button | rqueue[3].button;
+            }else{
+                rqueue[0].button = queue[0].button | rqueue[0].button;
+                rqueue[1].button = queue[1].button | rqueue[1].button;
+                rqueue[2].button = queue[2].button | rqueue[2].button;
+                rqueue[3].button = queue[3].button | rqueue[3].button;
+            }
+        }else if(HSD_PadLibData.qtype < 3){
+            goto JMP;
+        }
+    }else{
+        HSD_PadLibData.qcount += 1;
+    }
+    for (u8 i = 0; i < 4; i++){
+        queue[i] = status[i];
+    }
+    HSD_PadLibData.qwrite = (HSD_PadLibData.qwrite + 1) - (HSD_PadLibData.qwrite + 1) / HSD_PadLibData.qnum * HSD_PadLibData.qnum;
+JMP:
+    u32 mask = 0;
+    if(status[0].err == PAD_ERR_NO_CONTROLLER){
+        mask |= PAD_CHAN0_BIT;
+    }
+    if(status[1].err == PAD_ERR_NO_CONTROLLER){
+        mask |= PAD_CHAN1_BIT;
+    }
+    if(status[2].err == PAD_ERR_NO_CONTROLLER){
+        mask |= PAD_CHAN2_BIT;
+    }
+    if(status[3].err == PAD_ERR_NO_CONTROLLER){
+        mask |= PAD_CHAN3_BIT;
+    }
+    if(mask != 0){
+        PAD_Reset(mask);
+    }
+
+    u32 reset = SYS_ResetButtonDown();
+    if(reset == 0){
+        if(HSD_PadLibData.reset_switch_status != 0){
+            HSD_PadLibData.reset_switch = 1;
+            HSD_PadLibData.reset_switch_status = 0;
+        }
+    }else{
+        HSD_PadLibData.reset_switch_status = 1;
+    }
 }
 
 //80376D04
@@ -408,6 +473,11 @@ void HSD_PadRumbleRemoveAll()
         }
         IRQ_Restore(intr);
     }
+}
+
+//803786F0
+void HSD_PadRumbleInterpret(){
+
 }
 
 //80378828
