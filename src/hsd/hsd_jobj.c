@@ -1526,7 +1526,7 @@ static void resolveIKJoint1(HSD_JObj* jobj)
                 Mtx mtx;
                 if (robj_pos.x != 0) {
                     guMtxRotAxisRad(
-                        mtx, &trans,
+                        mtx, &trans_2,
                         robj_pos.x); // THIS IS PROBABLY WRONG -
                     // PSMTXRotAxisRad(robj_pos,auStack232,&trans_2);
                     guVecMultiply(mtx, &cvec, &cvec);
