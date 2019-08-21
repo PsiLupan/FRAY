@@ -306,8 +306,10 @@ void HSD_TExpSetupTev(HSD_TExpTevDesc* tevdesc, HSD_TExp* texp)
 //803854B4
 void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tdesc, HSD_TExp** list)
 {
-    HSD_TExpRes res;
+    HSD_TExpRes res, res2;
     u32 num;
+    u32 init_cprev = 1;
+    u32 init_aprev = 1;
     
     assert(tdesc != NULL);
     assert(list != NULL);
@@ -315,12 +317,12 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tdesc, HSD_TExp** list)
     HSD_TExpRef(texp, 5);
     HSD_TExpSimplify(texp);
 
-    
+    memset(&res2, 0, sizeof(HSD_TExpRes));
     num = HSD_TExpMakeDag(texp, &res);
-    HSD_TExpSchedule(num, &res, auStack208 + 1, auStack76);
+    HSD_TExpSchedule(num, &res, auStack208 + 1, &res2);
     puVar5 = auStack208;
     for (u32 i = 0; i < num; ++i) {
-        u32 val = TExpAssignReg(puVar5[i], auStack76);
+        u32 val = TExpAssignReg(puVar5[i], &res2);
         HSD_CheckAssert("val >= 0", val >= 0);
     }
     
@@ -329,13 +331,13 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tdesc, HSD_TExp** list)
     }
     
     num = HSD_TExpMakeDag(texp, &res);
-    HSD_TExpSchedule(num, &res, auStack208 + 1, auStack76);
+    HSD_TExpSchedule(num, &res, auStack208 + 1, &res2);
     *tdesc = NULL;
     for (u32 i = 0; i < num; ++i) {
         HSD_TExpTevDesc* tevdesc = hsdAllocMemPiece(sizeof(HSD_TExpTevDesc));
         u32 stage = HSD_Index2TevStage(i);
         tevdesc->desc.stage = stage;
-        TExp2TevDesc(auStack208[num - i], tevdesc, &local_5d0, &local_5d4);
+        TExp2TevDesc(auStack208[num - i], tevdesc, &init_cprev, &init_aprev);
         tevdesc->desc.next = *tdesc;
         *tdesc = tevdesc;
     }
