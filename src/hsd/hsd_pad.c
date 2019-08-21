@@ -1,6 +1,7 @@
 #include "hsd_pad.h"
 
 #include <ogc/system.h>
+#include <math.h>
 
 PadLibData HSD_PadLibData; //804C1F78
 HSD_PadStatus HSD_PadMasterStatus[4]; //804C1FAC
@@ -147,11 +148,52 @@ void HSD_PadClampCheck1(u8* val, u8 shift, u8 min, u8 max)
 //80376E90
 void HSD_PadClampCheck3(s8* x, s8* y, u8 shift, s8 min, s8 max)
 {
+    f64 total = (f64)*x * (f64)*x + (f64)*y * (f64)*y;
+    if(total > 0.0){
+        f64 v = 1.0 / sqrt(total);
+        f64 half = 0.5;
+        f64 three = 3.0;
+        f64 d = half * v * -(total * v * v - three);
+        f64 d2 = half * d * -(total * d * d - three);
+        total = (total * half * d2 * -(total * d2 * d2 - three));
+    }
+
+    if((f64)min <= total){
+        if((f64)max < total){
+            *x = (s8)(((f64)*x * (f64)max) / total);
+            *y = (s8)(((f64)*y * (f64)max) / total);
+            total = (f64)*x * (f64)*x + (f64)*y * (f64)*y;
+            if(total > 0.0){
+                f64 v = 1.0 / sqrt(total);
+                f64 half = 0.5;
+                f64 three = 3.0;
+                f64 d = half * v * -(total * v * v - three);
+                f64 d2 = half * d * -(total * d * d - three);
+                total = (total * half * d2 * -(total * d2 * d2 - three));
+            }
+        }
+        if(shift == 1 && total > 1e-10f){
+            *x = (s8)((f64)*x - (((f64)*x * (f64)min) / total));
+            *x = (s8)((f64)*y - (((f64)*y * (f64)min) / total));
+        }
+    }else{
+        *x = 0;
+        *y = 0;
+    }
 }
 
 //803771D4
 void HSD_PadADConvertCheck1(HSD_PadStatus* mp, s8 x, s8 y, u32 up, u32 down, u32 left, u32 right)
 {
+    f64 total = (f64)x + (f64)y;
+    if(total > 0.0){
+        f64 v = 1.0 / sqrt(total);
+        f64 half = 0.5;
+        f64 three = 3.0;
+        f64 d = half * v * -(total * v * v - three);
+        f64 d2 = half * d * -(total * d * d - three);
+        total = (double)(float)(total * half * d2 * -(total * d2 * d2 - three));
+    }
 }
 
 static void HSD_PadClamp(HSD_PadStatus* mp)
