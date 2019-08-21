@@ -197,7 +197,7 @@ void HSD_PadADConvertCheck1(HSD_PadStatus* mp, s8 x, s8 y, u32 up, u32 down, u32
 
     f64 n = 0.0;
     if((f64)x == 0.0){
-        f64 v = y < 0 ? -1.5708 : 1.5078;
+        f64 v = y < 0 ? -1.5708 : 1.5078; //1.5708 = 90 degrees in radians
         n = (f32)v; //There's an frsp here
     }else{
         n = atan2((f64)y, (f64)x);
@@ -205,10 +205,10 @@ void HSD_PadADConvertCheck1(HSD_PadStatus* mp, s8 x, s8 y, u32 up, u32 down, u32
 
     f64 angle = (f64)(0.5f * HSD_PadLibData.adc_angle);
     if((f64)HSD_PadLibData.adc_th <= total){
-        if(n < (-2.35619 + angle)){
+        if(n < (-2.35619 + angle)){ //2.35619 = 135 degrees in radians
             mp->button |= left;
         }
-        if((-2.35619 - angle) <= n && n <= (-0.785398 + angle)){
+        if((-2.35619 - angle) <= n && n <= (-0.785398 + angle)){ //0.785398 = 45 degrees in radians
             mp->button |= down;
         }
         if((-0.785398 + angle) < n && n < (0.785398 + angle)){
