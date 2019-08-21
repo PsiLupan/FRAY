@@ -806,7 +806,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
     match_controller.unk04 = 0;
     match_controller.timer2 = 0;
     match_controller.screen_ctrl = 0;
-    HSD_PadFlushQueue(2);
+    HSD_PadFlushQueue(HSD_PAD_FLUSH_QUEUE_LEAVE1);
     //MemCard_DisplaySaveBanner(); 8001CF18
     do {
         if (match_controller.screen_ctrl != 0) {
@@ -814,7 +814,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
             return;
         }
         //sub_80392E80(); Something memory card related
-        s8 pad_queue_count;
+        u8 pad_queue_count;
         while (true) {
             pad_queue_count = Pad_CheckQueue();
             if (pad_queue_count != 0) {

@@ -1,10 +1,10 @@
 #include "hsd_pad_ext.h"
 
 //80019894
-s8 Pad_CheckQueue()
+u8 Pad_CheckQueue()
 {
     u32 intr = IRQ_Disable();
-    s8 count = HSD_PadGetRawQueueCount();
+    u8 count = HSD_PadGetRawQueueCount();
     //sub_80019628 - Scene_CheckRunSpeedAdjust();
     IRQ_Restore(intr);
     return count;
