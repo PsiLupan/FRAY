@@ -122,6 +122,22 @@ void HSD_PadRenewRawStatus() //This is based on a newer version - Melee's actual
 {
 }
 
+//80376E48
+void HSD_PadClampCheck1(u8* val, u8 shift, u8 min, u8 max)
+{
+    if (*val < min) {
+        *val = 0;
+        return;
+    }
+    if (max < *val) {
+        *val = max;
+    }
+    if (shift != 1) {
+        return;
+    }
+    *val = *val - min;
+}
+
 //80376D04
 void HSD_PadFlushQueue(HSD_FlushType ftype)
 {

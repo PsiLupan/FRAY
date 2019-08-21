@@ -42,6 +42,7 @@ typedef struct _HSD_PadStatus {
 u8 HSD_PadGetRawQueueCount();
 s32 HSD_PadGetResetSwitch();
 void HSD_PadRenewRawStatus();
+void HSD_PadClampCheck1(u8*, u8, u8, u8);
 void HSD_PadFlushQueue(HSD_FlushType);
 void HSD_PadRenewMasterStatus();
 void HSD_PadRenewCopyStatus();
