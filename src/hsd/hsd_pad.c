@@ -1,7 +1,7 @@
 #include "hsd_pad.h"
 
-#include <ogc/system.h>
 #include <math.h>
+#include <ogc/system.h>
 
 PadLibData HSD_PadLibData; //804C1F78
 HSD_PadStatus HSD_PadMasterStatus[4]; //804C1FAC
@@ -36,57 +36,57 @@ void HSD_PadRenewRawStatus()
     PAD_Read(status);
 
     PADStatus* queue = (PADStatus*)(HSD_PadLibData.queue->stat + HSD_PadLibData.qwrite * 4);
-    if(HSD_PadLibData.qcount == HSD_PadLibData.qnum){
-        if(HSD_PadLibData.qtype == 1){
+    if (HSD_PadLibData.qcount == HSD_PadLibData.qnum) {
+        if (HSD_PadLibData.qtype == 1) {
 
-        }else if(HSD_PadLibData.qtype == 0){
+        } else if (HSD_PadLibData.qtype == 0) {
             HSD_PadLibData.qread = (HSD_PadLibData.qread + 1) - (HSD_PadLibData.qread + 1) / HSD_PadLibData.qnum * HSD_PadLibData.qnum;
             PADStatus* rqueue = (PADStatus*)(HSD_PadLibData.queue->stat + HSD_PadLibData.qread * 4);
-            if(HSD_PadLibData.qnum == 1){
+            if (HSD_PadLibData.qnum == 1) {
                 status[0].button = status[0].button | rqueue[0].button;
                 status[1].button = status[1].button | rqueue[1].button;
                 status[2].button = status[2].button | rqueue[2].button;
                 status[3].button = status[3].button | rqueue[3].button;
-            }else{
+            } else {
                 rqueue[0].button = queue[0].button | rqueue[0].button;
                 rqueue[1].button = queue[1].button | rqueue[1].button;
                 rqueue[2].button = queue[2].button | rqueue[2].button;
                 rqueue[3].button = queue[3].button | rqueue[3].button;
             }
-        }else if(HSD_PadLibData.qtype < 3){
+        } else if (HSD_PadLibData.qtype < 3) {
             goto JMP;
         }
-    }else{
+    } else {
         HSD_PadLibData.qcount += 1;
     }
-    for (u8 i = 0; i < 4; i++){
+    for (u8 i = 0; i < 4; i++) {
         queue[i] = status[i];
     }
     HSD_PadLibData.qwrite = (HSD_PadLibData.qwrite + 1) - (HSD_PadLibData.qwrite + 1) / HSD_PadLibData.qnum * HSD_PadLibData.qnum;
 JMP:
-    if(status[0].err == PAD_ERR_NO_CONTROLLER){
+    if (status[0].err == PAD_ERR_NO_CONTROLLER) {
         mask |= PAD_CHAN0_BIT;
     }
-    if(status[1].err == PAD_ERR_NO_CONTROLLER){
+    if (status[1].err == PAD_ERR_NO_CONTROLLER) {
         mask |= PAD_CHAN1_BIT;
     }
-    if(status[2].err == PAD_ERR_NO_CONTROLLER){
+    if (status[2].err == PAD_ERR_NO_CONTROLLER) {
         mask |= PAD_CHAN2_BIT;
     }
-    if(status[3].err == PAD_ERR_NO_CONTROLLER){
+    if (status[3].err == PAD_ERR_NO_CONTROLLER) {
         mask |= PAD_CHAN3_BIT;
     }
-    if(mask != 0){
+    if (mask != 0) {
         PAD_Reset(mask);
     }
 
     u32 reset = SYS_ResetButtonDown();
-    if(reset == 0){
-        if(HSD_PadLibData.reset_switch_status != 0){
+    if (reset == 0) {
+        if (HSD_PadLibData.reset_switch_status != 0) {
             HSD_PadLibData.reset_switch = 1;
             HSD_PadLibData.reset_switch_status = 0;
         }
-    }else{
+    } else {
         HSD_PadLibData.reset_switch_status = 1;
     }
 }
@@ -149,7 +149,7 @@ void HSD_PadClampCheck1(u8* val, u8 shift, u8 min, u8 max)
 void HSD_PadClampCheck3(s8* x, s8* y, u8 shift, s8 min, s8 max)
 {
     f64 total = (f64)*x * (f64)*x + (f64)*y * (f64)*y;
-    if(total > 0.0){
+    if (total > 0.0) {
         f64 v = 1.0 / sqrt(total);
         f64 half = 0.5;
         f64 three = 3.0;
@@ -158,12 +158,12 @@ void HSD_PadClampCheck3(s8* x, s8* y, u8 shift, s8 min, s8 max)
         total = (total * half * d2 * -(total * d2 * d2 - three));
     }
 
-    if((f64)min <= total){
-        if((f64)max < total){
+    if ((f64)min <= total) {
+        if ((f64)max < total) {
             *x = (s8)(((f64)*x * (f64)max) / total);
             *y = (s8)(((f64)*y * (f64)max) / total);
             total = (f64)*x * (f64)*x + (f64)*y * (f64)*y;
-            if(total > 0.0){
+            if (total > 0.0) {
                 f64 v = 1.0 / sqrt(total);
                 f64 half = 0.5;
                 f64 three = 3.0;
@@ -172,11 +172,11 @@ void HSD_PadClampCheck3(s8* x, s8* y, u8 shift, s8 min, s8 max)
                 total = (total * half * d2 * -(total * d2 * d2 - three));
             }
         }
-        if(shift == 1 && total > 1e-10f){
+        if (shift == 1 && total > 1e-10f) {
             *x = (s8)((f64)*x - (((f64)*x * (f64)min) / total));
             *x = (s8)((f64)*y - (((f64)*y * (f64)min) / total));
         }
-    }else{
+    } else {
         *x = 0;
         *y = 0;
     }
@@ -186,7 +186,7 @@ void HSD_PadClampCheck3(s8* x, s8* y, u8 shift, s8 min, s8 max)
 void HSD_PadADConvertCheck1(HSD_PadStatus* mp, s8 x, s8 y, u32 up, u32 down, u32 left, u32 right)
 {
     f64 total = (f64)x * (f64)x + (f64)y * (f64)y;
-    if(total > 0.0){
+    if (total > 0.0) {
         f64 v = 1.0 / sqrt(total);
         f64 half = 0.5;
         f64 three = 3.0;
@@ -196,28 +196,28 @@ void HSD_PadADConvertCheck1(HSD_PadStatus* mp, s8 x, s8 y, u32 up, u32 down, u32
     }
 
     f64 n = 0.0;
-    if((f64)x == 0.0){
+    if ((f64)x == 0.0) {
         f64 v = y < 0 ? -1.5708 : 1.5078; //1.5708 = 90 degrees in radians
         n = (f32)v; //There's an frsp here
-    }else{
+    } else {
         n = atan2((f64)y, (f64)x);
     }
 
     f64 angle = (f64)(0.5f * HSD_PadLibData.adc_angle);
-    if((f64)HSD_PadLibData.adc_th <= total){
-        if(n < (-2.35619 + angle)){ //2.35619 = 135 degrees in radians
+    if ((f64)HSD_PadLibData.adc_th <= total) {
+        if (n < (-2.35619 + angle)) { //2.35619 = 135 degrees in radians
             mp->button |= left;
         }
-        if((-2.35619 - angle) <= n && n <= (-0.785398 + angle)){ //0.785398 = 45 degrees in radians
+        if ((-2.35619 - angle) <= n && n <= (-0.785398 + angle)) { //0.785398 = 45 degrees in radians
             mp->button |= down;
         }
-        if((-0.785398 + angle) < n && n < (0.785398 + angle)){
+        if ((-0.785398 + angle) < n && n < (0.785398 + angle)) {
             mp->button |= right;
         }
-        if((0.785398 - angle) <= n && n <= (2.35619 + angle)){
+        if ((0.785398 - angle) <= n && n <= (2.35619 + angle)) {
             mp->button |= up;
         }
-        if((2.35619 - angle) < n){
+        if ((2.35619 - angle) < n) {
             mp->button |= left;
         }
     }
@@ -246,6 +246,14 @@ static void HSD_PadADConvert(HSD_PadStatus* mp)
 
 static void HSD_PadScale(HSD_PadStatus* mp)
 {
+    mp->nml_stickX = (f32)((f64)mp->stickX / (f64)HSD_PadLibData.scale_stick);
+    mp->nml_stickY = (f32)((f64)mp->stickY / (f64)HSD_PadLibData.scale_stick);
+    mp->nml_subStickX = (f32)((f64)mp->subStickX / (f64)HSD_PadLibData.scale_stick);
+    mp->nml_subStickY = (f32)((f64)mp->subStickY / (f64)HSD_PadLibData.scale_stick);
+    mp->nml_analogL = (f32)((f64)HSD_PadMasterStatus->analogL / HSD_PadLibData.scale_analogLR);
+    mp->nml_analogR = (f32)((f64)HSD_PadMasterStatus->analogR / HSD_PadLibData.scale_analogLR);
+    mp->nml_analogA = (f32)((f64)HSD_PadMasterStatus->analogA / HSD_PadLibData.scale_analogAB);
+    mp->nml_analogB = (f32)((f64)HSD_PadMasterStatus->analogB / HSD_PadLibData.scale_analogAB);
 }
 
 //80377450
@@ -545,8 +553,8 @@ void HSD_PadRumbleRemoveAll()
 }
 
 //803786F0
-void HSD_PadRumbleInterpret(){
-
+void HSD_PadRumbleInterpret()
+{
 }
 
 //80378828
