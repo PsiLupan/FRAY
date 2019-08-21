@@ -154,7 +154,7 @@ void HSD_PadADConvertCheck1(HSD_PadStatus* mp, s8 x, s8 y, u32 up, u32 down, u32
 {
 }
 
-static HSD_PadClamp(HSD_PadStatus* mp)
+static void HSD_PadClamp(HSD_PadStatus* mp)
 {
     if (HSD_PadLibData.clamp_stickType == 0) {
         HSD_PadClampCheck3(&mp->stickX, &mp->stickY, HSD_PadLibData.clamp_stickShift, HSD_PadLibData.clamp_stickMin, HSD_PadLibData.clamp_stickMax);
@@ -167,7 +167,7 @@ static HSD_PadClamp(HSD_PadStatus* mp)
     HSD_PadClampCheck1(&mp->analogB, HSD_PadLibData.clamp_analogABShift, HSD_PadLibData.clamp_analogABMin, HSD_PadLibData.clamp_analogABMax);
 }
 
-static HSD_PadADConvert(HSD_PadStatus* mp)
+static void HSD_PadADConvert(HSD_PadStatus* mp)
 {
     if (HSD_PadLibData.adc_type == 0) {
         HSD_PadADConvertCheck1(mp, mp->stickX, mp->stickY, 0x10000, 0x20000, 0x40000, 0x80000);
@@ -175,7 +175,7 @@ static HSD_PadADConvert(HSD_PadStatus* mp)
     }
 }
 
-static HSD_PadScale(HSD_PadStatus* mp)
+static void HSD_PadScale(HSD_PadStatus* mp)
 {
 }
 
@@ -292,7 +292,7 @@ void HSD_PadRenewMasterStatus()
             }
 
             qread += 1;
-            pad_status = (HSD_PadData*)(HSD_PadLibData.queue->stat + qread * 4);
+            pad_status = (PADStatus*)(HSD_PadLibData.queue->stat + qread * 4);
         }
     }
     IRQ_Restore(intr);

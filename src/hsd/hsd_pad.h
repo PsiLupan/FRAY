@@ -12,12 +12,14 @@ typedef enum _HSD_FlushType {
     HSD_PAD_FLUSH_QUEUE_TERMINATE = 3
 } HSD_FlushType;
 
+typedef struct _RumbleCommand {
+    u16 op;
+    u16 frame;
+} RumbleCommand;
+
 typedef union _HSD_Rumble {
     u16 def;
-    struct {
-        u16 op;
-        u16 frame;
-    } command;
+    struct _RumbleCommand command;
 } HSD_Rumble;
 
 typedef struct _HSD_RumbleData {
