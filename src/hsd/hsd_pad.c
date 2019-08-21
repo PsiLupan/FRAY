@@ -185,14 +185,41 @@ void HSD_PadClampCheck3(s8* x, s8* y, u8 shift, s8 min, s8 max)
 //803771D4
 void HSD_PadADConvertCheck1(HSD_PadStatus* mp, s8 x, s8 y, u32 up, u32 down, u32 left, u32 right)
 {
-    f64 total = (f64)x + (f64)y;
+    f64 total = (f64)x * (f64)x + (f64)y * (f64)y;
     if(total > 0.0){
         f64 v = 1.0 / sqrt(total);
         f64 half = 0.5;
         f64 three = 3.0;
         f64 d = half * v * -(total * v * v - three);
         f64 d2 = half * d * -(total * d * d - three);
-        total = (double)(float)(total * half * d2 * -(total * d2 * d2 - three));
+        total = (total * half * d2 * -(total * d2 * d2 - three));
+    }
+
+    f64 n = 0.0;
+    if((f64)x == 0.0){
+        f64 v = y < 0 ? -1.5708 : 1.5078;
+        n = (f32)v; //There's an frsp here
+    }else{
+        n = atan2((f64)y, (f64)x);
+    }
+
+    f64 angle = (f64)(0.5f * HSD_PadLibData.adc_angle);
+    if((f64)HSD_PadLibData.adc_th <= total){
+        if(n < (-2.35619 + angle)){
+            mp->button |= left;
+        }
+        if((-2.35619 - angle) <= n && n <= (-0.785398 + angle)){
+            mp->button |= down;
+        }
+        if((-0.785398 + angle) < n && n < (0.785398 + angle)){
+            mp->button |= right;
+        }
+        if((0.785398 - angle) <= n && n <= (2.35619 + angle)){
+            mp->button |= up;
+        }
+        if((2.35619 - angle) < n){
+            mp->button |= left;
+        }
     }
 }
 
