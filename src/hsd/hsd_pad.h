@@ -82,5 +82,6 @@ void HSD_PadInit(u8, HSD_PadData*, u16, HSD_PadRumbleListData*);
 void HSD_PadRumbleOn(u8);
 void HSD_PadRumbleOffH(u8);
 void HSD_PadRumbleRemoveAll();
+void HSD_PadRumbleInit(u16, HSD_PadRumbleListData*);
 
 #endif

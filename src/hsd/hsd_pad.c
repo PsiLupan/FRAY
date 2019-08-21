@@ -370,6 +370,35 @@ void HSD_PadReset()
 //80377D98
 void HSD_PadInit(u8 qnum, HSD_PadData* queue, u16 nb_list, HSD_PadRumbleListData* listdatap)
 {
+    HSD_PadLibData.qtype = 0;
+    HSD_PadLibData.repeat_start = 45;
+    HSD_PadLibData.repeat_interval = 8;
+    HSD_PadLibData.adc_type = 0;
+    HSD_PadLibData.adc_th = 30;
+    HSD_PadLibData.adc_angle = 0.f;
+    HSD_PadLibData.clamp_stickType = 0;
+    HSD_PadLibData.clamp_stickShift = 0;
+    HSD_PadLibData.clamp_stickMax = 127;
+    HSD_PadLibData.clamp_stickMin = 0;
+    HSD_PadLibData.clamp_analogLRShift = 0;
+    HSD_PadLibData.clamp_analogLRMax = 255;
+    HSD_PadLibData.clamp_analogLRMin = 0;
+    HSD_PadLibData.clamp_analogABShift = 0;
+    HSD_PadLibData.clamp_analogABMax = 255;
+    HSD_PadLibData.clamp_analogABMin = 0;
+    HSD_PadLibData.scale_stick = 127;
+    HSD_PadLibData.scale_analogLR = 255;
+    HSD_PadLibData.scale_analogAB = 255;
+    HSD_PadLibData.cross_dir = 0;
+    HSD_PadLibData.reset_switch_status = 0;
+    HSD_PadLibData.reset_switch = 0;
+    HSD_PadLibData.rumble_info.max_list = 0;
+    HSD_PadLibData.rumble_info.listdatap = NULL;
+    HSD_PadLibData.queue = queue;
+
+    HSD_PadRumbleInit(nb_list, listdatap);
+
+    //TODO
 }
 
 //80378090
@@ -405,4 +434,9 @@ void HSD_PadRumbleRemoveAll()
         //TODO
         IRQ_Restore(intr);
     }
+}
+
+//80378828
+void HSD_PadRumbleInit(u16 nb_list, HSD_PadRumbleListData* listdatap)
+{
 }
