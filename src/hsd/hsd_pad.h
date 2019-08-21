@@ -20,6 +20,14 @@ typedef union _HSD_Rumble {
     } command;
 } HSD_Rumble;
 
+typedef struct _HSD_RumbleData {
+    u8 last_status;
+    u8 status;
+    u8 direct_status;
+    u16 nb_list;
+    struct _HSD_PadRumbleListData* listdatap;
+} HSD_RumbleData;
+
 typedef struct _HSD_PadRumbleListData {
     struct _HSD_PadRumbleListData* next;
     u32 id;
@@ -117,6 +125,7 @@ void HSD_PadReset();
 void HSD_PadInit(u8, HSD_PadData*, u16, HSD_PadRumbleListData*);
 void HSD_PadRumbleOn(u8);
 void HSD_PadRumbleOffH(u8);
+void HSD_PadRumbleFree(HSD_RumbleData*, HSD_PadRumbleListData*);
 void HSD_PadRumbleRemoveAll();
 void HSD_PadRumbleInit(u16, HSD_PadRumbleListData*);
 

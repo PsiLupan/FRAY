@@ -3,14 +3,7 @@
 PadLibData HSD_PadLibData;//804C1F78
 HSD_PadStatus HSD_PadMasterStatus[4]; //804C1FAC
 HSD_PadStatus HSD_PadCopyStatus[4]; //804C20BC
-
-struct {
-    u8 last_status;
-    u8 status;
-    u8 direct_status;
-    u16 nb_list;
-    struct _HSD_PadRumbleListData* listdatap;
-} HSD_PadRumbleStatus[4]; //804C22E0
+HSD_RumbleData HSD_PadRumbleData[4]; //804C22E0
 
 //8037699C
 u8 HSD_PadGetRawQueueCount()
@@ -374,25 +367,31 @@ void HSD_PadInit(u8 qnum, HSD_PadData* queue, u16 nb_list, HSD_PadRumbleListData
 void HSD_PadRumbleOn(u8 pad)
 {
     u32 intr = IRQ_Disable();
-    HSD_PadRumbleStatus[pad].direct_status = 1;
+    HSD_PadRumbleData[pad].direct_status = 1;
     IRQ_Restore(intr);
-}
-
-void HSD_PadRumbleOffN(u8 pad)
-{
 }
 
 //803780DC
 void HSD_PadRumbleOffH(u8 pad)
 {
     u32 intr = IRQ_Disable();
-    HSD_PadRumbleStatus[pad].direct_status = 0;
+    HSD_PadRumbleData[pad].direct_status = 0;
     IRQ_Restore(intr);
 }
 
 //80378129
-void HSD_PadRumbleFree()
+void HSD_PadRumbleFree(HSD_RumbleData* rdp, HSD_PadRumbleListData* p)
 {
+    HSD_PadRumbleListData* data = rdp->listdatap;
+    HSD_PadRumbleListData* temp;
+    do {
+        temp = data;
+        data = data->next;
+    } while (data != p);
+    temp->next = p->next;
+    rdp->nb_list -= 1;
+    p->next = HSD_PadLibData.rumble_info.listdatap;
+    HSD_PadLibData.rumble_info.listdatap = p;
 }
 
 //80378208
@@ -400,7 +399,12 @@ void HSD_PadRumbleRemoveAll()
 {
     for (u32 i = 0; i < 4; i++) {
         u32 intr = IRQ_Disable();
-        //TODO
+        HSD_PadRumbleListData* data = HSD_PadRumbleData[i].listdatap;
+        while(data != NULL){
+            HSD_PadRumbleListData* next = data->next;
+            HSD_PadRumbleFree(&HSD_PadRumbleData[i], data);
+            data = next;
+        }
         IRQ_Restore(intr);
     }
 }
