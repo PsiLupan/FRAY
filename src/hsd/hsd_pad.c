@@ -230,7 +230,7 @@ void HSD_PadRenewMasterStatus()
         u8 qread = HSD_PadLibData.qread;
         u8 qwrite = qread + 1;
         HSD_PadLibData.qread = qwrite - (qwrite / HSD_PadLibData.qnum) * HSD_PadLibData.qnum;
-        PADStatus* pad_status = (HSD_PadData*)(HSD_PadLibData.queue->stat + qread * 4);
+        PADStatus* pad_status = (PADStatus*)(HSD_PadLibData.queue->stat + qread * 4);
         HSD_PadLibData.qcount -= 1;
 
         for (u8 i = 0; i < 4; ++i) {
@@ -493,7 +493,7 @@ void HSD_PadRumbleInit(u16 nb_list, HSD_PadRumbleListData* listdatap)
             u32 loop_count = nb_list - 2 >> 3;
             if (idx > 8 && (nb_list - 9) > 0) {
                 do {
-                    HSD_PadLibData.rumble_info.listdatap[0].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 1].next;
+                    HSD_PadLibData.rumble_info.listdatap[0].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 1];
                     HSD_PadLibData.rumble_info.listdatap[z_idx + 1].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 2];
                     HSD_PadLibData.rumble_info.listdatap[z_idx + 2].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 3];
                     HSD_PadLibData.rumble_info.listdatap[z_idx + 3].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 4];
