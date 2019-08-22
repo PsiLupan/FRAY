@@ -247,7 +247,23 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
         return;
     }
 
+    u8 c_in_type = tev->c_in[idx].type;
+    if(c_in_type != 2){
+        switch (c_in_type){
+            case 0:
+            break;
+
+            case 3:
+            break;
+        }
+    }
     //TODO
+
+    if(tev->a_range == 0xFF){
+        tev->a_range = c_in_type;
+    }else{
+        HSD_CheckAssert("swap == HSD_TE_UNDEF || tev->tex_swap == swap", c_in_type == 0xff && tev->a_range == c_in_type);
+    }
 }
 
 //80383A64
