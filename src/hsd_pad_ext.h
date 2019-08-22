@@ -5,7 +5,7 @@
 
 #include "hsd/hsd_pad.h"
 
-s8 Pad_CheckQueue();
+u8 Pad_CheckQueue();
 void Pad_Renew();
 void Pad_CheckInputs();
 

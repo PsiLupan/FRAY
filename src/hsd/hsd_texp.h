@@ -201,7 +201,7 @@ void HSD_TExpAlphaIn(HSD_TExp*, HSD_TEInput, HSD_TExp*, HSD_TEInput, HSD_TExp*, 
 void HSD_TExpOrder(HSD_TExp*, void*, u8);
 void HSD_TExpCompile(HSD_TExp*, HSD_TExpTevDesc**, HSD_TExp**);
 void HSD_TExpFreeTevDesc(HSD_TExpTevDesc*);
-u32 HSD_TExpMakeDag(HSD_TExp*, HSD_TExpRes*);
+u32 HSD_TExpMakeDag(HSD_TExp*, HSD_TExpDag*);
 void HSD_TExpSchedule(u32, HSD_TExpDag*, HSD_TExp**, HSD_TExpRes*);
 u32 HSD_TExpSimplify(HSD_TExp*);
 u32 HSD_TExpSimplify2(HSD_TExp*);
