@@ -316,7 +316,10 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
     }
     desc->desc.u.tevconf.kasel = swap;
 
-    if (texp->tev.c_op == GX_COLORNULL) {
+    u8 val;
+    if (texp->tev.c_op == GX_COLORNULL || 
+        (((((texp->tev.c_ref == 0 && (val = texp->tev.a_op, val != 8)) && (val != 9)) &&
+        ((val != 10 && (val != 11)))) && ((val != 12 && (val != 13)))))) {
         desc->desc.u.tevconf.clr_op = 0;
         desc->desc.u.tevconf.clr_a = 0xF;
         desc->desc.u.tevconf.clr_b = 0xF;
@@ -336,40 +339,40 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
 
         u8 arg = texp->tev.c_in[0].arg;
         swap = arg;
-        if(arg == 0xFF){
+        if (arg == 0xFF) {
             swap = 0xF;
         }
         desc->desc.u.tevconf.clr_a = swap;
 
         arg = texp->tev.c_in[1].arg;
         swap = arg;
-        if(arg == 0xFF){
+        if (arg == 0xFF) {
             swap = 0xF;
         }
         desc->desc.u.tevconf.clr_b = swap;
 
         arg = texp->tev.c_in[2].arg;
         swap = arg;
-        if(arg == 0xFF){
+        if (arg == 0xFF) {
             swap = 0xF;
         }
         desc->desc.u.tevconf.clr_c = swap;
 
         arg = texp->tev.c_in[3].arg;
         swap = arg;
-        if(arg == 0xFF){
+        if (arg == 0xFF) {
             swap = 0xF;
         }
         desc->desc.u.tevconf.clr_d = swap;
 
         swap = texp->tev.c_scale;
-        if(swap == 0xFF){
+        if (swap == 0xFF) {
             swap = 0;
         }
         desc->desc.u.tevconf.clr_scale = swap;
 
         swap = texp->tev.c_bias;
-        if(swap == 0xFF){
+        if (swap == 0xFF) {
             swap = 0;
         }
         desc->desc.u.tevconf.clr_bias = swap;
@@ -404,40 +407,40 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
 
         u8 arg = texp->tev.a_in[0].arg;
         swap = arg;
-        if(arg == 0xFF){
+        if (arg == 0xFF) {
             swap = 7;
         }
         desc->desc.u.tevconf.alpha_a = swap;
 
         arg = texp->tev.a_in[1].arg;
         swap = arg;
-        if(arg == 0xFF){
+        if (arg == 0xFF) {
             swap = 7;
         }
         desc->desc.u.tevconf.alpha_b = swap;
 
         arg = texp->tev.a_in[2].arg;
         swap = arg;
-        if(arg == 0xFF){
+        if (arg == 0xFF) {
             swap = 7;
         }
         desc->desc.u.tevconf.alpha_c = swap;
 
         arg = texp->tev.a_in[3].arg;
         swap = arg;
-        if(arg == 0xFF){
+        if (arg == 0xFF) {
             swap = 7;
         }
         desc->desc.u.tevconf.alpha_d = swap;
 
         swap = texp->tev.a_scale;
-        if(swap == 0xFF){
+        if (swap == 0xFF) {
             swap = 0;
         }
         desc->desc.u.tevconf.alpha_scale = swap;
 
         swap = texp->tev.a_bias;
-        if(swap == 0xFF){
+        if (swap == 0xFF) {
             swap = 0;
         }
         desc->desc.u.tevconf.alpha_bias = swap;
