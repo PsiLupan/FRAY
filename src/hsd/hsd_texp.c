@@ -564,11 +564,35 @@ void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tdesc)
 //80385B8C
 void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
 {
+    HSD_TETev** list = tevs;
+    u32 n = 0;
+
+    if(num > 0){
+        for(u32 i = num; i > 0; --i){
+            if(*list == tev){
+                if(d <= dist[n]){
+                    return;
+                }
+                dist[n] = d;
+                for(u32 j = 0; i < 4; ++j){
+                    if(tev->c_in[j].type == 1){
+                        CalcDistance(tevs, dist, &tev->c_in[j].exp->tev, num, d + 1);
+                    }
+                    if(tev->a_in[j].type == 1){
+                        CalcDistance(tevs, dist, &tev->c_in[j].exp->tev, num, d + 1);
+                    }
+                }
+            }
+            ++list;
+            ++n;
+        }
+    }
 }
 
 //80385C60
 u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
 {
+    HSD_CheckAssert("HSD_TExpMakeDag: type != 1", HSD_TExpGetType(root) == 1);
 }
 
 //80386234
