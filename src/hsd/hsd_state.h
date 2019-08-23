@@ -6,6 +6,7 @@
 #include <gctypes.h>
 #include <ogc/gx.h>
 
+#include "hsd_aobj.h"
 #include "hsd_mobj.h"
 
 #define HSD_STATE_ALL -1
@@ -29,17 +30,19 @@
 typedef s32 HSD_StateMask;
 
 typedef struct _HSD_Chan {
-    void* unk;
-    u8 light_mask;
+    struct _HSD_Chan* next;
+    u32 chan;
+    u32 flags;
+    GXColor amb_color;
+    GXColor mat_color;
     GXColor color;
-    GXColor ambient;
-    GXColor mat;
-    u8 gx_bool;
-    u8 src_reg1;
-    u8 src_reg2;
-    u8 light_id;
-    u8 diffuse;
-    u8 attn;
+    u8 enable;
+    u8 amb_src;
+    u8 mat_src;
+    u8 light_mask;
+    u8 diff_fn;
+    u8 attn_fn;
+    HSD_AObj* aobj;
 } HSD_Chan;
 
 void HSD_SetupChannelMode(u32);

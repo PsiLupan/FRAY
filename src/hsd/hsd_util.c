@@ -382,6 +382,15 @@ void HSD_MtxScaledAdd(f32 scale, Mtx src, Mtx add, Mtx dst)
     guMtxRowCol(dst, 2, 3) = (scale * guMtxRowCol(src, 2, 3) + guMtxRowCol(add, 2, 3));
 }
 
+//8037A780
+void HSD_MulColor(GXColor* src0, GXColor* src1, GXColor* dst)
+{
+    dst->r = (src0->r * src1->r) / 0xFF;
+    dst->g = (src0->g * src1->g) / 0xFF;
+    dst->b = (src0->b * src1->b) / 0xFF;
+    dst->a = (src0->a * src1->a) / 0xFF;
+}
+
 //8037A8AC
 u32 HSD_Index2PosNrmMtx(u32 MtxIdx)
 {

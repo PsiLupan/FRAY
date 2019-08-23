@@ -4,6 +4,7 @@
 #include <gctypes.h>
 
 #include <ogc/gu.h>
+#include <ogc/gx.h>
 
 #define FLT_MIN 1.175494E-38F
 #define FLT_EPSILON 1.19209290E-07F
@@ -48,6 +49,7 @@ void HSD_MkRotationMtx(Mtx, guVector*);
 void HSD_MtxSRT(Mtx, guVector*, guVector*, guVector*, guVector*);
 void HSD_MtxSRTQuat(Mtx, guVector*, guQuaternion*, guVector*, guVector*);
 void HSD_MtxScaledAdd(f32, Mtx, Mtx, Mtx);
+void HSD_MulColor(GXColor*, GXColor*, GXColor*);
 u32 HSD_Index2PosNrmMtx(u32);
 
 #endif

@@ -1,5 +1,7 @@
 #include "hsd_state.h"
 
+#include "hsd_lobj.h"
+
 static u8 state_num_chans = -1; //This variable is set but unused?
 static u8 state_num_tevstages; //r13_40A8
 
@@ -42,6 +44,180 @@ static struct {
 //803615D0
 void HSD_SetupChannelMode(u32 rendermode)
 {
+    u32 diffuse_mode;
+    u32 alpha_mode;
+    s32 use_color1 = 0;
+    s32 use_alpha1 = 0;
+
+    diffuse_mode = rendermode & RENDER_DIFFUSE_BITS;
+    if (diffuse_mode == RENDER_DIFFUSE_MAT0) {
+        diffuse_mode = RENDER_DIFFUSE_MAT;
+    }
+
+    alpha_mode = rendermode & RENDER_ALPHA_BITS;
+    if (alpha_mode == RENDER_ALPHA_COMPAT) {
+        alpha_mode = diffuse_mode << (RENDER_ALPHA_SHIFT - RENDER_DIFFUSE_SHIFT);
+    }
+
+    if (rendermode & RENDER_SPECULAR) {
+        static HSD_Chan ch = {
+            NULL,
+            GX_COLOR1,
+            0,
+            { 0, 0, 0, 0 },
+            { 255, 255, 255, 255 },
+            GX_TRUE,
+            GX_SRC_REG,
+            GX_SRC_REG,
+            0,
+            GX_DF_NONE,
+            GX_AF_SPEC,
+        };
+        s32 i, num;
+
+        ch.light_mask = HSD_LObjGetLightMaskSpecular();
+        //ch.enable = ch.light_mask ? GX_TRUE : GX_FALSE;
+        HSD_SetupChannel(&ch);
+        use_color1 = 1;
+
+        num = HSD_LObjGetNbActive();
+        for (i = 0; i < num; i++) {
+            HSD_LObj* lobj = HSD_LObjGetActiveByIndex(i);
+
+            if (lobj != NULL) {
+                HSD_LObjSetup(lobj, lobj->color, matstate.shininess);
+            }
+        }
+    }
+
+    if (rendermode & RENDER_DIFFUSE) {
+        HSD_LObj* amb;
+        static HSD_Chan ch = {
+            NULL,
+            GX_COLOR0,
+            0,
+            { 0, 0, 0, 0 },
+            { 255, 255, 255, 255 },
+            GX_ENABLE,
+            GX_SRC_REG,
+            GX_SRC_REG,
+            0,
+            GX_DF_CLAMP,
+            GX_AF_SPOT,
+        };
+        static HSD_Chan ch_a = {
+            NULL,
+            GX_ALPHA0,
+            0,
+            { 0, 0, 0, 0 },
+            { 0, 0, 0, 0 },
+            GX_ENABLE,
+            GX_SRC_REG,
+            GX_SRC_REG,
+            0,
+            GX_DF_CLAMP,
+            GX_AF_SPOT,
+        };
+        static HSD_Chan ch_vtx_a = {
+            NULL, GX_ALPHA0, 0,
+            { 0, 0, 0, 0 },
+            { 0, 0, 0, 0 },
+            GX_DISABLE, GX_SRC_REG, GX_SRC_VTX,
+            0, GX_DF_CLAMP, GX_AF_SPOT
+        };
+        int amb_alpha;
+
+        static GXColor dark_matter = { 0, 0, 0, 255 };
+
+        amb = HSD_LObjGetActiveByID(GX_MAXLIGHT);
+
+        if (amb && (amb->flags & LOBJ_DIFFUSE)) {
+            HSD_MulColor(&matstate.ambient, &amb->color, &ch.amb_color);
+        } else {
+            ch.amb_color = dark_matter;
+        }
+
+        ch.mat_src = (diffuse_mode & RENDER_DIFFUSE_VTX) ? GX_SRC_VTX : GX_SRC_REG;
+        ch.light_mask = HSD_LObjGetLightMaskDiffuse();
+        HSD_SetupChannel(&ch);
+
+        if (alpha_mode & RENDER_ALPHA_VTX) {
+            ch_a.chan = GX_ALPHA1;
+            use_alpha1 = 1;
+            HSD_SetupChannel(&ch_vtx_a);
+
+        } else {
+            ch_a.chan = GX_ALPHA0;
+        }
+
+        ch_a.light_mask = HSD_LObjGetLightMaskAlpha();
+
+        if (amb && (amb->flags & LOBJ_ALPHA)) {
+            amb_alpha = amb->color.a;
+        } else {
+            amb_alpha = 0;
+        }
+
+        if (ch_a.light_mask) {
+            ch_a.enable = GX_TRUE;
+            ch_a.mat_color.a = 255;
+            ch_a.amb_color.a = amb_alpha;
+        } else {
+            ch_a.enable = GX_FALSE;
+            ch_a.mat_color.a = amb_alpha;
+        }
+
+        HSD_SetupChannel(&ch_a);
+
+    } else {
+        static HSD_Chan ch = {
+            NULL,
+            GX_COLOR0,
+            0,
+            { 0, 0, 0, 0 },
+            { 255, 255, 255, 255 },
+            GX_FALSE,
+            GX_SRC_REG,
+            GX_SRC_VTX,
+            0,
+            GX_DF_NONE,
+            GX_AF_NONE,
+        };
+        static HSD_Chan ch_a = {
+            NULL,
+            GX_ALPHA0,
+            0,
+            { 0, 0, 0, 0 },
+            { 0, 0, 0, 255 },
+            GX_FALSE,
+            GX_SRC_REG,
+            GX_SRC_VTX,
+            0,
+            GX_DF_NONE,
+            GX_AF_NONE,
+        };
+
+        ch.mat_src = (diffuse_mode & RENDER_DIFFUSE_VTX) ? GX_SRC_VTX : GX_SRC_REG;
+        HSD_SetupChannel(&ch);
+
+        ch_a.mat_src = (alpha_mode & RENDER_ALPHA_VTX) ? GX_SRC_VTX : GX_SRC_REG;
+        HSD_SetupChannel(&ch_a);
+    }
+
+    if (use_color1) {
+        if (!use_alpha1) {
+            HSD_DisableChannelLighting(GX_ALPHA1);
+        }
+        HSD_StateSetNumChans(2);
+    } else { // !use_color1
+        if (use_alpha1) {
+            HSD_DisableChannelLighting(GX_COLOR1);
+            HSD_StateSetNumChans(2);
+        } else {
+            HSD_DisableChannelLighting(GX_COLOR1A1);
+            HSD_StateSetNumChans(1);
+        }
+    }
 }
 
 //80361778
