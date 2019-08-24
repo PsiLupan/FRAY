@@ -248,20 +248,20 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
     }
 
     u8 c_in_type = tev->c_in[idx].type;
-    if(c_in_type != 2){
-        switch (c_in_type){
-            case 0:
+    if (c_in_type != 2) {
+        switch (c_in_type) {
+        case 0:
             break;
 
-            case 3:
+        case 3:
             break;
         }
     }
     //TODO
 
-    if(tev->a_range == 0xFF){
+    if (tev->a_range == 0xFF) {
         tev->a_range = c_in_type;
-    }else{
+    } else {
         HSD_CheckAssert("swap == HSD_TE_UNDEF || tev->tex_swap == swap", c_in_type == 0xff && tev->a_range == c_in_type);
     }
 }
@@ -292,8 +292,7 @@ void HSD_TExpOrder(HSD_TExp* texp, void* tex, u8 chan)
     texp->tev.tex = tex;
     if (chan == 0xff) {
         texp->tev.chan = 0xff;
-    }
-    else {
+    } else {
         texp->tev.chan = chan;
     }
 }
@@ -342,9 +341,7 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
     desc->desc.u.tevconf.kasel = swap;
 
     u8 val;
-    if (texp->tev.c_op == GX_COLORNULL || 
-        (((((texp->tev.c_ref == 0 && (val = texp->tev.a_op, val != 8)) && (val != 9)) &&
-        ((val != 10 && (val != 11)))) && ((val != 12 && (val != 13)))))) {
+    if (texp->tev.c_op == GX_COLORNULL || (((((texp->tev.c_ref == 0 && (val = texp->tev.a_op, val != 8)) && (val != 9)) && ((val != 10 && (val != 11)))) && ((val != 12 && (val != 13)))))) {
         desc->desc.u.tevconf.clr_op = 0;
         desc->desc.u.tevconf.clr_a = 0xF;
         desc->desc.u.tevconf.clr_b = 0xF;
@@ -567,18 +564,18 @@ void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
     HSD_TETev** list = tevs;
     u32 n = 0;
 
-    if(num > 0){
-        for(u32 i = num; i > 0; --i){
-            if(*list == tev){
-                if(d <= dist[n]){
+    if (num > 0) {
+        for (u32 i = num; i > 0; --i) {
+            if (*list == tev) {
+                if (d <= dist[n]) {
                     return;
                 }
                 dist[n] = d;
-                for(u32 j = 0; i < 4; ++j){
-                    if(tev->c_in[j].type == 1){
+                for (u32 j = 0; i < 4; ++j) {
+                    if (tev->c_in[j].type == 1) {
                         CalcDistance(tevs, dist, &tev->c_in[j].exp->tev, num, d + 1);
                     }
-                    if(tev->a_in[j].type == 1){
+                    if (tev->a_in[j].type == 1) {
                         CalcDistance(tevs, dist, &tev->c_in[j].exp->tev, num, d + 1);
                     }
                 }
@@ -595,27 +592,167 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
     HSD_CheckAssert("HSD_TExpMakeDag: type != 1", HSD_TExpGetType(root) == 1);
 
     HSD_TExp** tevs;
+    HSD_TExp** tev_start;
+    tevs[0] = root;
     u32 i = 1;
+    u32 j;
 
-    for(u32 j = 0; j < i; ++i){
+    for (j = 0; j < i; ++j, ++tev_start) {
         HSD_CheckAssert("HSD_TExpMakeDag: j < HSD_TEXP_MAX_NUM", j < HSD_TEXP_MAX_NUM);
-
+        HSD_TExp* c_tev = *tev_start;
         u32 l = 0;
-        HSD_TExp* texp;
-        for(u32 k = 0; k < 4; ++k, i = l){
-            if(texp->tev.c_in[k].type == HSD_TE_TEV){
+        HSD_TETev* tev = &c_tev->tev;
+        for (u32 k = 0; k < 4; ++k, i = l) {
+            l = i;
+            if (tev->c_in[k].type == HSD_TE_TEV) {
                 u32 num = 0;
-                if(i > 0){
-                    for(l = i; l > 0; --l){
-                        if(*tevs == texp->tev.c_in[k].exp){
-
+                HSD_TExp** tev_list;
+                if (i > 0) {
+                    for (l = i; l > 0; --l) {
+                        if (*tevs == tev->c_in[k].exp) {
                             break;
                         }
-
+                        ++num;
+                        ++tev_list;
                     }
-                    if(i <= num){
+                    if (i <= num) {
                         l = i + 1;
-                        local_ac[i] = (HSD_TETev *)tev->c_in[0].exp;
+                        tevs[i] = tev->c_in[k].exp;
+                    }
+                }
+            }
+        }
+        for (u32 k = 0; k < 4; ++k, i = l) {
+            l = i;
+            if (tev->a_in[k].type == HSD_TE_TEV) {
+                u32 num = 0;
+                HSD_TExp** tev_list;
+                if (i > 0) {
+                    for (l = i; l > 0; --l) {
+                        if (*tevs == tev->a_in[k].exp) {
+                            break;
+                        }
+                        ++num;
+                        ++tev_list;
+                    }
+                    if (i <= num) {
+                        l = i + 1;
+                        tevs[i] = tev->a_in[k].exp;
+                    }
+                }
+            }
+        }
+    }
+
+    j = 0;
+    s32 dist[32];
+    if (i > 0) {
+        if (i > 8) {
+            u32 cnt = i - 1 >> 3;
+            if ((i - 8) > 0) {
+                do {
+                    dist[0 + j] = -1;
+                    dist[1 + j] = -1;
+                    dist[2 + j] = -1;
+                    dist[3 + j] = -1;
+                    dist[4 + j] = -1;
+                    dist[5 + j] = -1;
+                    dist[6 + j] = -1;
+                    dist[7 + j] = -1;
+                    j += 8;
+                    --cnt;
+                } while (cnt > 0);
+            }
+        }
+
+        u32 cnt = i - j;
+        if (i > j) {
+            for (u32 k = 0; cnt > 0; ++k, --cnt) {
+                dist[k] = -1;
+            }
+        }
+    }
+    CalcDistance((HSD_TETev**)tevs, dist, &tevs[0]->tev, i, 0);
+
+    for (j = 0; j < i; ++j) {
+        u32 offset = j + 1;
+        s32* v = dist + offset;
+        tev_start = tevs + offset;
+        if (i > offset) {
+            for (u32 n = i - offset; n > 0; --n, ++v, ++tev_start) {
+                if (*v < v[-1]) {
+                    HSD_TExp* t = tev_start[-1];
+                    tev_start[-1] = *tev_start;
+                    *tev_start = t;
+                    s32 temp = v[-1];
+                    v[-1] = *v;
+                    *v = temp;
+                }
+            }
+        }
+    }
+
+    u32 idx = i - 1;
+    j = idx;
+    HSD_TExpDag* dag = &list[idx];
+    tev_start = tevs + idx;
+
+    if (idx < 0) {
+        return i;
+    }
+    HSD_TExp* te = *tev_start;
+
+    HSD_TExpDag* cdag = NULL;
+    for (u32 o = 0; o < 8; o++) {
+        dag->idx = (u8)idx;
+        dag->nb_ref = 0;
+        dag->nb_dep = 0;
+        dag->tev = &te->tev;
+        HSD_TETev* tevn = &te->tev;
+
+        if (o < 4) {
+            if (tevn->c_in[o].type == HSD_TE_TEV) {
+                HSD_TExp** clist = tevs;
+                u32 num = idx;
+
+                if (i > idx) {
+                    for (u32 cnt = i - idx; cnt > 0; --cnt, ++num, ++clist) {
+                        if (tevn->c_in[o].exp == *clist) {
+                            cdag = (HSD_TExpDag*)(list + j);
+                            num = 0;
+                            if (dag->nb_dep == 0) {
+                                dag->nb_dep += 1;
+                                dag->dag[dag->nb_dep] = cdag;
+                                cdag->nb_ref += 1;
+                                HSD_CheckAssert("HSD_TExpMakeDag: i <= 0", i > 0);
+                            }
+                            if (dag->dag[0] == cdag) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            if (tevn->a_in[o].type == HSD_TE_TEV) {
+                HSD_TExp** clist = tevs;
+                u32 num = idx;
+
+                if (i > idx) {
+                    for (u32 cnt = i - idx; cnt > 0; --cnt, ++num, ++clist) {
+                        if (tevn->a_in[o].exp == *clist) {
+                            cdag = (HSD_TExpDag*)(list + j);
+                            num = 0;
+                            if (dag->nb_dep == 0) {
+                                dag->nb_dep += 1;
+                                dag->dag[dag->nb_dep] = cdag;
+                                cdag->nb_ref += 1;
+                                HSD_CheckAssert("HSD_TExpMakeDag: i <= 0", i > 0);
+                            }
+                            if (dag->dag[0] == cdag) {
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -629,9 +766,8 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
     u32 dep_mtx[32];
     u32 full_dep_mtx[32];
 
-    if(num > 0){
-        for(u32 i = num; i > 0; --i){
-
+    if (num > 0) {
+        for (u32 i = num; i > 0; --i) {
         }
     }
 }
@@ -639,6 +775,79 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
 //80386470
 static u32 SimplifySrc(HSD_TExp* texp)
 {
+    HSD_TETev* tev = &texp->tev;
+    BOOL res = FALSE;
+
+    for (u32 i = 0; i < 4; i++) {
+        if (tev->c_in[i].type == HSD_TE_TEV) {
+            HSD_TExp* t = tev->c_in[i].exp;
+            u8 sel = tev->c_in[i].sel;
+            if (HSD_TExpSimplify(t) != 0) {
+                res = TRUE;
+            }
+            if (sel == 1) {
+                sel = t->tev.c_op;
+                if (sel == GX_COLORNULL) {
+                    HSD_TExpUnref(t, 1);
+                    res = TRUE;
+                    //TODO
+                } else {
+                    if (((((sel != 0xff) && (sel == 0)) && (t->tev.c_in[0].sel == 7)) && ((t->tev.c_in[1].sel == 7 && (t->tev.c_bias == 0)))) && (t->tev.c_scale == 0)) {
+                        sel = t->tev.c_in[3].type;
+                        if (sel == HSD_TE_TEX) {
+                            if ((texp->tev.tex == NULL || texp->tev.tex == t->tev.tex) && (texp->tev.a_range == 0xFF || (t->tev.a_range == 0xFF || texp->tev.a_range == t->tev.a_range))) {
+                                //TODO
+                            }
+                        } else if (sel == HSD_TE_TEV && (t->tev.c_in[3].exp->tev.c_range != 0 || t->tev.c_clamp == 0)) {
+                            //TODO
+                        } else if ((sel == HSD_TE_RAS && (texp->tev.chan == GX_COLORNULL || texp->tev.chan == t->tev.chan)) && (texp->tev.tex_swap == 0xFF || (t->tev.tex_swap == 0xFF || texp->tev.tex_swap == t->tev.a_range))) {
+                            //TODO
+                        }
+                    }
+                }
+            }else if(t->tev.a_op == 0xFF){
+                HSD_TExpUnref(t,sel);
+                res = TRUE;
+                //TODO
+            }
+        }
+    }
+
+    for (u32 i = 0; i < 4; i++) {
+        if (tev->a_in[i].type == HSD_TE_TEV) {
+            HSD_TExp* t = tev->a_in[i].exp;
+            u8 sel = tev->a_in[i].sel;
+            if (HSD_TExpSimplify(t) != 0) {
+                res = TRUE;
+            }
+            if (sel == 1) {
+                sel = t->tev.a_op;
+                if (sel == GX_COLORNULL) {
+                    HSD_TExpUnref(t, 1);
+                    res = TRUE;
+                    //TODO
+                } else {
+                    if (((((sel != 0xff) && (sel == 0)) && (t->tev.a_in[0].sel == 7)) && ((t->tev.a_in[1].sel == 7 && (t->tev.a_bias == 0)))) && (t->tev.a_scale == 0)) {
+                        sel = t->tev.a_in[3].type;
+                        if (sel == HSD_TE_TEX) {
+                            if (texp->tev.tex == NULL || texp->tev.tex == t->tev.tex) {
+                                //TODO
+                            }
+                        } else if (sel == HSD_TE_TEV) {
+                            //TODO
+                        } else if (sel == HSD_TE_RAS && (texp->tev.chan == GX_COLORNULL || texp->tev.chan == t->tev.chan)) {
+                            //TODO
+                        }
+                    }
+                }
+            }else if(t->tev.a_op == 0xFF){
+                HSD_TExpUnref(t,sel);
+                res = TRUE;
+                //TODO
+            }
+        }
+    }
+    return res;
 }
 
 //8038687C

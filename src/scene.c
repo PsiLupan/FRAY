@@ -813,6 +813,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
             HSD_VISetXFBDrawDone();
             return;
         }
+        HSD_PadRenewRawStatus();
         //sub_80392E80(); Something memory card related
         u8 pad_queue_count;
         while (true) {
