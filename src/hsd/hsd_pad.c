@@ -496,6 +496,7 @@ void HSD_PadInit(u8 qnum, HSD_PadData* queue, u16 nb_list, HSD_PadRumbleListData
     HSD_PadLibData.reset_switch = 0;
     HSD_PadLibData.rumble_info.max_list = 0;
     HSD_PadLibData.rumble_info.listdatap = NULL;
+    HSD_PadLibData.qnum = qnum;
     HSD_PadLibData.queue = queue;
 
     HSD_PadRumbleInit(nb_list, listdatap);

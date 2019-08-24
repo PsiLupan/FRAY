@@ -593,11 +593,47 @@ void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
 u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
 {
     HSD_CheckAssert("HSD_TExpMakeDag: type != 1", HSD_TExpGetType(root) == 1);
+
+    HSD_TExp** tevs;
+    u32 i = 1;
+
+    for(u32 j = 0; j < i; ++i){
+        HSD_CheckAssert("HSD_TExpMakeDag: j < HSD_TEXP_MAX_NUM", j < HSD_TEXP_MAX_NUM);
+
+        u32 l = 0;
+        HSD_TExp* texp;
+        for(u32 k = 0; k < 4; ++k, i = l){
+            if(texp->tev.c_in[k].type == HSD_TE_TEV){
+                u32 num = 0;
+                if(i > 0){
+                    for(l = i; l > 0; --l){
+                        if(*tevs == texp->tev.c_in[k].exp){
+
+                            break;
+                        }
+
+                    }
+                    if(i <= num){
+                        l = i + 1;
+                        local_ac[i] = (HSD_TETev *)tev->c_in[0].exp;
+                    }
+                }
+            }
+        }
+    }
 }
 
 //80386234
 void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes* resource)
 {
+    u32 dep_mtx[32];
+    u32 full_dep_mtx[32];
+
+    if(num > 0){
+        for(u32 i = num; i > 0; --i){
+
+        }
+    }
 }
 
 //80386470

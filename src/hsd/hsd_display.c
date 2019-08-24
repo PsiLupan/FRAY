@@ -268,7 +268,6 @@ void HSD_JObjDispSub(HSD_JObj* jobj, MtxP vmtx, MtxP pmtx, HSD_TrspMask trsp_mas
             HSD_DObjSetCurrent(dobj);
             HSD_DOBJ_METHOD(dobj)->disp(dobj, vmtx, pmtx, rendermode);
         }
-        dobj = dobj->next;
     }
     HSD_DObjSetCurrent(NULL);
     HSD_JObjSetCurrent(NULL);

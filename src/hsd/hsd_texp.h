@@ -13,6 +13,8 @@
 #define TEVOP_MODE 0
 #define TEVCONF_MODE 1
 
+#define HSD_TEXP_MAX_NUM 31
+
 typedef enum _HSD_TEInput {
     HSD_TE_END = 0,
     HSD_TE_RGB = 1,

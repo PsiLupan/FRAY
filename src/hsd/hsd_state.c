@@ -41,6 +41,16 @@ static struct {
     f32 shininess;
 } matstate;
 
+static HSD_Chan prev_ch;
+
+static void HSD_DisableChannelLighting(u32 channel)
+{
+    u32 chan = channel & 3;
+    if(channel < GX_COLORZERO && channel > GX_ALPHA1){
+
+    }
+}
+
 //803615D0
 void HSD_SetupChannelMode(u32 rendermode)
 {
@@ -483,6 +493,11 @@ void HSD_StateInvalidate(HSD_StateMask state)
             invalidate_funcs[i].func();
         }
     }
+}
+
+//803620A4
+void HSD_SetupChannel(HSD_Chan* chan)
+{
 }
 
 //803623D0

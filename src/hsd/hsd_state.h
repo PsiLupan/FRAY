@@ -35,13 +35,12 @@ typedef struct _HSD_Chan {
     u32 flags;
     GXColor amb_color;
     GXColor mat_color;
-    GXColor color;
     u8 enable;
-    u8 amb_src;
-    u8 mat_src;
-    u8 light_mask;
-    u8 diff_fn;
-    u8 attn_fn;
+    u32 amb_src;
+    u32 mat_src;
+    u32 light_mask;
+    u32 diff_fn;
+    u32 attn_fn;
     HSD_AObj* aobj;
 } HSD_Chan;
 
@@ -62,6 +61,7 @@ void HSD_StateSetDstAlpha(s32, u8);
 void HSD_StateSetZCompLoc(s32);
 void HSD_StateSetDither(s32);
 void HSD_StateInvalidate(s32);
+void HSD_SetupChannel(HSD_Chan*);
 void HSD_StateSetNumChans(u8);
 void HSD_StateInitTev();
 u32 HSD_StateGetNumTevStages();
