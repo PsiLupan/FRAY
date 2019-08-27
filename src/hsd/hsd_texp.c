@@ -1301,10 +1301,10 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                 && texp->tev.c_in[1].sel == 7 && texp->tev.c_in[2].sel == 7
                 && (type = HSD_TExpGetType(texp->tev.c_in[0].exp), type != 4)
                 && (type = HSD_TExpGetType(texp->tev.c_in[3].exp), type != 4)) {
+                
                 if (texp->tev.c_op == 0 && texp->tev.c_in[3].type == 1
                     && (((sel = texp->tev.c_in[3].sel, sel == 1) && texp->tev.c_in[3].exp->tev.c_clamp != 0) || (sel == 5 && texp->tev.c_in[3].exp->tev.a_clamp != 0))
-                    && (sel = texp->tev.c_in[0].type, sel < 4)
-                    && sel > 1) {
+                    && (sel = texp->tev.c_in[0].type, sel < 4 && sel > 1)) {
                     u8 type = texp->tev.c_in[0].type;
                     u8 select = texp->tev.c_in[0].sel;
                     u8 arg = texp->tev.c_in[0].arg;
@@ -1320,12 +1320,14 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                     texp->tev.c_in[3].arg = arg;
                     texp->tev.c_in[3].exp = t;
                 }
+                
                 sel = texp->tev.c_in[0].type;
                 if (sel == 1) {
                     if (texp->tev.c_in[0].sel == 1) {
                         curr = texp->tev.c_in[0].exp;
                         if ((curr->tev.c_op == 0 || curr->tev.c_op == 1)
                             && curr->tev.c_in[3].sel == 7 && curr->tev.c_scale == 0) {
+                            
                             if (texp->tev.tex == NULL || curr->tev.tex == NULL || texp->tev.tex == curr->tev.tex) {
                                 if (texp->tev.chan == 0xFF || curr->tev.chan == 0xFF || texp->tev.chan == curr->tev.chan) {
                                     bVar2 = false;
@@ -1408,6 +1410,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                     if (sel == 0 && texp->tev.c_in[3].type == 1 && texp->tev.c_in[3].sel == 1
                         && (curr = texp->tev.c_in[3].exp, curr->tev.c_scale == 0)
                         && (texp->tev.c_bias == 0 || texp->tev.c_bias != curr->tev.c_bias)) {
+
                         if (texp->tev.tex == NULL || curr->tev.tex == NULL || texp->tev.tex == curr->tev.tex) {
                             if (texp->tev.chan == 0xFF || curr->tev.chan == 0xFF || texp->tev.chan == curr->tev.chan) {
                                 bVar2 = false;
@@ -1486,7 +1489,9 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                 && texp->tev.a_in[1].sel == 7 && texp->tev.a_in[2].sel == 7
                 && (type = HSD_TExpGetType(texp->tev.a_in[0].exp), type != 4)
                 && (type = HSD_TExpGetType(texp->tev.a_in[3].exp), type != 4)) {
-                if (texp->tev.a_op == 0 && texp->tev.a_in[3].type == 1 && texp->tev.a_in[3].exp->tev.a_clamp != 0 && (sel = texp->tev.a_in[0].type, sel < 4 && 1 < sel)) {
+
+                if (texp->tev.a_op == 0 && texp->tev.a_in[3].type == 1 && texp->tev.a_in[3].exp->tev.a_clamp != 0
+                    && (sel = texp->tev.a_in[0].type, sel < 4 && 1 < sel)) {
                     u8 type = texp->tev.a_in[0].type;
                     u8 select = texp->tev.a_in[0].sel;
                     u8 arg = texp->tev.a_in[0].arg;
