@@ -1286,7 +1286,6 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
     u8 bVar1;
     BOOL bVar2;
     BOOL bVar3;
-    HSD_TExp* pabVar4;
     u32 type;
     HSD_TExp* uVar7;
     s32 iVar8;
@@ -1324,7 +1323,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                 sel = texp->tev.c_in[0].type;
                 if (sel == 1) {
                     if (texp->tev.c_in[0].sel == 1) {
-                        curr = (HSD_TETev*)texp->tev.c_in[0].exp;
+                        curr = texp->tev.c_in[0].exp;
                         if ((curr->tev.c_op == 0 || curr->tev.c_op == 1)
                             && curr->tev.c_in[3].sel == 7 && curr->tev.c_scale == 0) {
                             if (texp->tev.tex == NULL || curr->tev.tex == NULL || texp->tev.tex == curr->tev.tex) {
