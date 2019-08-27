@@ -805,8 +805,8 @@ static u32 SimplifySrc(HSD_TExp* texp)
                         }
                     }
                 }
-            }else if(t->tev.a_op == 0xFF){
-                HSD_TExpUnref(t,sel);
+            } else if (t->tev.a_op == 0xFF) {
+                HSD_TExpUnref(t, sel);
                 res = TRUE;
                 //TODO
             }
@@ -840,8 +840,8 @@ static u32 SimplifySrc(HSD_TExp* texp)
                         }
                     }
                 }
-            }else if(t->tev.a_op == 0xFF){
-                HSD_TExpUnref(t,sel);
+            } else if (t->tev.a_op == 0xFF) {
+                HSD_TExpUnref(t, sel);
                 res = TRUE;
                 //TODO
             }
@@ -875,4 +875,51 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
 //80387BA4
 u32 HSD_TExpSimplify2(HSD_TExp* texp)
 {
+    for (u32 i = 0; i < 4; i++) {
+        HSD_TExp* t = texp->tev.c_in[i].exp;
+        if (texp->tev.c_in[i].type == HSD_TE_TEV && texp->tev.c_in[i].sel == 1) {
+            if (t->tev.c_op == 0 && t->tev.c_in[0].sel == 7 && t->tev.c_in[1].sel == 7 && t->tev.c_bias == 0 && t->tev.c_scale == 0) {
+                if(t->tev.c_in[3].type == HSD_TE_KONST){
+                    if(texp->tev.ras_swap == 0xFF){
+                        t->tev.ras_swap = t->tev.ras_swap;
+                    }else{
+                        if(texp->tev.ras_swap != t->tev.ras_swap){
+                            continue;
+                        }
+                    }
+                }else{
+                    continue;
+                }
+                texp->tev.c_in[i].type = t->tev.c_in[3].type;
+                texp->tev.c_in[i].exp = t->tev.c_in[3].exp;
+                HSD_TExpRef(texp->tev.c_in[i].exp, texp->tev.c_in[i].sel);
+                HSD_TExpUnref(t, 1);
+            }
+        }
+    }
+
+    for (u32 i = 0; i < 4; i++) {
+        HSD_TExp* t = texp->tev.a_in[i].exp;
+        if (texp->tev.a_in[i].type == HSD_TE_TEV) {
+            if (t->tev.a_op == 0 && t->tev.a_in[0].sel == 7 && t->tev.a_in[1].sel == 7 && t->tev.a_bias == 0 && t->tev.a_scale == 0) {
+                if(t->tev.a_in[3].type == HSD_TE_KONST){
+                    if(texp->tev.kcsel == 0xFF){
+                        t->tev.kcsel = t->tev.kcsel;
+                    }else{
+                        if(texp->tev.kcsel != t->tev.kcsel){
+                            continue;
+                        }
+                    }
+                }else{
+                    continue;
+                }
+                texp->tev.a_in[i].type = t->tev.a_in[3].type;
+                texp->tev.a_in[i].exp = t->tev.a_in[3].exp;
+                HSD_TExpRef(texp->tev.a_in[i].exp, texp->tev.a_in[i].sel);
+                HSD_TExpUnref(t, texp->tev.a_in[i].sel);
+            }
+        }
+    }
+
+    return 0;
 }
