@@ -589,7 +589,7 @@ void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
 //80385C60
 u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
 {
-    HSD_CheckAssert("HSD_TExpMakeDag: type != 1", HSD_TExpGetType(root) == 1);
+    HSD_CheckAssert("HSD_TExpMakeDag: type != 1", HSD_TExpGetType(root) == HSD_TE_TEV);
 
     HSD_TExp** tevs;
     HSD_TExp** tev_start;
@@ -1299,10 +1299,10 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
         if (sel == 0xFF || ((u8)(sel - 0xe) < 2) || sel < 2) {
             if ((texp->tev.c_op == 0 || texp->tev.c_op == 1)
                 && texp->tev.c_in[1].sel == 7 && texp->tev.c_in[2].sel == 7
-                && (type = HSD_TExpGetType(texp->tev.c_in[0].exp), type != 4)
-                && (type = HSD_TExpGetType(texp->tev.c_in[3].exp), type != 4)) {
-                
-                if (texp->tev.c_op == 0 && texp->tev.c_in[3].type == 1
+                && (type = HSD_TExpGetType(texp->tev.c_in[0].exp), type != HSD_TE_CNST)
+                && (type = HSD_TExpGetType(texp->tev.c_in[3].exp), type != HSD_TE_CNST)) {
+
+                if (texp->tev.c_op == 0 && texp->tev.c_in[3].type == HSD_TE_TEV
                     && (((sel = texp->tev.c_in[3].sel, sel == 1) && texp->tev.c_in[3].exp->tev.c_clamp != 0) || (sel == 5 && texp->tev.c_in[3].exp->tev.a_clamp != 0))
                     && (sel = texp->tev.c_in[0].type, sel < 4 && sel > 1)) {
                     u8 type = texp->tev.c_in[0].type;
@@ -1320,14 +1320,13 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                     texp->tev.c_in[3].arg = arg;
                     texp->tev.c_in[3].exp = t;
                 }
-                
-                sel = texp->tev.c_in[0].type;
-                if (sel == 1) {
+
+                if (texp->tev.c_in[0].type == HSD_TE_TEV) {
                     if (texp->tev.c_in[0].sel == 1) {
                         curr = texp->tev.c_in[0].exp;
                         if ((curr->tev.c_op == 0 || curr->tev.c_op == 1)
                             && curr->tev.c_in[3].sel == 7 && curr->tev.c_scale == 0) {
-                            
+
                             if (texp->tev.tex == NULL || curr->tev.tex == NULL || texp->tev.tex == curr->tev.tex) {
                                 if (texp->tev.chan == 0xFF || curr->tev.chan == 0xFF || texp->tev.chan == curr->tev.chan) {
                                     bVar2 = false;
@@ -1407,7 +1406,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                         }
                     }
                 } else {
-                    if (sel == 0 && texp->tev.c_in[3].type == 1 && texp->tev.c_in[3].sel == 1
+                    if (sel == HSD_TE_ZERO && texp->tev.c_in[3].type == HSD_TE_TEV && texp->tev.c_in[3].sel == 1
                         && (curr = texp->tev.c_in[3].exp, curr->tev.c_scale == 0)
                         && (texp->tev.c_bias == 0 || texp->tev.c_bias != curr->tev.c_bias)) {
 
@@ -1487,11 +1486,11 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
             }
             if ((texp->tev.a_op == 0 || texp->tev.a_op == 1)
                 && texp->tev.a_in[1].sel == 7 && texp->tev.a_in[2].sel == 7
-                && (type = HSD_TExpGetType(texp->tev.a_in[0].exp), type != 4)
-                && (type = HSD_TExpGetType(texp->tev.a_in[3].exp), type != 4)) {
+                && (type = HSD_TExpGetType(texp->tev.a_in[0].exp), type != HSD_TE_CNST)
+                && (type = HSD_TExpGetType(texp->tev.a_in[3].exp), type != HSD_TE_CNST)) {
 
-                if (texp->tev.a_op == 0 && texp->tev.a_in[3].type == 1 && texp->tev.a_in[3].exp->tev.a_clamp != 0
-                    && (sel = texp->tev.a_in[0].type, sel < 4 && 1 < sel)) {
+                if (texp->tev.a_op == 0 && texp->tev.a_in[3].type == HSD_TE_TEV && texp->tev.a_in[3].exp->tev.a_clamp != 0
+                    && (sel = texp->tev.a_in[0].type, sel < 4 && sel > 1)) {
                     u8 type = texp->tev.a_in[0].type;
                     u8 select = texp->tev.a_in[0].sel;
                     u8 arg = texp->tev.a_in[0].arg;
@@ -1508,8 +1507,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                     texp->tev.a_in[3].exp = t;
                 }
 
-                sel = texp->tev.a_in[0].type;
-                if (sel == 1) {
+                if (texp->tev.a_in[0].type == HSD_TE_TEV) {
                     curr = texp->tev.a_in[0].exp;
                     sel = texp->tev.a_in[0].sel;
                     if ((curr->tev.a_op == 0 || curr->tev.a_op == 1)
@@ -1586,7 +1584,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                         }
                     }
                 } else {
-                    if (sel == 0 && texp->tev.a_in[3].type == 1) {
+                    if (texp->tev.a_in[0].type == HSD_TE_ZERO && texp->tev.a_in[3].type == HSD_TE_TEV) {
                         curr = texp->tev.a_in[3].exp;
                         sel = texp->tev.a_in[3].sel;
                         if (curr->tev.a_scale == 0 && (texp->tev.a_bias == 0 || texp->tev.a_bias != curr->tev.a_bias)) {
