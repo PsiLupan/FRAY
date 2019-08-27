@@ -795,7 +795,7 @@ static u32 SimplifySrc(HSD_TExp* texp)
                     tev->c_in[i].arg = 0xFF;
                     tev->c_in[i].exp = NULL;
                 } else {
-                    if (((((sel != 0xff) && (sel == 0)) && (t->tev.c_in[0].sel == 7)) && ((t->tev.c_in[1].sel == 7 && (t->tev.c_bias == 0)))) && (t->tev.c_scale == 0)) {
+                    if (sel == 0 && t->tev.c_in[0].sel == 7 && t->tev.c_in[1].sel == 7 && t->tev.c_bias == 0 && t->tev.c_scale == 0) {
                         sel = t->tev.c_in[3].type;
                         if (sel == HSD_TE_TEX) {
                             if ((texp->tev.tex == NULL || texp->tev.tex == t->tev.tex) && (texp->tev.a_range == 0xFF || (t->tev.a_range == 0xFF || texp->tev.a_range == t->tev.a_range))) {
@@ -818,7 +818,7 @@ static u32 SimplifySrc(HSD_TExp* texp)
                             HSD_TExpRef(tev->c_in[i].exp, tev->c_in[i].sel);
                             HSD_TExpUnref(t, 1);
                             res = TRUE;
-                        } else if ((sel == HSD_TE_RAS && (texp->tev.chan == GX_COLORNULL || texp->tev.chan == t->tev.chan)) && (texp->tev.tex_swap == 0xFF || (t->tev.tex_swap == 0xFF || texp->tev.tex_swap == t->tev.a_range))) {
+                        } else if (sel == HSD_TE_RAS && (texp->tev.chan == GX_COLORNULL || texp->tev.chan == t->tev.chan) && (texp->tev.tex_swap == 0xFF || (t->tev.tex_swap == 0xFF || texp->tev.tex_swap == t->tev.a_range))) {
                             tev->c_in[i].type = t->tev.c_in[3].type;
                             tev->c_in[i].sel = t->tev.c_in[3].sel;
                             tev->c_in[i].arg = t->tev.c_in[3].arg;
@@ -859,7 +859,7 @@ static u32 SimplifySrc(HSD_TExp* texp)
                 tev->a_in[i].arg = 0xFF;
                 tev->a_in[i].exp = NULL;
             } else {
-                if (((((op != 0xff) && (sel == 0)) && (t->tev.a_in[0].sel == 7)) && ((t->tev.a_in[1].sel == 7 && (t->tev.a_bias == 0)))) && (t->tev.a_scale == 0)) {
+                if (op == 0 && t->tev.a_in[0].sel == 7 && t->tev.a_in[1].sel == 7 && t->tev.a_bias == 0 && t->tev.a_scale == 0) {
                     op = t->tev.a_in[3].type;
                     if (op == HSD_TE_TEX) {
                         if (texp->tev.tex == NULL || texp->tev.tex == t->tev.tex) {
