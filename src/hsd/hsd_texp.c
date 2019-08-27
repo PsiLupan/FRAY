@@ -1282,6 +1282,385 @@ static u32 SimplifyThis(HSD_TExp* texp)
 //803870E4
 static u32 SimplifyByMerge(HSD_TExp* texp)
 {
+    u8 sel;
+    u8 bVar1;
+    BOOL bVar2;
+    BOOL bVar3;
+    HSD_TExp* pabVar4;
+    u32 type;
+    HSD_TExp* uVar7;
+    s32 iVar8;
+    u32 uVar11;
+
+    HSD_TExp* curr;
+    uVar11 = 0;
+    do {
+        sel = texp->tev.a_op;
+        bVar3 = false;
+        if (sel == 0xFF || ((u8)(sel - 0xe) < 2) || sel < 2) {
+            if ((texp->tev.c_op == 0 || texp->tev.c_op == 1)
+                && texp->tev.c_in[1].sel == 7 && texp->tev.c_in[2].sel == 7
+                && (type = HSD_TExpGetType(texp->tev.c_in[0].exp), type != 4)
+                && (type = HSD_TExpGetType(texp->tev.c_in[3].exp), type != 4)) {
+                if (texp->tev.c_op == 0 && texp->tev.c_in[3].type == 1
+                    && (((sel = texp->tev.c_in[3].sel, sel == 1) && texp->tev.c_in[3].exp->tev.c_clamp != 0) || (sel == 5 && texp->tev.c_in[3].exp->tev.a_clamp != 0))
+                    && (sel = texp->tev.c_in[0].type, sel < 4)
+                    && sel > 1) {
+                    u8 type = texp->tev.c_in[0].type;
+                    u8 select = texp->tev.c_in[0].sel;
+                    u8 arg = texp->tev.c_in[0].arg;
+                    HSD_TExp* t = texp->tev.c_in[0].exp;
+
+                    texp->tev.c_in[0].type = texp->tev.c_in[3].type;
+                    texp->tev.c_in[0].sel = texp->tev.c_in[3].sel;
+                    texp->tev.c_in[0].arg = texp->tev.c_in[3].arg;
+                    texp->tev.c_in[0].exp = texp->tev.c_in[3].exp;
+
+                    texp->tev.c_in[3].type = type;
+                    texp->tev.c_in[3].sel = select;
+                    texp->tev.c_in[3].arg = arg;
+                    texp->tev.c_in[3].exp = t;
+                }
+                sel = texp->tev.c_in[0].type;
+                if (sel == 1) {
+                    if (texp->tev.c_in[0].sel == 1) {
+                        curr = (HSD_TETev*)texp->tev.c_in[0].exp;
+                        if ((curr->tev.c_op == 0 || curr->tev.c_op == 1)
+                            && curr->tev.c_in[3].sel == 7 && curr->tev.c_scale == 0) {
+                            if (texp->tev.tex == NULL || curr->tev.tex == NULL || texp->tev.tex == curr->tev.tex) {
+                                if (texp->tev.chan == 0xFF || curr->tev.chan == 0xFF || texp->tev.chan == curr->tev.chan) {
+                                    bVar2 = false;
+                                } else {
+                                    bVar2 = true;
+                                }
+                            } else {
+                                bVar2 = true;
+                            }
+                            if (!bVar2) {
+                                sel = curr->tev.c_bias;
+                                if (sel == 2) {
+                                    iVar8 = -1;
+                                } else {
+                                    if ((sel < 2) && (sel != 0)) {
+                                        iVar8 = 1;
+                                    } else {
+                                        iVar8 = 0;
+                                    }
+                                }
+                                if (curr->tev.c_op == 1) {
+                                    iVar8 = -iVar8;
+                                }
+                                sel = texp->tev.c_bias;
+                                if (sel == 2) {
+                                    iVar8 = iVar8 + -1;
+                                } else {
+                                    if ((sel < 2) && (sel != 0)) {
+                                        iVar8 = iVar8 + 1;
+                                    }
+                                }
+                                if (iVar8 == 0) {
+                                    texp->tev.c_bias = 0;
+                                    bVar3 = true;
+                                } else {
+                                    if (iVar8 < 0) {
+                                        if (iVar8 < -1) {
+                                        LAB_8038737c:
+                                            bVar3 = false;
+                                        } else {
+                                            texp->tev.c_bias = 2;
+                                            bVar3 = true;
+                                        }
+                                    } else {
+                                        if (1 < iVar8)
+                                            goto LAB_8038737c;
+                                        texp->tev.c_bias = 1;
+                                        bVar3 = true;
+                                    }
+                                }
+                                if (bVar3) {
+                                    if (curr->tev.c_op == 1) {
+                                        texp->tev.c_op = texp->tev.c_op == 0;
+                                    }
+                                    for (u32 i = 0; i < 3; ++i) {
+                                        texp->tev.c_in[i].type = curr->tev.c_in[i].type;
+                                        texp->tev.c_in[i].sel = curr->tev.c_in[i].sel;
+                                        texp->tev.c_in[i].arg = curr->tev.c_in[i].arg;
+                                        texp->tev.c_in[i].exp = curr->tev.c_in[i].exp;
+                                        HSD_TExpRef(texp->tev.c_in[i].exp, texp->tev.c_in[i].sel);
+                                    }
+                                    if (texp->tev.tex == NULL) {
+                                        texp->tev.tex = curr->tev.tex;
+                                    }
+                                    if (texp->tev.chan == 0xff) {
+                                        texp->tev.chan = curr->tev.chan;
+                                    }
+                                    if (texp->tev.a_range == 0xff) {
+                                        texp->tev.a_range = curr->tev.a_range;
+                                    }
+                                    if (texp->tev.tex_swap == 0xff) {
+                                        texp->tev.tex_swap = curr->tev.tex_swap;
+                                    }
+                                    HSD_TExpUnref(curr, 1);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    if (sel == 0 && texp->tev.c_in[3].type == 1 && texp->tev.c_in[3].sel == 1
+                        && (curr = texp->tev.c_in[3].exp, curr->tev.c_scale == 0)
+                        && (texp->tev.c_bias == 0 || texp->tev.c_bias != curr->tev.c_bias)) {
+                        if (texp->tev.tex == NULL || curr->tev.tex == NULL || texp->tev.tex == curr->tev.tex) {
+                            if (texp->tev.chan == 0xFF || curr->tev.chan == 0xFF || texp->tev.chan == curr->tev.chan) {
+                                bVar2 = false;
+                            } else {
+                                bVar2 = true;
+                            }
+                        } else {
+                            bVar2 = true;
+                        }
+                        if (!bVar2) {
+                            bVar3 = true;
+                            for (u32 i = 0; i < 4; ++i) {
+                                texp->tev.c_in[i].type = curr->tev.c_in[i].type;
+                                texp->tev.c_in[i].sel = curr->tev.c_in[i].sel;
+                                texp->tev.c_in[i].arg = curr->tev.c_in[i].arg;
+                                texp->tev.c_in[i].exp = curr->tev.c_in[i].exp;
+                                HSD_TExpRef(texp->tev.c_in[i].exp, texp->tev.c_in[i].sel);
+                            }
+                            texp->tev.c_op = curr->tev.c_op;
+                            sel = curr->tev.c_bias;
+                            if (sel == 2) {
+                                iVar8 = -1;
+                            } else {
+                                if ((sel < 2) && (sel != 0)) {
+                                    iVar8 = 1;
+                                } else {
+                                    iVar8 = 0;
+                                }
+                            }
+                            if (curr->tev.c_op == 1) {
+                                iVar8 = -iVar8;
+                            }
+                            sel = texp->tev.c_bias;
+                            if (sel == 2) {
+                                iVar8 = iVar8 + -1;
+                            } else {
+                                if ((sel < 2) && (sel != 0)) {
+                                    iVar8 = iVar8 + 1;
+                                }
+                            }
+                            if (iVar8 == 0) {
+                            LAB_803875d0:
+                                texp->tev.c_bias = 0;
+                            } else {
+                                if (iVar8 < 0) {
+                                    if (iVar8 < -1)
+                                        goto LAB_803875d0;
+                                    texp->tev.c_bias = 2;
+                                } else {
+                                    if (1 < iVar8)
+                                        goto LAB_803875d0;
+                                    texp->tev.c_bias = 1;
+                                }
+                            }
+                            if ((texp->tev.c_clamp == 0xFF) || (texp->tev.c_clamp == 0)) {
+                                texp->tev.c_clamp = curr->tev.c_clamp;
+                            }
+                            if (texp->tev.tex == NULL) {
+                                texp->tev.tex = curr->tev.tex;
+                            }
+                            if (texp->tev.chan == 0xFF) {
+                                texp->tev.chan = curr->tev.chan;
+                            }
+                            if (texp->tev.a_range == 0xFF) {
+                                texp->tev.a_range = curr->tev.a_range;
+                            }
+                            if (texp->tev.tex_swap == 0xFF) {
+                                texp->tev.tex_swap = curr->tev.tex_swap;
+                            }
+                            HSD_TExpUnref(curr, 1);
+                        }
+                    }
+                }
+            }
+            if ((texp->tev.a_op == 0 || texp->tev.a_op == 1)
+                && texp->tev.a_in[1].sel == 7 && texp->tev.a_in[2].sel == 7
+                && (type = HSD_TExpGetType(texp->tev.a_in[0].exp), type != 4)
+                && (type = HSD_TExpGetType(texp->tev.a_in[3].exp), type != 4)) {
+                if (texp->tev.a_op == 0 && texp->tev.a_in[3].type == 1 && texp->tev.a_in[3].exp->tev.a_clamp != 0 && (sel = texp->tev.a_in[0].type, sel < 4 && 1 < sel)) {
+                    u8 type = texp->tev.a_in[0].type;
+                    u8 select = texp->tev.a_in[0].sel;
+                    u8 arg = texp->tev.a_in[0].arg;
+                    HSD_TExp* t = texp->tev.a_in[0].exp;
+
+                    texp->tev.a_in[0].type = texp->tev.a_in[3].type;
+                    texp->tev.a_in[0].sel = texp->tev.a_in[3].sel;
+                    texp->tev.a_in[0].arg = texp->tev.a_in[3].arg;
+                    texp->tev.a_in[0].exp = texp->tev.a_in[3].exp;
+
+                    texp->tev.a_in[3].type = type;
+                    texp->tev.a_in[3].sel = select;
+                    texp->tev.a_in[3].arg = arg;
+                    texp->tev.a_in[3].exp = t;
+                }
+
+                sel = texp->tev.a_in[0].type;
+                if (sel == 1) {
+                    curr = texp->tev.a_in[0].exp;
+                    sel = texp->tev.a_in[0].sel;
+                    if ((curr->tev.a_op == 0 || curr->tev.a_op == 1)
+                        && curr->tev.a_in[3].sel == 7 && curr->tev.a_scale == 0) {
+                        if (texp->tev.tex == NULL || curr->tev.tex == NULL || texp->tev.tex == curr->tev.tex) {
+                            if (texp->tev.chan == 0xFF || curr->tev.chan == 0xFF || texp->tev.chan == curr->tev.chan) {
+                                bVar2 = false;
+                            } else {
+                                bVar2 = true;
+                            }
+                        } else {
+                            bVar2 = true;
+                        }
+                        if (!bVar2) {
+                            bVar1 = curr->tev.a_bias;
+                            if (bVar1 == 2) {
+                                iVar8 = -1;
+                            } else {
+                                if ((bVar1 < 2) && (bVar1 != 0)) {
+                                    iVar8 = 1;
+                                } else {
+                                    iVar8 = 0;
+                                }
+                            }
+                            if (curr->tev.a_op == 1) {
+                                iVar8 = -iVar8;
+                            }
+                            bVar1 = texp->tev.a_bias;
+                            if (bVar1 == 2) {
+                                iVar8 = iVar8 + -1;
+                            } else {
+                                if ((bVar1 < 2) && (bVar1 != 0)) {
+                                    iVar8 = iVar8 + 1;
+                                }
+                            }
+                            if (iVar8 == 0) {
+                                texp->tev.a_bias = 0;
+                                bVar3 = true;
+                            } else {
+                                if (iVar8 < 0) {
+                                    if (iVar8 < -1) {
+                                    LAB_80387874:
+                                        bVar3 = false;
+                                    } else {
+                                        texp->tev.a_bias = 2;
+                                        bVar3 = true;
+                                    }
+                                } else {
+                                    if (1 < iVar8)
+                                        goto LAB_80387874;
+                                    texp->tev.a_bias = 1;
+                                    bVar3 = true;
+                                }
+                            }
+                            if (bVar3) {
+                                if (curr->tev.a_op == 1) {
+                                    texp->tev.a_op = texp->tev.a_op == 0;
+                                }
+                                for (u32 i = 0; i < 3; ++i) {
+                                    texp->tev.a_in[i].type = curr->tev.a_in[i].type;
+                                    texp->tev.a_in[i].sel = curr->tev.a_in[i].sel;
+                                    texp->tev.a_in[i].arg = curr->tev.a_in[i].arg;
+                                    texp->tev.a_in[i].exp = curr->tev.a_in[i].exp;
+                                    HSD_TExpRef(texp->tev.a_in[i].exp, texp->tev.a_in[i].sel);
+                                }
+                                if (texp->tev.tex == NULL) {
+                                    texp->tev.tex = curr->tev.tex;
+                                }
+                                if (texp->tev.chan == 0xff) {
+                                    texp->tev.chan = curr->tev.chan;
+                                }
+                                HSD_TExpUnref(curr, sel);
+                            }
+                        }
+                    }
+                } else {
+                    if (sel == 0 && texp->tev.a_in[3].type == 1) {
+                        curr = texp->tev.a_in[3].exp;
+                        sel = texp->tev.a_in[3].sel;
+                        if (curr->tev.a_scale == 0 && (texp->tev.a_bias == 0 || texp->tev.a_bias != curr->tev.a_bias)) {
+                            if (texp->tev.tex == NULL || curr->tev.tex == NULL || texp->tev.tex == curr->tev.tex) {
+                                if (texp->tev.chan == 0xff || curr->tev.chan == 0xff || texp->tev.chan == curr->tev.chan) {
+                                    bVar2 = false;
+                                } else {
+                                    bVar2 = true;
+                                }
+                            } else {
+                                bVar2 = true;
+                            }
+                            if (!bVar2) {
+                                bVar3 = true;
+                                for (u32 i = 0; i < 4; ++i) {
+                                    texp->tev.a_in[i].type = curr->tev.a_in[i].type;
+                                    texp->tev.a_in[i].sel = curr->tev.a_in[i].sel;
+                                    texp->tev.a_in[i].arg = curr->tev.a_in[i].arg;
+                                    texp->tev.a_in[i].exp = curr->tev.a_in[i].exp;
+                                    HSD_TExpRef(texp->tev.a_in[i].exp, texp->tev.a_in[i].sel);
+                                }
+                                texp->tev.a_op = curr->tev.a_op;
+                                bVar1 = curr->tev.a_bias;
+                                if (bVar1 == 2) {
+                                    iVar8 = -1;
+                                } else {
+                                    if ((bVar1 < 2) && (bVar1 != 0)) {
+                                        iVar8 = 1;
+                                    } else {
+                                        iVar8 = 0;
+                                    }
+                                }
+                                if (curr->tev.a_op == 1) {
+                                    iVar8 = -iVar8;
+                                }
+                                bVar1 = texp->tev.a_bias;
+                                if (bVar1 == 2) {
+                                    iVar8 = iVar8 + -1;
+                                } else {
+                                    if ((bVar1 < 2) && (bVar1 != 0)) {
+                                        iVar8 = iVar8 + 1;
+                                    }
+                                }
+                                if (iVar8 == 0) {
+                                LAB_80387a98:
+                                    texp->tev.a_bias = 0;
+                                } else {
+                                    if (iVar8 < 0) {
+                                        if (iVar8 < -1)
+                                            goto LAB_80387a98;
+                                        texp->tev.a_bias = 2;
+                                    } else {
+                                        if (1 < iVar8)
+                                            goto LAB_80387a98;
+                                        texp->tev.a_bias = 1;
+                                    }
+                                }
+                                if (texp->tev.a_clamp == 0xFF || texp->tev.a_clamp == 0) {
+                                    texp->tev.a_clamp = curr->tev.a_clamp;
+                                }
+                                if (texp->tev.tex == NULL) {
+                                    texp->tev.tex = curr->tev.tex;
+                                }
+                                if (texp->tev.chan == 0xFF) {
+                                    texp->tev.chan = curr->tev.chan;
+                                }
+                                HSD_TExpUnref(curr, sel);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!bVar3) {
+            return uVar11;
+        }
+        uVar11 = 1;
+    } while (true);
 }
 
 //80387B1C
