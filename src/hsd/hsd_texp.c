@@ -148,6 +148,39 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list)
 //803831BC
 HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** texp_list)
 {
+    HSD_CheckAssert("HSD_TExpCnst: texp_list == NULL", texp_list != NULL);
+    HSD_TExp* texp = *texp_list;
+    HSD_TExp* result = NULL;
+
+    while(true){
+        if(texp == NULL){
+            if(comp == HSD_TE_0){
+                result = NULL;
+            }else{
+                HSD_TECnst* cnst = hsdAllocMemPiece(sizeof(HSD_TECnst));
+                HSD_CheckAssert("HSD_TExpCnst: Could not alloc cnst", cnst != NULL);
+                cnst->type = HSD_TE_CNST;
+                cnst->next = *texp_list;
+                cnst->val = val;
+                cnst->comp = comp;
+                cnst->ctype = type;
+                cnst->reg = 0xFF;
+                cnst->idx = 0xFF;
+                cnst->ref = 0;
+
+                result->cnst = *cnst;
+                *texp_list = result;
+            }
+            return result;
+        }
+        //BUG: Due to the resulting code, texp could be null potentially and lead to a bad deref
+        if(texp->type == 4 && texp->cnst.val == val && texp->cnst.comp == comp){
+            break;
+        }
+        texp = texp->cnst.next;
+    }
+    HSD_CheckAssert("HSD_TExpCnst: ctype != type", texp->cnst.ctype == type);
+    return texp;
 }
 
 //803832D0
@@ -831,10 +864,22 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
 {
     u32 dep_mtx[32];
     u32 full_dep_mtx[32];
+    u32 i, j, k;
 
     if (num > 0) {
-        for (u32 i = num; i > 0; --i) {
+        for (i = num, j = 0; i > 0; --i, ++j) {
+            HSD_TExpDag* list_cur = &list[j];
+            dep_mtx[j] = 0;
+            for (k = 0; k < list->nb_dep; k++) {
+                HSD_TExpDag* dag = list_cur->depend[k];
+                full_dep_mtx[j] |= 1 << dag->idx;
+            }
         }
+    }
+    make_full_dependency_mtx(num, dep_mtx, full_dep_mtx);
+
+    for(u32 i = 0; i < num; ++i){
+        
     }
 }
 

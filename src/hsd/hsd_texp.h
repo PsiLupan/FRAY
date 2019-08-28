@@ -111,8 +111,8 @@ typedef struct _HSD_TECnst {
     HSD_TExpType type;
     union _HSD_TExp* next;
     void* val;
-    u8 comp;
-    u8 ctype;
+    HSD_TEInput comp;
+    HSD_TEType ctype;
     u8 reg;
     u8 idx;
     u8 ref;
@@ -158,7 +158,7 @@ typedef struct _HSD_TETev {
 
 typedef union _HSD_TExp {
     HSD_TExpType type;
-    struct _HSD_TECommon* comm;
+    struct _HSD_TECommon comm;
     struct _HSD_TETev tev;
     struct _HSD_TECnst cnst;
 } HSD_TExp;
