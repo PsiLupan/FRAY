@@ -183,7 +183,7 @@ typedef struct _HSD_TExpDag {
     u8 nb_dep;
     u8 nb_ref;
     u8 dist;
-    struct _HSD_TExpDag* dag[8];
+    struct _HSD_TExpDag* depend[8];
 } HSD_TExpDag;
 
 void HSD_StateRegisterTexGen(u32);

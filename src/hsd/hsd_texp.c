@@ -722,11 +722,11 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
                             num = 0;
                             if (dag->nb_dep == 0) {
                                 dag->nb_dep += 1;
-                                dag->dag[dag->nb_dep] = cdag;
+                                dag->depend[dag->nb_dep] = cdag;
                                 cdag->nb_ref += 1;
                                 HSD_CheckAssert("HSD_TExpMakeDag: i <= 0", i > 0);
                             }
-                            if (dag->dag[0] == cdag) {
+                            if (dag->depend[0] == cdag) {
                                 break;
                             }
                         }
@@ -745,11 +745,11 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
                             num = 0;
                             if (dag->nb_dep == 0) {
                                 dag->nb_dep += 1;
-                                dag->dag[dag->nb_dep] = cdag;
+                                dag->depend[dag->nb_dep] = cdag;
                                 cdag->nb_ref += 1;
                                 HSD_CheckAssert("HSD_TExpMakeDag: i <= 0", i > 0);
                             }
-                            if (dag->dag[0] == cdag) {
+                            if (dag->depend[0] == cdag) {
                                 break;
                             }
                         }
@@ -758,6 +758,72 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
             }
         }
     }
+}
+
+//80385944
+static void order_dag(s32 num, u32* dep_mtx, u32* full_dep_mtx, HSD_TExpDag* list, s32 depth, s32 idx, u32 done_set, u32 ready_set, s32* order, s32* min, s32* min_order)
+{
+
+}
+
+//80386100
+static void make_full_dependency_mtx(s32 num, u32* dep, u32* full)
+{
+    BOOL bVar2;
+    s32 iVar3;
+    u32* puVar4;
+    u32* puVar5;
+    s32 iVar6;
+    u32 uVar7;
+    u32 uVar8;
+
+    if (num > 0) {
+        iVar6 = 0;
+        if ((8 < num) && (puVar4 = dep, puVar5 = full, 0 < num + -8)) {
+            for(uVar8 = num - 1 >> 3; uVar8 > 0; --uVar8){
+                puVar5[iVar6] = puVar4[iVar6];
+                puVar5[iVar6 + 1] = puVar4[iVar6 + 1];
+                puVar5[iVar6 + 2] = puVar4[iVar6 + 2];
+                puVar5[iVar6 + 3] = puVar4[iVar6 + 3];
+                puVar5[iVar6 + 4] = puVar4[iVar6 + 4];
+                puVar5[iVar6 + 5] = puVar4[iVar6 + 5];
+                puVar5[iVar6 + 6] = puVar4[iVar6 + 6];
+                puVar5[iVar6 + 7] = puVar4[iVar6 + 7];
+                iVar6 = iVar6 + 8;
+            }
+        }
+        dep = dep + iVar6;
+        puVar4 = full + iVar6;
+        iVar3 = num - iVar6;
+        if (iVar6 < num) {
+            do {
+                uVar8 = *dep;
+                dep = dep + 1;
+                *puVar4 = uVar8;
+                puVar4 = puVar4 + 1;
+                iVar3 = iVar3 + -1;
+            } while (iVar3 != 0);
+        }
+    }
+    do {
+        bVar2 = FALSE;
+        puVar4 = full;
+        for(iVar6 = 0; iVar6 < num; ++iVar6) {
+            uVar8 = *puVar4;
+            puVar5 = full;
+            if (num > 0) {
+                for(iVar3 = num; iVar3 > 0; --iVar3){
+                    uVar7 = *puVar5;
+                    if (((1 << iVar6 & uVar7) != 0) && (*puVar5 = uVar7 | uVar8, uVar7 != *puVar5)) {
+                        bVar2 = TRUE;
+                    }
+                    puVar5 = puVar5 + 1;
+                    iVar3 = iVar3 + -1;
+                }
+            }
+            puVar4 = puVar4 + 1;
+        }
+    } while (bVar2);
 }
 
 //80386234
