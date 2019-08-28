@@ -5,6 +5,8 @@
 
 static u32 num_texgens = 0; //r13_40A4
 
+u8 TevReg[48]; //Technically a struct
+
 //80362478
 void HSD_StateRegisterTexGen(u32 coord)
 {
@@ -21,9 +23,32 @@ void HSD_StateSetNumTexGens()
     num_texgens = 0;
 }
 
+static u32 HSD_Index2TevRegID(u32 idx){
+    switch(idx){
+        case 0: return GX_TEVREG0;
+        case 1: return GX_TEVREG1;
+        case 2: return GX_TEVREG2;
+        case 3: return 0;
+        default: return GX_TEVREG0;
+    }
+}
+
 //803629D8
 void HSD_SetTevRegAll()
 {
+    for (u32 i = 0; i < 4; i++) {
+        if (*(s32*)(TevReg + i * 0xc + 8) != 0) {
+            u32 offset = i * 0xc;
+            GXColorS10 color;
+            color.r = *(u16*)(TevReg + offset);
+            color.g = *(u16*)(TevReg + offset + 2);
+            color.b = *(u16*)(TevReg + offset + 4);
+            color.a = *(u16*)(TevReg + offset + 6);
+            u32 reg = HSD_Index2TevRegID(i);
+            GX_SetTevKColorS10(reg, color);
+            *(u32*)(TevReg + offset + 8) = 0;
+        }
+    }
 }
 
 //80362AA4
@@ -152,11 +177,11 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** 
     HSD_TExp* texp = *texp_list;
     HSD_TExp* result = NULL;
 
-    while(true){
-        if(texp == NULL){
-            if(comp == HSD_TE_0){
+    while (true) {
+        if (texp == NULL) {
+            if (comp == HSD_TE_0) {
                 result = NULL;
-            }else{
+            } else {
                 HSD_TECnst* cnst = hsdAllocMemPiece(sizeof(HSD_TECnst));
                 HSD_CheckAssert("HSD_TExpCnst: Could not alloc cnst", cnst != NULL);
                 cnst->type = HSD_TE_CNST;
@@ -174,7 +199,7 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** 
             return result;
         }
         //BUG: Due to the resulting code, texp could be null potentially and lead to a bad deref
-        if(texp->type == 4 && texp->cnst.val == val && texp->cnst.comp == comp){
+        if (texp->type == 4 && texp->cnst.val == val && texp->cnst.comp == comp) {
             break;
         }
         texp = texp->cnst.next;
@@ -796,7 +821,6 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
 //80385944
 static void order_dag(s32 num, u32* dep_mtx, u32* full_dep_mtx, HSD_TExpDag* list, s32 depth, s32 idx, u32 done_set, u32 ready_set, s32* order, s32* min, s32* min_order)
 {
-
 }
 
 //80386100
@@ -813,7 +837,7 @@ static void make_full_dependency_mtx(s32 num, u32* dep, u32* full)
     if (num > 0) {
         iVar6 = 0;
         if ((8 < num) && (puVar4 = dep, puVar5 = full, 0 < num + -8)) {
-            for(uVar8 = num - 1 >> 3; uVar8 > 0; --uVar8){
+            for (uVar8 = num - 1 >> 3; uVar8 > 0; --uVar8) {
                 puVar5[iVar6] = puVar4[iVar6];
                 puVar5[iVar6 + 1] = puVar4[iVar6 + 1];
                 puVar5[iVar6 + 2] = puVar4[iVar6 + 2];
@@ -841,11 +865,11 @@ static void make_full_dependency_mtx(s32 num, u32* dep, u32* full)
     do {
         bVar2 = FALSE;
         puVar4 = full;
-        for(iVar6 = 0; iVar6 < num; ++iVar6) {
+        for (iVar6 = 0; iVar6 < num; ++iVar6) {
             uVar8 = *puVar4;
             puVar5 = full;
             if (num > 0) {
-                for(iVar3 = num; iVar3 > 0; --iVar3){
+                for (iVar3 = num; iVar3 > 0; --iVar3) {
                     uVar7 = *puVar5;
                     if (((1 << iVar6 & uVar7) != 0) && (*puVar5 = uVar7 | uVar8, uVar7 != *puVar5)) {
                         bVar2 = TRUE;
@@ -878,8 +902,7 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
     }
     make_full_dependency_mtx(num, dep_mtx, full_dep_mtx);
 
-    for(u32 i = 0; i < num; ++i){
-        
+    for (u32 i = 0; i < num; ++i) {
     }
 }
 
