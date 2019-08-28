@@ -36,9 +36,6 @@ typedef struct _HSD_CObj {
     f32 proj_left; //0x48
     f32 proj_right; //0x4C
     u8 projection_type; //0x50
-    u8 unk51;
-    u8 unk52;
-    u8 unk53;
     Mtx view_mtx; //0x54
     HSD_AObj* aobj; //0x84
     MtxP proj_mtx; //0x88
