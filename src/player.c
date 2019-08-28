@@ -165,7 +165,7 @@ void Player_LoseGroundJump_ECBDisable(Player* player)
 //8007D60C
 void Player_LoseAllJumps_ECBDisable(Player* player)
 {
-    if((player->x2227_flags >> 7) != 0 && player->x1968_jumps_used < 2){
+    if ((player->x2227_flags >> 7) != 0 && player->x1968_jumps_used < 2) {
         //sub_8003FC44(player->slot, (player->x221F_flags >> 3) & 1);
     }
     player->xE0_in_air = TRUE;
@@ -340,6 +340,23 @@ void Player_PlaySFX(Player* player, u32 pitch_id, u32 unk1, u32 unk2)
 //8008A4D4
 void Player_Interrupt_Wait()
 {
+}
+
+//80094818
+void Player_80094818(HSD_GObj* gobj)
+{
+    Player* ply = GOBJ_PLAYER(gobj);
+    if (ply->x1978_unk == 0) {
+        if (ply->x1974_held_item != NULL) {
+            /*if(OnItemPickup_Func[ply->x4_internal_id] != NULL){
+                (*OnItemPickup_Func[ply->x4_internal_id])();
+            }
+            sub_8003E17C(player->slot, (player->field_0x221f >> 3) & 1, player->x1974_held_item);
+            */
+        }else{
+            //sub_8003E17C(player->slot, (player->field_0x221f >> 3) & 1, NULL);
+        }
+    }
 }
 
 //800A2040

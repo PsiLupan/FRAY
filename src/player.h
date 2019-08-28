@@ -243,6 +243,7 @@ typedef struct _Player {
     u8 x1968_jumps_used;
 
     HSD_GObj* x1974_held_item;
+    u32 x1978_unk;
 
     u16 x1A64_grabbable_flags;
 
