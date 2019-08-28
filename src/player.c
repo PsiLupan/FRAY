@@ -159,13 +159,21 @@ void Player_LoseGroundJump_ECBDisable(Player* player)
     player->xB8_pos_z = 0;
     player->x1968_jumps_used = 1;
     player->x88C_ecb_inactive_frames = 10;
-    player->x820_unk |= 0x10u;
+    player->x820_unk |= 0x10;
 }
 
 //8007D60C
 void Player_LoseAllJumps_ECBDisable(Player* player)
 {
-    //TODO
+    if((player->x2227_flags >> 7) != 0 && player->x1968_jumps_used < 2){
+        //sub_8003FC44(player->slot, (player->x221F_flags >> 3) & 1);
+    }
+    player->xE0_in_air = TRUE;
+    player->xEC_vel_ground_self_x = 0.f;
+    player->x78_unk = 0.f;
+    player->x1968_jumps_used = player->attribs.maxJumps;
+    player->x88C_ecb_inactive_frames = 5;
+    player->x820_unk |= 0x10;
 }
 
 //8007D698

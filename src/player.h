@@ -173,6 +173,7 @@ typedef struct _Player {
     void* unkptr40;
     void* unkptr44;
     u32 linklist_len;
+    f32 x78_unk;
     f32 x80_self_vel_x;
     f32 x84_self_vel_y;
     f32 x88_self_vel_z;
@@ -267,6 +268,7 @@ typedef struct _Player {
     u8 x221F_flags;
 
     u8 x2224_flags;
+    u8 x2227_flags;
     u32 x222C_flags;
     u32 x2230_flags;
     u32 x2234_flags;
