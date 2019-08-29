@@ -17,7 +17,7 @@ void HSD_StateRegisterTexGen(u32 coord)
 }
 
 //803624A8
-void HSD_StateSetNumTexGens()
+void HSD_StateSetNumTexGens(void)
 {
     GX_SetNumTexGens(num_texgens);
     num_texgens = 0;
@@ -34,7 +34,7 @@ static u32 HSD_Index2TevRegID(u32 idx){
 }
 
 //803629D8
-void HSD_SetTevRegAll()
+void HSD_SetTevRegAll(void)
 {
     for (u32 i = 0; i < 4; i++) {
         if (*(s32*)(TevReg + i * 0xc + 8) != 0) {

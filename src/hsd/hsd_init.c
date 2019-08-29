@@ -26,7 +26,7 @@ static u32 iparam_heap_max_num = 0;
 static u32 iparam_audio_heap_size = HSD_DEFAULT_AUDIO_SIZE;
 
 //80374F28
-void HSD_InitComponent()
+void HSD_InitComponent(void)
 {
     //HSD_OSInit();
     {
@@ -61,7 +61,7 @@ void HSD_GXSetFifoObj(GXFifoObj* fifo)
 }
 
 //80374F78
-void HSD_DVDInit()
+void HSD_DVDInit(void)
 {
 }
 
@@ -106,7 +106,7 @@ void* HSD_AllocateFIFO(u32 size)
 }
 
 //80375258
-void HSD_GXInit()
+void HSD_GXInit(void)
 {
     {
         GXLightObj lightobj;
@@ -124,7 +124,7 @@ void HSD_GXInit()
 }
 
 //80375304 - TODO: Rewrite custom memory management with lwp_heap
-void HSD_OSInit()
+void HSD_OSInit(void)
 {
     hsd_heap_arena_lo = (void*)ROUNDUP32(SYS_GetArenaLo());
     hsd_heap_arena_hi = (void*)ROUNDDOWN32(SYS_GetArenaHi());
@@ -159,7 +159,7 @@ void HSD_SetNextArena(void* start, void* end)
 }
 
 //80375530
-HSD_RenderPass HSD_GetCurrentRenderPass()
+HSD_RenderPass HSD_GetCurrentRenderPass(void)
 {
   return current_render_pass;
 }
@@ -179,7 +179,7 @@ void HSD_StartRender(HSD_RenderPass pass)
 }
 
 //803755B4
-void HSD_ObjInit()
+void HSD_ObjInit(void)
 {
     //HSD_ListInitAllocData();
     HSD_AObjInitAllocData();
@@ -194,7 +194,7 @@ void HSD_ObjInit()
 }
 
 //803755F8
-void HSD_ObjDumpStat()
+void HSD_ObjDumpStat(void)
 {
 }
 

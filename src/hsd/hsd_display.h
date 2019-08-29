@@ -47,9 +47,10 @@ typedef struct _HSD_ZList {
     struct _HSD_ZList* next;
 } HSD_ZList;
 
-void _HSD_ZListSort();
-void _HSD_ZListDisp();
-void _HSD_ZListClear();
+void HSD_ZListInitAllocData(void);
+void _HSD_ZListSort(void);
+void _HSD_ZListDisp(void);
+void _HSD_ZListClear(void);
 
 void mkRBillBoardMtx(HSD_JObj*, Mtx, Mtx);
 MtxP _HSD_mkEnvelopeModelNodeMtx(HSD_JObj* m, MtxP mtx);

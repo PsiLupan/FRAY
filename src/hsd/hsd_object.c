@@ -2,8 +2,8 @@
 
 #include <stdlib.h>
 
-static void ObjInfoInit();
-static void _hsdInfoInit();
+static void ObjInfoInit(void);
+static void _hsdInfoInit(void);
 
 HSD_ObjAllocData* alloc_datas;
 
@@ -177,7 +177,7 @@ void HSD_ObjAllocInit(HSD_ObjAllocData* init_obj, u32 size, u32 align)
 }
 
 //8037E6C4
-static void ObjInfoInit()
+static void ObjInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "has_obj", sizeof(HSD_ObjInfo), 8);
 }
@@ -270,7 +270,7 @@ static void _hsdClassAmnesia(HSD_ClassInfo* info)
 }
 
 //803822C0
-static void _hsdInfoInit()
+static void _hsdInfoInit(void)
 {
     hsdInitClassInfo(&hsdClass, NULL, HSD_BASE_CLASS_LIBRARY, "hsd_class", sizeof(HSD_ClassInfo), 4);
     hsdClass.alloc = _hsdClassAlloc;

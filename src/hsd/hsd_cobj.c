@@ -3,7 +3,7 @@
 #include "hsd_display.h"
 #include "hsd_memory.h"
 
-static void CObjInfoInit();
+static void CObjInfoInit(void);
 
 static HSD_CObjInfo hsdCObj = { CObjInfoInit };
 
@@ -270,7 +270,7 @@ BOOL HSD_CObjSetCurrent(HSD_CObj* cobj)
 }
 
 //80368608
-void HSD_CObjEndCurrent()
+void HSD_CObjEndCurrent(void)
 {
     _HSD_ZListSort();
     _HSD_ZListDisp();
@@ -859,13 +859,13 @@ void HSD_CObjClearFlags(HSD_CObj* cobj, u32 flags)
 }
 
 //8036A288
-HSD_CObj* HSD_CObjGetCurrent()
+HSD_CObj* HSD_CObjGetCurrent(void)
 {
     return current_cobj;
 }
 
 //8036A290
-HSD_CObj* HSD_CObjAlloc()
+HSD_CObj* HSD_CObjAlloc(void)
 {
     HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class ? default_class : &hsdCObj);
     HSD_CObj* cobj = (HSD_CObj*)hsdNew(info);
@@ -1003,7 +1003,7 @@ static void CObjAmnesia(HSD_ClassInfo* info)
 }
 
 //8036A8BC
-static void CObjInfoInit()
+static void CObjInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdCObj), HSD_CLASS_INFO(&hsdObj), HSD_BASE_CLASS_LIBRARY, "hsd_cobj", sizeof(HSD_CObjInfo), sizeof(HSD_CObj));
 

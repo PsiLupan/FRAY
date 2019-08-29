@@ -4,7 +4,7 @@
 #include "hsd_state.h"
 #include "hsd_texp.h"
 
-static void TObjInfoInit();
+static void TObjInfoInit(void);
 
 HSD_TObjInfo hsdTObj = { TObjInfoInit };
 
@@ -651,9 +651,6 @@ void HSD_TObjSetupVolatileTev(HSD_TObj* tobj, u32 rendermode)
 //8035F7D0
 static void MakeColorGenTExp(u32 lightmap, HSD_TObj* tobj, HSD_TExp** c, HSD_TExp** a, HSD_TExp** list, int repeat)
 {
-#pragma unused(lightmap)
-#pragma unused(repeat)
-
     HSD_TObjTev* tev = tobj->tev;
     u8* in;
     HSD_TExp *e0, *tmp;
@@ -1574,13 +1571,13 @@ void HSD_TObjSetDefaultClass(HSD_TObjInfo* info)
     default_class = info;
 }
 
-HSD_TObjInfo* HSD_TObjGetDefaultClass()
+HSD_TObjInfo* HSD_TObjGetDefaultClass(void)
 {
     return default_class ? default_class : &hsdTObj;
 }
 
 //8036118C
-HSD_TObj* HSD_TObjAlloc()
+HSD_TObj* HSD_TObjAlloc(void)
 {
     HSD_TObj* tobj = (HSD_TObj*)hsdNew((HSD_ClassInfo*)HSD_TObjGetDefaultClass());
     assert(tobj != NULL);
@@ -1596,7 +1593,7 @@ void HSD_TObjFree(HSD_TObj* tobj)
 }
 
 //8036121C
-HSD_Tlut* HSD_TlutAlloc()
+HSD_Tlut* HSD_TlutAlloc(void)
 {
     HSD_Tlut* tlut = hsdAllocMemPiece(sizeof(HSD_Tlut));
     assert(tlut != NULL);
@@ -1612,7 +1609,7 @@ void HSD_TlutFree(HSD_Tlut* tlut)
 }
 
 //803612A0
-HSD_TObjTev* HSD_TObjTevAlloc()
+HSD_TObjTev* HSD_TObjTevAlloc(void)
 {
     HSD_TObjTev* tev = hsdAllocMemPiece(sizeof(HSD_TObjTev));
     assert(tev != NULL);
@@ -1621,7 +1618,7 @@ HSD_TObjTev* HSD_TObjTevAlloc()
 }
 
 //803612F8
-HSD_ImageDesc* HSD_ImageDescAlloc()
+HSD_ImageDesc* HSD_ImageDescAlloc(void)
 {
     HSD_ImageDesc* idesc = hsdAllocMemPiece(sizeof(HSD_ImageDesc));
     assert(idesc != NULL);
@@ -1685,7 +1682,7 @@ static void TObjAmnesia(HSD_ClassInfo* info)
 }
 
 //80361548
-static void TObjInfoInit()
+static void TObjInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdTObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_tobj", sizeof(HSD_TObjInfo), sizeof(HSD_TObj));
 

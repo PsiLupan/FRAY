@@ -9,7 +9,7 @@ HSD_PadStatus HSD_PadCopyStatus[4]; //804C20BC
 HSD_RumbleData HSD_PadRumbleData[4]; //804C22E0
 
 //8037699C
-u8 HSD_PadGetRawQueueCount()
+u8 HSD_PadGetRawQueueCount(void)
 {
     u32 intr = IRQ_Disable();
     u8 queue_count = HSD_PadLibData.qcount;
@@ -18,13 +18,13 @@ u8 HSD_PadGetRawQueueCount()
 }
 
 //803769D8
-s32 HSD_PadGetResetSwitch()
+s32 HSD_PadGetResetSwitch(void)
 {
     return (HSD_PadLibData.reset_switch != 0) ? TRUE : FALSE;
 }
 
 //803769FC
-void HSD_PadRenewRawStatus()
+void HSD_PadRenewRawStatus(void)
 {
     /* This is based on a newer version - Melee's actually has a BOOL param that's checked and will read how many controllers there are err'd
     This occurs after the PAD_Read by checking err != 0 on each status and incrementing the controller number by 1. If every controller is err'd, it returns.
@@ -300,7 +300,7 @@ static void HSD_PadCrossDir(HSD_PadStatus* mp)
 }
 
 //8037750C
-void HSD_PadRenewMasterStatus()
+void HSD_PadRenewMasterStatus(void)
 {
     u32 intr = IRQ_Disable();
     if (HSD_PadLibData.qcount != 0) {
@@ -376,7 +376,7 @@ void HSD_PadRenewMasterStatus()
 }
 
 //803779C0
-void HSD_PadRenewCopyStatus()
+void HSD_PadRenewCopyStatus(void)
 {
     for (u8 i = 0; i < 4; i++) {
         HSD_PadCopyStatus[i].last_button = HSD_PadCopyStatus[i].button;
@@ -438,12 +438,12 @@ void HSD_PadRenewCopyStatus()
 }
 
 //80377B54
-void HSD_PadZeroQueue()
+void HSD_PadZeroQueue(void)
 {
 }
 
 //80377CE8
-void HSD_PadRenewStatus()
+void HSD_PadRenewStatus(void)
 {
     HSD_PadRenewRawStatus();
     HSD_PadRenewMasterStatus();
@@ -452,7 +452,7 @@ void HSD_PadRenewStatus()
 }
 
 //80377D18
-void HSD_PadReset()
+void HSD_PadReset(void)
 {
     u32 intr = IRQ_Disable();
 
@@ -539,7 +539,7 @@ void HSD_PadRumbleFree(HSD_RumbleData* rdp, HSD_PadRumbleListData* p)
 }
 
 //80378208
-void HSD_PadRumbleRemoveAll()
+void HSD_PadRumbleRemoveAll(void)
 {
     for (u32 i = 0; i < 4; i++) {
         u32 intr = IRQ_Disable();
@@ -554,7 +554,7 @@ void HSD_PadRumbleRemoveAll()
 }
 
 //803786F0
-void HSD_PadRumbleInterpret()
+void HSD_PadRumbleInterpret(void)
 {
 }
 

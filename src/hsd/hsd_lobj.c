@@ -39,25 +39,25 @@ void HSD_LObjClearFlags(HSD_LObj* lobj, u32 flags)
 }
 
 //803653E4
-u8 HSD_LObjGetLightMaskDiffuse()
+u8 HSD_LObjGetLightMaskDiffuse(void)
 {
     return lightmask_diffuse;
 }
 
 //803653EC
-u8 HSD_LObjGetLightMaskAttnFunc()
+u8 HSD_LObjGetLightMaskAttnFunc(void)
 {
     return lightmask_attnfunc;
 }
 
 //803653F4
-u8 HSD_LObjGetLightMaskAlpha()
+u8 HSD_LObjGetLightMaskAlpha(void)
 {
     return lightmask_alpha;
 }
 
 //803653FC
-u8 HSD_LObjGetLightMaskSpecular()
+u8 HSD_LObjGetLightMaskSpecular(void)
 {
     return lightmask_specular;
 }
@@ -78,7 +78,7 @@ void HSD_LObjSetActive(HSD_LObj* lobj)
 }
 
 //80365404
-s32 HSD_LObjGetNbActive()
+s32 HSD_LObjGetNbActive(void)
 {
     return nb_active_lights;
 }

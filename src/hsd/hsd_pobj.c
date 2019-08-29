@@ -225,7 +225,7 @@ void HSD_PObjSetDefaultClass(HSD_PObjInfo* info)
 }
 
 //8036BFCC
-HSD_PObj* HSD_PObjAlloc()
+HSD_PObj* HSD_PObjAlloc(void)
 {
     HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class ? default_class : &hsdPObj);
     HSD_PObj* pobj = (HSD_PObj*)hsdNew(info);
@@ -283,7 +283,7 @@ void HSD_PObjResolveRefsAll(HSD_PObj* pobj, HSD_PObjDesc* pdesc)
 }
 
 //8036C244
-void HSD_ClearVtxDesc()
+void HSD_ClearVtxDesc(void)
 {
     GX_ClearVtxDesc();
     prev_vtxdesclist_array = NULL;
@@ -1089,7 +1089,7 @@ static void PObjAmnesia(HSD_ClassInfo* info)
 }
 
 //8036EB88
-static void PObjInfoInit()
+static void PObjInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdPObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_pobj", sizeof(HSD_PObjInfo), sizeof(HSD_PObj));
     HSD_CLASS_INFO(&hsdPObj)->release = PObjRelease;

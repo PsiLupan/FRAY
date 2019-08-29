@@ -430,7 +430,7 @@ void HSD_StateSetDither(s32 dither)
 }
 
 //80361F34
-static void _HSD_StateInvalidatePrimitive()
+static void _HSD_StateInvalidatePrimitive(void)
 {
     state_point_size = 0;
     state_cull_mode = 0;
@@ -438,13 +438,13 @@ static void _HSD_StateInvalidatePrimitive()
 }
 
 //80361F4C
-static void _HSD_StateInvalidateVtxAttr()
+static void _HSD_StateInvalidateVtxAttr(void)
 {
     HSD_ClearVtxDesc();
 }
 
 //80361F6C
-static void _HSD_StateInvalidateRenderMode()
+static void _HSD_StateInvalidateRenderMode(void)
 {
     state_blend_type = -1;
     state_src_factor = -1;
@@ -509,19 +509,19 @@ void HSD_StateSetNumChans(u8 num)
 }
 
 //803624D8
-void HSD_StateInitTev()
+void HSD_StateInitTev(void)
 {
     state_num_tevstages = 0;
 }
 
 //803624E4
-u32 HSD_StateGetNumTevStages()
+u32 HSD_StateGetNumTevStages(void)
 {
     return state_num_tevstages;
 }
 
 //803624EC
-u8 HSD_StateAssignTev()
+u8 HSD_StateAssignTev(void)
 {
     u8 tevstage = state_num_tevstages;
     state_num_tevstages += 1;
@@ -529,7 +529,7 @@ u8 HSD_StateAssignTev()
 }
 
 //80362518
-void HSD_StateSetNumTevStages()
+void HSD_StateSetNumTevStages(void)
 {
     GX_SetNumTevStages(state_num_tevstages);
     state_num_tevstages = 0;
@@ -638,21 +638,21 @@ u8 HSD_TevStage2Index(u8 idx)
 }
 
 //80362CA0
-void _HSD_StateInvalidateColorChannel()
+void _HSD_StateInvalidateColorChannel(void)
 {
 }
 
 //80362CF8
-void _HSD_StateInvalidateTevStage()
+void _HSD_StateInvalidateTevStage(void)
 {
 }
 
 //80362D04
-void _HSD_StateInvalidateTevRegister()
+void _HSD_StateInvalidateTevRegister(void)
 {
 }
 
 //80362D24
-void _HSD_StateInvalidateTexCoordGen()
+void _HSD_StateInvalidateTexCoordGen(void)
 {
 }

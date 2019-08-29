@@ -1,6 +1,6 @@
 #include "hsd_dobj.h"
 
-static void DObjInfoInit();
+static void DObjInfoInit(void);
 
 HSD_DObjInfo hsdDObj = { DObjInfoInit }; //80405450
 
@@ -168,7 +168,7 @@ void HSD_DObjRemoveAll(HSD_DObj* dobj)
 }
 
 //8035E2C0
-HSD_DObj* HSD_DObjAlloc()
+HSD_DObj* HSD_DObjAlloc(void)
 {
     HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class ? default_class : &hsdDObj);
     HSD_DObj* dobj = hsdNew(info);
@@ -224,7 +224,7 @@ static void DObjAmnesia(HSD_ClassInfo* info)
 }
 
 //8035E4E4
-static void DObjInfoInit()
+static void DObjInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdDObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_dobj", sizeof(HSD_DObjInfo), sizeof(HSD_DObj));
 

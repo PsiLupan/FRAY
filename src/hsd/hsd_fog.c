@@ -1,7 +1,7 @@
 #include "hsd_fog.h"
 
-static void FogInfoInit();
-static void FogAdjInfoInit();
+static void FogInfoInit(void);
+static void FogAdjInfoInit(void);
 
 HSD_FogInfo hsdFog = { FogInfoInit }; //80407078
 HSD_ObjAllocData fog_init_alloc; //8040708C
@@ -189,14 +189,14 @@ static void FogRelease(HSD_Class* o)
 }
 
 //8037E120
-static void FogInfoInit()
+static void FogInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdFog), HSD_CLASS_INFO(&hsdObj), HSD_BASE_CLASS_LIBRARY, "hsd_fog", sizeof(HSD_FogInfo), sizeof(HSD_Fog));
     HSD_OBJECT_INFO(&hsdFog)->release = FogRelease;
 }
 
 //8037E178
-static void FogAdjInfoInit()
+static void FogAdjInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdFogAdj), HSD_CLASS_INFO(&hsdObj), HSD_BASE_CLASS_LIBRARY, "hsd_fogadj", sizeof(HSD_FogAdjInfo), sizeof(HSD_FogAdj));
 }

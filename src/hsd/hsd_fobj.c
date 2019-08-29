@@ -5,13 +5,13 @@
 HSD_ObjAllocData fobj_alloc_data;
 
 //8036A938
-HSD_ObjAllocData* HSD_FObjGetAllocData()
+HSD_ObjAllocData* HSD_FObjGetAllocData(void)
 {
     return &fobj_alloc_data;
 }
 
 //8036A944
-void HSD_FObjInitAllocData()
+void HSD_FObjInitAllocData(void)
 {
     return HSD_ObjAllocInit(&fobj_alloc_data, sizeof(HSD_FObj), 4);
 }
@@ -440,7 +440,7 @@ HSD_FObj* HSD_FObjLoadDesc(HSD_FObjDesc* desc)
 }
 
 //8036B848
-HSD_FObj* HSD_FObjAlloc()
+HSD_FObj* HSD_FObjAlloc(void)
 {
     HSD_FObj* fobj = (HSD_FObj*)HSD_MemAlloc(sizeof(HSD_FObj)); //HSD_ObjAlloc(&fobj_alloc_data);
     HSD_CheckAssert("FObjAlloc could not alloc", fobj != NULL);

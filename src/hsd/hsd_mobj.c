@@ -3,7 +3,7 @@
 #include "hsd_aobj.h"
 #include "hsd_state.h"
 
-static void MObjInfoInit();
+static void MObjInfoInit(void);
 
 HSD_MObjInfo hsdMObj = { MObjInfoInit };
 
@@ -642,7 +642,7 @@ void HSD_MObjRemove(HSD_MObj* mobj)
 }
 
 //80363CA4
-HSD_MObj* HSD_MObjAlloc()
+HSD_MObj* HSD_MObjAlloc(void)
 {
     HSD_MObj* mobj = (HSD_MObj*)hsdNew((HSD_ClassInfo*)HSD_MObjGetDefaultClass());
     assert(mobj);
@@ -650,7 +650,7 @@ HSD_MObj* HSD_MObjAlloc()
 }
 
 //80363D00
-HSD_Material* HSD_MaterialAlloc()
+HSD_Material* HSD_MaterialAlloc(void)
 {
     HSD_Material* mat = hsdAllocMemPiece(sizeof(HSD_Material));
     assert(mat);
@@ -724,7 +724,7 @@ static void MObjAmnesia(HSD_ClassInfo* info)
 }
 
 //80363F28
-static void MObjInfoInit()
+static void MObjInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdMObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_mobj", sizeof(HSD_MObjInfo), sizeof(HSD_MObj));
 

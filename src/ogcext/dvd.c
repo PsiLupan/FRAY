@@ -22,7 +22,7 @@ u8* fst_info[32];
 
 dvdcmdblk cmdblk;
 
-static void __DVDFSInit()
+static void __DVDFSInit(void)
 {
     start_memory = (u32*)(0x80000000);
 
@@ -41,7 +41,7 @@ static void __DVDFSInit()
     string_table = (char*)&(entry_table[total_entries]);
 }
 
-void DVDInit()
+void DVDInit(void)
 {
     DVD_Init();
     DVD_Mount();
@@ -50,7 +50,7 @@ void DVDInit()
 }
 
 //800195D0
-void DVD_CheckDisk()
+void DVD_CheckDisk(void)
 {
     //DVD_DisplayDiskError(resetCallback);
     //MemoryCard_CheckToSave();

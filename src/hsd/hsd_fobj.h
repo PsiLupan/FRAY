@@ -56,8 +56,8 @@ typedef struct _HSD_FObjData {
     f32 fv;
 } FObjData;
 
-HSD_ObjAllocData* HSD_FObjGetAllocData();
-void HSD_FObjInitAllocData();
+HSD_ObjAllocData* HSD_FObjGetAllocData(void);
+void HSD_FObjInitAllocData(void);
 void HSD_FObjRemove(HSD_FObj*);
 void HSD_FObjRemoveAll(HSD_FObj*);
 u8 HSD_FObjSetState(HSD_FObj*, u8);
@@ -69,7 +69,7 @@ void FObjUpdateAnim(HSD_FObj*, void*, void (*)(void*, u32, FObjData));
 void HSD_FObjInterpretAnim(HSD_FObj*, void*, void (*)(), f32);
 void HSD_FObjInterpretAnimAll(HSD_FObj*, void*, void (*)(), f32);
 HSD_FObj* HSD_FObjLoadDesc(HSD_FObjDesc*);
-HSD_FObj* HSD_FObjAlloc();
+HSD_FObj* HSD_FObjAlloc(void);
 void HSD_FObjFree(HSD_FObj*);
 
 #endif

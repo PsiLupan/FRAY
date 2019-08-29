@@ -94,17 +94,17 @@ typedef struct _HSD_VIInfo {
 VIRetraceCallback HSD_VISetUserPreRetraceCallback(VIRetraceCallback);
 VIRetraceCallback HSD_VISetUserPostRetraceCallback(VIRetraceCallback);
 HSD_VIGXDrawDoneCallback HSD_VISetUserGXDrawDoneCallback(HSD_VIGXDrawDoneCallback);
-s32 HSD_VIGetXFBDrawEnable();
+s32 HSD_VIGetXFBDrawEnable(void);
 void HSD_VICopyEFB2XFBPtr(HSD_VIStatus*, void*, HSD_RenderPass);
 void HSD_VICopyXFBASync(HSD_RenderPass);
 void HSD_VIDrawDoneXFB(s32);
-void HSD_VISetXFBDrawDone();
-s32 HSD_VIGetXFBLastDrawDone();
-void HSD_VISetEFBDrawDone();
+void HSD_VISetXFBDrawDone(void);
+s32 HSD_VIGetXFBLastDrawDone(void);
+void HSD_VISetEFBDrawDone(void);
 void HSD_VISetConfigure(GXRModeObj*);
 void HSD_VISetBlack(u8);
 void HSD_VIInit(HSD_VIStatus*, void*, void*, void*);
 
-static u32 HSD_VIGetNbXFB();
+static u32 HSD_VIGetNbXFB(void);
 
 #endif

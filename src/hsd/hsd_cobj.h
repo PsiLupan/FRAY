@@ -86,7 +86,7 @@ void HSD_CObjAnim(HSD_CObj*);
 void HSD_CObjReqAnim(HSD_CObj*, f32);
 u8 makeProjectionMtx(HSD_CObj*, Mtx44);
 BOOL HSD_CObjSetCurrent(HSD_CObj*);
-void HSD_CObjEndCurrent();
+void HSD_CObjEndCurrent(void);
 HSD_WObj* HSD_CObjGetInterestWObj(HSD_CObj*);
 HSD_WObj* HSD_CObjGetEyePositionWObj(HSD_CObj*);
 void HSD_CObjGetInterest(HSD_CObj*, guVector*);
@@ -137,10 +137,10 @@ void HSD_CObjGetOrtho(HSD_CObj*, f32*, f32*, f32*, f32*);
 u32 HSD_CObjGetFlags(HSD_CObj*);
 void HSD_CObjSetFlags(HSD_CObj*, u32);
 void HSD_CObjClearFlags(HSD_CObj*, u32);
-HSD_CObj* HSD_CObjGetCurrent();
-HSD_CObj* HSD_CObjAlloc();
+HSD_CObj* HSD_CObjGetCurrent(void);
+HSD_CObj* HSD_CObjAlloc(void);
 void HSD_CObjSetDefaultClass(HSD_CObjInfo*);
-HSD_CObjInfo* HSD_CObjGetDefaultClass();
+HSD_CObjInfo* HSD_CObjGetDefaultClass(void);
 HSD_CObj* HSD_CObjLoadDesc(HSD_CObjDesc*);
 
 #endif

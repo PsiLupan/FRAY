@@ -156,8 +156,8 @@ void HSD_MObjSetDiffuseColor(HSD_MObj* mobj, u8 r, u8 g, u8 b);
 void HSD_MObjSetAlpha(HSD_MObj* mobj, f32 alpha);
 HSD_TObj* HSD_MObjGetTObj(HSD_MObj* mobj);
 void HSD_MObjRemove(HSD_MObj* mobj);
-HSD_MObj* HSD_MObjAlloc();
-HSD_Material* HSD_MaterialAlloc();
+HSD_MObj* HSD_MObjAlloc(void);
+HSD_Material* HSD_MaterialAlloc(void);
 void HSD_MObjAddShadowTexture(HSD_TObj* tobj);
 void HSD_MObjDeleteShadowTexture(HSD_TObj* tobj);
 

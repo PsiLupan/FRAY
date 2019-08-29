@@ -4,7 +4,7 @@
 
 #include "hsd_jobj.h"
 
-static void WObjInfoInit();
+static void WObjInfoInit(void);
 
 HSD_WObjInfo hsdWObj = { WObjInfoInit };
 
@@ -231,7 +231,7 @@ void HSD_WObjGetPosition(HSD_WObj* wobj, guVector* pos)
 }
 
 //8037D808
-HSD_WObj* HSD_WObjAlloc()
+HSD_WObj* HSD_WObjAlloc(void)
 {
     HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class != NULL ? (HSD_ClassInfo*)default_class : (HSD_ClassInfo*)&hsdWObj);
     HSD_WObj* wobj = (HSD_WObj*)hsdNew(info);
@@ -258,7 +258,7 @@ static void WObjAmnesia(HSD_ClassInfo* info)
 }
 
 //8037D900
-static void WObjInfoInit()
+static void WObjInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdWObj), HSD_CLASS_INFO(&hsdObj), HSD_BASE_CLASS_LIBRARY, "hsd_wobj", sizeof(HSD_WObjInfo), sizeof(HSD_WObj));
     HSD_CLASS_INFO(&hsdWObj)->release = WObjRelease;

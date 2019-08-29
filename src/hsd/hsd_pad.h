@@ -113,23 +113,23 @@ typedef struct _PadLibData {
 
 extern PadLibData HSD_PadLibData;
 
-u8 HSD_PadGetRawQueueCount();
-s32 HSD_PadGetResetSwitch();
-void HSD_PadRenewRawStatus();
+u8 HSD_PadGetRawQueueCount(void);
+s32 HSD_PadGetResetSwitch(void);
+void HSD_PadRenewRawStatus(void);
 void HSD_PadFlushQueue(HSD_FlushType);
 void HSD_PadClampCheck1(u8*, u8, u8, u8);
 void HSD_PadClampCheck3(s8*, s8*, u8, s8, s8);
-void HSD_PadRenewMasterStatus();
-void HSD_PadRenewCopyStatus();
-void HSD_PadZeroQueue();
-void HSD_PadRenewStatus();
-void HSD_PadReset();
+void HSD_PadRenewMasterStatus(void);
+void HSD_PadRenewCopyStatus(void);
+void HSD_PadZeroQueue(void);
+void HSD_PadRenewStatus(void);
+void HSD_PadReset(void);
 void HSD_PadInit(u8, HSD_PadData*, u16, HSD_PadRumbleListData*);
 void HSD_PadRumbleOn(u8);
 void HSD_PadRumbleOffH(u8);
 void HSD_PadRumbleFree(HSD_RumbleData*, HSD_PadRumbleListData*);
-void HSD_PadRumbleRemoveAll();
-void HSD_PadRumbleInterpret();
+void HSD_PadRumbleRemoveAll(void);
+void HSD_PadRumbleInterpret(void);
 void HSD_PadRumbleInit(u16, HSD_PadRumbleListData*);
 
 #endif

@@ -14,8 +14,8 @@ typedef struct _FSTEntry {
     u32 len;
 } FSTEntry;
 
-void DVDInit();
-void DVD_CheckDisk();
+void DVDInit(void);
+void DVD_CheckDisk(void);
 BOOL DVDFastOpen(s32, dvdfileinfo*);
 BOOL DVDClose(dvdfileinfo* fileinfo);
 s32 DVDConvertFilenameToEntrynum(char* filename);

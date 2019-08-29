@@ -9,20 +9,20 @@ HSD_ObjAllocData robj_alloc_data;
 HSD_ObjAllocData rvalue_alloc_data;
 
 //8037AE34
-void HSD_RObjInitAllocData()
+void HSD_RObjInitAllocData(void)
 {
     HSD_ObjAllocInit(&robj_alloc_data, sizeof(HSD_RObj), 4); //size 0x1C
     HSD_ObjAllocInit(&rvalue_alloc_data, 0xc, 4); //size 0xC
 }
 
 //8037AE78
-HSD_ObjAllocData* HSD_RObjGetAllocData()
+HSD_ObjAllocData* HSD_RObjGetAllocData(void)
 {
     return &robj_alloc_data;
 }
 
 //8037AE84
-HSD_ObjAllocData* HSD_RvalueObjGetAllocData()
+HSD_ObjAllocData* HSD_RvalueObjGetAllocData(void)
 {
     return &rvalue_alloc_data;
 }
@@ -293,7 +293,7 @@ void HSD_RObjRemoveAll(HSD_RObj* robj)
 }
 
 //8037C444
-HSD_RObj* HSD_RObjAlloc()
+HSD_RObj* HSD_RObjAlloc(void)
 {
     HSD_RObj* robj = (HSD_RObj*)HSD_MemAlloc(sizeof(HSD_RObj)); //HSD_ObjAlloc(&robj_alloc_data);
     HSD_CheckAssert("Not enough memory for RObjAlloc", robj != NULL);

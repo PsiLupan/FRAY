@@ -337,7 +337,7 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
 }
 
 //803738A0
-void HSD_ZListInitAllocData()
+void HSD_ZListInitAllocData(void)
 {
     HSD_ObjAllocInit(&zlist_alloc_data, sizeof(HSD_ZList), 4);
 }
@@ -392,7 +392,7 @@ static HSD_ZList* zlist_sort(HSD_ZList* list, int nb, int offset)
 #define OFFSET(stru, member) ((int)(&((stru*)0)->member))
 
 //803747F8
-void _HSD_ZListSort()
+void _HSD_ZListSort(void)
 {
     if (zsort_sorting) {
         zlist_texedge_top = zlist_sort(zlist_texedge_top, zlist_texedge_nb, OFFSET(HSD_ZList, sort.texedge));
@@ -401,7 +401,7 @@ void _HSD_ZListSort()
 }
 
 //80374848
-void _HSD_ZListDisp()
+void _HSD_ZListDisp(void)
 {
     HSD_ZList* list;
     MtxP vmtx;
@@ -426,7 +426,7 @@ void _HSD_ZListDisp()
 }
 
 //80374910
-void _HSD_ZListClear()
+void _HSD_ZListClear(void)
 {
     HSD_ZList* list = zlist_top;
 

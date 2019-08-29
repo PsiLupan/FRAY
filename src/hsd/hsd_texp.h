@@ -187,8 +187,8 @@ typedef struct _HSD_TExpDag {
 } HSD_TExpDag;
 
 void HSD_StateRegisterTexGen(u32);
-void HSD_StateSetNumTexGens();
-void HSD_SetTevRegAll();
+void HSD_StateSetNumTexGens(void);
+void HSD_SetTevRegAll(void);
 u32 HSD_TexCoordID2Num(u32);
 u32 HSD_TExpGetType(HSD_TExp*);
 void HSD_TExpRef(HSD_TExp*, u8);

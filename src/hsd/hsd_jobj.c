@@ -6,7 +6,7 @@
 #include "hsd_display.h"
 #include "hsd_memory.h"
 
-static void JObjInfoInit();
+static void JObjInfoInit(void);
 
 HSD_JObjInfo hsdJObj = { JObjInfoInit };
 
@@ -1413,7 +1413,7 @@ void HSD_JObjClearFlagsAll(HSD_JObj* jobj, u32 flags)
 }
 
 // 8037210C
-HSD_JObj* HSD_JObjAlloc()
+HSD_JObj* HSD_JObjAlloc(void)
 {
     HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class != NULL ? default_class : &hsdJObj);
     HSD_JObj* jobj = (HSD_JObj*)hsdNew(info);
@@ -1429,7 +1429,7 @@ void HSD_JObjSetCurrent(HSD_JObj* jobj)
 }
 
 // 80372314
-HSD_JObj* HSD_JObjGetCurrent()
+HSD_JObj* HSD_JObjGetCurrent(void)
 {
     return current_jobj;
 }
@@ -1772,7 +1772,7 @@ static void JObjAmnesia(HSD_ClassInfo* info)
 }
 
 // 803737F4
-static void JObjInfoInit()
+static void JObjInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdJObj), HSD_CLASS_INFO(&hsdObj),
         HSD_BASE_CLASS_LIBRARY, "hsd_jobj", sizeof(HSD_JObjInfo),

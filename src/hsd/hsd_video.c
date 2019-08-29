@@ -138,7 +138,7 @@ static void HSD_VIPostRetraceCB(u32 retraceCount)
 }
 
 //80375E1C
-static void HSD_VIGXDrawDoneCB()
+static void HSD_VIGXDrawDoneCB(void)
 {
     _p->drawdone.waiting = 0;
 
@@ -147,13 +147,13 @@ static void HSD_VIGXDrawDoneCB()
 }
 
 //80375E60
-static BOOL HSD_VIGetDrawDoneWaitingFlag()
+static BOOL HSD_VIGetDrawDoneWaitingFlag(void)
 {
     return _p->drawdone.waiting;
 }
 
 //80375E70
-s32 HSD_VIGetXFBDrawEnable()
+s32 HSD_VIGetXFBDrawEnable(void)
 {
     u32 intr;
     s32 idx = -1;
@@ -265,7 +265,7 @@ void HSD_VIDrawDoneXFB(s32 idx)
 }
 
 //8037639C
-void HSD_VISetXFBDrawDone()
+void HSD_VISetXFBDrawDone(void)
 {
     u32 intr;
     s32 idx;
@@ -288,7 +288,7 @@ void HSD_VISetXFBDrawDone()
 }
 
 //807364A8
-s32 HSD_VIGetXFBLastDrawDone()
+s32 HSD_VIGetXFBLastDrawDone(void)
 {
     s32 idx = -1;
     u32 intr = IRQ_Disable();
@@ -302,7 +302,7 @@ s32 HSD_VIGetXFBLastDrawDone()
 }
 
 //803765A8
-void HSD_VISetEFBDrawDone()
+void HSD_VISetEFBDrawDone(void)
 {
     u32 intr;
 
@@ -390,7 +390,7 @@ void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
     HSD_VICopyEFB2XFBPtr(&_p->efb.vi_all.vi, _p->xfb[idx].buffer, HSD_RP_SCREEN);
 }
 
-static u32 HSD_VIGetNbXFB()
+static u32 HSD_VIGetNbXFB(void)
 {
     return _p->nb_xfb;
 }

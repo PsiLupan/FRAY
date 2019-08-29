@@ -25,18 +25,18 @@ typedef enum _HSD_InitParam {
     HSD_INIT_RENDER_MODE_OBJ
 } HSD_InitParam;
 
-void HSD_InitComponent();
+void HSD_InitComponent(void);
 void HSD_GXSetFifoObj(GXFifoObj*);
-void HSD_DVDInit();
+void HSD_DVDInit(void);
 void** HSD_AllocateXFB(u32, GXRModeObj*);
 void* HSD_AllocateFIFO(u32);
-void HSD_GXInit();
+void HSD_GXInit(void);
 
-HSD_RenderPass HSD_GetCurrentRenderPass();
+HSD_RenderPass HSD_GetCurrentRenderPass(void);
 void HSD_StartRender(HSD_RenderPass pass);
 
-void HSD_ObjInit();
-void HSD_ObjDumpStat();
+void HSD_ObjInit(void);
+void HSD_ObjDumpStat(void);
 BOOL HSD_SetInitParameter(HSD_InitParam, ...);
 
 #endif

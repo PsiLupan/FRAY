@@ -50,9 +50,9 @@ typedef struct _HSD_RObjAnim {
     struct _HSD_AObjDesc* aobjdesc;
 } HSD_RObjAnim;
 
-void HSD_RObjInitAllocData();
-HSD_ObjAllocData* HSD_RObjGetAllocData();
-HSD_ObjAllocData* HSD_RvalueObjGetAllocData();
+void HSD_RObjInitAllocData(void);
+HSD_ObjAllocData* HSD_RObjGetAllocData(void);
+HSD_ObjAllocData* HSD_RvalueObjGetAllocData(void);
 void HSD_RObjSetFlags(HSD_RObj*, u32);
 HSD_RObj* HSD_RObjGetByType(HSD_RObj*, u32, u32);
 void HSD_RObjAnimAll(HSD_RObj*);
@@ -67,7 +67,7 @@ void HSD_RObjResolveRefsAll(HSD_RObj*, HSD_RObjDesc*);
 HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc*);
 void HSD_RObjRemove(HSD_RObj*);
 void HSD_RObjRemoveAll(HSD_RObj*);
-HSD_RObj* HSD_RObjAlloc();
+HSD_RObj* HSD_RObjAlloc(void);
 void HSD_RObjFree(HSD_RObj*);
 void HSD_RvalueResolveRefsAll(HSD_Rvalue*, HSD_RvalueDesc*);
 

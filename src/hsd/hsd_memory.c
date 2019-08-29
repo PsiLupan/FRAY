@@ -13,19 +13,19 @@ HSD_ObjAllocData hsd_iddata; //804C23C0
 HSD_IDTable default_table; //804C23EC
 
 //8037CD80
-HSD_ObjAllocData* HSD_IDGetAllocData()
+HSD_ObjAllocData* HSD_IDGetAllocData(void)
 {
     return &hsd_iddata;
 }
 
 //8037CD8C
-void HSD_IDInitAllocData()
+void HSD_IDInitAllocData(void)
 {
     HSD_ObjAllocInit(&hsd_iddata, 12, 4);
 }
 
 //8037CDBC
-void* HSD_IDSetup()
+void* HSD_IDSetup(void)
 {
     return memset(&default_table, 0, 404);
 }
