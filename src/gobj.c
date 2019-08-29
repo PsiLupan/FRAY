@@ -8,10 +8,10 @@
 
 static HSD_GObjProc* slinklow_procs[S_LINK_MAX + 2]; //r13_3E5C
 static HSD_GObjProc* slinkhigh_procs[S_LINK_MAX + 2]; //r13_3E60
-static u32 r13_3E64 = 0; //r13_3E64
-static HSD_GObjProc* first_gobjproc; //r13_3E68
+static u32 curr_proc_prio = 0; //r13_3E64
+static HSD_GObjProc* curr_gobjproc; //r13_3E68
 static u32 last_s_link = 0; //r13_3E6C
-static HSD_GObjProc* last_gobjproc; //r13_3E70
+static HSD_GObjProc* next_gobjproc; //r13_3E70
 static HSD_GObj* plinkhigh_gobjs[P_LINK_MAX + 2]; //r13_3E74
 static HSD_GObj* plinklow_gobjs[P_LINK_MAX + 2]; //r13_3E78
 static HSD_GObj* highestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E7C
@@ -23,7 +23,7 @@ static void* hsd_destructors[14]; //r13_3E90 - Length is currently made up, TODO
 
 u32 flag_array[4] = { 1, 4, 2, 0 }; //804085F0
 
-u32 gobj_prep[3] = {0x3F3F0200, 0, 0}; //DAT_80408620
+u32 gobj_prep[3] = { 0x3F3F0200, 0, 0 }; //DAT_80408620
 
 u8 curr_slink = 24; //804CE382
 HSD_ObjAllocData gobj_def; //804CE38C
@@ -58,6 +58,12 @@ BOOL GObj_IsItem(HSD_GObj* gobj)
         }
     }
     return FALSE;
+}
+
+//80322D30
+u64 GObj_GetProcFlags(u32 i, u32 j, u32 p){
+    u64 n = i << p | j >> 0x20 - p | j << p + -0x20;
+    return n << p;
 }
 
 //8038FAA8
@@ -113,12 +119,12 @@ JMPLABEL_2:
     if (gobj_def_3.flags >> 7 == 0) {
         return;
     }
-    if (proc->prev != first_gobjproc) {
+    if (proc->prev != curr_gobjproc) {
         return;
     }
-    if (proc->next == last_gobjproc) {
+    if (proc->next == next_gobjproc) {
         if (s_link == last_s_link) {
-            last_gobjproc = proc;
+            next_gobjproc = proc;
         }
     }
 }
@@ -398,20 +404,51 @@ void GObj_CallDestructor(HSD_GObj* gobj)
 }
 
 //80390CFC
-void GObj_80390CFC()
+void GObj_RunProcs(void)
 {
-    HSD_ObjAllocData* def;
-    u32 unk;
-    /*if(unk_804CE380[2] == 0){
-		def = NULL;
-		unk = 0;
+    u32 unk1;
+    u32 unk2;
+    /*if(unk_804CE388 == 0){
+		unk1 = NULL;
+		unk2 = 0;
 	}else{
-		unk = unk_804CE380[2];
-		def = &gobj_def;
+		unk1 = unk_804CE388[0];
+		unk2 = unk_804CE388[1];
 	}*/
-    r13_3E64 += 1;
-    if (r13_3E64 > 2) {
-        r13_3E64 = 0;
+    curr_proc_prio += 1;
+    if (curr_proc_prio > 2) {
+        curr_proc_prio = 0;
+    }
+    for (u32 i = 0; i < curr_slink; ++i) {
+        last_s_link = i;
+        HSD_GObjProc* proc = slinkhigh_procs[i];
+        while (proc != NULL) {
+            next_gobjproc = proc->next;
+            if ((proc->flags >> 4 & 3) != curr_proc_prio) {
+                proc->flags = (curr_proc_prio << 4) & 0x30 | proc->flags & 0xCF;
+                HSD_GObj* gobj = proc->gobj;
+                u32 res = GObj_GetProcFlags(0, 1, gobj->p_link);
+                if ((unk2 & res | unk1 & ((u64)res >> 0x20)) == 0) {
+                    if ((proc->flags >> 7 == 0) && ((proc->flags >> 6 & 1) == 0)) {
+                        current_gobj = gobj;
+                        curr_gobjproc = proc;
+                        (*proc->callback)(proc->gobj);
+                        next_gobjproc = proc->next;
+                        /*if ((DAT_804ce3e4 >> 6 & 1) == 0) {
+                            if ((DAT_804ce3e4 >> 4 & 1) != 0) {
+                                //FUN_8039032c(DAT_804ce3e8, proc->gobj, DAT_804ce3ec, DAT_804ce3ed, DAT_804ce3f0);
+                            }
+                            if ((DAT_804ce3e4 >> 5 & 1) != 0) {
+                                FUN_8038fe24(proc);
+                            }
+                        } else {
+                            GObj_Free(proc->gobj);
+                        }*/
+                    }
+                }
+            }
+            proc = next_gobjproc;
+        }
     }
 }
 
@@ -422,7 +459,8 @@ u32 GObj_GetFlagFromArray(u32 offset)
 }
 
 //80390ED0
-void GObj_SetTextureCamera(HSD_GObj* gobj, u32 iters){
+void GObj_SetTextureCamera(HSD_GObj* gobj, u32 iters)
+{
     HSD_GObj* curr;
     u64 uVar5;
 
@@ -472,7 +510,8 @@ void GObj_RunGXLinkMaxCallbacks(void)
 }
 
 //803910D8
-void GObj_SetCamera(HSD_GObj* gobj){
+void GObj_SetCamera(HSD_GObj* gobj)
+{
     BOOL res = HSD_CObjSetCurrent((HSD_CObj*)gobj->data);
     if (res == FALSE) {
         GObj_SetTextureCamera(gobj, 7);
@@ -497,8 +536,8 @@ void GObj_SetCamera(HSD_GObj* gobj){
 }*/
 
 //803912A8
-u32 GObj_803912A8(u32 array[], u32* unk){
-
+u32 GObj_803912A8(u32 array[], u32* unk)
+{
 }
 
 //803912E0
@@ -512,5 +551,4 @@ void GObj_CallbackPrep(void** cb)
 //80391304
 void GObj_Setup()
 {
-
 }

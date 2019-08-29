@@ -880,7 +880,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
             if (match_controller.unk2C != NULL) {
                 (*match_controller.unk2C)();
             }
-            //GObj_80390CFC();
+            GObj_RunProcs();
             if (match_controller.timer != -2) {
                 match_controller.timer += 1;
             }

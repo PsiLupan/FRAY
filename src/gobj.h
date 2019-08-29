@@ -54,9 +54,9 @@ typedef struct _HSD_GObjProc {
     struct _HSD_GObjProc* next; //0x4
     struct _HSD_GObjProc* prev; //0x8
     u8 s_link; //0xC
-    u16 flags; //0xD
+    u8 flags; //0xD
     struct _HSD_GObj* gobj; //0x10
-    void (*callback)(); //0x14
+    void (*callback)(struct _HSD_GObj*); //0x14
 } HSD_GObjProc;
 
 BOOL GObj_IsPlayer(HSD_GObj*);
@@ -76,6 +76,7 @@ void* GObj_NullObj_ReturnPtr(HSD_GObj*);
 void GObj_CallHSDDestructor(HSD_GObj*);
 void GObj_InitKindData(HSD_GObj*, s8, void*, void*);
 void GObj_CallDestructor(HSD_GObj*);
+void GObj_RunProcs(void);
 u32 GObj_GetFlagFromArray(u32);
 void GObj_SetTextureCamera(HSD_GObj*, u32);
 void GObj_RunGXLinkMaxCallbacks(void);
