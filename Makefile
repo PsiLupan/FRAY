@@ -27,7 +27,8 @@ INCLUDES	:=
 # options for code generation
 #---------------------------------------------------------------------------------
 
-CFLAGS	= -O1 -mrvl -Wno-implicit-function-declaration $(MACHDEP) $(INCLUDE)
+#NODEBUG = -DNDEBUG
+CFLAGS	= -O1 -mrvl -Wno-implicit-function-declaration $(MACHDEP) $(INCLUDE) $(NODEBUG)
 CXXFLAGS	= $(CFLAGS)
 
 LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map,--section-start,.init=0x80003100

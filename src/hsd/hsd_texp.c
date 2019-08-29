@@ -98,10 +98,10 @@ u32 HSD_TExpGetType(HSD_TExp* texp)
 void HSD_TExpRef(HSD_TExp* texp, u8 sel)
 {
     u32 type = HSD_TExpGetType(texp);
-    if (type == 4) {
+    if (type == HSD_TE_CNST) {
         texp->cnst.ref += 1;
         return;
-    } else if (type != 1) {
+    } else if (type != HSD_TE_TEV) {
         return;
     }
 
@@ -211,7 +211,7 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** 
 //803832D0
 void HSD_TExpColorOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 clamp)
 {
-    assert(HSD_TExpGetType(texp) == 1);
+    assert(HSD_TExpGetType(texp) == HSD_TE_TEV);
     texp->tev.c_op = op;
     texp->tev.c_clamp = (clamp ? GX_ENABLE : GX_DISABLE);
     if (op < 2) {
@@ -225,7 +225,7 @@ void HSD_TExpColorOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 clamp)
 //803833AC
 void HSD_TExpAlphaOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 clamp)
 {
-    assert(HSD_TExpGetType(texp) == 1);
+    assert(HSD_TExpGetType(texp) == HSD_TE_TEV);
     texp->tev.a_op = op;
     texp->tev.a_clamp = (clamp ? GX_ENABLE : GX_DISABLE);
     if (op < 2) {
@@ -346,7 +346,7 @@ void HSD_TExpAlphaIn(HSD_TExp* texp, HSD_TEInput sel_a, HSD_TExp* exp_a, HSD_TEI
 void HSD_TExpOrder(HSD_TExp* texp, void* tex, u8 chan)
 {
     HSD_CheckAssert("HSD_TExpOrder: texp == NULL", texp != NULL);
-    HSD_CheckAssert("HSD_TExpOrder: texp->type != TEV", HSD_TExpGetType(texp) == 1);
+    HSD_CheckAssert("HSD_TExpOrder: texp->type != HSD_TE_TEV", HSD_TExpGetType(texp) == HSD_TE_TEV);
     texp->tev.tex = tex;
     if (chan == 0xff) {
         texp->tev.chan = 0xff;
@@ -368,7 +368,7 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
     HSD_CheckAssert("TExp2TevDesc: texp cannot be null", texp != NULL);
     HSD_CheckAssert("TExp2TevDesc: desc cannot be null", desc != NULL);
     u32 type = HSD_TExpGetType(texp);
-    HSD_CheckAssert("TExp2TevDesc: type != 1", type == 1);
+    HSD_CheckAssert("TExp2TevDesc: type != HSD_TE_TEV", type == HSD_TE_TEV);
     desc->desc.next = NULL;
     desc->desc.flags = 1;
     desc->tobj = texp->tev.tex;
@@ -1848,7 +1848,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
 u32 HSD_TExpSimplify(HSD_TExp* texp)
 {
     u32 res = 0;
-    if (HSD_TExpGetType(texp) == 1) {
+    if (HSD_TExpGetType(texp) == HSD_TE_TEV) {
         res = SimplifySrc(texp) != 0 ? 1 : 0;
         res = SimplifyThis(texp) != 0 ? 1 : 0;
         res = SimplifyByMerge(texp) != 0 ? 1 : 0;

@@ -458,7 +458,7 @@ void GObj_SetTextureCamera(HSD_GObj* gobj, u32 iters){
 }
 
 //80390FC0
-void GObj_RunGXLinkMaxCallbacks()
+void GObj_RunGXLinkMaxCallbacks(void)
 {
     HSD_GObj* gobj = highestprio_gobjs[GX_LINK_MAX + 1];
     for (HSD_GObj* i = gobj; i != NULL; i = i->next_gx) {

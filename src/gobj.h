@@ -78,7 +78,7 @@ void GObj_InitKindData(HSD_GObj*, s8, void*, void*);
 void GObj_CallDestructor(HSD_GObj*);
 u32 GObj_GetFlagFromArray(u32);
 void GObj_SetTextureCamera(HSD_GObj*, u32);
-void GObj_RunGXLinkMaxCallbacks();
+void GObj_RunGXLinkMaxCallbacks(void);
 void GObj_Prep(void**);
 
 #endif
