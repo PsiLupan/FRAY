@@ -300,7 +300,7 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
             swap = 1;
             break;
         default:
-            HSD_Halt("Unexpected ras sel");
+            HSD_Halt("Unexpected kcsel");
         }
 
         if (tev->kcsel == HSD_TE_UNDEF) {
@@ -329,9 +329,11 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
             goto END;
 
         case 3:
+            //TODO
             break;
 
         case 4:
+            //TODO
             break;
 
         default:
@@ -372,6 +374,8 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
         HSD_CheckAssert("swap == HSD_TE_UNDEF || tev->tex_swap == swap", swap == HSD_TE_UNDEF || tev->tex_swap == swap);
     }
 END:
+    //TODO
+    return;
 }
 
 //80383A64
