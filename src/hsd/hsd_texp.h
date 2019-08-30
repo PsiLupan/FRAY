@@ -32,7 +32,8 @@ typedef enum _HSD_TEInput {
     HSD_TE_5_8 = 13,
     HSD_TE_6_8 = 14,
     HSD_TE_7_8 = 15,
-    HSD_TE_INPUT_MAX = 16
+    HSD_TE_INPUT_MAX = 16,
+    HSD_TE_UNDEF = 0xFF
 } HSD_TEInput;
 
 typedef enum _HSD_TEType {
@@ -135,7 +136,9 @@ typedef struct _HSD_TETev {
     u8 a_clamp;
     u8 a_bias;
     u8 a_scale;
+    #ifdef NEW_LIB
     u8 a_range;
+    #endif
     u8 tex_swap;
     u8 ras_swap;
     u8 kcsel;
