@@ -11,7 +11,7 @@
 
 typedef struct _StaticPlayer {
     s32 state;
-    u32 character_id;
+    u32 x4_character_id;
     u32 slot_type;
     u16 transformed;
     u16 unknown0E;
@@ -19,8 +19,8 @@ typedef struct _StaticPlayer {
     f32 transformed_pos[3];
     f32 spawnplat_final_pos[3];
     f32 unk_pos[3];
-    f32 facedir;
-    u8 costume_id;
+    f32 x40_facedir;
+    u8 x44_costume_id;
     u8 unk45;
     u8 controller_idx;
     u8 team_id;
@@ -86,6 +86,8 @@ void StaticPlayer_SetSlotType(u32, u32);
 f32* StaticPlayer_GetNametagCoords(u32, f32*);
 f32 StaticPlayer_GetFacing(u32);
 void StaticPlayer_SetFacing(u32, f32);
+u8 StaticPlayer_GetCostumeID(u32);
+void StaticPlayer_SetCostumeID(u32, u8);
 
 u8 StaticPlayer_GetCPULevel(u32);
 

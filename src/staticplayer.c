@@ -13,14 +13,14 @@ u32 StaticPlayer_GetState(u32 slot)
 u32 StaticPlayer_GetExternalID(u32 slot)
 {
     assert(slot >= 0 && slot < MAX_PLAYERS);
-    return players[slot].character_id;
+    return players[slot].x4_character_id;
 }
 
 //800323A0
 void StaticPlayer_SetExternalID(u32 slot, u32 id)
 {
     assert(slot >= 0 && slot < MAX_PLAYERS);
-    players[slot].character_id = id;
+    players[slot].x4_character_id = id;
 }
 
 //8003241C
@@ -57,14 +57,28 @@ f32* StaticPlayer_GetNametagCoords(u32 slot, f32* pos)
 f32 StaticPlayer_GetFacing(u32 slot)
 {
     assert(slot >= 0 && slot < MAX_PLAYERS);
-    return players[slot].facedir;
+    return players[slot].x40_facedir;
 }
 
 //80033094
 void StaticPlayer_SetFacing(u32 slot, f32 facing)
 {
     assert(slot >= 0 && slot < MAX_PLAYERS);
-    players[slot].facedir = facing;
+    players[slot].x40_facedir = facing;
+}
+
+//80033198
+u8 StaticPlayer_GetCostumeID(u32 slot)
+{
+    assert(slot >= 0 && slot < MAX_PLAYERS);
+    return players[slot].x44_costume_id;
+}
+
+//80033208
+void StaticPlayer_SetCostumeID(u32 slot, u8 id)
+{
+    assert(slot >= 0 && slot < MAX_PLAYERS);
+    players[slot].x44_costume_id = id;
 }
 
 //80033548
