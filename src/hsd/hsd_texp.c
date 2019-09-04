@@ -1171,8 +1171,12 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
 {
     u32 dep_mtx[32];
     u32 full_dep_mtx[32];
+    s32 order[32];
+    s32 min_order[32];
+    s32 min = 5;
     u32 i, j, k;
 
+    memset(min_order, 0, 32 * 4);
     if (num > 0) {
         for (i = num, j = 0; i > 0; --i, ++j) {
             HSD_TExpDag* list_cur = &list[j];
@@ -1184,8 +1188,34 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
         }
     }
     make_full_dependency_mtx(num, dep_mtx, full_dep_mtx);
+    order_dag(num, dep_mtx, full_dep_mtx, list, 0, 0, 0, 0, order, &min, min_order);
 
-    for (u32 i = 0; i < num; ++i) {
+    for (i = 0; i < num; ++i) {
+        result[i]->tev = *list[min_order[i]].tev;
+
+        if (result[i]->tev.c_dst != HSD_TE_UNDEF) {
+            resource->reg[result[i]->tev.c_dst].color = 3;
+            for (j = 0; j < 4; j++) {
+                if (HSD_TExpGetType(result[i]->tev.c_in[j].exp) == HSD_TE_TEV) {
+                    if (result[i]->tev.c_in[j].sel == 1) {
+                        result[i]->tev.c_in[j].arg = 0; //WRONG
+                    } else {
+                        result[i]->tev.c_in[j].arg = 0; //WRONG
+                    }
+                }
+            }
+        }
+
+        if (result[i]->tev.a_dst != HSD_TE_UNDEF) {
+            resource->reg[result[i]->tev.a_dst].alpha = 1;
+            for (j = 0; j < 4; j++) {
+                if (HSD_TExpGetType(result[i]->tev.a_in[j].exp) == HSD_TE_TEV) {
+                    if (result[i]->tev.a_in[j].sel == 1) {
+                        result[i]->tev.a_in[j].arg = 0; //WRONG
+                    }
+                }
+            }
+        }
     }
 }
 
