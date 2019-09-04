@@ -120,6 +120,13 @@ typedef struct _HSD_TECnst {
     u8 range;
 } HSD_TECnst;
 
+typedef struct _HSD_TEArg {
+    u8 type;
+    u8 sel;
+    u8 arg;
+    union _HSD_TExp* exp;
+} HSD_TEArg;
+
 typedef struct _HSD_TETev {
     HSD_TExpType type;
     union _HSD_TExp* next;
@@ -143,18 +150,8 @@ typedef struct _HSD_TETev {
     u8 ras_swap;
     u8 kcsel;
     u8 kasel;
-    struct {
-        u8 type;
-        u8 sel;
-        u8 arg;
-        union _HSD_TExp* exp;
-    } c_in[4];
-    struct {
-        u8 type;
-        u8 sel;
-        u8 arg;
-        union _HSD_TExp* exp;
-    } a_in[4];
+    HSD_TEArg c_in[4];
+    HSD_TEArg a_in[4];
     void* tex; //HSD_TObj*
     u8 chan;
 } HSD_TETev;

@@ -325,15 +325,47 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
             HSD_CheckAssert("HSD_TExpColorInSub: sel != HSD_TE_RGB or HSD_TE_A", sel == HSD_TE_RGB || sel == HSD_TE_A);
             HSD_CheckAssert("HSD_TExpColorInSub: ", idx == 3 || sel != HSD_TE_RGB || texp->tev.c_clamp != 0);
             HSD_CheckAssert("HSD_TExpColorInSub: ", idx == 3 || sel != HSD_TE_A || texp->tev.a_clamp != 0);
-            HSD_TExRef(tev->c_in[idx].exp, tev->c_in[idx].sel);
+            HSD_TExpRef(tev->c_in[idx].exp, tev->c_in[idx].sel);
             goto END;
 
-        case 3:
-            //TODO
+        case HSD_TE_RAS:
+            swap = HSD_TE_UNDEF;
+            
+            switch (sel) {
+            case HSD_TE_RGB:
+                tev->c_in[idx].arg = GX_CC_RASC;
+                swap = 0;
+                break;
+
+            case HSD_TE_R:
+                tev->c_in[idx].arg = GX_CC_RASC;
+                swap = 1;
+                break;
+
+            case HSD_TE_G:
+                tev->c_in[idx].arg = GX_CC_RASC;
+                swap = 2;
+                break;
+
+            case HSD_TE_B:
+                tev->c_in[idx].arg = GX_CC_RASC;
+                swap = 3;
+                break;
+
+            case HSD_TE_A:
+                tev->c_in[idx].arg = GX_CC_RASA;
+                break;
+            }
+
+            if (tev->ras_swap == HSD_TE_UNDEF) {
+                tev->ras_swap = swap;
+            }
             break;
 
-        case 4:
-            //TODO
+        case HSD_TE_CNST:
+            tev->c_in[idx].sel = texp->cnst.comp;
+            HSD_TExpRef(tev->c_in[idx].exp, tev->c_in[idx].sel);
+            goto END;
             break;
 
         default:
@@ -374,7 +406,7 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
         HSD_CheckAssert("swap == HSD_TE_UNDEF || tev->tex_swap == swap", swap == HSD_TE_UNDEF || tev->tex_swap == swap);
     }
 END:
-    //TODO
+    HSD_TExpUnref(texp, tev->c_in[idx].sel);
     return;
 }
 
