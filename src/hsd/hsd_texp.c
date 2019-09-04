@@ -865,9 +865,9 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_
     }
 
     HSD_TExp** t = (HSD_TExp**)(order + num);
-    while (num = num + -1, -1 < num) {
+    while (num += -1, num >= 0) {
         HSD_TExpSimplify2(*t);
-        t = t + -1;
+        t += -1;
     }
 
     num = HSD_TExpMakeDag(texp, list);
@@ -900,8 +900,8 @@ void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tdesc)
 }
 
 //80385798
-static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order){
-    
+static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
+{
 }
 
 //80385B8C
