@@ -899,6 +899,11 @@ void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tdesc)
     }
 }
 
+//80385798
+static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order){
+    
+}
+
 //80385B8C
 void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
 {
@@ -1104,6 +1109,86 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
 //80385944
 static void order_dag(s32 num, u32* dep_mtx, u32* full_dep_mtx, HSD_TExpDag* list, s32 depth, s32 idx, u32 done_set, u32 ready_set, s32* order, s32* min, s32* min_order)
 {
+    s32* piVar1;
+    s32 idx_00;
+    s32* piVar2;
+    u32* puVar3;
+    s32* piVar4;
+    s32 iVar5;
+    u32 uVar6;
+    s32 depth_00;
+    u32 ready_set_00;
+
+    depth_00 = depth + 1;
+    done_set = done_set | 1 << idx;
+    order[depth] = idx & 0xff;
+    if (depth_00 == num) {
+        depth_00 = assign_reg(num, dep_mtx, list, order);
+        if (depth_00 < *min) {
+            *min = depth_00;
+            depth_00 = 0;
+            if (0 < num) {
+                if ((8 < num) && (ready_set_00 = num - 1U >> 3, piVar2 = order, piVar4 = min_order, 0 < num + -8)) {
+                    do {
+                        depth_00 = depth_00 + 8;
+                        *piVar4 = *piVar2;
+                        piVar4[1] = piVar2[1];
+                        piVar4[2] = piVar2[2];
+                        piVar4[3] = piVar2[3];
+                        piVar4[4] = piVar2[4];
+                        piVar4[5] = piVar2[5];
+                        piVar4[6] = piVar2[6];
+                        piVar1 = piVar2 + 7;
+                        piVar2 = piVar2 + 8;
+                        piVar4[7] = *piVar1;
+                        piVar4 = piVar4 + 8;
+                        ready_set_00 = ready_set_00 - 1;
+                    } while (ready_set_00 != 0);
+                }
+                order = order + depth_00;
+                min_order = min_order + depth_00;
+                idx_00 = num - depth_00;
+                if (depth_00 < num) {
+                    do {
+                        depth_00 = *order;
+                        order = order + 1;
+                        *min_order = depth_00;
+                        min_order = min_order + 1;
+                        idx_00 = idx_00 + -1;
+                    } while (idx_00 != 0);
+                }
+            }
+        }
+    } else {
+        ready_set_00 = ready_set & ~(1 << idx) | dep_mtx[idx];
+        uVar6 = 0;
+        iVar5 = 0;
+        puVar3 = full_dep_mtx;
+        idx_00 = num;
+        if (0 < num) {
+            do {
+                if ((ready_set_00 & 1 << iVar5) != 0) {
+                    uVar6 = uVar6 | *puVar3;
+                }
+                puVar3 = puVar3 + 1;
+                iVar5 = iVar5 + 1;
+                idx_00 = idx_00 + -1;
+            } while (idx_00 != 0);
+        }
+        ready_set_00 = ready_set_00 & ~uVar6;
+        if ((list[idx].nb_dep == 1) && ((ready_set_00 & dep_mtx[idx]) != 0)) {
+            order_dag(num, dep_mtx, full_dep_mtx, list, depth_00, list[idx].depend[0]->idx, done_set, ready_set_00, order, min, min_order);
+        } else {
+            idx_00 = 0;
+            while (idx_00 < num) {
+                if ((ready_set_00 & 1 << idx_00) != 0) {
+                    order_dag(num, dep_mtx, full_dep_mtx, list, depth_00, idx_00, done_set, ready_set_00, order, min,
+                        min_order);
+                }
+                idx_00 = idx_00 + 1;
+            }
+        }
+    }
 }
 
 //80386100
