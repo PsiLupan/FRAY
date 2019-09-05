@@ -20,25 +20,27 @@ typedef enum _HSD_VIXFBDrawDispStatus {
     HSD_VI_XFB_NONE,
     HSD_VI_XFB_NOUSE,
     HSD_VI_XFB_FREE,
-    HSD_VI_XFB_DONE,
-    HSD_VI_XFB_WAITDONE,
     HSD_VI_XFB_DRAWING,
+    HSD_VI_XFB_WAITDONE,
     HSD_VI_XFB_DRAWDONE,
-    HSD_VI_XFB_COPYEFB,
     HSD_VI_XFB_NEXT,
-    HSD_VI_XFB_DISPLAY
+    HSD_VI_XFB_DISPLAY,
+    HSD_VI_XFB_COPYEFB,
+    HSD_VI_XFB_TERMINATE
 } HSD_VIXFBDrawDispStatus;
 
 typedef enum _HSD_VIEFBDrawDispStatus {
     HSD_VI_EFB_FREE,
-    HSD_VI_EFB_DRAWDONE
+    HSD_VI_EFB_DRAWDONE,
+    HSD_VI_EFB_TERMINATE
 } HSD_VIEFBDrawDispStatus;
 
 typedef enum _HSD_RenderPass {
     HSD_RP_SCREEN,
     HSD_RP_TOPHALF,
     HSD_RP_BOTTOMHALF,
-    HSD_RP_OFFSCREEN
+    HSD_RP_OFFSCREEN,
+    HSD_RP_NUM
 } HSD_RenderPass;
 
 typedef struct _HSD_VIStatus {
