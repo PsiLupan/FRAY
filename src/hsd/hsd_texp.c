@@ -88,7 +88,7 @@ u32 HSD_TexCoordID2Num(u32 coord)
 //80382C00
 u32 HSD_TExpGetType(HSD_TExp* texp)
 {
-    if (texp->type == 0) {
+    if (texp == NULL || texp->type == 0) {
         return HSD_TE_ZERO;
     }
     if (texp->type == -1) {
@@ -258,13 +258,13 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
         tev->c_in[idx].arg = GX_CC_ZERO;
         tev->c_in[idx].exp = NULL;
         HSD_TExpUnref(texp, HSD_TE_ZERO);
-        break;
+        return;
 
     case HSD_TE_1:
         tev->c_in[idx].arg = GX_CC_ONE;
         tev->c_in[idx].exp = NULL;
         HSD_TExpUnref(texp, HSD_TE_IMM);
-        break;
+        return;
 
     case HSD_TE_4_8:
         tev->c_in[idx].arg = GX_CC_HALF;
