@@ -188,18 +188,17 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** 
             if (comp == HSD_TE_0) {
                 result = NULL;
             } else {
-                HSD_TECnst* cnst = hsdAllocMemPiece(sizeof(HSD_TECnst));
-                HSD_CheckAssert("HSD_TExpCnst: Could not alloc cnst", cnst != NULL);
-                cnst->type = HSD_TE_CNST;
-                cnst->next = *texp_list;
-                cnst->val = val;
-                cnst->comp = comp;
-                cnst->ctype = type;
-                cnst->reg = 0xFF;
-                cnst->idx = 0xFF;
-                cnst->ref = 0;
-
-                result->cnst = *cnst;
+                result = (HSD_TExp*)hsdAllocMemPiece(sizeof(HSD_TECnst));
+                HSD_CheckAssert("HSD_TExpCnst: Could not alloc cnst", result != NULL);
+                result->cnst.type = HSD_TE_CNST;
+                result->cnst.next = *texp_list;
+                result->cnst.val = val;
+                result->cnst.comp = comp;
+                result->cnst.ctype = type;
+                result->cnst.reg = 0xFF;
+                result->cnst.idx = 0xFF;
+                result->cnst.ref = 0;
+                
                 *texp_list = result;
             }
             return result;
