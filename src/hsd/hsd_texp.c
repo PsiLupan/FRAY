@@ -917,10 +917,10 @@ void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
                 }
                 dist[n] = d;
                 for (u32 j = 0; j < 4; ++j) {
-                    if (tev->c_in[j].type == 1) {
+                    if (tev->c_in[j].type == HSD_TE_TEV) {
                         CalcDistance(tevs, dist, &tev->c_in[j].exp->tev, num, d + 1);
                     }
-                    if (tev->a_in[j].type == 1) {
+                    if (tev->a_in[j].type == HSD_TE_TEV) {
                         CalcDistance(tevs, dist, &tev->c_in[j].exp->tev, num, d + 1);
                     }
                 }
@@ -937,28 +937,25 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
     HSD_CheckAssert("HSD_TExpMakeDag: type != 1", HSD_TExpGetType(root) == HSD_TE_TEV);
 
     HSD_TExp* tevs[32];
-    HSD_TExp** tev_start = tevs;
     tevs[0] = root;
     u32 i = 1;
     u32 j;
 
-    for (j = 0; j < i; ++j, ++tev_start) {
+    for (j = 0; j < i; ++j) {
         HSD_CheckAssert("HSD_TExpMakeDag: j < HSD_TEXP_MAX_NUM", j < HSD_TEXP_MAX_NUM);
-        HSD_TExp* c_tev = *tev_start;
+        HSD_TExp* c_tev = tevs[j];
         u32 l = 0;
         HSD_TETev* tev = &c_tev->tev;
         for (u32 k = 0; k < 4; ++k, i = l) {
             l = i;
             if (tev->c_in[k].type == HSD_TE_TEV) {
                 u32 num = 0;
-                HSD_TExp** tev_list;
+                HSD_TExp** tev_list = tevs;
                 if (i > 0) {
-                    for (l = i; l > 0; --l) {
-                        if (*tevs == tev->c_in[k].exp) {
+                    for (l = i; l > 0; --l, ++num, ++tev_list) {
+                        if (*tev_list == tev->c_in[k].exp) {
                             break;
                         }
-                        ++num;
-                        ++tev_list;
                     }
                     if (i <= num) {
                         l = i + 1;
@@ -971,14 +968,12 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
             l = i;
             if (tev->a_in[k].type == HSD_TE_TEV) {
                 u32 num = 0;
-                HSD_TExp** tev_list;
+                HSD_TExp** tev_list = tevs;
                 if (i > 0) {
-                    for (l = i; l > 0; --l) {
-                        if (*tevs == tev->a_in[k].exp) {
+                    for (l = i; l > 0; --l, ++num, ++tev_list) {
+                        if (*tev_list == tev->a_in[k].exp) {
                             break;
                         }
-                        ++num;
-                        ++tev_list;
                     }
                     if (i <= num) {
                         l = i + 1;
@@ -1021,8 +1016,8 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
 
     for (j = 0; j < i; ++j) {
         u32 offset = j + 1;
-        s32* v = dist + offset;
-        tev_start = tevs + offset;
+        s32* v = &dist[offset];
+        HSD_TExp** tev_start = &tevs[offset];
         if (i > offset) {
             for (u32 n = i - offset; n > 0; --n, ++v, ++tev_start) {
                 if (*v < v[-1]) {
@@ -1039,21 +1034,21 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
 
     u32 idx = i - 1;
     j = idx;
-    HSD_TExpDag* dag = &list[idx];
-    tev_start = tevs + idx;
 
     if (idx < 0) {
         return i;
     }
-    HSD_TExp* te = *tev_start;
 
     HSD_TExpDag* cdag = NULL;
-    for (u32 o = 0; o < 8; o++) {
+    for (u32 o = 0; o < 8; o++, --idx, --j) {
+        HSD_TExp* te = tevs[idx];
+        HSD_TExpDag* dag = &list[idx];
+        HSD_TETev* tevn = &te->tev;
+
         dag->idx = (u8)idx;
         dag->nb_ref = 0;
         dag->nb_dep = 0;
-        dag->tev = &te->tev;
-        HSD_TETev* tevn = &te->tev;
+        dag->tev = tevn;
 
         if (o < 4) {
             if (tevn->c_in[o].type == HSD_TE_TEV) {
@@ -1063,7 +1058,7 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
                 if (i > idx) {
                     for (u32 cnt = i - idx; cnt > 0; --cnt, ++num, ++clist) {
                         if (tevn->c_in[o].exp == *clist) {
-                            cdag = (HSD_TExpDag*)(list + j);
+                            cdag = &list[j];
                             num = 0;
                             if (dag->nb_dep == 0) {
                                 dag->nb_dep += 1;
@@ -1101,6 +1096,9 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
                     }
                 }
             }
+        }
+        if (idx < 0) {
+            return i;
         }
     }
 }

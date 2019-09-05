@@ -1423,9 +1423,13 @@ HSD_JObj* HSD_JObjAlloc(void)
 
 // 80372168
 void HSD_JObjSetCurrent(HSD_JObj* jobj)
-{ // INCOMPLETE
-    if (jobj != NULL)
+{
+    if (jobj != NULL){
+        HSD_JObjRefThis(jobj);
+        HSD_JObj* current = current_jobj;
+        HSD_JObjUnref(current);
         current_jobj = jobj;
+    }
 }
 
 // 80372314
