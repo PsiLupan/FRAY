@@ -354,7 +354,7 @@ void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
     for (u32 i = 0, fbnum = 0; i < HSD_VI_XFB_MAX; i++) {
         _p->xfb[i].vi_all = _p->current;
         if (_p->xfb[i].buffer != NULL) {
-            fbnum += 1;
+            fbnum += 1; //Don't ever do fbnum++ because GCC sucks cock and will optimize this variable away
             _p->xfb[i].status = HSD_VI_XFB_FREE;
         } else {
             _p->xfb[i].status = HSD_VI_XFB_NONE;
