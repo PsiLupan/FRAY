@@ -8,7 +8,7 @@ HSD_VIStatus vi;
 
 #define _p ((HSD_VIInfo*)&HSD_VIData)
 
-static u8 garbage[HSD_ANTIALIAS_GARBAGE_SIZE];
+static u8 garbage[HSD_ANTIALIAS_GARBAGE_SIZE] ATTRIBUTE_ALIGN(32);
 
 //8037588C
 static s32 HSD_VISearchXFBByStatus(HSD_VIXFBDrawDispStatus status)
@@ -340,9 +340,7 @@ void HSD_VISetBlack(u8 black)
 //803767B8
 void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
 {
-    s32 fbnum, idx;
-
-    VIDEO_Init();
+    s32 idx;
 
     _p->current.vi = *vi;
     _p->current.chg_flag = FALSE;
@@ -351,17 +349,17 @@ void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
     _p->xfb[1].buffer = xfb1;
     _p->xfb[2].buffer = xfb2;
 
-    for (u32 i = 0, fbnum = 0; i < HSD_VI_XFB_MAX; i++) {
+    for (u32 i = 0; i < HSD_VI_XFB_MAX; i++) {
         _p->xfb[i].vi_all = _p->current;
         if (_p->xfb[i].buffer != NULL) {
-            fbnum += 1; //Don't ever do fbnum++ because GCC sucks cock and will optimize this variable away
             _p->xfb[i].status = HSD_VI_XFB_FREE;
+            HSD_VINumXFB += 1;
         } else {
             _p->xfb[i].status = HSD_VI_XFB_NONE;
         }
     }
 
-    _p->nb_xfb = fbnum;
+    _p->nb_xfb = HSD_VINumXFB;
 
     _p->efb.status = HSD_VI_EFB_FREE;
     _p->efb.vi_all = _p->current;

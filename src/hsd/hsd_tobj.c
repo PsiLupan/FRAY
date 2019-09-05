@@ -1312,7 +1312,7 @@ void HSD_TObjSetup(HSD_TObj* tobj)
             break;
 
         default:
-            assert(0);
+            HSD_Halt("HSD_TObjSetup: Unknown imagedesc format");
         }
 
         if (!imagedesc->mipmap) {
