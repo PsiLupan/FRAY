@@ -362,7 +362,7 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
             break;
 
         case HSD_TE_CNST:
-            tev->c_in[idx].sel = texp->cnst.comp;
+            tev->c_in[idx].sel = exp->cnst.comp;
             HSD_TExpRef(tev->c_in[idx].exp, tev->c_in[idx].sel);
             goto END;
             break;
