@@ -916,7 +916,7 @@ void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
                     return;
                 }
                 dist[n] = d;
-                for (u32 j = 0; i < 4; ++j) {
+                for (u32 j = 0; j < 4; ++j) {
                     if (tev->c_in[j].type == 1) {
                         CalcDistance(tevs, dist, &tev->c_in[j].exp->tev, num, d + 1);
                     }
