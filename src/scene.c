@@ -908,10 +908,10 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
         DVD_CheckDisk();
         GX_InvVtxCache();
         GX_InvalidateTexAll();
-        HSD_StartRender(0);
+        HSD_StartRender(HSD_RP_SCREEN);
         GObj_RunGXLinkMaxCallbacks();
         //HSD_PerfSetDrawTime();
-        HSD_VICopyXFBASync(0);
+        HSD_VICopyXFBASync(HSD_RP_SCREEN);
         if (match_controller.unk04 != -2) {
             match_controller.unk04 += 1;
         }

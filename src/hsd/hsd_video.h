@@ -59,35 +59,36 @@ typedef struct _current {
 } Current;
 
 typedef struct _XFB {
+    void* buffer;
     HSD_VIXFBDrawDispStatus status;
     Current vi_all;
-    void* buffer;
 } XFB;
 
 typedef struct _HSD_VIInfo {
-    VIRetraceCallback pre_cb;
-    VIRetraceCallback post_cb;
-
     Current current;
 
-    struct drawdone {
-        BOOL waiting;
-        int arg;
-        HSD_VIGXDrawDoneCallback cb;
-    } drawdone;
+    XFB xfb[HSD_VI_XFB_MAX];
 
     struct EFB {
         HSD_VIEFBDrawDispStatus status;
         Current vi_all;
     } efb;
 
+    u32 nb_xfb;
+    
+    VIRetraceCallback pre_cb;
+    VIRetraceCallback post_cb;
+    
+    struct drawdone {
+        BOOL waiting;
+        int arg;
+        HSD_VIGXDrawDoneCallback cb;
+    } drawdone;
+
     struct perf {
         u32 frame_period;
         u32 frame_renew;
     } perf;
-
-    u32 nb_xfb;
-    XFB xfb[HSD_VI_XFB_MAX];
 
 } HSD_VIInfo;
 

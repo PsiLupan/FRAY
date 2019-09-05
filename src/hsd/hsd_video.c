@@ -239,7 +239,7 @@ void HSD_VICopyXFBASync(HSD_RenderPass rpass)
 
         u32 intr;
         intr = IRQ_Disable();
-        assert(_p->xfb[idx].status == HSD_VI_XFB_DRAWING);
+        HSD_CheckAssert("HSD_VICopyXFBASync: status != HSD_VI_XFB_DRAWING", _p->xfb[idx].status == HSD_VI_XFB_DRAWING);
         _p->xfb[idx].status = HSD_VI_XFB_WAITDONE;
         _p->xfb[idx].vi_all = _p->current;
         _p->current.chg_flag = FALSE;
@@ -353,8 +353,8 @@ void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
 
     for (u32 i = 0, fbnum = 0; i < HSD_VI_XFB_MAX; i++) {
         _p->xfb[i].vi_all = _p->current;
-        if (_p->xfb[i].buffer) {
-            fbnum++;
+        if (_p->xfb[i].buffer != NULL) {
+            fbnum += 1;
             _p->xfb[i].status = HSD_VI_XFB_FREE;
         } else {
             _p->xfb[i].status = HSD_VI_XFB_NONE;
