@@ -936,8 +936,8 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
 {
     HSD_CheckAssert("HSD_TExpMakeDag: type != 1", HSD_TExpGetType(root) == HSD_TE_TEV);
 
-    HSD_TExp** tevs;
-    HSD_TExp** tev_start;
+    HSD_TExp* tevs[32];
+    HSD_TExp** tev_start = tevs;
     tevs[0] = root;
     u32 i = 1;
     u32 j;
