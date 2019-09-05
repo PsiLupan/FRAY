@@ -42,6 +42,7 @@ static struct {
 } matstate;
 
 static HSD_Chan prev_ch;
+static HSD_Chan invalid_prev_ch;
 
 static void HSD_DisableChannelLighting(u32 channel)
 {
@@ -640,19 +641,11 @@ u8 HSD_TevStage2Index(u8 idx)
 //80362CA0
 void _HSD_StateInvalidateColorChannel(void)
 {
+    memcpy(&prev_ch, &invalid_prev_ch, sizeof(HSD_Chan));
 }
 
 //80362CF8
 void _HSD_StateInvalidateTevStage(void)
 {
-}
-
-//80362D04
-void _HSD_StateInvalidateTevRegister(void)
-{
-}
-
-//80362D24
-void _HSD_StateInvalidateTexCoordGen(void)
-{
+    HSD_StateInitTev();
 }

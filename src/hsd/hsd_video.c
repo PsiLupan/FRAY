@@ -1,6 +1,7 @@
 #include "hsd_video.h"
 
 #include "hsd_init.h"
+#include "hsd_state.h"
 
 static u32 HSD_VINumXFB = 0;
 HSD_VIInfo HSD_VIData;

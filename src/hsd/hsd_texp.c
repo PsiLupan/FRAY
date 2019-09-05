@@ -145,6 +145,37 @@ void HSD_TExpUnref(HSD_TExp* texp, u8 sel)
     }
 }
 
+//80362D04
+void _HSD_StateInvalidateTevRegister(void)
+{
+    TevReg[8] = 0;
+    TevReg[9] = 0;
+    TevReg[0xA] = 0;
+    TevReg[0xB] = 0;
+
+    TevReg[0x14] = 0;
+    TevReg[0x15] = 0;
+    TevReg[0x16] = 0;
+    TevReg[0x17] = 0;
+
+    TevReg[0x20] = 0;
+    TevReg[0x21] = 0;
+    TevReg[0x22] = 0;
+    TevReg[0x23] = 0;
+
+    TevReg[0x2C] = 0;
+    TevReg[0x2D] = 0;
+    TevReg[0x2E] = 0;
+    TevReg[0x2F] = 0;
+}
+
+//80362D24
+void _HSD_StateInvalidateTexCoordGen(void)
+{
+    num_texgens = 0;
+}
+
+
 //80382DDC
 HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp, u32 flags, u8 method)
 {
