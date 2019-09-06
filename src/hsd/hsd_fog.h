@@ -10,15 +10,13 @@
 
 typedef struct _HSD_FogAdj {
     HSD_Obj parent;
-    u16 x8_unk; //0x08
-    u16 xA_unk; //0xA
-    Mtx mtx; //0x0C
-    f32 x3C_unk; //0x3C
-    f32 x40_unk; //0x40
-    f32 x44_unk; //0x44
-    f32 x48_unk; //0x48
-    u32 x4C_unk;
-    u32 x50_unk;
+    #ifdef NEW_LIB
+    u32 flags;
+    #endif
+    u16 center; //0x08
+    u16 width; //0xA
+    Mtx44 mtx; //0x0C
+    struct _HSD_AObj* aobj;
 } HSD_FogAdj;
 
 typedef struct _HSD_Fog {
@@ -33,9 +31,9 @@ typedef struct _HSD_Fog {
 } HSD_Fog;
 
 typedef struct _HSD_FogAdjDesc {
-    u16 x0_unk; //0x00
-    u16 x2_unk; //0x02
-    MtxP pmtx; //0x04
+    u16 center; //0x00
+    u16 width; //0x02
+    Mtx44 mtx; //0x04
 } HSD_FogAdjDesc;
 
 typedef struct _HSD_FogInfo {

@@ -25,6 +25,7 @@ void HSD_FogSet(HSD_Fog* fog)
         if (fog->fog_adj) {
             GX_SetFogRangeAdj(0, 0, NULL);
         } else {
+            
         }
     }
 }
@@ -46,8 +47,8 @@ void HSD_FogInit(HSD_Fog* fog, HSD_FogDesc* desc)
 {
     if (fog != NULL) {
         if (desc == (HSD_FogDesc*)0x0) {
-            f32* v;
-            //GXGetViewportv(&v);
+            f32 v[2];
+            //GXGetViewportv(v);
             fog->type = 2;
             fog->start = v[0];
             fog->end = v[1];
@@ -78,19 +79,19 @@ void HSD_FogAdjInit(HSD_FogAdj* fog_adj, HSD_FogAdjDesc* desc)
 {
     if (fog_adj != NULL) {
         if (desc == NULL) {
-            f32* v;
-            //GXGetViewportv(&v);
-            //fog_adj->xA_unk = v[1];
-            //fog_adj->x8_unk = fog_adj->xA_unk >> 1;
+            f32 v[2];
+            //GXGetViewportv(v);
+            //fog_adj->width = v[1];
+            //fog_adj->center = fog_adj->width >> 1;
             guMtxIdentity(fog_adj->mtx);
-            fog_adj->x3C_unk = 0.0f;
-            fog_adj->x40_unk = 0.0f;
-            fog_adj->x44_unk = 0.0f;
-            fog_adj->x48_unk = 1.0f;
+            fog_adj->mtx[3][0] = 0.0f;
+            fog_adj->mtx[3][1] = 0.0f;
+            fog_adj->mtx[3][2] = 0.0f;
+            fog_adj->mtx[3][3] = 1.0f;
         } else {
-            fog_adj->xA_unk = desc->x2_unk;
-            fog_adj->x8_unk = desc->x0_unk;
-            guMtxCopy(desc->pmtx, fog_adj->mtx);
+            fog_adj->width = desc->width;
+            fog_adj->center = desc->center;
+            guMtxCopy(desc->mtx, fog_adj->mtx);
         }
     }
 }
@@ -159,7 +160,7 @@ void FogUpdateFunc(HSD_Fog* fog, u32 type, f32* fv)
 
         case 20:
             if (fog->fog_adj != NULL) {
-                fog->fog_adj->x8_unk = (u16)*fv;
+                fog->fog_adj->center = (u16)*fv;
             }
             break;
         }
