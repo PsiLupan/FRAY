@@ -175,10 +175,31 @@ void _HSD_StateInvalidateTexCoordGen(void)
     num_texgens = 0;
 }
 
-
 //80382DDC
-HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp, u32 flags, u8 method)
+HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
 {
+    HSD_TExp** handle;
+
+    if (all = 0) {
+        if (type == HSD_TE_ALL || type == HSD_TE_TEV) {
+            for (HSD_TExp* next = texp_list->tev.next; next != NULL; next = next->tev.next) {
+                if (next->type == HSD_TE_TEV && next->tev.c_ref == 0) {
+                    HSD_TExpUnref(next, 1);
+                    HSD_TExpUnref(next, 5);
+                }
+            }
+        }
+
+        HSD_TExp* ptr = handle[0];
+        for (u32 i = 0; ptr != NULL; ++i, ptr = handle[i]) {
+            if (type == HSD_TE_ALL || type == ptr->type) {
+            }
+        }
+    } else {
+        HSD_TExp* ptr = handle[0];
+        for (u32 i = 0; ptr != NULL; ++i, ptr = handle[i]) {
+        }
+    }
 }
 
 //803830FC
@@ -229,7 +250,7 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** 
                 result->cnst.reg = 0xFF;
                 result->cnst.idx = 0xFF;
                 result->cnst.ref = 0;
-                
+
                 *texp_list = result;
             }
             return result;
@@ -543,11 +564,53 @@ static s32 AssignAlphaReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 //80384340
 static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 {
+    HSD_TECnst* cnst = &tev->c_in[idx].exp->cnst;
+    if (cnst->reg == HSD_TE_UNDEF) {
+        if (cnst->comp == HSD_TE_X) {
+            //TODO
+        } else {
+            for (u32 i = 0; i < 4; ++i) {
+                if (res->reg[i].color == 0) {
+                    res->reg[i].color = 3;
+                    cnst->reg = i;
+                    cnst->idx = 0;
+                    tev->kcsel = cnst->reg; //WRONG
+                    tev->c_in[idx].type = HSD_TE_KONST;
+                    tev->c_in[idx].arg = 0xE;
+                }
+            }
+        }
+        return -1;
+    }
+    if (cnst->reg < 4) {
+        if (cnst->comp == HSD_TE_X) {
+            tev->kcsel = cnst->idx; //WRONG
+            tev->c_in[idx].type = HSD_TE_KONST;
+            tev->c_in[idx].arg = 0xE;
+        } else {
+            tev->kcsel = cnst->reg;
+            tev->c_in[idx].type = HSD_TE_KONST;
+            tev->c_in[idx].arg = 0xE;
+        }
+        return 0;
+    }
+    return -1;
 }
 
 //80384560
 static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 {
+    HSD_TECnst* cnst = &tev->a_in[idx].exp->cnst;
+    if (cnst->reg == HSD_TE_UNDEF) {
+        //TODO
+        return -1;
+    }
+    if (cnst->reg > 3) {
+        return -1;
+    }
+    tev->kasel = cnst->idx; //WRONG
+    tev->a_in[idx].type = HSD_TE_KONST;
+    tev->a_in[idx].arg = 6;
 }
 
 //803846C0

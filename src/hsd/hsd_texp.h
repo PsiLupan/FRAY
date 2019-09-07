@@ -3,6 +3,7 @@
 
 #include <gctypes.h>
 
+#include "hsd_aobj.h"
 #include "hsd_debug.h"
 #include "hsd_memory.h"
 
@@ -14,6 +15,13 @@
 #define TEVCONF_MODE 1
 
 #define HSD_TEXP_MAX_NUM 31
+
+typedef struct _HSD_TevReg {
+    struct _HSD_TevReg* next;
+    u32 id;
+    GXColorS10 color;
+    struct _HSD_AObj* aobj;
+} HSD_TevReg;
 
 typedef enum _HSD_TEInput {
     HSD_TE_END = 0,
@@ -193,7 +201,7 @@ u32 HSD_TexCoordID2Num(u32);
 u32 HSD_TExpGetType(HSD_TExp*);
 void HSD_TExpRef(HSD_TExp*, u8);
 void HSD_TExpUnref(HSD_TExp*, u8);
-HSD_TExp* HSD_TExpFreeList(HSD_TExp*, u32, u8);
+HSD_TExp* HSD_TExpFreeList(HSD_TExp*, HSD_TExpType, s32);
 HSD_TExp* HSD_TExpTev(HSD_TExp**);
 HSD_TExp* HSD_TExpCnst(void*, HSD_TEInput, HSD_TEType, HSD_TExp**);
 void HSD_TExpColorOp(HSD_TExp*, u8, u8, u8, u8);
