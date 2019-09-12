@@ -46,7 +46,7 @@ HSD_Fog* HSD_FogLoadDesc(HSD_FogDesc* fogdesc)
 void HSD_FogInit(HSD_Fog* fog, HSD_FogDesc* desc)
 {
     if (fog != NULL) {
-        if (desc == (HSD_FogDesc*)0x0) {
+        if (desc == NULL) {
             f32 v[2];
             //GXGetViewportv(v);
             fog->type = 2;
