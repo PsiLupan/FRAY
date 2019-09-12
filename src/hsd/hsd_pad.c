@@ -312,9 +312,9 @@ void HSD_PadRenewMasterStatus(void)
 
         for (u8 i = 0; i < 4; ++i) {
             HSD_PadMasterStatus[i].last_button = HSD_PadMasterStatus[i].button;
-            HSD_PadMasterStatus[i].support_rumble = pad_status->err;
+            HSD_PadMasterStatus[i].err = pad_status->err;
 
-            if (HSD_PadMasterStatus[i].support_rumble == 0) {
+            if (HSD_PadMasterStatus[i].err == 0) {
                 HSD_PadMasterStatus[i].button = pad_status->button;
                 HSD_PadMasterStatus[i].stickX = pad_status->stickX;
                 HSD_PadMasterStatus[i].stickY = pad_status->stickY;
@@ -330,8 +330,8 @@ void HSD_PadRenewMasterStatus(void)
                 HSD_PadScale(&HSD_PadMasterStatus[i]);
                 HSD_PadCrossDir(&HSD_PadMasterStatus[i]);
 
-            } else if (HSD_PadMasterStatus[i].support_rumble == -3) {
-                HSD_PadMasterStatus[i].support_rumble = 0;
+            } else if (HSD_PadMasterStatus[i].err == -3) {
+                HSD_PadMasterStatus[i].err = 0;
             } else {
                 HSD_PadMasterStatus[i].button = 0;
                 HSD_PadMasterStatus[i].stickX = 0;
@@ -380,8 +380,8 @@ void HSD_PadRenewCopyStatus(void)
 {
     for (u8 i = 0; i < 4; i++) {
         HSD_PadCopyStatus[i].last_button = HSD_PadCopyStatus[i].button;
-        HSD_PadCopyStatus[i].support_rumble = HSD_PadMasterStatus[i].support_rumble;
-        if (HSD_PadCopyStatus[i].support_rumble == 0) {
+        HSD_PadCopyStatus[i].err = HSD_PadMasterStatus[i].err;
+        if (HSD_PadCopyStatus[i].err == 0) {
             HSD_PadCopyStatus[i].button = HSD_PadMasterStatus[i].button;
             HSD_PadCopyStatus[i].stickX = HSD_PadMasterStatus[i].stickX;
             HSD_PadCopyStatus[i].stickY = HSD_PadMasterStatus[i].stickY;
