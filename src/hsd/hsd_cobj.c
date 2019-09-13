@@ -28,20 +28,20 @@ void HSD_CObjEraseScreen(HSD_CObj* cobj, s32 enable_color, s32 enable_alpha, s32
         u8 proj_type = HSD_CObjGetProjectionType(cobj);
         if (proj_type == PROJ_FRUSTRUM) {
             f32 val = z_val / near;
-            right_res = val * cobj->proj_right;
-            left_res = val * cobj->proj_left;
-            top_res = val * cobj->fov_top;
-            bottom_res = val * cobj->aspect_bottom;
+            right_res = val * cobj->projection_param.frustrum.right;
+            left_res = val * cobj->projection_param.frustrum.left;
+            top_res = val * cobj->projection_param.frustrum.top;
+            bottom_res = val * cobj->projection_param.frustrum.bottom;
         } else if (proj_type == PROJ_PERSPECTIVE) {
-            top_res = (z_val * tan(0.5f * (cobj->fov_top * 0.017453292f)));
+            top_res = (z_val * tan(0.5f * (cobj->projection_param.perspective.fov * 0.017453292f)));
             bottom_res = -top_res;
-            right_res = cobj->aspect_bottom * top_res;
+            right_res = cobj->projection_param.perspective.aspect * top_res;
             left_res = -right_res;
         } else if (proj_type == PROJ_ORTHO) {
-            right_res = cobj->proj_right;
-            left_res = cobj->proj_left;
-            top_res = cobj->fov_top;
-            bottom_res = cobj->aspect_bottom;
+            right_res = cobj->projection_param.ortho.right;
+            left_res = cobj->projection_param.ortho.left;
+            top_res = cobj->projection_param.ortho.top;
+            bottom_res = cobj->projection_param.ortho.bottom;
         }
 
         HSD_EraseRect(top_res, bottom_res, left_res, right_res, -z_val, enable_color, enable_alpha, enable_depth);
@@ -153,17 +153,20 @@ u8 makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx)
     switch (cobj->projection_type) {
     case PROJ_PERSPECTIVE:
         isOrtho = 0;
-        guPerspective(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->near, cobj->far);
+        guPerspective(mtx, cobj->projection_param.perspective.fov, cobj->projection_param.perspective.aspect, 
+                      cobj->near, cobj->far);
         break;
 
     case PROJ_FRUSTRUM:
         isOrtho = 0;
-        guFrustum(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->proj_left, cobj->proj_right, cobj->near, cobj->far);
+        guFrustum(mtx, cobj->projection_param.frustrum.top, cobj->projection_param.frustrum.bottom, cobj->projection_param.frustrum.left, 
+                  cobj->projection_param.frustrum.right, cobj->near, cobj->far);
         break;
 
     case PROJ_ORTHO:
         isOrtho = 1;
-        guOrtho(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->proj_left, cobj->proj_right, cobj->near, cobj->far);
+        guOrtho(mtx, cobj->projection_param.ortho.top, cobj->projection_param.ortho.bottom, cobj->projection_param.ortho.left, 
+                cobj->projection_param.ortho.right, cobj->near, cobj->far);
         break;
 
     default:
@@ -191,15 +194,17 @@ static BOOL setupNormalCamera(HSD_CObj* cobj){
     Mtx44 mtx;
     switch(cobj->projection_type){
         case PROJ_PERSPECTIVE:
-        guPerspective(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->near, cobj->far);
+        guPerspective(mtx, cobj->projection_param.perspective.fov, cobj->projection_param.perspective.aspect, cobj->near, cobj->far);
         break;
 
         case PROJ_FRUSTRUM:
-        guFrustum(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->proj_left, cobj->proj_right, cobj->near, cobj->far);
+        guFrustum(mtx, cobj->projection_param.frustrum.top, cobj->projection_param.frustrum.bottom, cobj->projection_param.frustrum.left, 
+                  cobj->projection_param.frustrum.right, cobj->near, cobj->far);
         break;
 
         case PROJ_ORTHO:
-        guOrtho(mtx, cobj->fov_top, cobj->aspect_bottom, cobj->proj_left, cobj->proj_right, cobj->near, cobj->far);
+        guOrtho(mtx, cobj->projection_param.ortho.top, cobj->projection_param.ortho.bottom, cobj->projection_param.ortho.left, 
+                cobj->projection_param.ortho.right, cobj->near, cobj->far);
         break;
     }
     GX_LoadProjectionMtx(mtx, GX_PERSPECTIVE);
@@ -505,7 +510,7 @@ f32 HSD_CObjGetFov(HSD_CObj* cobj)
 {
     if (cobj != NULL) {
         if (cobj->projection_type == PROJ_PERSPECTIVE)
-            return cobj->fov_top;
+            return cobj->projection_param.perspective.fov;
     }
     return 0.0f;
 }
@@ -515,7 +520,7 @@ void HSD_CObjSetFov(HSD_CObj* cobj, f32 fov)
 {
     if (cobj != NULL) {
         if (cobj->projection_type == PROJ_PERSPECTIVE)
-            cobj->fov_top = fov;
+            cobj->projection_param.perspective.fov = fov;
     }
 }
 
@@ -524,7 +529,7 @@ f32 HSD_CObjGetAspect(HSD_CObj* cobj)
 {
     if (cobj != NULL) {
         if (cobj->projection_type == PROJ_PERSPECTIVE)
-            return cobj->aspect_bottom;
+            return cobj->projection_param.perspective.aspect;
     }
     return 0.0f;
 }
@@ -534,7 +539,7 @@ void HSD_CObjSetAspect(HSD_CObj* cobj, f32 aspect)
 {
     if (cobj != NULL) {
         if (cobj->projection_type == PROJ_PERSPECTIVE)
-            cobj->aspect_bottom = aspect;
+            cobj->projection_param.perspective.aspect = aspect;
     }
 }
 
@@ -543,10 +548,10 @@ f32 HSD_CObjGetTop(HSD_CObj* cobj)
 {
     if (cobj != NULL) {
         if (cobj->projection_type == PROJ_FRUSTRUM || cobj->projection_type == PROJ_ORTHO) {
-            return cobj->fov_top;
+            return cobj->projection_param.frustrum.top;
         }
         if (cobj->projection_type == PROJ_PERSPECTIVE) {
-            return cobj->near * tan(0.5f * (cobj->fov_top * 0.017453292f));
+            return cobj->near * tan(0.5f * (cobj->projection_param.perspective.fov * 0.017453292f));
         }
     }
     return 0.0f;
@@ -557,7 +562,7 @@ void HSD_CObjSetTop(HSD_CObj* cobj, f32 top)
 {
     if (cobj != NULL) {
         if (cobj->projection_type == PROJ_FRUSTRUM || cobj->projection_type == PROJ_ORTHO)
-            cobj->fov_top = top;
+            cobj->projection_param.frustrum.top = top;
     }
 }
 
@@ -569,12 +574,12 @@ f32 HSD_CObjGetBottom(HSD_CObj* cobj)
         u8 proj_type = cobj->projection_type;
         switch (proj_type) {
         case PROJ_PERSPECTIVE:
-            res = tanf(0.5f * 0.0174533f * cobj->fov_top);
+            res = tanf(0.5f * 0.017453292f * cobj->projection_param.perspective.fov);
             res = cobj->near * res;
             break;
         case PROJ_FRUSTRUM:
         case PROJ_ORTHO:
-            res = cobj->aspect_bottom;
+            res = cobj->projection_param.frustrum.bottom;
             break;
         default:
             res = 0.0f;
@@ -588,7 +593,7 @@ void HSD_CObjSetBottom(HSD_CObj* cobj, f32 bottom)
 {
     if (cobj != NULL) {
         if (cobj->projection_type == PROJ_FRUSTRUM || cobj->projection_type == PROJ_ORTHO) {
-            cobj->aspect_bottom = bottom;
+            cobj->projection_param.frustrum.bottom = bottom;
         }
     }
 }
@@ -601,12 +606,12 @@ f32 HSD_CObjGetLeft(HSD_CObj* cobj)
         u8 proj_type = cobj->projection_type;
         switch (proj_type) {
         case PROJ_PERSPECTIVE:
-            res = tanf(0.5f * 0.0174533f * cobj->fov_top);
-            res = cobj->aspect_bottom * cobj->near * res;
+            res = tanf(0.5f * 0.017453292f * cobj->projection_param.perspective.fov);
+            res = cobj->projection_param.perspective.aspect * cobj->near * res;
             break;
         case PROJ_FRUSTRUM:
         case PROJ_ORTHO:
-            res = cobj->proj_left;
+            res = cobj->projection_param.frustrum.left;
             break;
         }
     }
@@ -630,12 +635,12 @@ f32 HSD_CObjGetRight(HSD_CObj* cobj)
         u8 proj_type = cobj->projection_type;
         switch (proj_type) {
         case PROJ_PERSPECTIVE:
-            res = tanf(0.5f * 0.0174533f * cobj->fov_top);
-            res = cobj->aspect_bottom * cobj->near * res;
+            res = tanf(0.5f * 0.017453292f * cobj->projection_param.perspective.fov);
+            res = cobj->projection_param.perspective.aspect * cobj->near * res;
             break;
         case PROJ_FRUSTRUM:
         case PROJ_ORTHO:
-            res = cobj->proj_right;
+            res = cobj->projection_param.frustrum.right;
             break;
         }
     }
@@ -647,7 +652,7 @@ void HSD_CObjSetRight(HSD_CObj* cobj, f32 right)
 {
     if (cobj != NULL) {
         if (cobj->projection_type == PROJ_FRUSTRUM || cobj->projection_type == PROJ_ORTHO)
-            cobj->proj_right = right;
+            cobj->projection_param.frustrum.right = right;
     }
 }
 
@@ -778,8 +783,8 @@ void HSD_CObjSetPerspective(HSD_CObj* cobj, f32 fov, f32 aspect)
 {
     if (cobj != NULL) {
         cobj->projection_type = PROJ_PERSPECTIVE;
-        cobj->fov_top = fov;
-        cobj->aspect_bottom = aspect;
+        cobj->projection_param.perspective.fov = fov;
+        cobj->projection_param.perspective.aspect = aspect;
     }
 }
 
@@ -788,10 +793,10 @@ void HSD_CObjSetFrustrum(HSD_CObj* cobj, f32 top, f32 bottom, f32 left, f32 righ
 {
     if (cobj != NULL) {
         cobj->projection_type = PROJ_FRUSTRUM;
-        cobj->fov_top = top;
-        cobj->aspect_bottom = bottom;
-        cobj->proj_left = left;
-        cobj->proj_right = right;
+        cobj->projection_param.frustrum.top = top;
+        cobj->projection_param.frustrum.bottom = bottom;
+        cobj->projection_param.frustrum.left = left;
+        cobj->projection_param.frustrum.right = right;
     }
 }
 
@@ -800,10 +805,10 @@ void HSD_CObjSetOrtho(HSD_CObj* cobj, f32 top, f32 bottom, f32 left, f32 right)
 {
     if (cobj != NULL) {
         cobj->projection_type = PROJ_ORTHO;
-        cobj->fov_top = top;
-        cobj->aspect_bottom = bottom;
-        cobj->proj_left = left;
-        cobj->proj_right = right;
+        cobj->projection_param.ortho.top = top;
+        cobj->projection_param.ortho.bottom = bottom;
+        cobj->projection_param.ortho.left = left;
+        cobj->projection_param.ortho.right = right;
     }
 }
 
@@ -813,9 +818,9 @@ void HSD_CObjGetPerspective(HSD_CObj* cobj, f32* top, f32* bottom)
     if (cobj != NULL) {
         if (cobj->projection_type == PROJ_PERSPECTIVE) {
             if (top != NULL)
-                *top = cobj->fov_top;
+                *top = cobj->projection_param.perspective.fov;
             if (bottom != NULL)
-                *bottom = cobj->aspect_bottom;
+                *bottom = cobj->projection_param.perspective.aspect;
         }
     }
 }
@@ -826,13 +831,13 @@ void HSD_CObjGetOrtho(HSD_CObj* cobj, f32* top, f32* bottom, f32* left, f32* rig
     if (cobj != NULL) {
         if (cobj->projection_type == PROJ_ORTHO) {
             if (top != NULL)
-                *top = cobj->fov_top;
+                *top = cobj->projection_param.ortho.top;
             if (bottom != NULL)
-                *bottom = cobj->aspect_bottom;
+                *bottom = cobj->projection_param.ortho.bottom;
             if (left != NULL)
-                *left = cobj->proj_left;
+                *left = cobj->projection_param.ortho.left;
             if (right != NULL)
-                *right = cobj->proj_right;
+                *right = cobj->projection_param.ortho.right;
         }
     }
 }
@@ -910,16 +915,21 @@ static int CObjLoad(HSD_CObj* cobj, HSD_CObjDesc* desc)
     switch (proj_type) {
     case PROJ_PERSPECTIVE:
         cobj->projection_type = PROJ_PERSPECTIVE;
-        cobj->fov_top = desc->fov_top;
-        cobj->aspect_bottom = desc->aspect_bottom;
+        cobj->projection_param.perspective.fov = desc->projection_param.perspective.fov;
+        cobj->projection_param.perspective.aspect = desc->projection_param.perspective.aspect;
         break;
     case PROJ_FRUSTRUM:
-    case PROJ_ORTHO:
         cobj->projection_type = PROJ_FRUSTRUM;
-        cobj->fov_top = desc->fov_top;
-        cobj->aspect_bottom = desc->aspect_bottom;
-        cobj->proj_left = desc->proj_left;
-        cobj->proj_right = desc->proj_right;
+        cobj->projection_param.frustrum.top = desc->projection_param.frustrum.top;
+        cobj->projection_param.frustrum.bottom = desc->projection_param.frustrum.bottom;
+        cobj->projection_param.frustrum.left = desc->projection_param.frustrum.left;
+        cobj->projection_param.frustrum.right = desc->projection_param.frustrum.right;
+    case PROJ_ORTHO:
+        cobj->projection_type = PROJ_ORTHO;
+        cobj->projection_param.ortho.top = desc->projection_param.ortho.top;
+        cobj->projection_param.ortho.bottom = desc->projection_param.ortho.bottom;
+        cobj->projection_param.ortho.left = desc->projection_param.ortho.left;
+        cobj->projection_param.ortho.right = desc->projection_param.ortho.right;
         break;
     default:
         HSD_Halt("Unexpected projection type");
