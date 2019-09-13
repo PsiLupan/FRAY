@@ -31,10 +31,26 @@ typedef struct _HSD_CObj {
     f32 yaw; //0x34
     f32 near; //0x38
     f32 far; //0x3C
-    f32 fov_top; //0x40
-    f32 aspect_bottom; //0x44
-    f32 proj_left; //0x48
-    f32 proj_right; //0x4C
+    union {
+        struct {
+            f32 fov;
+            f32 aspect;
+        } perspective;
+        
+        struct {
+            f32 top;
+            f32 bottom;
+            f32 left;
+            f32 right;
+        } frustrum;
+        
+        struct {
+            f32 top;
+            f32 bottom;
+            f32 left;
+            f32 right;
+        } ortho;
+    } projection_param;
     u8 projection_type; //0x50
     Mtx view_mtx; //0x54
     HSD_AObj* aobj; //0x84
@@ -57,10 +73,26 @@ typedef struct _HSD_CObjDesc {
     guVector* vector; //0x24
     f32 near; //0x28
     f32 far; //0x2C
-    f32 fov_top; //0x30
-    f32 aspect_bottom; //0x34
-    f32 proj_left; //0x38
-    f32 proj_right; //0x3C
+    union {
+        struct {
+            f32 fov;
+            f32 aspect;
+        } perspective;
+        
+        struct {
+            f32 top;
+            f32 bottom;
+            f32 left;
+            f32 right;
+        } frustrum;
+        
+        struct {
+            f32 top;
+            f32 bottom;
+            f32 left;
+            f32 right;
+        } ortho;
+    } projection_param;
 } HSD_CObjDesc;
 
 typedef struct _HSD_CObjInfo {
