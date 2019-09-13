@@ -623,7 +623,7 @@ void HSD_CObjSetLeft(HSD_CObj* cobj, f32 left)
 {
     if (cobj != NULL) {
         if (cobj->projection_type == PROJ_FRUSTRUM || cobj->projection_type == PROJ_ORTHO)
-            cobj->cobj->projection_param.frustrum.left = left;
+            cobj->projection_param.frustrum.left = left;
     }
 }
 
