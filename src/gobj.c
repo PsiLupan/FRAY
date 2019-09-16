@@ -60,6 +60,22 @@ BOOL GObj_IsItem(HSD_GObj* gobj)
     return FALSE;
 }
 
+//8031CC68
+//8031D168
+//8031D18C
+//8031D6E4
+//8031E304
+//8031E6EC
+//8031EE60
+//8031F548
+//8031F990
+//8031F9B4
+//803204C0
+//803204E4
+void GObj_AnimateJObj(HSD_GObj* gobj){
+    HSD_JObjAnimAll(gobj->hsd_obj);
+}
+
 //80322D30
 u64 GObj_GetProcFlags(u32 i, u32 j, u32 p){
     u64 n = i << p | j >> 0x20 - p | j << p + -0x20;
