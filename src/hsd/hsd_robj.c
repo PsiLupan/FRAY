@@ -30,18 +30,18 @@ HSD_ObjAllocData* HSD_RvalueObjGetAllocData(void)
 //8037AE90
 void HSD_RObjSetFlags(HSD_RObj* robj, u32 flags)
 {
-    if (robj) {
+    if (robj != NULL) {
         robj->flags |= flags;
     }
 }
 
 //8037AEA8
-HSD_RObj* HSD_RObjGetByType(HSD_RObj* robj, u32 type, u32 flags2)
+HSD_RObj* HSD_RObjGetByType(HSD_RObj* robj, u32 type, u32 subtype)
 {
-    if (robj) {
+    if (robj != NULL) {
         for (HSD_RObj* curr = robj; curr != NULL; curr = curr->next) {
             u32 flags = curr->flags;
-            if ((flags & 0x80000000) != 0 && (flags & TYPE_MASK) == type && (!flags2 || flags2 == (flags & 0xFFFFFFF))) {
+            if ((flags & 0x80000000) != 0 && (flags & TYPE_MASK) == type && (!subtype || subtype == (flags & 0xFFFFFFF))) {
                 return curr;
             }
         }
@@ -49,10 +49,11 @@ HSD_RObj* HSD_RObjGetByType(HSD_RObj* robj, u32 type, u32 flags2)
 }
 
 //8037AF14
-static void RObjUpdateFunc(HSD_RObj* robj, u32 obj_type, FObjData data)
+static void RObjUpdateFunc(void* obj, u32 type, FObjData val)
 {
-    if (robj != NULL && obj_type == TYPE_ROBJ) {
-        if (data.fv >= 1.75f) {
+    if (obj != NULL && type == TYPE_ROBJ) {
+        HSD_RObj* robj = (HSD_RObj*)obj;
+        if (val.fv >= 1.75f) {
             robj->flags = robj->flags | 0x80000000;
             return;
         }
@@ -121,11 +122,11 @@ void HSD_RObjReqAnimAll(HSD_RObj* robj, f32 frame)
 }
 
 //8037B1A0
-void HSD_RObjAddAnimAll(HSD_RObj* robj, HSD_RObjAnim* anim)
+void HSD_RObjAddAnimAll(HSD_RObj* robj, HSD_RObjAnimJoint* anim)
 { //The second parameter is assumed based on layout - It literally is never NULL in my experience
     if (robj != NULL && anim != NULL) {
         HSD_RObj* i;
-        HSD_RObjAnim* j;
+        HSD_RObjAnimJoint* j;
         for (i = robj, j = anim; i != NULL && j != NULL; i = i->next, j = j->next) {
             if (i->aobj != NULL) {
                 HSD_AObjRemove(i->aobj);
@@ -207,7 +208,7 @@ void HSD_RObjResolveRefsAll(HSD_RObj* robj, HSD_RObjDesc* robjdesc)
             u32 flags = ro->flags & 0x70000000;
             if (flags == 0x10000000) {
                 HSD_JObjUnrefThis(ro->u.jobj);
-                HSD_JObj* jobj = HSD_IDGetDataFromTable(NULL, (u32)rdesc->u.jobjdesc, NULL);
+                HSD_JObj* jobj = HSD_IDGetDataFromTable(NULL, (u32)rdesc->u.joint, NULL);
                 ro->u.jobj = jobj;
                 assert(ro->u.jobj != NULL);
                 ro->u.jobj->parent.ref_count_individual += 1;
@@ -241,9 +242,9 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc)
             break;
         case 0x20000000:
             if (flags != 0 && flags < 7) {
-                robj->u.fv = 0.01754533f * desc->u.fv;
+                robj->u.limit = 0.01754533f * desc->u.limit;
             } else {
-                robj->u.fv = desc->u.fv;
+                robj->u.limit = desc->u.limit;
             }
             break;
         case 0x30000000:
@@ -314,7 +315,7 @@ void HSD_RvalueResolveRefsAll(HSD_Rvalue* rval, HSD_RvalueDesc* desc)
         while (rval != NULL && desc->jobjdesc != NULL) {
             if (rval != NULL && desc != NULL) {
                 HSD_JObjUnrefThis(rval->jobj);
-                HSD_JObj* jobj = HSD_IDGetDataFromTable(NULL, (u32)desc->jobjdesc, NULL);
+                HSD_JObj* jobj = HSD_IDGetDataFromTable(NULL, (u32)desc->joint, NULL);
                 rval->jobj = jobj;
                 assert(rval->jobj != NULL);
                 HSD_JObjRefThis(jobj);
