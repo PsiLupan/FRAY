@@ -19,7 +19,6 @@ typedef struct _HSD_RObj {
     } u; //0x08
     guVector pos; //0xC
     struct _HSD_AObj* aobj; //0x18
-    u32 x1C_unk;
 } HSD_RObj;
 
 typedef struct _HSD_Rvalue {
