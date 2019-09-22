@@ -205,8 +205,8 @@ void HSD_RObjResolveRefsAll(HSD_RObj* robj, HSD_RObjDesc* robjdesc)
     HSD_RObjDesc* rdesc;
     for (ro = robj, rdesc = robjdesc; ro != NULL && rdesc != NULL; ro = ro->next, rdesc = rdesc->next) {
         if (ro != NULL && rdesc != NULL) {
-            u32 flags = ro->flags & 0x70000000;
-            if (flags == 0x10000000) {
+            u32 flags = ro->flags & TYPE_MASK;
+            if (flags == REFTYPE_JOBJ) {
                 HSD_JObjUnrefThis(ro->u.jobj);
                 HSD_JObj* jobj = HSD_IDGetDataFromTable(NULL, (u32)rdesc->u.joint, NULL);
                 ro->u.jobj = jobj;
@@ -215,7 +215,7 @@ void HSD_RObjResolveRefsAll(HSD_RObj* robj, HSD_RObjDesc* robjdesc)
                 assert(ro->u.jobj->parent.ref_count_individual != 0);
             } else {
                 if (flags == 0) {
-                    HSD_RvalueResolveRefsAll((HSD_Rvalue*)ro->u.rvalue->data, (HSD_RvalueDesc*)rdesc->u.rvalue->data);
+                    HSD_RvalueResolveRefsAll(ro->u.exp.rvalue, rdesc->u.exp->rvalue);
                 }
             }
         }
@@ -309,7 +309,7 @@ void HSD_RObjFree(HSD_RObj* robj)
 }
 
 //8037CBA4
-void HSD_RvalueResolveRefsAll(HSD_Rvalue* rval, HSD_RvalueDesc* desc)
+void HSD_RvalueResolveRefsAll(HSD_Rvalue* rval, HSD_RvalueList* desc)
 {
     if (desc != NULL) {
         while (rval != NULL && desc->jobjdesc != NULL) {
