@@ -31,7 +31,7 @@ typedef struct _HSD_WObjInfo {
 
 typedef struct _HSD_WObjAnim {
     struct _HSD_AObjDesc* aobjdesc;
-    struct _HSD_RObjAnim* robjanim;
+    struct _HSD_RObjAnimJoint* robjanim;
 } HSD_WObjAnim;
 
 extern HSD_WObjInfo hsdWObj;
