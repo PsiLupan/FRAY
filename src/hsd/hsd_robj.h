@@ -8,6 +8,7 @@
 
 #define TYPE_MASK 0x70000000
 #define REFTYPE_JOBJ 0x10000000
+#define REFTYPE_IKHINT 0x40000000
 
 typedef struct _HSD_Rvalue {
     struct _HSD_Rvalue* next;
