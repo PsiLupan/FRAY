@@ -23,27 +23,27 @@ void HSD_MObjSetCurrent(HSD_MObj* mobj)
 //80362D38
 void HSD_MObjSetFlags(HSD_MObj* mobj, u32 flags)
 {
-    if (mobj)
+    if (mobj != NULL)
         mobj->rendermode |= flags;
 }
 
 //80362D50
 void HSD_MObjClearFlags(HSD_MObj* mobj, u32 flags)
 {
-    if (mobj)
+    if (mobj != NULL)
         mobj->rendermode &= ~flags;
 }
 
 //80362D68
 void HSD_MObjRemoveAnimByFlags(HSD_MObj* mobj, u32 flags)
 {
-    if (mobj) {
-        if (flags & MOBJ_ANIM) {
+    if (mobj != NULL) {
+        if ((flags & MOBJ_ANIM) != 0) {
             HSD_AObjRemove(mobj->aobj);
             mobj->aobj = NULL;
         }
 
-        if (flags & TOBJ_ANIM) {
+        if ((flags & TOBJ_ANIM) != 0) {
             HSD_TObjRemoveAnimAll(mobj->tobj);
         }
     }
@@ -64,8 +64,8 @@ void HSD_MObjAddAnim(HSD_MObj* mobj, HSD_MatAnim* matanim)
 //80362E30
 void HSD_MObjReqAnimByFlags(HSD_MObj* mobj, u32 flags, f32 startframe)
 {
-    if (mobj) {
-        if (flags & MOBJ_ANIM) {
+    if (mobj != NULL) {
+        if ((flags & MOBJ_ANIM) != 0) {
             HSD_AObjReqAnim(mobj->aobj, startframe);
         }
         HSD_TObjReqAnimAllByFlags(mobj->tobj, startframe, flags);
@@ -75,7 +75,7 @@ void HSD_MObjReqAnimByFlags(HSD_MObj* mobj, u32 flags, f32 startframe)
 //80362E98
 void HSD_MObjReqAnim(HSD_MObj* mobj, f32 startframe)
 {
-    if (mobj) {
+    if (mobj != NULL) {
         HSD_AObjReqAnim(mobj->aobj, startframe);
         HSD_TObjReqAnimAllByFlags(mobj->tobj, startframe, ALL_ANIM);
     }
@@ -89,79 +89,79 @@ static void MObjUpdateFunc(void* obj, u32 type, FObjData* val)
     if (mobj) {
         switch (type) {
         case HSD_A_M_AMBIENT_R:
-            if (mobj->mat) {
+            if (mobj->mat != NULL) {
                 mobj->mat->ambient.r = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
             }
             break;
 
         case HSD_A_M_AMBIENT_G:
-            if (mobj->mat) {
+            if (mobj->mat != NULL) {
                 mobj->mat->ambient.g = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
             }
             break;
 
         case HSD_A_M_AMBIENT_B:
-            if (mobj->mat) {
+            if (mobj->mat != NULL) {
                 mobj->mat->ambient.b = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
             }
             break;
 
         case HSD_A_M_DIFFUSE_R:
-            if (mobj->mat) {
+            if (mobj->mat != NULL) {
                 mobj->mat->diffuse.r = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
             }
             break;
 
         case HSD_A_M_DIFFUSE_G:
-            if (mobj->mat) {
+            if (mobj->mat != NULL) {
                 mobj->mat->diffuse.g = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
             }
             break;
 
         case HSD_A_M_DIFFUSE_B:
-            if (mobj->mat) {
+            if (mobj->mat != NULL) {
                 mobj->mat->diffuse.b = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
             }
             break;
 
         case HSD_A_M_ALPHA:
-            if (mobj->mat) {
+            if (mobj->mat != NULL) {
                 mobj->mat->alpha = HSD_ClampFloat(1.0F - val->fv, 0, 1);
             }
             break;
 
         case HSD_A_M_SPECULAR_R:
-            if (mobj->mat) {
+            if (mobj->mat != NULL) {
                 mobj->mat->specular.r = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
             }
             break;
 
         case HSD_A_M_SPECULAR_G:
-            if (mobj->mat) {
+            if (mobj->mat != NULL) {
                 mobj->mat->specular.g = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
             }
             break;
 
         case HSD_A_M_SPECULAR_B:
-            if (mobj->mat) {
+            if (mobj->mat != NULL) {
                 mobj->mat->specular.b = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
             }
             break;
 
         case HSD_A_M_PE_REF0:
-            if (mobj->pe) {
+            if (mobj->pe != NULL) {
                 mobj->pe->ref0 = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
             }
             break;
 
         case HSD_A_M_PE_REF1:
-            if (mobj->pe) {
+            if (mobj->pe != NULL) {
                 mobj->pe->ref1 = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
             }
             break;
 
         case HSD_A_M_PE_DSTALPHA:
-            if (mobj->pe) {
+            if (mobj->pe != NULL) {
                 mobj->pe->dst_alpha = (u8)(255.0F * HSD_ClampFloat(val->fv, 0, 1));
             }
             break;
@@ -172,7 +172,7 @@ static void MObjUpdateFunc(void* obj, u32 type, FObjData* val)
 //803630FC
 void HSD_MObjAnim(HSD_MObj* mobj)
 {
-    if (mobj) {
+    if (mobj != NULL) {
         HSD_AObjInterpretAnim(mobj->aobj, mobj, MObjUpdateFunc);
         HSD_TObjAnimAll(mobj->tobj);
     }
@@ -186,7 +186,7 @@ static int MObjLoad(HSD_MObj* mobj, HSD_MObjDesc* desc)
     mobj->mat = HSD_MaterialAlloc();
     memcpy(mobj->mat, desc->mat, sizeof(HSD_Material));
     mobj->rendermode |= RENDER_TOON;
-    if (desc->pedesc) {
+    if (desc->pedesc != NULL) {
         mobj->pe = hsdAllocMemPiece(sizeof(HSD_PEDesc));
         memcpy(mobj->pe, desc->pedesc, sizeof(HSD_PEDesc));
     }
@@ -233,11 +233,11 @@ static HSD_TExp* MObjMakeTExp(HSD_MObj* mobj, HSD_TObj* tobj_top, HSD_TExp** lis
     u32 diffuse_mode;
     u32 alpha_mode;
 
-    assert(list);
+    HSD_CheckAssert("MObjMakeTExp: list == NULL", list != NULL);
 
     *list = NULL;
 
-    for (tobj = tobj_top; tobj; tobj = tobj->next) {
+    for (tobj = tobj_top; tobj != NULL; tobj = tobj->next) {
         if (tobj_coord(tobj) == TEX_COORD_TOON) {
             toon = tobj;
         }
@@ -254,7 +254,7 @@ static HSD_TExp* MObjMakeTExp(HSD_MObj* mobj, HSD_TObj* tobj_top, HSD_TExp** lis
     }
 
     exp = HSD_TExpTev(list);
-    if (mobj->rendermode & RENDER_DIFFUSE) {
+    if ((mobj->rendermode & RENDER_DIFFUSE) != 0) {
         static u8 one = 255;
 
         switch (diffuse_mode) {
@@ -367,8 +367,8 @@ static HSD_TExp* MObjMakeTExp(HSD_MObj* mobj, HSD_TObj* tobj_top, HSD_TExp** lis
     }
     done |= TEX_LIGHTMAP_DIFFUSE | TEX_LIGHTMAP_AMBIENT;
 
-    if (mobj->rendermode & RENDER_DIFFUSE) {
-        if (alpha_mode & RENDER_ALPHA_VTX) {
+    if ((mobj->rendermode & RENDER_DIFFUSE) != 0) {
+        if ((alpha_mode & RENDER_ALPHA_VTX) != 0) {
             exp = HSD_TExpTev(list);
 
             HSD_TExpOrder(exp, NULL, GX_COLOR1A1);
@@ -541,19 +541,19 @@ void HSD_MObjSetup(HSD_MObj* mobj, u32 rendermode)
     rendermode = mobj->rendermode;
     HSD_SetMaterialColor(mobj->mat->ambient, mobj->mat->diffuse, mobj->mat->specular, mobj->mat->alpha);
 
-    if (rendermode & RENDER_SPECULAR) {
+    if ((rendermode & RENDER_SPECULAR) != 0) {
         HSD_SetMaterialShininess(mobj->mat->shininess);
     }
 
     tobj = mobj->tobj;
     tail = NULL;
 
-    if ((rendermode & RENDER_SHADOW) && tobj_shadows) {
-        for (tail = &tobj; *tail; tail = &((*tail)->next)) {
+    if ((rendermode & RENDER_SHADOW) != 0 && tobj_shadows != NULL) {
+        for (tail = &tobj; *tail != NULL; tail = &((*tail)->next)) {
         }
         *tail = tobj_shadows;
     }
-    if (rendermode & RENDER_TOON && tobj_toon && tobj_toon->imagedesc != NULL) {
+    if ((rendermode & RENDER_TOON) != 0 && tobj_toon != NULL && tobj_toon->imagedesc != NULL) {
         tobj_toon->next = tobj;
         tobj = tobj_toon;
     }
@@ -562,7 +562,7 @@ void HSD_MObjSetup(HSD_MObj* mobj, u32 rendermode)
 
     HSD_MOBJ_METHOD(mobj)->setup_tev(mobj, tobj, rendermode);
     HSD_SetupRenderModeWithCustomPE(rendermode, mobj->pe);
-    if (tail) {
+    if (tail != NULL) {
         *tail = NULL;
     }
 }
@@ -577,7 +577,7 @@ void HSD_MObjUnset(HSD_MObj* mobj, u32 rendermode)
 //80363B8C
 void HSD_MObjSetToonTextureImage(HSD_ImageDesc* toonimage)
 {
-    if (!tobj_toon) {
+    if (tobj_toon == NULL) {
         static HSD_TObjDesc desc = {
             NULL,
             NULL,
@@ -606,7 +606,7 @@ void HSD_MObjSetToonTextureImage(HSD_ImageDesc* toonimage)
 //80363C10
 void HSD_MObjSetDiffuseColor(HSD_MObj* mobj, u8 r, u8 g, u8 b)
 {
-    if (!mobj || !mobj->mat) {
+    if (mobj == NULL || mobj->mat == NULL) {
         return;
     }
     mobj->mat->diffuse.r = r;
@@ -617,7 +617,7 @@ void HSD_MObjSetDiffuseColor(HSD_MObj* mobj, u8 r, u8 g, u8 b)
 //80363C2C
 void HSD_MObjSetAlpha(HSD_MObj* mobj, f32 alpha)
 {
-    if (!mobj || !mobj->mat) {
+    if (mobj == NULL || mobj->mat == NULL) {
         return;
     }
     mobj->mat->alpha = alpha;
@@ -626,7 +626,7 @@ void HSD_MObjSetAlpha(HSD_MObj* mobj, f32 alpha)
 //80363C38
 HSD_TObj* HSD_MObjGetTObj(HSD_MObj* mobj)
 {
-    if (mobj) {
+    if (mobj != NULL) {
         return mobj->tobj;
     }
     return NULL;
@@ -645,7 +645,7 @@ void HSD_MObjRemove(HSD_MObj* mobj)
 HSD_MObj* HSD_MObjAlloc(void)
 {
     HSD_MObj* mobj = (HSD_MObj*)hsdNew((HSD_ClassInfo*)HSD_MObjGetDefaultClass());
-    assert(mobj);
+    HSD_CheckAssert("HSD_MObjAlloc: Could not alloc mobj", mobj != NULL);
     return mobj;
 }
 
@@ -653,7 +653,7 @@ HSD_MObj* HSD_MObjAlloc(void)
 HSD_Material* HSD_MaterialAlloc(void)
 {
     HSD_Material* mat = hsdAllocMemPiece(sizeof(HSD_Material));
-    assert(mat);
+    HSD_CheckAssert("HSD_MaterialAlloc: Could not alloc mat", mat != NULL);
     memset(mat, 0, sizeof(HSD_Material));
     mat->alpha = 1.0F;
     return mat;
@@ -664,7 +664,7 @@ void HSD_MObjAddShadowTexture(HSD_TObj* tobj)
 {
     HSD_TObj* tp;
     assert(tobj);
-    for (tp = tobj_shadows; tp; tp = tp->next) {
+    for (tp = tobj_shadows; tp != NULL; tp = tp->next) {
         if (tp == tobj)
             return;
     }
@@ -677,7 +677,7 @@ void HSD_MObjDeleteShadowTexture(HSD_TObj* tobj)
 {
     HSD_TObj **tp, *next;
     if (tobj) {
-        for (tp = &tobj_shadows; *tp; tp = &(*tp)->next) {
+        for (tp = &tobj_shadows; *tp != NULL; tp = &(*tp)->next) {
             if (*tp == tobj) {
                 *tp = tobj->next;
                 tobj->next = NULL;
@@ -685,7 +685,7 @@ void HSD_MObjDeleteShadowTexture(HSD_TObj* tobj)
             }
         }
     } else {
-        for (; tobj_shadows; tobj_shadows = next) {
+        for (; tobj_shadows != NULL; tobj_shadows = next) {
             next = tobj_shadows->next;
             tobj_shadows->next = NULL;
         }
