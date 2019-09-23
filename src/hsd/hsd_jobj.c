@@ -1461,7 +1461,7 @@ static void resolveIKJoint1(HSD_JObj* jobj)
     assert(robj != NULL);
 
     guVector robj_pos = robj->pos;
-    f32 rx_scale = robj->u.fv * vec.x;
+    f32 rx_scale = robj->u.limit * vec.x;
 
     HSD_JObj* child_c;
     f32 x_scale = 0.f;
@@ -1471,7 +1471,7 @@ static void resolveIKJoint1(HSD_JObj* jobj)
         HSD_RObj* child_robj = HSD_RObjGetByType(child->robj, 0x40000000, 0);
         assert(child_robj != NULL);
         has_flag = (child_robj->flags & 4) != 0;
-        x_scale = vec.x * child_robj->u.fv * child->scale.x;
+        x_scale = vec.x * child_robj->u.limit * child->scale.x;
         child_c = child->child;
     }
 
@@ -1633,7 +1633,7 @@ void HSD_JObjSetupMatrixSub(HSD_JObj* jobj)
                 if (prev->pvec != NULL) {
                     val = prev->pvec->x;
                 }
-                guVecScale(&x_vec, &x_vec, robj->u.fv);
+                guVecScale(&x_vec, &x_vec, robj->u.limit);
                 guVector res;
                 guVecAdd(&w_vec, &x_vec, &res);
                 jobj->mtx[0][3] = res.x;
