@@ -37,7 +37,7 @@ typedef struct _HSD_AnimJoint {
     struct _HSD_AnimJoint* child;
     struct _HSD_AnimJoint* next;
     struct _HSD_AObjDesc* aobjdesc;
-    struct _HSD_RObjAnim* robj_anim;
+    struct _HSD_RObjAnimJoint* robj_anim;
     u32 flags;
 } HSD_AnimJoint;
 
