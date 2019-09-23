@@ -495,7 +495,7 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             if ((jobj->flags & JOINT1) != 0) {
                 HSD_RObj* robj = HSD_RObjGetByType(jobj->robj, 0x40000000, 0);
                 if (robj != NULL) {
-                    robj->pos = val->p;
+                    robj->u.ik_hint.rotate_x = val->fv;
                 }
             }
             assert(JOBJ_USE_QUATERNION(jobj) == 0);
@@ -1457,21 +1457,21 @@ static void resolveIKJoint1(HSD_JObj* jobj)
         vec.y = pvec->y;
         vec.z = pvec->z;
     }
-    HSD_RObj* robj = HSD_RObjGetByType(jobj->robj, 0x40000000, 0);
+    HSD_RObj* robj = HSD_RObjGetByType(jobj->robj, REFTYPE_IKHINT, 0);
     assert(robj != NULL);
 
-    guVector robj_pos = robj->pos;
-    f32 rx_scale = robj->u.limit * vec.x;
+    f32 rotate_x = robj->u.ik_hint.rotate_x;
+    f32 rx_scale = robj->u.ik_hint.bone_length * vec.x;
 
     HSD_JObj* child_c;
     f32 x_scale = 0.f;
     if (child == NULL) {
         child_c = jobj->child;
     } else {
-        HSD_RObj* child_robj = HSD_RObjGetByType(child->robj, 0x40000000, 0);
+        HSD_RObj* child_robj = HSD_RObjGetByType(child->robj, REFTYPE_IKHINT, 0);
         assert(child_robj != NULL);
         has_flag = (child_robj->flags & 4) != 0;
-        x_scale = vec.x * child_robj->u.limit * child->scale.x;
+        x_scale = vec.x * child_robj->u.bone_length * child->scale.x;
         child_c = child->child;
     }
 
@@ -1481,13 +1481,13 @@ static void resolveIKJoint1(HSD_JObj* jobj)
         }
     }
     assert(child_c != NULL);
-    HSD_RObj* child_robj = HSD_RObjGetByType(child_c->robj, 0x10000000, 1);
+    HSD_RObj* child_robj = HSD_RObjGetByType(child_c->robj, REFTYPE_JOBJ, 1);
     if (child_robj == NULL) {
         child_c = NULL;
     }
 
     if (child_c != NULL) {
-        HSD_RObj* robj_t3 = HSD_RObjGetByType(jobj->robj, 0x10000000, 3);
+        HSD_RObj* robj_t3 = HSD_RObjGetByType(jobj->robj, REFTYPE_JOBJ, 3);
         if (robj_t3 == NULL && jobj->robj != NULL) {
             HSD_RObjUpdateAll(jobj->robj, jobj, JObjUpdateFunc);
             assert(jobj != NULL);
@@ -1528,11 +1528,11 @@ static void resolveIKJoint1(HSD_JObj* jobj)
             } else {
                 guVecSub(&cvec, &trans, &cvec);
                 Mtx mtx;
-                if (robj_pos.x != 0) {
+                if (rotate_x != 0) {
                     guMtxRotAxisRad(
                         mtx, &trans_2,
-                        robj_pos.x); // THIS IS PROBABLY WRONG -
-                    // PSMTXRotAxisRad(robj_pos,auStack232,&trans_2);
+                        rotate_x); // THIS IS PROBABLY WRONG -
+                    // PSMTXRotAxisRad(rotate_x,auStack232,&trans_2);
                     guVecMultiply(mtx, &cvec, &cvec);
                 }
                 guVecCross(&trans_2, &cvec, &zvec);
