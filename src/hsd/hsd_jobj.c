@@ -1471,7 +1471,7 @@ static void resolveIKJoint1(HSD_JObj* jobj)
         HSD_RObj* child_robj = HSD_RObjGetByType(child->robj, REFTYPE_IKHINT, 0);
         assert(child_robj != NULL);
         has_flag = (child_robj->flags & 4) != 0;
-        x_scale = vec.x * child_robj->u.bone_length * child->scale.x;
+        x_scale = vec.x * child_robj->u.ik_hint.bone_length * child->scale.x;
         child_c = child->child;
     }
 
