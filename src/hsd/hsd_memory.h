@@ -8,9 +8,9 @@
 #include "hsd_object.h"
 
 #define BUCKET_BITS 5
-#define ALIGN_SZ 31
+#define ALIGN_SZ 32
 
-#define ALIGN(size) (size + ALIGN_SZ)
+#define ALIGN(size) ((size + (align - 1)) & -align)
 #define BUCKET(size) (size >> BUCKET_BITS)
 #define ALIGNED_BUCKET(size) (ALIGN(size) >> BUCKET_BITS)
 #define GET_BUCKET(size) (ALIGNED_BUCKET(size) - 1)
