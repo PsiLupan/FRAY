@@ -60,7 +60,6 @@ typedef struct _HSD_RObj {
         f32 limit;
         struct _HSD_IKHint ik_hint;
     } u; //0x08
-    guVector pos; //0xC
     struct _HSD_AObj* aobj; //0x18
 } HSD_RObj;
 
