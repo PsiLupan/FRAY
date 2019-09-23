@@ -152,7 +152,7 @@ u32 HSD_RObjGetGlobalPosition(HSD_RObj* robj, u32 flag, guVector* pos)
                     HSD_JObj* jobj = i->u.jobj;
                     assert(jobj != NULL);
                     BOOL need_mtx = FALSE;
-                    if ((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0) {
+                    if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
                         need_mtx = TRUE;
                     }
                     if (need_mtx == TRUE) {
@@ -252,8 +252,8 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc)
             robj->flags = robj->flags & 0x8fffffff;
             break;
         case REFTYPE_IKHINT:
-            robj->u.ik_hint.bone_length = desc->u.ik_hint.bone_length;
-            robj->u.ik_hint.rotate_x = desc->u.ik_hint.bone_length;
+            robj->u.ik_hint.bone_length = desc->u.ik_hint->bone_length;
+            robj->u.ik_hint.rotate_x = desc->u.ik_hint->bone_length;
             break;
         default:
             HSD_Halt("Unexpected type of RObj");
@@ -313,10 +313,10 @@ void HSD_RObjFree(HSD_RObj* robj)
 void HSD_RvalueResolveRefsAll(HSD_Rvalue* rval, HSD_RvalueList* desc)
 {
     if (desc != NULL) {
-        while (rval != NULL && desc->u.joint != NULL) {
+        while (rval != NULL && desc->joint != NULL) {
             if (rval != NULL && desc != NULL) {
                 HSD_JObjUnrefThis(rval->jobj);
-                HSD_JObj* jobj = HSD_IDGetDataFromTable(NULL, (u32)desc->u.joint, NULL);
+                HSD_JObj* jobj = HSD_IDGetDataFromTable(NULL, (u32)desc->joint, NULL);
                 rval->jobj = jobj;
                 assert(rval->jobj != NULL);
                 HSD_JObjRefThis(jobj);
