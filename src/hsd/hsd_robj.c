@@ -236,7 +236,7 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc)
         u32 flags = robj->flags & 0xfffffff;
         switch (type) {
         case 0:
-            //expLoadDesc(&robj->u.rvalue, desc->u.rvalue);
+            //expLoadDesc(&robj->u.exp.rvalue, desc->u.exp.rvalue);
             break;
         case REFTYPE_JOBJ:
             break;
@@ -248,11 +248,12 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc)
             }
             break;
         case 0x30000000:
+            //bcexpLoadDesc(robj->u.exp.rvalue, desc->u.bcexp.rvalue);
             robj->flags = robj->flags & 0x8fffffff;
             break;
-        case 0x40000000:
-            //bcexpLoadDesc(robj->u.exp.rvalue, desc->u.bcexp.rvalue);
-            robj->pos = desc->pos;
+        case REFTYPE_IKHINT:
+            robj->u.ik_hint.bone_length = desc->u.ik_hint.bone_length;
+            robj->u.ik_hint.rotate_x = desc->u.ik_hint.bone_length;
             break;
         default:
             HSD_Halt("Unexpected type of RObj");
@@ -312,10 +313,10 @@ void HSD_RObjFree(HSD_RObj* robj)
 void HSD_RvalueResolveRefsAll(HSD_Rvalue* rval, HSD_RvalueList* desc)
 {
     if (desc != NULL) {
-        while (rval != NULL && desc->jobjdesc != NULL) {
+        while (rval != NULL && desc->u.joint != NULL) {
             if (rval != NULL && desc != NULL) {
                 HSD_JObjUnrefThis(rval->jobj);
-                HSD_JObj* jobj = HSD_IDGetDataFromTable(NULL, (u32)desc->joint, NULL);
+                HSD_JObj* jobj = HSD_IDGetDataFromTable(NULL, (u32)desc->u.joint, NULL);
                 rval->jobj = jobj;
                 assert(rval->jobj != NULL);
                 HSD_JObjRefThis(jobj);
