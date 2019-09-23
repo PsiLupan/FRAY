@@ -192,7 +192,7 @@ void HSD_RObjUpdateAll(HSD_RObj* robj, void* jobj, void (*obj_update)(void*, u32
          */
         for (HSD_RObj* r = robj; r != NULL; r = r->next) {
             if ((r->flags & 0x70000000) == 0 && (r->flags & 0x80000000) != 0) {
-                //expEvaluate(robj->u.rvalue, r->flags & 0xFFFFFFF, obj, obj_update);
+                //expEvaluate(robj->u.exp.rvalue, r->flags & 0xFFFFFFF, obj, obj_update);
             }
         }
     }
@@ -251,7 +251,7 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc)
             robj->flags = robj->flags & 0x8fffffff;
             break;
         case 0x40000000:
-            //bcexpLoadDesc(robj->u.rvalue, desc->u.rvalue);
+            //bcexpLoadDesc(robj->u.exp.rvalue, desc->u.bcexp.rvalue);
             robj->pos = desc->pos;
             break;
         default:
@@ -269,7 +269,7 @@ void HSD_RObjRemove(HSD_RObj* robj)
         if (type == REFTYPE_JOBJ) {
             HSD_JObjUnrefThis(robj->u.jobj);
         } else if (type == 0) {
-            //HSD_RvalueRemoveAll(robj->xC_unk);
+            //HSD_RvalueRemoveAll(robj->u.exp.rvalue);
         }
         HSD_AObjRemove(robj->aobj);
         HSD_RObjFree(robj);
@@ -285,7 +285,7 @@ void HSD_RObjRemoveAll(HSD_RObj* robj)
             if (type == REFTYPE_JOBJ) {
                 HSD_JObjUnrefThis(i->u.jobj);
             } else if (type == 0) {
-                //HSD_RvalueRemoveAll(i->xC_unk);
+                //HSD_RvalueRemoveAll(i->u.exp.rvalue);
             }
             HSD_AObjRemove(i->aobj);
             HSD_RObjFree(i);
