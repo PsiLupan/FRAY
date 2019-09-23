@@ -7,6 +7,14 @@
 
 #include "hsd_object.h"
 
+#define BUCKET_BITS 5
+#define ALIGN_SZ 31
+
+#define ALIGN(size) (size + ALIGN_SZ)
+#define BUCKET(size) (size >> BUCKET_BITS)
+#define ALIGNED_BUCKET(size) (ALIGN(size) >> BUCKET_BITS)
+#define GET_BUCKET(size) (ALIGNED_BUCKET(size) - 1)
+
 typedef u32 HSD_ID;
 
 typedef struct _IDEntry {
