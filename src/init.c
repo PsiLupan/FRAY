@@ -12,6 +12,7 @@
 #include "ogcext/dvd.h"
 
 #include "scene.h"
+#include "util.h"
 
 static u32 arena_size; //-0x5110(r13)
 static u64 sys_time;
@@ -42,12 +43,6 @@ void Pad_InitCallback()
     HSD_PadLibData.clamp_analogLRMin = 0;
     HSD_PadLibData.scale_stick = 80;
     HSD_PadLibData.scale_analogLR = 140;
-}
-
-//8015FDA0
-static void stub()
-{
-    return;
 }
 
 //8015FEB4

@@ -1,5 +1,11 @@
 #include "util.h"
 
+//8015FDA0
+void stub()
+{
+    return;
+}
+
 u64 concat_to_64(u32 x, u32 y)
 {
     u64 pow = 10;
