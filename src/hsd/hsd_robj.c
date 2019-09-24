@@ -1,5 +1,7 @@
 #include "hsd_robj.h"
 
+#include <string.h>
+
 #include "hsd_aobj.h"
 #include "hsd_jobj.h"
 #include "hsd_mobj.h"
@@ -236,7 +238,7 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc)
         u32 flags = robj->flags & 0xfffffff;
         switch (type) {
         case 0:
-            //expLoadDesc(&robj->u.exp.rvalue, desc->u.exp.rvalue);
+            expLoadDesc(robj->u.exp, desc->u.exp);
             break;
         case REFTYPE_JOBJ:
             break;
@@ -248,7 +250,7 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc)
             }
             break;
         case 0x30000000:
-            //bcexpLoadDesc(robj->u.exp.rvalue, desc->u.bcexp.rvalue);
+            bcexpLoadDesc(robj->u.exp, desc->u.bcexp);
             robj->flags = robj->flags & 0x8fffffff;
             break;
         case REFTYPE_IKHINT:
@@ -270,7 +272,7 @@ void HSD_RObjRemove(HSD_RObj* robj)
         if (type == REFTYPE_JOBJ) {
             HSD_JObjUnrefThis(robj->u.jobj);
         } else if (type == 0) {
-            //HSD_RvalueRemoveAll(robj->u.exp.rvalue);
+            HSD_RvalueRemoveAll(robj->u.exp.rvalue);
         }
         HSD_AObjRemove(robj->aobj);
         HSD_RObjFree(robj);
@@ -286,7 +288,7 @@ void HSD_RObjRemoveAll(HSD_RObj* robj)
             if (type == REFTYPE_JOBJ) {
                 HSD_JObjUnrefThis(i->u.jobj);
             } else if (type == 0) {
-                //HSD_RvalueRemoveAll(i->u.exp.rvalue);
+                HSD_RvalueRemoveAll(i->u.exp.rvalue);
             }
             HSD_AObjRemove(i->aobj);
             HSD_RObjFree(i);
@@ -307,6 +309,66 @@ HSD_RObj* HSD_RObjAlloc(void)
 void HSD_RObjFree(HSD_RObj* robj)
 {
     HSD_ObjFree(&robj_alloc_data, (HSD_ObjAllocLink*)robj);
+}
+
+//8037C950
+static f32 dummy_func()
+{
+    return 0.0f;
+}
+
+//8037C958
+void HSD_RvalueRemoveAll(HSD_Rvalue* rvalue)
+{
+    HSD_Rvalue* next;
+    while (next = rvalue, next != NULL) {
+        rvalue = next->next;
+        if (next != null) {
+            HSD_JObjUnrefThis(next->jobj);
+            HSD_ObjFree(&rvalue_alloc_data, (HSD_ObjAllocLink*)next);
+        }
+    }
+}
+
+//8037C9C8
+void expLoadDesc(HSD_Exp* exp, HSD_ExpDesc* desc)
+{
+    memset(exp, 0, sizeof(HSD_Exp));
+    if (desc != NULL) {
+        if (desc->func == NULL) {
+            exp->expr.func = dummy_func;
+        } else {
+            exp->expr.func = desc->func;
+        }
+
+        HSD_Rvalue* rv = NULL;
+        if (desc->rvalue != NULL) {
+            //TODO
+        }
+        exp->rvalue = rv;
+        exp->nb_args = -1;
+    }
+}
+
+//8037CAB4
+void bcexpLoadDesc(HSD_Exp* exp, HSD_ByteCodeExpDesc* desc)
+{
+    memset(exp, 0, sizeof(HSD_Exp));
+    if (desc != NULL) {
+        if (desc->bytecode == NULL) {
+            exp->expr.bytecode = 0;
+        } else {
+            exp->expr.bytecode = desc->bytecode;
+        }
+
+        HSD_Rvalue* rv = NULL;
+        if (desc->rvalue != NULL) {
+            //TODO
+        }
+        exp->rvalue = rv;
+        exp->nb_args = -1;
+        exp->is_bytecode = TRUE;
+    }
 }
 
 //8037CBA4

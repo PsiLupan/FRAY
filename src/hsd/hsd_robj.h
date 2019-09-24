@@ -101,6 +101,9 @@ void HSD_RObjRemove(HSD_RObj*);
 void HSD_RObjRemoveAll(HSD_RObj*);
 HSD_RObj* HSD_RObjAlloc(void);
 void HSD_RObjFree(HSD_RObj*);
+void HSD_RvalueRemoveAll(HSD_Rvalue*);
+void expLoadDesc(HSD_Exp*, HSD_ExpDesc*);
+void bcexpLoadDesc(HSD_Exp*, HSD_ByteCodeExpDesc*);
 void HSD_RvalueResolveRefsAll(HSD_Rvalue*, HSD_RvalueList*);
 
 #endif
