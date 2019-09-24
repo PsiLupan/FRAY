@@ -465,18 +465,113 @@ END:
 void HSD_TExpColorIn(HSD_TExp* texp, HSD_TEInput sel_a, HSD_TExp* exp_a, HSD_TEInput sel_b, HSD_TExp* exp_b,
     HSD_TEInput sel_c, HSD_TExp* exp_c, HSD_TEInput sel_d, HSD_TExp* exp_d)
 {
-    assert(HSD_TExpGetType(texp) == 1);
+    assert(HSD_TExpGetType(texp) == HSD_TE_TEV);
     HSD_TExpColorInSub(&texp->tev, sel_a, exp_a, 0);
     HSD_TExpColorInSub(&texp->tev, sel_b, exp_b, 1);
     HSD_TExpColorInSub(&texp->tev, sel_c, exp_c, 2);
     HSD_TExpColorInSub(&texp->tev, sel_d, exp_d, 3);
 }
 
+//80383B64
+static void HSD_TExpAlphaInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u32 idx)
+{
+    u32 swap;
+    HSD_TExp* texp = tev->a_in[idx].exp;
+
+    u32 type = HSD_TExpGetType(exp);
+    tev->a_in[idx].type = type;
+    tev->a_in[idx].sel = sel;
+    tev->a_in[idx].exp = exp;
+    tev->a_in[idx].arg = 0xFF;
+
+    if (sel == HSD_TE_0) {
+        tev->a_in[idx].type = HSD_TE_ZERO;
+        tev->a_in[idx].arg = GX_CC_A2;
+        tev->a_in[idx].exp = NULL;
+    } else {
+        if (sel < HSD_TE_0 || HSD_TE_7_8 < sel) {
+            u8 a_in_type = tev->a_in[idx].type;
+            switch (a_in_type) {
+            case HSD_TE_ZERO:
+                tev->a_in[idx].type = HSD_TE_ZERO;
+                tev->a_in[idx].sel = HSD_TE_0;
+                tev->a_in[idx].arg = GX_CC_A2;
+                tev->a_in[idx].exp = NULL;
+                break;
+
+            case HSD_TE_TEV:
+                HSD_CheckAssert("HSD_TExpAlphaInSub: sel != HSD_TE_A", sel == HSD_TE_A);
+                HSD_CheckAssert("HSD_TExpAlphaInSub: idx != 3 || exp->tev.a_clamp != 0", idx == 3 || texp->tev.a_clamp != 0);
+                HSD_TExpRef(tev->a_in[idx].exp, tev->a_in[idx].sel);
+                break;
+
+            case HSD_TE_TEX:
+                HSD_CheckAssert("HSD_TExpAlphaInSub: sel != HSD_TE_A", sel == HSD_TE_A);
+                tev->a_in[idx].arg = GX_CC_C1;
+                break;
+
+            case HSD_TE_RAS:
+                HSD_CheckAssert("HSD_TExpAlphaInSub: sel != HSD_TE_A", sel == HSD_TE_A);
+                tev->a_in[idx].arg = GX_CC_A1;
+                break;
+
+            case HSD_TE_CNST:
+                HSD_CheckAssert("HSD_TExpAlphaInSub: sel != HSD_TE_A || sel != HSD_TE_X", sel == HSD_TE_A || sel == HSD_TE_X);
+                HSD_CheckAssert("HSD_TExpAlphaInSub: exp->cnst.comp != HSD_TE_X", exp->cnst.comp == HSD_TE_X);
+                tev->a_in[idx].sel = HSD_TE_X;
+                HSD_TExpRef(tev->a_in[idx].exp, tev->a_in[idx].sel);
+                break;
+
+            default:
+                HSD_Halt("HSD_TExpAlphaInSub: Unexpected a_in_type");
+            }
+        } else {
+            tev->a_in[idx].exp = NULL;
+            tev->a_in[idx].arg = HSD_TE_UNDEF;
+            switch (sel) {
+            case HSD_TE_1_8:
+                swap = 7;
+                break;
+            case HSD_TE_2_8:
+                swap = 6;
+                break;
+            case HSD_TE_3_8:
+                swap = 5;
+                break;
+            case HSD_TE_5_8:
+                swap = 3;
+                break;
+            case HSD_TE_6_8:
+                swap = 2;
+                break;
+            case HSD_TE_7_8:
+                swap = 1;
+                break;
+            default:
+                HSD_Halt("Unexpected kcsel");
+            }
+
+            if (tev->kasel == HSD_TE_UNDEF) {
+                tev->kasel = swap;
+            } else {
+                HSD_CheckAssert("HSD_TExpAlphaInSub: tev->kasel != swap", tev->kcsel != swap);
+            }
+            tev->a_in[idx].type = HSD_TE_KONST;
+        }
+    }
+    HSD_TExpUnref(texp, tev->a_in[idx].sel);
+    return;
+}
+
 //80383F50
 void HSD_TExpAlphaIn(HSD_TExp* texp, HSD_TEInput sel_a, HSD_TExp* exp_a, HSD_TEInput sel_b, HSD_TExp* exp_b,
     HSD_TEInput sel_c, HSD_TExp* exp_c, HSD_TEInput sel_d, HSD_TExp* exp_d)
 {
-    assert(HSD_TExpGetType(texp) == 1);
+    assert(HSD_TExpGetType(texp) == HSD_TE_TEV);
+    HSD_TExpAlphaInSub(&texp->tev, sel_a, exp_a, 0);
+    HSD_TExpAlphaInSub(&texp->tev, sel_b, exp_b, 1);
+    HSD_TExpAlphaInSub(&texp->tev, sel_c, exp_c, 2);
+    HSD_TExpAlphaInSub(&texp->tev, sel_d, exp_d, 3);
 }
 
 //80384050
