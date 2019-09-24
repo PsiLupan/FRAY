@@ -281,6 +281,8 @@ typedef struct _Player {
     f32 x2344_flags;
 } Player;
 
+void Player_ChangeActionState(HSD_GObj*, u32, u32, HSD_GObj*, f32, f32, f32);
+
 void Player_SetCharacterFlags(HSD_GObj*, u32, u32);
 
 u32 Player_BoneID2Index(Player*, u32);
