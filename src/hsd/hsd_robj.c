@@ -238,7 +238,7 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc)
         u32 flags = robj->flags & 0xfffffff;
         switch (type) {
         case 0:
-            expLoadDesc(robj->u.exp, desc->u.exp);
+            expLoadDesc(&robj->u.exp, desc->u.exp);
             break;
         case REFTYPE_JOBJ:
             break;
@@ -250,7 +250,7 @@ HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc* desc)
             }
             break;
         case 0x30000000:
-            bcexpLoadDesc(robj->u.exp, desc->u.bcexp);
+            bcexpLoadDesc(&robj->u.exp, desc->u.bcexp);
             robj->flags = robj->flags & 0x8fffffff;
             break;
         case REFTYPE_IKHINT:
@@ -323,7 +323,7 @@ void HSD_RvalueRemoveAll(HSD_Rvalue* rvalue)
     HSD_Rvalue* next;
     while (next = rvalue, next != NULL) {
         rvalue = next->next;
-        if (next != null) {
+        if (next != NULL) {
             HSD_JObjUnrefThis(next->jobj);
             HSD_ObjFree(&rvalue_alloc_data, (HSD_ObjAllocLink*)next);
         }
