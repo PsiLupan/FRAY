@@ -1,8 +1,6 @@
 #ifndef _item_h_
 #define _item_h_
 
-#include <stdbool.h>
-
 #include <gctypes.h>
 
 #include "gobj.h"

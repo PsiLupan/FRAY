@@ -98,7 +98,6 @@ void* HSD_AllocateFIFO(u32 size)
     void* fifo;
     fifo = HSD_MemAlloc(size);
     if (!fifo) {
-        assert(TRUE);
         HSD_Halt("Failed to allocate GFX FIFO\n");
     }
 
