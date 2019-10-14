@@ -22,10 +22,13 @@ void HSD_FogSet(HSD_Fog* fog)
         f32 far = HSD_CObjGetFar(cobj);
         f32 near = HSD_CObjGetNear(cobj);
         GX_SetFog(fog->type, fog->start, fog->end, near, far, color);
-        if (fog->fog_adj) {
+        if (fog->fog_adj == NULL) {
             GX_SetFogRangeAdj(0, 0, NULL);
         } else {
-            
+            f32 v[6];
+            GX_GetViewportv(v);
+            HSD_FogAdj* fogadj = fog->fog_adj;
+            //TODO
         }
     }
 }
@@ -47,8 +50,8 @@ void HSD_FogInit(HSD_Fog* fog, HSD_FogDesc* desc)
 {
     if (fog != NULL) {
         if (desc == NULL) {
-            f32 v[2];
-            //GXGetViewportv(v);
+            f32 v[6];
+            GX_GetViewportv(v);
             fog->type = 2;
             fog->start = v[0];
             fog->end = v[1];
@@ -79,10 +82,10 @@ void HSD_FogAdjInit(HSD_FogAdj* fog_adj, HSD_FogAdjDesc* desc)
 {
     if (fog_adj != NULL) {
         if (desc == NULL) {
-            f32 v[2];
-            //GXGetViewportv(v);
-            //fog_adj->width = v[1];
-            //fog_adj->center = fog_adj->width >> 1;
+            f32 v[6];
+            GX_GetViewportv(v);
+            fog_adj->width = v[1];
+            fog_adj->center = fog_adj->width >> 1;
             guMtxIdentity(fog_adj->mtx);
             fog_adj->mtx[3][0] = 0.0f;
             fog_adj->mtx[3][1] = 0.0f;

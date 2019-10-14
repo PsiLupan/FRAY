@@ -184,7 +184,7 @@ static BOOL setupNormalCamera(HSD_CObj* cobj){
     f64 top = cobj->viewport_top * (f64)tb;
     f64 bottom = (cobj->viewport_bottom * (f64)tb) - top;
     //if (DAT_804c1d98 == 0) {
-    GX_SetViewport(left,top,right,bottom, 0.f, 1.f);
+    GX_SetViewport_Wrapper(left,top,right,bottom, 0.f, 1.f);
     //}
     u64 s_top = (u64)((f64)cobj->scissor_top * tb);
     u64 s_left = (u64)((f64)cobj->scissor_left * lr);
@@ -235,7 +235,7 @@ BOOL HSD_CObjSetCurrent(HSD_CObj* cobj)
         break;
 
     case HSD_RP_OFFSCREEN:
-        GX_SetViewport(cobj->viewport_left, cobj->viewport_top,
+        GX_SetViewport_Wrapper(cobj->viewport_left, cobj->viewport_top,
             cobj->viewport_right - cobj->viewport_left,
             cobj->viewport_bottom - cobj->viewport_top,
             0.f, 1.f);

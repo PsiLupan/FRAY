@@ -4,6 +4,40 @@
 
 #include "hsd_memory.h"
 
+static struct _GXViewport {
+   f32 x0,y0,x1,y1,n,f;
+} GXViewport;
+
+void GX_SetViewport_Wrapper(f32 xOrig, f32 yOrig, f32 wd,f32 ht, f32 nearZ ,f32 farZ)
+{
+    GXViewport.x0 = xOrig;
+    GXViewport.y0 = yOrig - 0.5f;
+    GXViewport.x1 = wd;
+    GXViewport.y1 = ht;
+    GXViewport.n = nearZ;
+    GXViewport.f = farZ;
+    GX_SetViewport(xOrig, yOrig, wd, ht, nearZ, farZ);
+}
+
+void GX_GetViewport(f32* xOrig,f32* yOrig,f32* wd,f32* ht,f32* nearZ,f32* farZ)
+{
+    *xOrig = GXViewport.x0;
+    *yOrig = GXViewport.y0;
+    *wd = GXViewport.x1;
+    *ht = GXViewport.y1;
+    *nearZ = GXViewport.n;
+    *farZ = GXViewport.f;
+}
+
+void GX_GetViewportv(f32* vp){
+    vp[0] = GXViewport.x0;
+    vp[1] = GXViewport.y0;
+    vp[2] = GXViewport.x1;
+    vp[3] = GXViewport.y1;
+    vp[4] = GXViewport.n;
+    vp[5] = GXViewport.f;
+}
+
 f32 HSD_ClampFloat(f32 val, f32 min, f32 max)
 {
     if (val > max) {
