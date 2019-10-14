@@ -6,4 +6,5 @@ main.dol
 main.elf
 ntsc102.c
 .vscode/
+.vs/
 .DS_Store
