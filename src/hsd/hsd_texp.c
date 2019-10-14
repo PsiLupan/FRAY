@@ -1061,13 +1061,11 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_
     HSD_TExpSchedule(num, list, order, &res);
     for (u32 i = 0; i < num; ++i) {
         u32 val = TExpAssignReg(order[i], &res);
-        HSD_CheckAssert("val >= 0", val >= 0);
+        HSD_CheckAssert("val < 0", val >= 0);
     }
 
-    HSD_TExp** t = (HSD_TExp**)(order + num);
-    while (num += -1, num >= 0) {
-        HSD_TExpSimplify2(*t);
-        t += -1;
+    for(; num >= 0; num--) {
+        HSD_TExpSimplify2(order[num]);
     }
 
     num = HSD_TExpMakeDag(texp, list);
@@ -2529,6 +2527,8 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
 u32 HSD_TExpSimplify2(HSD_TExp* texp)
 {
     HSD_TExp* t;
+
+    HSD_CheckAssert("HSD_TExpSimplify2: texp == NULL", texp != NULL);
 
     for (u32 i = 0; i < 4; i++) {
         t = texp->tev.c_in[i].exp;
