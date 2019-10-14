@@ -1037,11 +1037,23 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_
     u32 init_aprev = 1;
     HSD_TExp* order[32];
     HSD_TExpDag list[32];
+    u32 type;
 
     assert(tevdesc != NULL);
     assert(list != NULL);
-    HSD_TExpRef(texp, 1);
-    HSD_TExpRef(texp, 5);
+    
+    type = HSD_TExpGetType(texp);
+    if (type == HSD_TE_CNST) {
+        texp->cnst.ref += 1;
+    } else if (type == HSD_TE_TEV) {
+        texp->tev.c_ref += 1;
+    }
+    if (type == HSD_TE_CNST) {
+        texp->cnst.ref += 1;
+    } else if (type == HSD_TE_TEV) {
+        texp->tev.a_ref += 1;
+    }
+    
     HSD_TExpSimplify(texp);
 
     memset(&res, 0, sizeof(HSD_TExpRes));

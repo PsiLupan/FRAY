@@ -3,7 +3,6 @@
 
 #include <string.h>
 
-#include <gccore.h>
 #include <gctypes.h>
 
 #include "hsd/hsd_fog.h"
