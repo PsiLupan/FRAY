@@ -2,6 +2,7 @@
 #include "hsd/hsd_memory.h"
 
 #include <malloc.h>
+#include <math.h>
 
 #include <di/di.h>
 
@@ -102,7 +103,14 @@ void Archive_LoadFileIntoMemory(char* filepath, u8* mem, u32 filelength)
     }
     dvdcmdblk cmdblk;
     u32 addr = handle.addr;
-    DVD_ReadPrio(&cmdblk, mem, filelength, addr, 2);
+    if(filelength > 0x4000){
+        u32 max_iterations = (u32)ceil((double)filelength / (double)0x4000);
+        for(u32 i = 0; i < max_iterations; ++i){
+            DVD_ReadPrio(&cmdblk, mem + (i * 0x4000), 0x4000, addr + (i * 0x4000), 2);
+        }
+    }else{
+        DVD_ReadPrio(&cmdblk, mem, filelength, addr, 2);
+    }
 }
 
 //80016A54
