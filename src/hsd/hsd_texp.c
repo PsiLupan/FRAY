@@ -662,7 +662,28 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
     HSD_TECnst* cnst = &tev->c_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
         if (cnst->comp == HSD_TE_X) {
-            //TODO
+            for (u32 i = 0; i < 4; ++i) {
+                if (res->reg[i].alpha == 0) {
+                    res->reg[i].alpha = 1;
+                    cnst->reg = i + 1;
+                    cnst->idx = 3;
+                    tev->kcsel = cnst->reg; //WRONG
+                    tev->c_in[idx].type = HSD_TE_KONST;
+                    tev->c_in[idx].arg = 0xE;
+                }
+            }
+
+            for (u32 i = 0; i < 4; ++i) {
+                if (res->reg[i].color < 3) {
+                    cnst->reg = i;
+                    u8 color = res->reg[i].color;
+                    res->reg[i].color += 1;
+                    cnst->idx = color;
+                    tev->kcsel = cnst->reg; //WRONG
+                    tev->c_in[idx].type = HSD_TE_KONST;
+                    tev->c_in[idx].arg = 0xE;
+                }
+            }
         } else {
             for (u32 i = 0; i < 4; ++i) {
                 if (res->reg[i].color == 0) {
@@ -1064,7 +1085,7 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_
         HSD_CheckAssert("val < 0", val >= 0);
     }
 
-    for(; num >= 0; num--) {
+    for(num = num - 1; num >= 0; --num) {
         HSD_TExpSimplify2(order[num]);
     }
 
@@ -2532,7 +2553,6 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
 
     for (u32 i = 0; i < 4; i++) {
         t = texp->tev.c_in[i].exp;
-        HSD_CheckAssert("HSD_TExpSimplify2: c_in[i].exp == NULL", t != NULL);
         if (texp->tev.c_in[i].type == HSD_TE_TEV && texp->tev.c_in[i].sel == 1) {
             if (t->tev.c_op == 0 && t->tev.c_in[0].sel == 7 && t->tev.c_in[1].sel == 7 && t->tev.c_bias == 0 && t->tev.c_scale == 0) {
                 if (t->tev.c_in[3].type == HSD_TE_KONST) {
@@ -2556,7 +2576,6 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
 
     for (u32 i = 0; i < 4; i++) {
         t = texp->tev.a_in[i].exp;
-        HSD_CheckAssert("HSD_TExpSimplify2: a_in[i].exp == NULL", t != NULL);
         if (texp->tev.a_in[i].type == HSD_TE_TEV) {
             if (t->tev.a_op == 0 && t->tev.a_in[0].sel == 7 && t->tev.a_in[1].sel == 7 && t->tev.a_bias == 0 && t->tev.a_scale == 0) {
                 if (t->tev.a_in[3].type == HSD_TE_KONST) {
