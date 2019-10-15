@@ -18,13 +18,15 @@ static u32* start_memory = NULL; //r13_4428
 static lwpq_t dvd_wait_queue;
 
 u8* fst;
-u8* fst_info[32];
+u8* fst_info;
 
 dvdcmdblk cmdblk;
 
 static void __DVDFSInit(void)
 {
     start_memory = (u32*)(0x80000000);
+
+    fst_info = memalign(32, 32);
 
     assert(DVD_ReadPrio(&cmdblk, fst_info, 32, 0x424 / 4 << 2, 2) > 0);
 
