@@ -1086,17 +1086,8 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_
     assert(list != NULL);
 
     type = HSD_TExpGetType(texp);
-    if (type == HSD_TE_CNST) {
-        texp->cnst.ref += 1;
-    } else if (type == HSD_TE_TEV) {
-        texp->tev.c_ref += 1;
-    }
-    if (type == HSD_TE_CNST) {
-        texp->cnst.ref += 1;
-    } else if (type == HSD_TE_TEV) {
-        texp->tev.a_ref += 1;
-    }
-
+    HSD_TExpRef(texp,1);
+    HSD_TExpRef(texp,5);
     HSD_TExpSimplify(texp);
 
     memset(&res, 0, sizeof(HSD_TExpRes));
@@ -1107,7 +1098,7 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_
         HSD_CheckAssert("val < 0", val >= 0);
     }
 
-    for(num = num - 1; num >= 0; --num) {
+    while(num = num - 1, -1 < num) {
         HSD_TExpSimplify2(order[num]);
     }
 
@@ -1118,7 +1109,7 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_
         HSD_TExpTevDesc* tdesc = hsdAllocMemPiece(sizeof(HSD_TExpTevDesc));
         u32 stage = HSD_Index2TevStage(i);
         tdesc->desc.stage = stage;
-        TExp2TevDesc(order[num - i], tdesc, &init_cprev, &init_aprev);
+        TExp2TevDesc(order[(num - i) - 1], tdesc, &init_cprev, &init_aprev);
         tdesc->desc.next = (HSD_TevDesc*)(*tevdesc);
         *tevdesc = tdesc;
     }
