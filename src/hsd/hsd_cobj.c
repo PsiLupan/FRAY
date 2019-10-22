@@ -377,9 +377,9 @@ f32 HSD_CObjGetEyeDistance(HSD_CObj* cobj)
 s32 HSD_CObjGetUpVector(HSD_CObj* cobj, guVector* vec){
     if(cobj != NULL && vec != NULL){
         if ((cobj->flags & 1) != 0) {
-            vec->x = cobj->roll;
-            vec->y = cobj->pitch;
-            vec->z = cobj->yaw;
+            vec->x = cobj->u.up.x;
+            vec->y = cobj->u.up.y;
+            vec->z = cobj->u.up.z;
             return 0;
         }
         guVector eye;
@@ -442,12 +442,12 @@ void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec)
             if (use_local == TRUE) {
                 //uvec = local_vec; No fucking clue how the local vector ends up on the stack
             }
-            if (cobj->roll != uvec.x || cobj->pitch != uvec.y || cobj->yaw != uvec.z) {
+            if (cobj->u.up.x != uvec.x || cobj->u.up.y != uvec.y || cobj->u.up.z != uvec.z) {
                 HSD_CObjSetMtxDirty(cobj);
             }
-            cobj->roll = uvec.x;
-            cobj->pitch = uvec.y;
-            cobj->yaw = uvec.z;
+            cobj->u.up.x = uvec.x;
+            cobj->u.up.y = uvec.y;
+            cobj->u.up.z = uvec.z;
         }
     }
 }
@@ -495,10 +495,10 @@ void HSD_CObjSetRoll(HSD_CObj* cobj, f32 roll)
 {
     if (cobj != NULL) {
         if ((cobj->flags & 1) == 0) {
-            if (cobj->roll != roll) {
+            if (cobj->u.roll != roll) {
                 cobj->flags |= 0xC0000000;
             }
-            cobj->roll = roll;
+            cobj->u.roll = roll;
         } else {
             //FUCK YOU I'M NOT WRITING ALL THIS
         }
@@ -895,10 +895,10 @@ static int CObjLoad(HSD_CObj* cobj, HSD_CObjDesc* desc)
     cobj->far = desc->far;
     if ((desc->flags & 1) == 0) {
         if ((cobj->flags & 1) == 0) {
-            if (cobj->roll != desc->roll) {
+            if (cobj->u.roll != desc->roll) {
                 cobj->flags |= 0xC0000000;
             }
-            cobj->roll = desc->roll;
+            cobj->u.roll = desc->roll;
         } else {
             //roll2upvec(cobj, ??);
             //HSD_CObjSetUpVector(cobj, ??);
