@@ -662,26 +662,27 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
     HSD_TECnst* cnst = &tev->c_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
         if (cnst->comp == HSD_TE_X) {
-            for (u32 i = 0; i < 4; ++i) {
+            for (u32 i = 1; i < 4; i++) {
                 if (res->reg[i].alpha == 0) {
                     res->reg[i].alpha = 1;
-                    cnst->reg = i + 1;
+                    cnst->reg = i;
                     cnst->idx = 3;
                     tev->kcsel = cnst->reg; //WRONG
                     tev->c_in[idx].type = HSD_TE_KONST;
                     tev->c_in[idx].arg = 0xE;
+                    return 0;
                 }
             }
 
             for (u32 i = 0; i < 4; ++i) {
                 if (res->reg[i].color < 3) {
                     cnst->reg = i;
-                    u8 color = res->reg[i].color;
+                    cnst->idx = res->reg[i].color;
                     res->reg[i].color += 1;
-                    cnst->idx = color;
                     tev->kcsel = cnst->reg; //WRONG
                     tev->c_in[idx].type = HSD_TE_KONST;
                     tev->c_in[idx].arg = 0xE;
+                    return 0;
                 }
             }
         } else {
@@ -693,12 +694,12 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                     tev->kcsel = cnst->reg; //WRONG
                     tev->c_in[idx].type = HSD_TE_KONST;
                     tev->c_in[idx].arg = 0xE;
+                    return 0;
                 }
             }
         }
-        return -1;
     }
-    if (cnst->reg < 4) {
+    else if (cnst->reg < 4) {
         if (cnst->comp == HSD_TE_X) {
             tev->kcsel = cnst->idx; //WRONG
             tev->c_in[idx].type = HSD_TE_KONST;
@@ -718,15 +719,36 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 {
     HSD_TECnst* cnst = &tev->a_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
-        //TODO
-        return -1;
+        for(u32 i = 1; i < 4; i++){
+            if(res->reg[i].alpha == 0){
+                res->reg[i].alpha = 1;
+                cnst->reg = i;
+                cnst->idx = 3;
+                tev->kasel = cnst->reg; //WRONG
+                tev->a_in[idx].type = HSD_TE_KONST;
+                tev->a_in[idx].arg = 0x6;
+                return 0;
+            }
+        }
+        for(u32 i = 0; i < 4; i++){
+            if(res->reg[i].color < 3){
+                cnst->reg = i;
+                cnst->idx = res->reg[i].color;
+                res->reg[i].color += 1;
+                tev->kasel = cnst->reg; //WRONG
+                tev->a_in[idx].type = HSD_TE_KONST;
+                tev->a_in[idx].arg = 0x6;
+                return 0;
+            }
+        }
     }
-    if (cnst->reg > 3) {
-        return -1;
+    else if (cnst->reg < 4) {
+        tev->kasel = cnst->reg; //WRONG
+        tev->a_in[idx].type = HSD_TE_KONST;
+        tev->a_in[idx].arg = 6;
+        return 0;
     }
-    tev->kasel = cnst->idx; //WRONG
-    tev->a_in[idx].type = HSD_TE_KONST;
-    tev->a_in[idx].arg = 6;
+    return -1;
 }
 
 //803846C0
