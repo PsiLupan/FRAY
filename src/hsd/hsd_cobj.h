@@ -26,9 +26,10 @@ typedef struct _HSD_CObj {
     u16 scissor_bottom; //0x22
     HSD_WObj* eye_position; //0x24
     HSD_WObj* interest; //0x28
-    f32 roll; //0x2C
-    f32 pitch; //0x30
-    f32 yaw; //0x34
+    union {
+        f32 roll; //0x2C
+        guVector up; //0x2C - 0x34
+    } u;
     f32 near; //0x38
     f32 far; //0x3C
     union {
