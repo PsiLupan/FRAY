@@ -5,6 +5,9 @@
 
 static u32 num_texgens = 0; //r13_40A4
 
+u8 c_reg[4]; //r2_11F8
+u8 a_reg[4]; //r2_11F4
+
 u8 TevReg[48]; //Technically a struct
 
 //80362478
@@ -255,7 +258,6 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** 
             }
             return result;
         }
-        //BUG: Due to the resulting code, texp could be null potentially and lead to a bad deref
         if (texp->type == 4 && texp->cnst.val == val && texp->cnst.comp == comp) {
             break;
         }
@@ -1134,6 +1136,59 @@ void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tdesc)
 //80385798
 static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
 {
+    u32 type, i, j;
+    s32 c_use = 4;
+    s32 a_use = 4;
+
+    num -= 1;
+    do {
+        if (num < 0){
+            return (8 - c_use) - a_use;
+        }
+        
+        HSD_TETev* tev = list[order[num]].tev;
+        for (i = 0; i < 4; ++i){
+            type = HSD_TExpGetType(tev->c_in[i].exp);
+            if (type == HSD_TE_TEV){
+                if(tev->c_in[i].sel == GX_ENABLE){
+                    tev->c_in[i].exp->tev.c_dst -= 1;
+                }else{
+                    tev->c_in[i].exp->tev.a_dst -= 1;
+                }
+            }
+            type = HSD_TExpGetType(tev->a_in[i].exp);
+            if (type == HSD_TE_TEV){
+                tev->c_in[i].exp->tev.a_dst -= 1;
+            }
+        }
+        
+        if(tev->c_ref > 0){
+            for(i = 4, j = 3; i > 0; --i, --j){
+                if(c_reg[j] == 0){
+                    c_reg[j] = tev->c_ref;
+                    tev->c_dst = j;
+                    if (j < c_use){
+                        c_use = j;
+                    }
+                    break;
+                }
+            }
+        }
+
+        if(tev->a_ref > 0){
+            for(i = 4, j = 3; i > 0; --i, --j){
+                if(a_reg[j] == 0){
+                    a_reg[j] = tev->a_ref;
+                    tev->a_dst = j;
+                    if (j < a_use){
+                        a_use = j;
+                    }
+                    break;
+                }
+            }
+        }
+        num -= 1;
+    } while (true);
 }
 
 //80385B8C
