@@ -813,6 +813,8 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
             HSD_VISetXFBDrawDone();
             return;
         }
+        //For clarity sake, this the game does the following with the PAD Alarm. 
+        //Doing it here is technically the fix for poll drift.
         HSD_PadRenewRawStatus();
         //sub_80392E80(); Something memory card related
         u8 pad_queue_count;
