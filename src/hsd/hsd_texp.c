@@ -1634,7 +1634,7 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
     order_dag(num, dep_mtx, full_dep_mtx, list, 0, 0, 0, 0, order, &min, min_order);
 
     for (i = 0; i < num; ++i) {
-        result[i] = (HSD_TExp*)&list[min_order[i]].tev;
+        result[i] = (HSD_TExp*)list[min_order[i]].tev;
 
         if (result[i]->tev.c_dst != HSD_TE_UNDEF) {
             resource->reg[result[i]->tev.c_dst].color = 3;
