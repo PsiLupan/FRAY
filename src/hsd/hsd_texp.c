@@ -1095,7 +1095,9 @@ void HSD_TExpSetReg(HSD_TExp* texp)
             }
             return;
         }
-        HSD_CheckAssert("HSD_TExpSetReg: texp->type != HSD_TE_CNST", texp->type == HSD_TE_CNST);
+        if(texp->type != 4){
+            HSD_Halt("What the fuck GCC");
+        }
         if (texp->cnst.reg < 8) {
             i = i | 1 << texp->cnst.reg;
             switch (texp->cnst.ctype) {
@@ -1137,23 +1139,32 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                 break;
             }
 
-            if (texp->cnst.reg < 4 && texp->cnst.comp != HSD_TE_RGB) {
-                switch (texp->cnst.idx) {
-                case 0:
+            if (texp->cnst.comp != HSD_TE_RGB) {
+                if (texp->cnst.reg < 4) {
+                    switch (texp->cnst.idx) {
+                    case 0:
+                        color[texp->cnst.reg].r = te_res;
+                        break;
+
+                    case 1:
+                        color[texp->cnst.reg].g = te_res;
+                        break;
+
+                    case 2:
+                        color[texp->cnst.reg].b = te_res;
+                        break;
+
+                    case 3:
+                        color[texp->cnst.reg].a = te_res;
+                        break;
+                    }
+                } else {
+                    if (texp->cnst.idx == 3) {
+                        color[texp->cnst.reg].a = te_res;
+                    }
                     color[texp->cnst.reg].r = te_res;
-                    break;
-
-                case 1:
                     color[texp->cnst.reg].g = te_res;
-                    break;
-
-                case 2:
                     color[texp->cnst.reg].b = te_res;
-                    break;
-
-                case 3:
-                    color[texp->cnst.reg].a = te_res;
-                    break;
                 }
             } else {
                 color[texp->cnst.reg].r = te_res;
