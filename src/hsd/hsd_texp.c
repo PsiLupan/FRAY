@@ -1170,17 +1170,17 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
             if (type == HSD_TE_TEV) {
                 if (tev->c_in[i].sel == GX_ENABLE) {
                     dst = tev->c_in[i].exp->tev.c_dst;
-                    c_reg[dst] = c_reg[dst] -= 1;
+                    c_reg[dst] -= 1;
                 } else {
                     dst = tev->c_in[i].exp->tev.a_dst;
-                    a_reg[dst] = a_reg[dst] -= 1;
+                    a_reg[dst] -= 1;
 
                 }
             }
             type = HSD_TExpGetType(tev->a_in[i].exp);
             if (type == HSD_TE_TEV) {
                 dst = tev->a_in[i].exp->tev.a_dst;
-                a_reg[dst] = a_reg[dst] -= 1;
+                a_reg[dst] -= 1;
             }
         }
 
