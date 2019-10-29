@@ -223,14 +223,10 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
 //803830FC
 HSD_TExp* HSD_TExpTev(HSD_TExp** list)
 {
-    if (list == NULL) {
-        HSD_Halt("HSD_TExpTev: List is NULL");
-    }
+    HSD_CheckAssert("HSD_TExpTev: List is NULL", list != NULL);
 
     HSD_TExp* texp = (HSD_TExp*)hsdAllocMemPiece(sizeof(HSD_TETev));
-    if (texp == NULL) {
-        HSD_Halt("HSD_TExpTev: No free memory");
-    }
+    HSD_CheckAssert("HSD_TExpTev: No free memory", texp != NULL);
 
     memset(texp, 0xFF, sizeof(HSD_TExp));
     texp->type = HSD_TE_TEV;
@@ -368,13 +364,13 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
             swap = 1;
             break;
         default:
-            HSD_Halt("Unexpected kcsel");
+            HSD_Halt("HSD_TExpColorInSub: Unexpected kcsel");
         }
 
         if (tev->kcsel == HSD_TE_UNDEF) {
             tev->kcsel = swap;
         } else {
-            HSD_CheckAssert("tev cannot select multiple konst", tev->kcsel != swap);
+            HSD_CheckAssert("HSD_TExpColorInSub: tev cannot select multiple konst", tev->kcsel != swap);
         }
 
         goto END;
@@ -471,7 +467,7 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
     if (tev->tex_swap == HSD_TE_UNDEF) {
         tev->tex_swap = swap;
     } else {
-        HSD_CheckAssert("swap == HSD_TE_UNDEF || tev->tex_swap == swap", swap == HSD_TE_UNDEF || tev->tex_swap == swap);
+        HSD_CheckAssert("HSD_TExpColorInSub: swap == HSD_TE_UNDEF || tev->tex_swap == swap", swap == HSD_TE_UNDEF || tev->tex_swap == swap);
     }
 END:
     HSD_TExpUnref(texp, tev->c_in[idx].sel);
@@ -565,7 +561,7 @@ static void HSD_TExpAlphaInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
                 swap = 1;
                 break;
             default:
-                HSD_Halt("Unexpected kcsel");
+                HSD_Halt("HSD_TExpAlphaInSub: Unexpected kcsel");
             }
 
             if (tev->kasel == HSD_TE_UNDEF) {
@@ -1096,7 +1092,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
             return;
         }
         if(texp->type != 4){
-            HSD_Halt("What the fuck GCC");
+            HSD_Halt("HSD_TExpSetReg: texp->type != HSD_TE_CNST");
         }
         if (texp->cnst.reg < 8) {
             i = i | 1 << texp->cnst.reg;
