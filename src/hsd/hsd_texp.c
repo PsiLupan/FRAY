@@ -233,7 +233,7 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list)
     }
 
     memset(texp, 0xFF, sizeof(HSD_TExp));
-    texp->type = 1;
+    texp->type = HSD_TE_TEV;
     texp->tev.next = *list;
     *list = texp;
     texp->tev.c_ref = 0;
@@ -274,11 +274,11 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** 
             return result;
         }
         if (texp->type == 4 && texp->cnst.val == val && texp->cnst.comp == comp) {
+            HSD_CheckAssert("HSD_TExpCnst: ctype != type", texp->cnst.ctype == type);
             break;
         }
         texp = texp->cnst.next;
     }
-    HSD_CheckAssert("HSD_TExpCnst: ctype != type", texp->cnst.ctype == type);
     return texp;
 }
 
