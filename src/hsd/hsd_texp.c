@@ -214,7 +214,7 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
                 hsdFreeMemPiece(handle, sizeof(HSD_TETev));
                 handle = next;
             }
-        }else{
+        } else {
             handle = handle->cnst.next;
         }
     }
@@ -1069,6 +1069,100 @@ __attribute__((noinline)) static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDe
 //80384F28
 void HSD_TExpSetReg(HSD_TExp* texp)
 {
+    u32 i, j;
+    i = 0;
+
+    u32 te_res;
+    GXColor color[8];
+
+    while (true) {
+        if (texp == NULL) {
+            if (i != 0) {
+                GX_PixModeSync();
+                for (j = 0; j < 4; ++j) {
+                    if ((i & 1 << j) != 0) {
+                        GX_SetTevKColor(j, color[j]);
+                    }
+                }
+
+                for (j = 4; j < 7; ++j) {
+                    if ((i & 1 << j) != 0) {
+                        GX_SetTevColor(j, color[j]);
+                    }
+                }
+                HSD_StateInvalidate(HSD_STATE_TEV_REGISTER);
+                GX_PixModeSync();
+            }
+            return;
+        }
+        HSD_CheckAssert("HSD_TExpSetReg: texp->type != HSD_TE_CNST", texp->type == HSD_TE_CNST);
+        if (texp->cnst.reg < 8) {
+            i = i | 1 << texp->cnst.reg;
+            switch (texp->cnst.ctype) {
+            case HSD_TE_U8:
+                te_res = *(u8*)texp->cnst.val;
+                break;
+            case HSD_TE_U16:
+                te_res = *(u16*)texp->cnst.val;
+                if (te_res > 255) {
+                    te_res = 255;
+                }
+                break;
+
+            case HSD_TE_U32:
+                te_res = *(u32*)texp->cnst.val;
+                if (te_res > 255) {
+                    te_res = 255;
+                } else if (te_res < 0) {
+                    te_res = 0;
+                }
+                break;
+
+            case HSD_TE_F32:
+                te_res = (u32)(*(f32*)texp->cnst.val);
+                if (te_res > 255) {
+                    te_res = 255;
+                } else if (te_res < 0) {
+                    te_res = 0;
+                }
+                break;
+
+            case HSD_TE_F64:
+                te_res = (u32)(*(f64*)texp->cnst.val);
+                if (te_res > 255) {
+                    te_res = 255;
+                } else if (te_res < 0) {
+                    te_res = 0;
+                }
+                break;
+            }
+
+            if (texp->cnst.reg < 4 && texp->cnst.comp != HSD_TE_RGB) {
+                switch (texp->cnst.idx) {
+                case 0:
+                    color[texp->cnst.reg].r = te_res;
+                    break;
+
+                case 1:
+                    color[texp->cnst.reg].g = te_res;
+                    break;
+
+                case 2:
+                    color[texp->cnst.reg].b = te_res;
+                    break;
+
+                case 3:
+                    color[texp->cnst.reg].a = te_res;
+                    break;
+                }
+            } else {
+                color[texp->cnst.reg].r = te_res;
+                color[texp->cnst.reg].g = te_res;
+                color[texp->cnst.reg].b = te_res;
+            }
+        }
+        texp = texp->cnst.next;
+    }
 }
 
 //80385448
@@ -1174,7 +1268,6 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
                 } else {
                     dst = tev->c_in[i].exp->tev.a_dst;
                     a_reg[dst] -= 1;
-
                 }
             }
             type = HSD_TExpGetType(tev->a_in[i].exp);
