@@ -5,9 +5,6 @@
 
 static u32 num_texgens = 0; //r13_40A4
 
-u8 c_reg[4]; //r2_11F8
-u8 a_reg[4]; //r2_11F4
-
 u8 TevReg[48]; //Technically a struct
 
 //80362478
@@ -991,7 +988,7 @@ __attribute__((noinline)) static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDe
 
         desc->desc.u.tevconf.clr_clamp = texp->tev.c_clamp != 0;
 
-        HSD_CheckAssert("c_dst is undefined", texp->tev.c_dst != 0xFF);
+        HSD_CheckAssert("TExp2TevDesc: c_dst is undefined", texp->tev.c_dst != 0xFF);
 
         desc->desc.u.tevconf.clr_out_reg = texp->tev.c_dst;
         if (desc->desc.u.tevconf.clr_out_reg == 0) {
@@ -1155,11 +1152,14 @@ void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tdesc)
 static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
 {
     u32 type, i, j;
+    u8 dst;
     s32 c_use = 4;
     s32 a_use = 4;
+    static u8 c_reg[4]; //r2_11F8
+    static u8 a_reg[4]; //r2_11F4
 
-    num -= 1;
     do {
+        num -= 1;
         if (num < 0) {
             return (8 - c_use) - a_use;
         }
@@ -1169,14 +1169,18 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
             type = HSD_TExpGetType(tev->c_in[i].exp);
             if (type == HSD_TE_TEV) {
                 if (tev->c_in[i].sel == GX_ENABLE) {
-                    tev->c_in[i].exp->tev.c_dst -= 1;
+                    dst = tev->c_in[i].exp->tev.c_dst;
+                    c_reg[dst] = c_reg[dst] -= 1;
                 } else {
-                    tev->c_in[i].exp->tev.a_dst -= 1;
+                    dst = tev->c_in[i].exp->tev.a_dst;
+                    a_reg[dst] = a_reg[dst] -= 1;
+
                 }
             }
             type = HSD_TExpGetType(tev->a_in[i].exp);
             if (type == HSD_TE_TEV) {
-                tev->c_in[i].exp->tev.a_dst -= 1;
+                dst = tev->a_in[i].exp->tev.a_dst;
+                a_reg[dst] = a_reg[dst] -= 1;
             }
         }
 
@@ -1205,7 +1209,6 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
                 }
             }
         }
-        num -= 1;
     } while (true);
 }
 
