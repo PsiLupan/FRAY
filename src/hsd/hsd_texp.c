@@ -181,26 +181,44 @@ void _HSD_StateInvalidateTexCoordGen(void)
 //80382DDC
 HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
 {
-    HSD_TExp** handle;
+    HSD_TExp* handle;
+    HSD_TExp* next;
 
     if (all = 0) {
         if (type == HSD_TE_ALL || type == HSD_TE_TEV) {
-            for (HSD_TExp* next = texp_list->tev.next; next != NULL; next = next->tev.next) {
-                if (next->type == HSD_TE_TEV && next->tev.c_ref == 0) {
-                    HSD_TExpUnref(next, 1);
-                    HSD_TExpUnref(next, 5);
+            for (handle = texp_list; handle != NULL; handle = handle->tev.next) {
+                if (handle->type == HSD_TE_TEV && handle->tev.c_ref == 0) {
+                    HSD_TExpUnref(handle, 1);
+                    HSD_TExpUnref(handle, 5);
                 }
             }
         }
+    }
 
-        HSD_TExp* ptr = handle[0];
-        for (u32 i = 0; ptr != NULL; ++i, ptr = handle[i]) {
-            if (type == HSD_TE_ALL || type == ptr->type) {
+    handle = texp_list;
+    while (handle != NULL) {
+        HSD_TExpType handle_type = handle->type;
+        if (type == HSD_TE_ALL || type == handle_type) {
+            if (handle_type == HSD_TE_CNST) {
+                if (all == 0 && handle->cnst.ref != 0) {
+                    handle = handle->cnst.next;
+                    continue;
+                }
+                next = handle->cnst.next;
+                hsdFreeMemPiece(handle, sizeof(HSD_TECnst));
+                handle = next;
+            } else {
+                HSD_CheckAssert("TExpFreeList: type != HSD_TE_TEV", handle_type == HSD_TE_TEV);
+                if (all == 0 && (handle->tev.c_ref != 0 || handle->tev.a_ref != 0)) {
+                    handle = handle->tev.next;
+                    continue;
+                }
+                next = handle->tev.next;
+                hsdFreeMemPiece(handle, sizeof(HSD_TETev));
+                handle = next;
             }
-        }
-    } else {
-        HSD_TExp* ptr = handle[0];
-        for (u32 i = 0; ptr != NULL; ++i, ptr = handle[i]) {
+        }else{
+            handle = handle->cnst.next;
         }
     }
 }
@@ -700,8 +718,7 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                 }
             }
         }
-    }
-    else if (cnst->reg < 4) {
+    } else if (cnst->reg < 4) {
         if (cnst->comp == HSD_TE_X) {
             tev->kcsel = cnst->idx; //WRONG
             tev->c_in[idx].type = HSD_TE_KONST;
@@ -721,8 +738,8 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 {
     HSD_TECnst* cnst = &tev->a_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
-        for(u32 i = 1; i < 4; i++){
-            if(res->reg[i].alpha == 0){
+        for (u32 i = 1; i < 4; i++) {
+            if (res->reg[i].alpha == 0) {
                 res->reg[i].alpha = 1;
                 cnst->reg = i;
                 cnst->idx = 3;
@@ -732,8 +749,8 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                 return 0;
             }
         }
-        for(u32 i = 0; i < 4; i++){
-            if(res->reg[i].color < 3){
+        for (u32 i = 0; i < 4; i++) {
+            if (res->reg[i].color < 3) {
                 cnst->reg = i;
                 cnst->idx = res->reg[i].color;
                 res->reg[i].color += 1;
@@ -743,8 +760,7 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                 return 0;
             }
         }
-    }
-    else if (cnst->reg < 4) {
+    } else if (cnst->reg < 4) {
         tev->kasel = cnst->reg; //WRONG
         tev->a_in[idx].type = HSD_TE_KONST;
         tev->a_in[idx].arg = 6;
@@ -867,7 +883,7 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 }
 
 //80384B20
-static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev, u32* init_aprev)
+__attribute__((noinline)) static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev, u32* init_aprev)
 {
     u32 swap;
 
@@ -1088,8 +1104,8 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_
     assert(list != NULL);
 
     type = HSD_TExpGetType(texp);
-    HSD_TExpRef(texp,1);
-    HSD_TExpRef(texp,5);
+    HSD_TExpRef(texp, 1);
+    HSD_TExpRef(texp, 5);
     HSD_TExpSimplify(texp);
 
     memset(&res, 0, sizeof(HSD_TExpRes));
@@ -1100,7 +1116,7 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_
         HSD_CheckAssert("val < 0", val >= 0);
     }
 
-    while(num = num - 1, -1 < num) {
+    while (num = num - 1, -1 < num) {
         HSD_TExpSimplify2(order[num]);
     }
 
@@ -1116,9 +1132,11 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_
         *tevdesc = tdesc;
     }
 
-    HSD_TExp* free = HSD_TExpFreeList(*texp_list, 1, 1);
+    HSD_TExp* free = *texp_list;
+    HSD_TExpFreeList(*texp_list, 1, 1);
     *texp_list = free;
-    free = HSD_TExpFreeList(*texp_list, 4, 0);
+    free = *texp_list;
+    HSD_TExpFreeList(*texp_list, 4, 0);
     *texp_list = free;
 }
 
@@ -1142,32 +1160,32 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
 
     num -= 1;
     do {
-        if (num < 0){
+        if (num < 0) {
             return (8 - c_use) - a_use;
         }
-        
+
         HSD_TETev* tev = list[order[num]].tev;
-        for (i = 0; i < 4; ++i){
+        for (i = 0; i < 4; ++i) {
             type = HSD_TExpGetType(tev->c_in[i].exp);
-            if (type == HSD_TE_TEV){
-                if(tev->c_in[i].sel == GX_ENABLE){
+            if (type == HSD_TE_TEV) {
+                if (tev->c_in[i].sel == GX_ENABLE) {
                     tev->c_in[i].exp->tev.c_dst -= 1;
-                }else{
+                } else {
                     tev->c_in[i].exp->tev.a_dst -= 1;
                 }
             }
             type = HSD_TExpGetType(tev->a_in[i].exp);
-            if (type == HSD_TE_TEV){
+            if (type == HSD_TE_TEV) {
                 tev->c_in[i].exp->tev.a_dst -= 1;
             }
         }
-        
-        if(tev->c_ref > 0){
-            for(i = 4, j = 3; i > 0; --i, --j){
-                if(c_reg[j] == 0){
+
+        if (tev->c_ref > 0) {
+            for (i = 4, j = 3; i > 0; --i, --j) {
+                if (c_reg[j] == 0) {
                     c_reg[j] = tev->c_ref;
                     tev->c_dst = j;
-                    if (j < c_use){
+                    if (j < c_use) {
                         c_use = j;
                     }
                     break;
@@ -1175,12 +1193,12 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
             }
         }
 
-        if(tev->a_ref > 0){
-            for(i = 4, j = 3; i > 0; --i, --j){
-                if(a_reg[j] == 0){
+        if (tev->a_ref > 0) {
+            for (i = 4, j = 3; i > 0; --i, --j) {
+                if (a_reg[j] == 0) {
                     a_reg[j] = tev->a_ref;
                     tev->a_dst = j;
-                    if (j < a_use){
+                    if (j < a_use) {
                         a_use = j;
                     }
                     break;
