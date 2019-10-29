@@ -1151,7 +1151,7 @@ void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tdesc)
 //80385798
 static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
 {
-    u32 type, i, j;
+    u32 type, i;
     u8 dst;
     s32 c_use = 4;
     s32 a_use = 4;
@@ -1185,12 +1185,12 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
         }
 
         if (tev->c_ref > 0) {
-            for (i = 4, j = 3; i > 0; --i, --j) {
-                if (c_reg[j] == 0) {
-                    c_reg[j] = tev->c_ref;
-                    tev->c_dst = j;
-                    if (j < c_use) {
-                        c_use = j;
+            for (i = 3; i >= 0; --i) {
+                if (c_reg[i] == 0) {
+                    c_reg[i] = tev->c_ref;
+                    tev->c_dst = i;
+                    if (i < c_use) {
+                        c_use = i;
                     }
                     break;
                 }
@@ -1198,12 +1198,12 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
         }
 
         if (tev->a_ref > 0) {
-            for (i = 4, j = 3; i > 0; --i, --j) {
-                if (a_reg[j] == 0) {
-                    a_reg[j] = tev->a_ref;
-                    tev->a_dst = j;
-                    if (j < a_use) {
-                        a_use = j;
+            for (i = 3; i >= 0; --i) {
+                if (a_reg[i] == 0) {
+                    a_reg[i] = tev->a_ref;
+                    tev->a_dst = i;
+                    if (i < a_use) {
+                        a_use = i;
                     }
                     break;
                 }
