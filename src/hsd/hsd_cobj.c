@@ -1,5 +1,7 @@
 #include "hsd_cobj.h"
 
+#include <math.h>
+
 #include "hsd_display.h"
 #include "hsd_memory.h"
 
@@ -153,20 +155,20 @@ u8 makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx)
     switch (cobj->projection_type) {
     case PROJ_PERSPECTIVE:
         isOrtho = 0;
-        guPerspective(mtx, cobj->projection_param.perspective.fov, cobj->projection_param.perspective.aspect, 
-                      cobj->near, cobj->far);
+        guPerspective(mtx, cobj->projection_param.perspective.fov, cobj->projection_param.perspective.aspect,
+            cobj->near, cobj->far);
         break;
 
     case PROJ_FRUSTRUM:
         isOrtho = 0;
-        guFrustum(mtx, cobj->projection_param.frustrum.top, cobj->projection_param.frustrum.bottom, cobj->projection_param.frustrum.left, 
-                  cobj->projection_param.frustrum.right, cobj->near, cobj->far);
+        guFrustum(mtx, cobj->projection_param.frustrum.top, cobj->projection_param.frustrum.bottom, cobj->projection_param.frustrum.left,
+            cobj->projection_param.frustrum.right, cobj->near, cobj->far);
         break;
 
     case PROJ_ORTHO:
         isOrtho = 1;
-        guOrtho(mtx, cobj->projection_param.ortho.top, cobj->projection_param.ortho.bottom, cobj->projection_param.ortho.left, 
-                cobj->projection_param.ortho.right, cobj->near, cobj->far);
+        guOrtho(mtx, cobj->projection_param.ortho.top, cobj->projection_param.ortho.bottom, cobj->projection_param.ortho.left,
+            cobj->projection_param.ortho.right, cobj->near, cobj->far);
         break;
 
     default:
@@ -176,7 +178,8 @@ u8 makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx)
 }
 
 //80367C28
-static BOOL setupNormalCamera(HSD_CObj* cobj){
+static BOOL setupNormalCamera(HSD_CObj* cobj)
+{
     u16 lr = 640; //804C1D84 and 804C1D8C
     u16 tb = 480; //804C1D86 and 804C1D90
     f64 left = (f64)cobj->viewport_left * (f64)lr;
@@ -184,7 +187,7 @@ static BOOL setupNormalCamera(HSD_CObj* cobj){
     f64 top = cobj->viewport_top * (f64)tb;
     f64 bottom = (cobj->viewport_bottom * (f64)tb) - top;
     //if (DAT_804c1d98 == 0) {
-    GX_SetViewport_Wrapper(left,top,right,bottom, 0.f, 1.f);
+    GX_SetViewport_Wrapper(left, top, right, bottom, 0.f, 1.f);
     //}
     u64 s_top = (u64)((f64)cobj->scissor_top * tb);
     u64 s_left = (u64)((f64)cobj->scissor_left * lr);
@@ -192,19 +195,19 @@ static BOOL setupNormalCamera(HSD_CObj* cobj){
     u64 s_bottom = (u64)(((f64)cobj->scissor_bottom * tb) - s_top);
     GX_SetScissor(s_left, s_top, s_right, s_bottom);
     Mtx44 mtx;
-    switch(cobj->projection_type){
-        case PROJ_PERSPECTIVE:
+    switch (cobj->projection_type) {
+    case PROJ_PERSPECTIVE:
         guPerspective(mtx, cobj->projection_param.perspective.fov, cobj->projection_param.perspective.aspect, cobj->near, cobj->far);
         break;
 
-        case PROJ_FRUSTRUM:
-        guFrustum(mtx, cobj->projection_param.frustrum.top, cobj->projection_param.frustrum.bottom, cobj->projection_param.frustrum.left, 
-                  cobj->projection_param.frustrum.right, cobj->near, cobj->far);
+    case PROJ_FRUSTRUM:
+        guFrustum(mtx, cobj->projection_param.frustrum.top, cobj->projection_param.frustrum.bottom, cobj->projection_param.frustrum.left,
+            cobj->projection_param.frustrum.right, cobj->near, cobj->far);
         break;
 
-        case PROJ_ORTHO:
-        guOrtho(mtx, cobj->projection_param.ortho.top, cobj->projection_param.ortho.bottom, cobj->projection_param.ortho.left, 
-                cobj->projection_param.ortho.right, cobj->near, cobj->far);
+    case PROJ_ORTHO:
+        guOrtho(mtx, cobj->projection_param.ortho.top, cobj->projection_param.ortho.bottom, cobj->projection_param.ortho.left,
+            cobj->projection_param.ortho.right, cobj->near, cobj->far);
         break;
     }
     GX_LoadProjectionMtx(mtx, GX_PERSPECTIVE);
@@ -252,11 +255,11 @@ BOOL HSD_CObjSetCurrent(HSD_CObj* cobj)
         HSD_Halt("Unknown renderpass");
     }
 
-    if(res == FALSE){
+    if (res == FALSE) {
         return FALSE;
-    }else{
-        if ((cobj->flags & 2) == 0){
-            if(HSD_CObjMtxIsDirty(cobj)){
+    } else {
+        if ((cobj->flags & 2) == 0) {
+            if (HSD_CObjMtxIsDirty(cobj)) {
                 guVector eye_pos;
                 guVector up;
                 guVector interest;
@@ -334,7 +337,7 @@ s32 HSD_CObjGetEyeVector(HSD_CObj* cobj, guVector* vec)
 
         guVecSub(&interest_pos, &eye_pos, vec);
 
-        if(vec == NULL){
+        if (vec == NULL) {
             return -1;
         }
         if ((f32)((u32)vec->x & 0x7FFFFFFF) > FLT_MIN
@@ -374,8 +377,9 @@ f32 HSD_CObjGetEyeDistance(HSD_CObj* cobj)
 }
 
 //80378E70
-s32 HSD_CObjGetUpVector(HSD_CObj* cobj, guVector* vec){
-    if(cobj != NULL && vec != NULL){
+s32 HSD_CObjGetUpVector(HSD_CObj* cobj, guVector* vec)
+{
+    if (cobj != NULL && vec != NULL) {
         if ((cobj->flags & 1) != 0) {
             vec->x = cobj->u.up.x;
             vec->y = cobj->u.up.y;
@@ -384,12 +388,12 @@ s32 HSD_CObjGetUpVector(HSD_CObj* cobj, guVector* vec){
         }
         guVector eye;
         s32 eye_res = HSD_CObjGetEyeVector(cobj, &eye);
-        if(eye_res == 0){
+        if (eye_res == 0) {
             //TODO
         }
         return 0;
     }
-    if(vec != NULL){
+    if (vec != NULL) {
         vec->x = 0.f;
         vec->y = 1.f;
         vec->z = 0.f;
@@ -464,7 +468,8 @@ MtxP HSD_CObjGetViewingMtxPtrDirect(HSD_CObj* cobj)
 }
 
 //80369574
-BOOL HSD_CObjMtxIsDirty(HSD_CObj* cobj){
+BOOL HSD_CObjMtxIsDirty(HSD_CObj* cobj)
+{
     if ((cobj->flags & 0x40000000) == 0) {
         if (cobj->eye_position != NULL && (cobj->eye_position->flags & 2) != 0) {
             return TRUE;
@@ -493,6 +498,9 @@ MtxP HSD_CObjGetInvViewingMtxPtrDirect(HSD_CObj* cobj)
 //803699C0
 void HSD_CObjSetRoll(HSD_CObj* cobj, f32 roll)
 {
+    guVector eye, up, res;
+    Mtx rmtx;
+
     if (cobj != NULL) {
         if ((cobj->flags & 1) == 0) {
             if (cobj->u.roll != roll) {
@@ -500,7 +508,36 @@ void HSD_CObjSetRoll(HSD_CObj* cobj, f32 roll)
             }
             cobj->u.roll = roll;
         } else {
-            //FUCK YOU I'M NOT WRITING ALL THIS
+            if (HSD_CObjGetEyeVector(cobj, &eye) == 0) {
+                if (0.0001 <= 1.0 - fabs((f64)eye.y)) {
+                    f64 xz = (eye.x * eye.x) + (eye.z * eye.z);
+                    if (xz > 0) {
+                        f64 rec = 1.0 / sqrt(xz);
+                        rec = 0.5 * rec * -(xz * rec * rec - 3.0);
+                        rec = 0.5 * rec * -(xz * rec * rec - 3.0);
+                        xz = (xz * 0.5 * rec * -(xz * rec * rec - 3.0));
+                    }
+                    up.y = xz;
+                    up.x = eye.x * (-eye.y / up.y);
+                    up.z = -eye.y / up.y;
+                }else{
+                    f64 yz = (eye.y * eye.y) + (eye.z * eye.z);
+                    if (yz > 0) {
+                        f64 rec = 1.0 / sqrt(yz);
+                        rec = 0.5 * rec * -(yz * rec * rec - 3.0);
+                        rec = 0.5 * rec * -(yz * rec * rec - 3.0);
+                        yz = (yz * 0.5 * rec * -(yz * rec * rec - 3.0));
+                    }
+                    up.x = yz;
+                    up.y = eye.y * (-eye.x / up.x);
+                    up.z = -eye.x / up.x;
+                }
+                up.z = eye.z * up.z;
+                guMtxRotAxisRad(rmtx, &eye, -roll);
+                guVecMultiplySR(rmtx, &up, &res);
+                guVecNormalize(&res);
+            }
+            HSD_CObjSetUpVector(cobj, &res);
         }
     }
 }

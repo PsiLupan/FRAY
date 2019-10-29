@@ -1,5 +1,7 @@
 #include "hsd_tobj.h"
 
+#include <math.h>
+
 #include "hsd_lobj.h"
 #include "hsd_state.h"
 #include "hsd_texp.h"

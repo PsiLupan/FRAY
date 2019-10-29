@@ -1,5 +1,7 @@
 #include "hsd_display.h"
 
+#include <math.h>
+
 static void (*sptcl_callback)(s32, s32, s32, HSD_JObj*) = NULL; //r13_4008
 
 static GXColor hsd_background_color = { 0, 0, 0, 0 };

@@ -4,8 +4,6 @@
 #include <gctypes.h>
 #include <ogc/gu.h>
 
-#include <math.h>
-
 #include "hsd_aobj.h"
 #include "hsd_wobj.h"
 
