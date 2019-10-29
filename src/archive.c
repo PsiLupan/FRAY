@@ -103,14 +103,7 @@ void Archive_LoadFileIntoMemory(char* filepath, u8* mem, u32 filelength)
     }
     dvdcmdblk cmdblk;
     u32 addr = handle.addr;
-    if(filelength > 0x4000){
-        u32 max_iterations = (u32)ceil((double)filelength / (double)0x4000);
-        for(u32 i = 0; i < max_iterations; ++i){
-            DVD_ReadPrio(&cmdblk, mem + (i * 0x4000), 0x4000, addr + (i * 0x4000), 2);
-        }
-    }else{
-        DVD_ReadPrio(&cmdblk, mem, filelength, addr, 2);
-    }
+    DVD_ReadPrio(&cmdblk, mem, filelength + 0x1F & 0xFFFFFFE0, addr, 2);
 }
 
 //80016A54
@@ -132,7 +125,7 @@ void Archive_LoadFileSections(char* filename, u32 sections, ...)
     va_list ap;
 
     u32 file_size = Archive_GetDVDFileLengthByName(filename);
-    u8* dat_file = HSD_MemAlloc(file_size); //This (size + 0x1F) & 0xFFFFFFE0 aligns the file size along 0x20 sized boundaries, IE Anything from 0x74581 - 0x745A0 would become 0x745A0
+    u8* dat_file = HSD_MemAlloc(file_size + 0x1F & 0xFFFFFFE0); //This (size + 0x1F) & 0xFFFFFFE0 aligns the file size along 0x20 sized boundaries, IE Anything from 0x74581 - 0x745A0 would become 0x745A0
     HSD_Archive* archive = (HSD_Archive*)HSD_MemAlloc(sizeof(HSD_Archive));
     Archive_LoadFileIntoMemory(filename, dat_file, file_size);
     Archive_InitializeDAT(archive, dat_file, file_size);

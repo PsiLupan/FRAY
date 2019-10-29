@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <malloc.h>
+#include <math.h>
 #include <string.h>
 
 #include <ogc/irq.h>
@@ -34,9 +35,21 @@ static void __DVDFSInit(void)
     u32 fst_size = ((u32*)(fst_info))[1];
     start_memory[15] = fst_size;
 
-    fst = memalign(32, fst_size);
+    fst = memalign(32, fst_size + 0x1F & 0xFFFFFFE0);
     start_memory[14] = (u32)fst;
-    assert(DVD_ReadPrio(&cmdblk, fst, fst_size, fst_offset, 2) > 0);
+
+    if(fst_size > 0x4000){
+        u32 max_iterations = (u32)ceil((double)fst_size / (double)0x4000);
+        u32 size = fst_size + 0x1F & 0xFFFFFFE0;
+        for(u32 i = 0; i < max_iterations; i++){
+            if(size > 0x4000){
+                assert(DVD_ReadPrio(&cmdblk, fst + (i * 0x4000), 0x4000, fst_offset + (0x4000 * i), 2) > 0);
+            }else{
+                assert(DVD_ReadPrio(&cmdblk, fst + (i * 0x4000), size, fst_offset + (0x4000 * i), 2) > 0);
+            }
+            size -= 0x4000;
+        }
+    }
 
     entry_table = (FSTEntry*)fst;
     total_entries = entry_table[0].len;
