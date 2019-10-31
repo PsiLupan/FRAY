@@ -98,7 +98,7 @@ void* HSD_IDGetDataFromTable(HSD_IDTable* id_table, u32 id, u8* success)
             }
             return NULL;
         }
-        if (entry->id = id)
+        if (entry->id == id)
             break;
         entry = entry->next;
     }
@@ -145,7 +145,7 @@ HSD_MemoryEntry* GetMemoryEntry(u32 idx)
         if (nb_memory_list == 0) { //In this case, it's uninitialized and allocs the array
             u32 j = 32;
             while (idx >= j) {
-                j << 1;
+                j = j << 1;
             }
             HSD_MemoryEntry** entry = (HSD_MemoryEntry**)HSD_MemAlloc(4 * j);
             memory_list = entry;
@@ -174,7 +174,7 @@ HSD_MemoryEntry* GetMemoryEntry(u32 idx)
             i = 4 * (tmp & 0x3FFFFFF8);
             memory_list = &entry;
             hsdFreeMemPiece(mem_list, i);
-            HSD_MemoryEntry* unk_entry = (HSD_MemoryEntry*)(*memory_list + (i + 31 >> 3 & 0x1FFFFFFC) - 4);
+            HSD_MemoryEntry* unk_entry = (HSD_MemoryEntry*)(*memory_list + ((i + 31) >> 3 & 0x1FFFFFFC) - 4);
             unk_entry->nb_alloc += 1;
         }
     }

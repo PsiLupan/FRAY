@@ -594,6 +594,7 @@ u8 HSD_Index2TevStage(u8 idx)
         assert(TRUE);
         break;
     }
+    return 0;
 }
 
 //80362838
@@ -636,6 +637,7 @@ u8 HSD_TevStage2Index(u8 idx)
         assert(TRUE);
         break;
     }
+    return 0;
 }
 
 //80362CA0

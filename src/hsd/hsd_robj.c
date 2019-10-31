@@ -48,6 +48,7 @@ HSD_RObj* HSD_RObjGetByType(HSD_RObj* robj, u32 type, u32 subtype)
             }
         }
     }
+    return NULL;
 }
 
 //8037AF14
@@ -301,7 +302,7 @@ HSD_RObj* HSD_RObjAlloc(void)
 {
     HSD_RObj* robj = (HSD_RObj*)HSD_MemAlloc(sizeof(HSD_RObj)); //HSD_ObjAlloc(&robj_alloc_data);
     HSD_CheckAssert("Not enough memory for RObjAlloc", robj != NULL);
-    memset(robj, 0, sizeof(robj));
+    memset(robj, 0, sizeof(HSD_RObj));
     return robj;
 }
 

@@ -47,6 +47,7 @@ u32 Player_BoneID2Index(Player* player, u32 bone_id)
 	u8* bones = (result_1 + 0x4);
 	return bone[bone_id];
 	*/
+    return 0;
 }
 
 //8007D174

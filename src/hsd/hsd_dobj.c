@@ -43,7 +43,7 @@ void HSD_DObjClearFlags(HSD_DObj* dobj, u32 flags)
 void HSD_DObjModifyFlags(HSD_DObj* dobj, u32 flags_1, u32 flags_2)
 {
     if (dobj != NULL) {
-        dobj->flags = dobj->flags & ~flags_2 | flags_1 & flags_2;
+        dobj->flags = (dobj->flags & ~flags_2) | (flags_1 & flags_2);
     }
 }
 
@@ -123,13 +123,13 @@ static int DObjLoad(HSD_DObj* dobj, HSD_DObjDesc* desc)
         u32 rendermode = dobj->mobj->rendermode & 0x60000000;
         switch (rendermode) {
         case 0:
-            dobj->flags = dobj->flags & 0xfffffff1 | 2;
+            dobj->flags = (dobj->flags & 0xfffffff1) | 2;
             break;
         case 0x40000000:
-            dobj->flags = dobj->flags & 0xfffffff1 | 8;
+            dobj->flags = (dobj->flags & 0xfffffff1) | 8;
             break;
         case 0x60000000:
-            dobj->flags = dobj->flags & 0xfffffff1 | 4;
+            dobj->flags = (dobj->flags & 0xfffffff1) | 4;
             break;
         default:
             HSD_Halt("Unexpected blendflags in MObj");
