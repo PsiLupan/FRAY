@@ -21,7 +21,7 @@
 #define GOBJ_CLASS_HSD_LOBJ 0xB
 #define GOBJ_CLASS_HSD_COBJ_TITLE 0x13
 
-#define GOBJ_NOREF 0xFF
+#define GOBJ_NOREF -1
 
 typedef struct _HSD_GObj {
     u16 classifier;
@@ -81,6 +81,7 @@ void GObj_RunProcs(void);
 u32 GObj_GetFlagFromArray(u32);
 void GObj_SetTextureCamera(HSD_GObj*, u32);
 void GObj_RunGXLinkMaxCallbacks(void);
-void GObj_Prep(void**);
+void GObj_SetCamera(HSD_GObj*);
+void GObj_CallbackPrep(void**);
 
 #endif

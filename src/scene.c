@@ -104,23 +104,23 @@ static void __InitStartMeleeData(s8* addr)
 static void Scene_InitStartMeleeStruct(s8* addr)
 {
     memset(addr, 0, 0x60u);
-    addr[0] = addr[0] & 0xE3 | 0x10;
+    addr[0] = (addr[0] & 0xE3) | 0x10;
     addr[12] = 0;
     addr[11] = 2;
     *((u32*)addr + 9) = -1;
     *((u32*)addr + 8) = -1;
     *((u32*)addr + 10) = 0;
-    addr[3] = addr[3] & 0xBF | 0x40;
-    addr[3] = addr[3] & 0xFB | 4;
-    addr[3] = addr[3] & 0xF7 | 8;
-    addr[4] = addr[4] & 0x7F | 0x80;
+    addr[3] = (addr[3] & 0xBF) | 0x40;
+    addr[3] = (addr[3] & 0xFB) | 4;
+    addr[3] = (addr[3] & 0xF7) | 8;
+    addr[4] = (addr[4] & 0x7F) | 0x80;
     addr[1] &= 0xFDu;
-    addr[2] = addr[2] & 0xFB | 4;
-    addr[2] = addr[2] & 0xFD | 2;
+    addr[2] = (addr[2] & 0xFB) | 4;
+    addr[2] = (addr[2] & 0xFD) | 2;
     *((f32*)addr + 11) = 1.0f;
     *((f32*)addr + 12) = 1.0f;
     *((f32*)addr + 13) = 1.0f;
-    addr[4] = addr[4] & 0xFD | 2;
+    addr[4] = (addr[4] & 0xFD) | 2;
     addr[4] = (u8)(addr[4] & 0xFE) | 1;
     addr[13] = 110;
     addr[10] = 0;
@@ -374,7 +374,7 @@ static void Scene_Minor_Class0_OnLoad(void* unk_struct)
 
     u8 major = Scene_GetCurrentMajor();
     u8 minor = Scene_GetCurrentMinor();
-    if (major != 0 && major != 24 || minor != 2) { //Even forcing this condition, I couldn't see a visible difference
+    if ((major != 0 && major != 24) || minor != 2) { //Even forcing this condition, I couldn't see a visible difference
         HSD_JObjReqAnimAll(jobj, title_frames[0]);
     } else {
         HSD_JObjReqAnimAll(jobj, 130.0f);
@@ -843,7 +843,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
             if ((match_controller.pause & 1) == 0 && (match_controller.frozen & 1) != 0) {
                 match_controller.flags &= 0x7F;
             } else {
-                match_controller.flags = match_controller.flags & 0x7F | 0x80;
+                match_controller.flags = (match_controller.flags & 0x7F) | 0x80;
             }
             if (match_controller.flags >> 7 != 0) {
                 if (sub_80019A30(0) != 0) {
