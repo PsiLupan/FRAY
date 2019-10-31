@@ -1102,7 +1102,7 @@ void HSD_JObjRemoveAll(HSD_JObj* jobj)
 void RecalcParentTrspBits(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
-        for (HSD_JObj* i = jobj; i != NULL; i->next) {
+        for (HSD_JObj* i = jobj; i != NULL; i = i->next) {
             u32 mask = 0x8FFFFFFF;
             for (HSD_JObj* child = jobj->child; child != NULL; child = child->next) {
                 mask |= (child->flags | (child->flags << 10)) & (ROOT_OPA | ROOT_TEXEDGE | ROOT_XLU);
@@ -1133,7 +1133,7 @@ void HSD_JObjAddChild(HSD_JObj* jobj, HSD_JObj* child)
                 child->next = jobj;
                 u32 ori_flags = child->flags;
                 u32 flags = (ori_flags | (ori_flags << 10)) & (ROOT_OPA | ROOT_TEXEDGE | ROOT_XLU);
-                for (HSD_JObj* senti = jobj; senti; senti->prev) {
+                for (HSD_JObj* senti = jobj; senti; senti = senti->prev) {
                     ori_flags = senti->flags;
                     if (!(flags & ~ori_flags))
                         break;
@@ -1281,7 +1281,7 @@ void HSD_JObjDeleteRObj(HSD_JObj* jobj, HSD_RObj* robj)
 {
     HSD_RObj** rp;
     if (jobj != NULL && robj != NULL) {
-        for (rp = &jobj->robj; *rp; &(*rp)->next) {
+        for (rp = &jobj->robj; *rp; rp = &(*rp)->next) {
             if (*rp == robj) {
                 *rp = robj->next;
                 robj->next = NULL;
