@@ -7,10 +7,11 @@ ifeq ($(strip $(DEVKITPPC)),)
   $(error "Please set DEVKITPPC in your environment. export DEVKITPPC=<path to>devkitPPC")
 endif
 
-export	LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
-export	LIBOGC_LIB	:=	$(DEVKITPRO)/libogc/lib/cube
-
 include $(DEVKITPPC)/gamecube_rules
+
+export CC := powerpc-eabi-clang
+MACHDEP =  -DGEKKO -mcpu=750 \
+	   -D__gamecube__ -DHW_DOL -ffunction-sections -fdata-sections
 
 #---------------------------------------------------------------------------------
 # TARGET is the name of the output
@@ -28,10 +29,10 @@ INCLUDES	:=
 #---------------------------------------------------------------------------------
 
 #NODEBUG = -DNDEBUG
-CFLAGS	= -O1 -mrvl -Wno-implicit-function-declaration $(MACHDEP) $(INCLUDE) $(NODEBUG)
+CFLAGS	= -g -O1 -std=gnu18 $(MACHDEP) $(INCLUDE) $(NODEBUG)
 CXXFLAGS	= $(CFLAGS)
 
-LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map,--section-start,.init=0x80003100
+LDFLAGS	= -g $(MACHDEP) -Wl,-Map,$(notdir $@).map,--section-start,.init=0x80003100
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
@@ -42,7 +43,7 @@ LIBS	:= -logc -lm
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(CURDIR)/libs
+LIBDIRS	:= 
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
@@ -83,16 +84,17 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 #---------------------------------------------------------------------------------
 # build a list of include paths
 #---------------------------------------------------------------------------------
-export INCLUDE	:=	$(foreach dir,$(INCLUDES), -iquote $(CURDIR)/$(dir)) \
+export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-					-I$(CURDIR)/$(BUILD) -I$(CURDIR)/include \
-					-I$(LIBOGC_INC)
+					-I$(CURDIR)/$(BUILD) \
+					-isystem /d/LLVM/lib/clang/9.0.0/include -isystem $(DEVKITPPC)/powerpc-eabi/include \
+					-isystem /d/devkitpro/libogc/include
 					
 #---------------------------------------------------------------------------------
 # build a list of library paths
 #---------------------------------------------------------------------------------
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
-					-L$(LIBOGC_LIB)
+					-L/d/devkitpro/libogc/lib/cube
 					
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
 .PHONY: $(BUILD) clean
