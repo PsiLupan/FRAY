@@ -272,7 +272,7 @@ HSD_GObj* GObj_Create(u32 class, u32 p_link, u32 p_prio)
 //80390228
 void GObj_Free(HSD_GObj* gobj)
 {
-    assert(gobj);
+    assert(gobj != NULL);
     if (((gobj_def_3.flags >> 7) & 1) != 0 || gobj != current_gobj) {
         GObj_CallDestructor(gobj);
         GObj_CallHSDDestructor(gobj);
@@ -349,7 +349,7 @@ void GObj_SetupGXLink_Max(HSD_GObj* gobj, void* render_cb, u32 priority)
 //8039084C
 void GObj_GXLinkDestructor(HSD_GObj* gobj)
 {
-    assert(gobj->gx_link != GOBJ_NOREF);
+    HSD_CheckAssert("GObj_GXLinkDestructor: gobj->gx_link == GOBJ_NOREF", gobj->gx_link != GOBJ_NOREF);
     if (gobj->prev_gx != NULL) {
         gobj->prev_gx->next_gx = gobj->next_gx;
     } else {
@@ -369,7 +369,8 @@ void GObj_GXLinkDestructor(HSD_GObj* gobj)
 //80390A70
 void GObj_InitKindObj(HSD_GObj* gobj, s8 obj_kind, void* obj_ptr)
 {
-    assert(gobj->obj_kind != GOBJ_NOREF);
+    HSD_CheckAssert("GObj_InitKindObj: gobj->obj_kind != GOBJ_NOREF", gobj->obj_kind == GOBJ_NOREF);
+    HSD_CheckAssert("GObj_InitKindObj: obj_ptr == NULL", obj_ptr != NULL);
     gobj->obj_kind = obj_kind;
     gobj->data = obj_ptr;
 }
@@ -401,7 +402,7 @@ void GObj_CallHSDDestructor(HSD_GObj* gobj)
 //80390B68
 void GObj_InitKindData(HSD_GObj* gobj, s8 data_kind, void* destructor_func, void* data_ptr)
 {
-    assert(gobj->data_kind == GOBJ_NOREF);
+    HSD_CheckAssert("GObj_InitKindData: gobj->data_kind == NULL", gobj->data_kind == GOBJ_NOREF);
     gobj->data_kind = data_kind;
     gobj->data = data_ptr;
     gobj->user_data_remove_func = destructor_func;
@@ -411,7 +412,7 @@ void GObj_InitKindData(HSD_GObj* gobj, s8 data_kind, void* destructor_func, void
 void GObj_CallDestructor(HSD_GObj* gobj)
 {
     if (gobj->data_kind != GOBJ_NOREF) {
-        assert(gobj->user_data_remove_func);
+        HSD_CheckAssert("GObj_CallDestructor: gobj->user_data_remove_func == NULL", gobj->user_data_remove_func != NULL);
         (*gobj->user_data_remove_func)(gobj->data);
 
         gobj->data_kind = GOBJ_NOREF;

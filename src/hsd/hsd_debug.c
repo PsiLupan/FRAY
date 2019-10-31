@@ -9,10 +9,9 @@ void HSD_Halt(char error[])
 
 void HSD_CheckAssert(char error[], bool condition)
 {
-    if (condition == false) {
+    if (!condition) {
         printf("HALT: %s\n", error);
         assert(TRUE);
-        while(true){}
     }
 }
 

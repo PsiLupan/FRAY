@@ -1,6 +1,8 @@
 #ifndef _hsd_debug_h_
 #define _hsd_debug_h_
 
+#include <gctypes.h>
+
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
