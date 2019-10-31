@@ -568,7 +568,7 @@ void HSD_PadRumbleInit(u16 nb_list, HSD_PadRumbleListData* listdatap)
         u32 idx = nb_list - 1;
         u32 z_idx = 0;
         if (idx > 0) {
-            u32 loop_count = nb_list - 2 >> 3;
+            u32 loop_count = (nb_list - 2) >> 3;
             if (idx > 8 && (nb_list - 9) > 0) {
                 do {
                     HSD_PadLibData.rumble_info.listdatap[0].next = &HSD_PadLibData.rumble_info.listdatap[z_idx + 1];

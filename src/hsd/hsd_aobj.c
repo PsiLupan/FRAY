@@ -80,7 +80,7 @@ void HSD_AObjReqAnim(HSD_AObj* aobj, f32 frame)
 {
     if (aobj != NULL) {
         aobj->curr_frame = frame;
-        aobj->flags = aobj->flags & 0xBFFFFFFF | AOBJ_FIRST_PLAY;
+        aobj->flags = (aobj->flags & 0xBFFFFFFF) | AOBJ_FIRST_PLAY;
         HSD_FObjReqAnimAll(aobj->fobj, frame);
     }
 }
@@ -249,7 +249,7 @@ void HSD_AObjSetCurrentFrame(HSD_AObj* aobj, f32 frame)
 {
     if (aobj != NULL && !(aobj->flags & AOBJ_NO_ANIM)) {
         aobj->curr_frame = frame;
-        aobj->flags = aobj->flags & 0xBFFFFFFF | AOBJ_FIRST_PLAY;
+        aobj->flags = (aobj->flags & 0xBFFFFFFF) | AOBJ_FIRST_PLAY;
         HSD_FObjReqAnimAll(aobj->fobj, frame);
     }
 }

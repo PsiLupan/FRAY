@@ -48,7 +48,7 @@ void HSD_FObjRemoveAll(HSD_FObj* fobj)
 u8 HSD_FObjSetState(HSD_FObj* fobj, u8 state)
 {
     if (fobj) {
-        fobj->flags = state & 0xF | fobj->flags & 0xF0;
+        fobj->flags = (state & 0xF) | (fobj->flags & 0xF0);
     }
     return state;
 }
@@ -78,7 +78,7 @@ void HSD_FObjReqAnimAll(HSD_FObj* fobj, f32 frame)
             curr->p1 = 0.f;
             curr->d0 = 0.f;
             curr->d1 = 0.f;
-            curr->flags = curr->flags & 0xF0 | 1;
+            curr->flags = (curr->flags & 0xF0) | 1;
         }
     }
 }
@@ -292,7 +292,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                         } else {
                             result = 4;
                         }
-                        fobj->flags = result & 0xF | fobj->flags & 0xF0;
+                        fobj->flags = (result & 0xF) | (fobj->flags & 0xF0);
                         break;
 
                     case HSD_A_OP_SPL0:
@@ -347,9 +347,10 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                 break;
 
             case HSD_A_OP_SPL0:
-                if (fobj->flags & 0x80)
+                if (fobj->flags & 0x80){
                     FObjUpdateAnim(fobj, obj, obj_update);
-                assert(fobj->flags & 0xF != 3);
+                }
+                assert((fobj->flags & 0xF) != 3);
 
                 if ((fobj->ad - fobj->ad_head) < fobj->length) {
                     u32 fterm;
@@ -365,7 +366,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                     fobj->fterm = fterm;
                     fobj->flags |= 0x20u;
                     result = 2;
-                    fobj->flags = fobj->flags & 0xF0 | result;
+                    fobj->flags = (fobj->flags & 0xF0) | result;
                 } else {
                     result = 6;
                 }
@@ -373,7 +374,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
 
             case HSD_A_OP_SLP:
                 result = 4;
-                fobj->flags = fobj->flags & 0xF0 | result;
+                fobj->flags = (fobj->flags & 0xF0) | result;
                 break;
 
             case HSD_A_OP_KEY:
@@ -392,11 +393,11 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
         fobj->time = fobj->time - fobj->fterm;
         v22 = fobj->time;
         result = 3;
-        fobj->flags = fobj->flags & 0xF0 | result;
+        fobj->flags = (fobj->flags & 0xF0) | result;
     }
     FObjUpdateAnim(fobj, obj, obj_update);
     result = 5;
-    fobj->flags = fobj->flags & 0xF0 | result;
+    fobj->flags = (fobj->flags & 0xF0) | result;
 }
 
 //8036B6CC

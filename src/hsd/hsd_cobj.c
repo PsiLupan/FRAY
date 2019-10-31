@@ -411,7 +411,7 @@ void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec)
             s32 res = HSD_CObjGetEyeVector(cobj, &uvec);
             if (res == 0) {
                 f32 val = guVecDotProduct(vec, &uvec);
-                if (FLT_MIN <= 1.0f - abs(val)) {
+                if (FLT_MIN <= 1.0f - fabsf(val)) {
                     guVector zero = { 0.f, 0.f, 0.f };
                     guVector upvec = { 0.f, 1.f, 0.f };
                     MtxP mtx;
@@ -882,22 +882,26 @@ void HSD_CObjGetOrtho(HSD_CObj* cobj, f32* top, f32* bottom, f32* left, f32* rig
 //8036A250
 u32 HSD_CObjGetFlags(HSD_CObj* cobj)
 {
-    if (cobj != NULL)
+    if (cobj != NULL){
         return cobj->flags;
+    }
+    return 0;
 }
 
 //8036A258
 void HSD_CObjSetFlags(HSD_CObj* cobj, u32 flags)
 {
-    if (cobj != NULL)
+    if (cobj != NULL){
         cobj->flags |= flags;
+    }
 }
 
 //8036A270
 void HSD_CObjClearFlags(HSD_CObj* cobj, u32 flags)
 {
-    if (cobj != NULL)
+    if (cobj != NULL){
         cobj->flags &= ~flags;
+    }
 }
 
 //8036A288
@@ -919,7 +923,7 @@ HSD_CObj* HSD_CObjAlloc(void)
 static int CObjLoad(HSD_CObj* cobj, HSD_CObjDesc* desc)
 {
     cobj->flags = desc->flags;
-    cobj->flags = cobj->flags & 0xC0000000 | desc->flags;
+    cobj->flags = (cobj->flags & 0xC0000000) | desc->flags;
     cobj->viewport_left = (f32)desc->viewport_left;
     cobj->viewport_right = (f32)desc->viewport_right;
     cobj->viewport_top = (f32)desc->viewport_top;

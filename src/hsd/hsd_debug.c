@@ -23,5 +23,5 @@ void HSD_Panic(char error[])
 
 void HSD_Report(char error[])
 {
-    printf(error);
+    printf("%s", error);
 }

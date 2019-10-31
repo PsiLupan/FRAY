@@ -181,7 +181,7 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
     HSD_TExp* handle;
     HSD_TExp* next;
 
-    if (all = 0) {
+    if (all == 0) {
         if (type == HSD_TE_ALL || type == HSD_TE_TEV) {
             for (handle = texp_list; handle != NULL; handle = handle->tev.next) {
                 if (handle->type == HSD_TE_TEV && handle->tev.c_ref == 0) {
@@ -218,6 +218,7 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
             handle = handle->cnst.next;
         }
     }
+    return texp_list;
 }
 
 //803830FC
@@ -873,6 +874,7 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
             }
         }
     }
+    return val;
 }
 
 //80384B20
@@ -1400,7 +1402,7 @@ u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
     s32 dist[32];
     if (i > 0) {
         if (i > 8) {
-            u32 cnt = i - 1 >> 3;
+            u32 cnt = (i - 1) >> 3;
             if ((i - 8) > 0) {
                 do {
                     dist[0 + j] = -1;
@@ -1607,7 +1609,7 @@ static void order_dag(s32 num, u32* dep_mtx, u32* full_dep_mtx, HSD_TExpDag* lis
             *min = depth_00;
             depth_00 = 0;
             if (0 < num) {
-                if ((8 < num) && (ready_set_00 = num - 1U >> 3, piVar2 = order, piVar4 = min_order, 0 < num + -8)) {
+                if ((8 < num) && (ready_set_00 = (num - 1) >> 3, piVar2 = order, piVar4 = min_order, 0 < (num + -8))) {
                     do {
                         depth_00 = depth_00 + 8;
                         *piVar4 = *piVar2;
@@ -1639,7 +1641,7 @@ static void order_dag(s32 num, u32* dep_mtx, u32* full_dep_mtx, HSD_TExpDag* lis
             }
         }
     } else {
-        ready_set_00 = ready_set & ~(1 << idx) | dep_mtx[idx];
+        ready_set_00 = (ready_set & ~(1 << idx)) | dep_mtx[idx];
         uVar6 = 0;
         iVar5 = 0;
         puVar3 = full_dep_mtx;
@@ -1684,7 +1686,7 @@ static void make_full_dependency_mtx(s32 num, u32* dep, u32* full)
     if (num > 0) {
         iVar6 = 0;
         if ((8 < num) && (puVar4 = dep, puVar5 = full, 0 < num + -8)) {
-            for (uVar8 = num - 1 >> 3; uVar8 > 0; --uVar8) {
+            for (uVar8 = (num - 1) >> 3; uVar8 > 0; --uVar8) {
                 puVar5[iVar6] = puVar4[iVar6];
                 puVar5[iVar6 + 1] = puVar4[iVar6 + 1];
                 puVar5[iVar6 + 2] = puVar4[iVar6 + 2];

@@ -226,9 +226,9 @@ void HSD_JObjMakeMatrix(HSD_JObj* jobj)
             }
             guVector rvec;
             guVecMultiply(aj->mtx, &jobj->position, &rvec);
-            guMtxRowCol(jobj->mtx, 0, 4) = rvec.x;
-            guMtxRowCol(jobj->mtx, 1, 4) = rvec.y;
-            guMtxRowCol(jobj->mtx, 2, 4) = rvec.z;
+            guMtxRowCol(jobj->mtx, 0, 3) = rvec.x;
+            guMtxRowCol(jobj->mtx, 1, 3) = rvec.y;
+            guMtxRowCol(jobj->mtx, 2, 3) = rvec.z;
         }
     }
 }
@@ -1023,7 +1023,7 @@ void HSD_JObjRefThis(HSD_JObj* jobj)
 void HSD_JObjUnrefThis(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
-        u16 ref_count_individual = jobj->parent.ref_count_individual;
+        s16 ref_count_individual = jobj->parent.ref_count_individual;
         u32 lz = __builtin_clz(-ref_count_individual);
         lz = lz >> 5;
         if (lz == 0) {
@@ -1032,11 +1032,11 @@ void HSD_JObjUnrefThis(HSD_JObj* jobj)
             lz = lz >> 5;
         }
         if (lz != 0) {
-            u16 ref_count = jobj->parent.ref_count;
+            s16 ref_count = jobj->parent.ref_count;
             if (ref_count == HSD_OBJ_NOREF) {
                 ref_count = -1;
             }
-            if ((s16)ref_count < 0) {
+            if (ref_count < 0) {
                 HSD_OBJECT_METHOD(jobj)->release((HSD_Class*)jobj);
                 HSD_OBJECT_METHOD(jobj)->destroy((HSD_Class*)jobj);
             }
