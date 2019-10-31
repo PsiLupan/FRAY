@@ -24,7 +24,7 @@ void Player_SetCharacterFlags(HSD_GObj* gobj, u32 offset, u32 flags)
 {
     Player* player = GOBJ_PLAYER(gobj);
     *(u32*)(player + offset * 2 + 0x5F4) = flags; //TODO: Not rely on set offsets if possible
-    player->x221D_flags = player->x221D_flags & 0xDF | 0x20;
+    player->x221D_flags = (player->x221D_flags & 0xDF) | 0x20;
 }
 
 //8007500C
