@@ -78,7 +78,7 @@ void GObj_AnimateJObj(HSD_GObj* gobj){
 
 //80322D30
 u64 GObj_GetProcFlags(u32 i, u32 j, u32 p){
-    u64 n = i << p | j >> 0x20 - p | j << p + -0x20;
+    u64 n = i << p | j >> (0x20 - p) | j << (p + -0x20);
     return n << p;
 }
 
@@ -154,9 +154,9 @@ HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj* gobj, void (*cb)(), u8 s_pri
     HSD_CheckAssert("Proc == NULL", proc != NULL);
     HSD_CheckAssert("SPrio > curr_slink ", s_prio <= curr_slink);
     proc->s_link = s_prio;
-    proc->flags = proc->flags & 0xbf;
-    proc->flags = proc->flags & 0x7f;
-    proc->flags = proc->flags & 0xcf | 0x30;
+    proc->flags = proc->flags & 0xBF;
+    proc->flags = proc->flags & 0x7F;
+    proc->flags = (proc->flags & 0xCF) | 0x30;
     proc->gobj = gobj;
     proc->callback = cb;
     GObj_LinkProc(proc);
@@ -441,10 +441,10 @@ void GObj_RunProcs(void)
         while (proc != NULL) {
             next_gobjproc = proc->next;
             if ((proc->flags >> 4 & 3) != curr_proc_prio) {
-                proc->flags = (curr_proc_prio << 4) & 0x30 | proc->flags & 0xCF;
+                proc->flags = ((curr_proc_prio << 4) & 0x30) | (proc->flags & 0xCF);
                 HSD_GObj* gobj = proc->gobj;
                 u32 res = GObj_GetProcFlags(0, 1, gobj->p_link);
-                if ((unk2 & res | unk1 & ((u64)res >> 0x20)) == 0) {
+                if (((unk2 & res) | (unk1 & ((u64)res >> 0x20))) == 0) {
                     if ((proc->flags >> 7 == 0) && ((proc->flags >> 6 & 1) == 0)) {
                         current_gobj = gobj;
                         curr_gobjproc = proc;
@@ -554,6 +554,7 @@ void GObj_SetCamera(HSD_GObj* gobj)
 //803912A8
 u32 GObj_803912A8(u32 array[], u32* unk)
 {
+    return 0;
 }
 
 //803912E0
