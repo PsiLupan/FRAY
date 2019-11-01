@@ -835,7 +835,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
         u32 i = 0;
         while (i < pad_queue_count) {
             //HSD_PerfSetStartTime();
-            Pad_Renew();
+            HSD_PadRenewMasterStatus(); //Normally Pad_Renew() - Don't see much reason to use a wrapper function when not debugging
             /*if(debug_level >= 3){
                 DevelopMode_CPUStats(&match_controller.unk14);
             }*/
