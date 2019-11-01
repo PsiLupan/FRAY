@@ -364,7 +364,7 @@ static HSD_TExp* MObjMakeTExp(HSD_MObj* mobj, HSD_TObj* tobj_top, HSD_TExp** lis
 #else
     HSD_TExp *diff, *spec, *ext, *alpha;
     HSD_TExp *exp, *cnst;
-    HSD_TObj *tobj, *toon = NULL, *bump = NULL;
+    HSD_TObj *tobj, *toon = NULL;
     u32 done = 0;
     u32 diffuse_mode;
     u32 alpha_mode;
