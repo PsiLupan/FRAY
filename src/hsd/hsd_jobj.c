@@ -735,9 +735,9 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             }
             if (type == 54 || type == 56) {
                 // HSD_MtxGetTranslate(mtx, &jobj->position);
-                jobj->position.x = mtx[0][3];
-                jobj->position.y = mtx[1][3];
-                jobj->position.z = mtx[2][3];
+                jobj->position.x = guMtxRowCol(mtx, 0, 3);
+                jobj->position.y = guMtxRowCol(mtx, 1, 3);
+                jobj->position.z = guMtxRowCol(mtx, 2, 3);
             }
             if ((type - 54) < 2) {
                 HSD_MtxGetRotation(mtx, (guVector*)&jobj->rotation);
@@ -1581,7 +1581,7 @@ static void resolveIKJoint2(HSD_JObj* jobj) {}
 
 void HSD_JObjSetupMatrix(HSD_JObj* jobj)
 {
-    assert(jobj != NULL);
+    HSD_CheckAssert("HSD_JObjSetupMatrix: jobj == NULL", jobj != NULL);
     if (((jobj->flags & USER_DEF_MTX) == 0) && ((jobj->flags & MTX_DIRTY) != 0)) {
         HSD_JObjSetupMatrixSub(jobj);
     }
