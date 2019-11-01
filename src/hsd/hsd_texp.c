@@ -1190,10 +1190,10 @@ void HSD_TExpSetupTev(HSD_TExpTevDesc* tevdesc, HSD_TExp* texp)
 }
 
 //803854B4
-void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_list)
+s32 HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_list)
 {
     HSD_TExpRes res;
-    u32 num;
+    s32 num;
     u32 init_cprev = 1;
     u32 init_aprev = 1;
     HSD_TExp* order[32];
@@ -1232,12 +1232,11 @@ void HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_
         *tevdesc = tdesc;
     }
 
-    HSD_TExp* free = *texp_list;
-    HSD_TExpFreeList(*texp_list, 1, 1);
+    HSD_TExp* free = HSD_TExpFreeList(*texp_list, 1, 1);
     *texp_list = free;
-    free = *texp_list;
-    HSD_TExpFreeList(*texp_list, 4, 0);
+    free = HSD_TExpFreeList(*texp_list, 4, 0);
     *texp_list = free;
+    return num;
 }
 
 //80385758
@@ -1345,7 +1344,7 @@ void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
 }
 
 //80385C60
-u32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
+s32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
 {
     HSD_CheckAssert("HSD_TExpMakeDag: type != 1", HSD_TExpGetType(root) == HSD_TE_TEV);
 
