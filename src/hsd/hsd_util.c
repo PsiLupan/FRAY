@@ -239,7 +239,7 @@ void HSD_MtxGetRotation(Mtx mtx, guVector* rotation)
                     dVar2 = 1.5708f;
                 }
                 rotation->y = dVar2;
-                dVar2 = cosf(rotation->y);
+                dVar2 = cos(rotation->y);
                 dVar5 = FLT_MIN;
                 if (dVar5 <= dVar2) {
                     if (dVar5 < (f32)((u32)(guMtxRowCol(mtx, 2, 2) / dVar4) & 0x7fffffff)) {
