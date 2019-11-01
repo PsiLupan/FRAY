@@ -250,10 +250,10 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
                     if (next->cnst.ref != 0)
                         goto LAB_803830c8;
                     pabVar2 = next->cnst.next;
-                    if (texp_type == 4) {
+                    if (texp_type == HSD_TE_CNST) {
                         hsdFreeMemPiece(next, sizeof(HSD_TECnst));
                     } else {
-                        if ((texp_type < 4) && (texp_type == 1)) {
+                        if (texp_type == HSD_TE_TEV) {
                             hsdFreeMemPiece(next, sizeof(HSD_TETev));
                         }
                     }
@@ -264,10 +264,10 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
                         goto LAB_803830c8;
                     pabVar2 = next->tev.next;
                     if (texp_type == HSD_TE_CNST) {
-                        hsdFreeMemPiece(next, 0x18);
+                        hsdFreeMemPiece(next, sizeof(HSD_TECnst));
                     } else {
                         if (texp_type == HSD_TE_TEV) {
-                            hsdFreeMemPiece(next, 0x6c);
+                            hsdFreeMemPiece(next, sizeof(HSD_TETev));
                         }
                     }
                     *handle = pabVar2;
@@ -278,16 +278,16 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
             }
         }
     } else {
-        while (pabVar2 = *handle, pabVar2 != (HSD_TExp*)0x0) {
+        while (pabVar2 = *handle, pabVar2 != NULL) {
             if ((type == 7) || (type == pabVar2->type)) {
                 iVar3 = pabVar2->type;
                 if (iVar3 == HSD_TE_CNST) {
                     pabVar4 = pabVar2->cnst.next;
                     if (iVar3 == HSD_TE_CNST) {
-                        hsdFreeMemPiece(pabVar2, 0x18);
+                        hsdFreeMemPiece(pabVar2, sizeof(HSD_TECnst));
                     } else {
                         if (iVar3 == HSD_TE_TEV) {
-                            hsdFreeMemPiece(pabVar2, 0x6c);
+                            hsdFreeMemPiece(pabVar2, sizeof(HSD_TETev));
                         }
                     }
                     *handle = pabVar4;
@@ -295,10 +295,10 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
                     HSD_CheckAssert("TExpFreeList: type != HSD_TE_TEV", iVar3 == HSD_TE_TEV);
                     pabVar4 = (*handle)->tev.next;
                     if (iVar3 == HSD_TE_CNST) {
-                        hsdFreeMemPiece(pabVar2, 0x18);
+                        hsdFreeMemPiece(pabVar2, sizeof(HSD_TECnst));
                     } else {
                         if (iVar3 == HSD_TE_TEV) {
-                            hsdFreeMemPiece(pabVar2, 0x6c);
+                            hsdFreeMemPiece(pabVar2, sizeof(HSD_TETev));
                         }
                     }
                     *handle = pabVar4;
