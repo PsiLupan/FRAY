@@ -276,7 +276,7 @@ void GObj_Free(HSD_GObj* gobj)
     if (((gobj_def_3.flags >> 7) & 1) != 0 || gobj != current_gobj) {
         GObj_CallDestructor(gobj);
         GObj_CallHSDDestructor(gobj);
-        sub_8038FED4(gobj);
+        sub_8038FED4(gobj); //TODO
 
         if (gobj->gx_link != GOBJ_NOREF) {
             GObj_GXLinkDestructor(gobj);
