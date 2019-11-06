@@ -12,6 +12,8 @@ HSD_FogAdjInfo hsdFogAdj = { FogAdjInfoInit }; //804070B4
 //8037D970
 void HSD_FogSet(HSD_Fog* fog)
 {
+    GXFogAdjTbl table;
+
     if (fog == NULL) {
         GXColor color = { 0, 0, 0, 0 };
         GX_SetFog(0, 0.f, 0.f, 0.f, 0.f, color);
@@ -28,7 +30,19 @@ void HSD_FogSet(HSD_Fog* fog)
             f32 v[6];
             GX_GetViewportv(v);
             HSD_FogAdj* fogadj = fog->fog_adj;
-            //TODO
+            u32 offset = (v[0] + (v[2] * (f32)fogadj->center));
+            if (offset < 0) {
+                offset = 0;
+            } else if (offset > 640) {
+                offset = 640;
+            }
+
+            if (fogadj->width == 0) {
+                //TODO
+            }else{
+                GX_InitFogAdjTable(&table, fogadj->width, fogadj->mtx);
+            }
+            GX_SetFogRangeAdj(GX_ENABLE, offset, &table);
         }
     }
 }
