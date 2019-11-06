@@ -219,7 +219,7 @@ void HSD_PObjRemoveAll(HSD_PObj* pobj)
 void HSD_PObjSetDefaultClass(HSD_PObjInfo* info)
 {
     if (info != NULL) {
-        assert(hsdIsDescendantOf(info, &hsdPObj));
+        assert(hsdIsDescendantOf((HSD_ClassInfo*)info, (HSD_ClassInfo*)&hsdPObj));
     }
     default_class = info;
 }

@@ -1567,9 +1567,9 @@ HSD_TObj* HSD_TObjGetNext(HSD_TObj* tobj)
 
 void HSD_TObjSetDefaultClass(HSD_TObjInfo* info)
 {
-    /*if (info) {
-		assert(hsdIsDescendantOf(info, &hsdTObj));
-	}*/
+    if (info) {
+		assert(hsdIsDescendantOf((HSD_ClassInfo*)info, (HSD_ClassInfo*)&hsdTObj));
+	}
     default_class = info;
 }
 
