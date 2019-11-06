@@ -23,7 +23,7 @@ HSD_CObj* CObj_Create(HSD_CObjDesc* cdesc)
 }
 
 //801A1814
-void CObj_Texture_Callback(HSD_GObj* gobj)
+void CObj_Texture_Callback(HSD_GObj* gobj, s32 unused)
 {
     HSD_CObj* cobj = GOBJ_HSD_COBJ(gobj);
     if(HSD_CObjSetCurrent(cobj)){
@@ -33,7 +33,7 @@ void CObj_Texture_Callback(HSD_GObj* gobj)
 }
 
 //801A18D4
-void CObj_SetErase_Callback(HSD_GObj* gobj)
+void CObj_SetErase_Callback(HSD_GObj* gobj, s32 unused)
 {
     HSD_CObj* cobj = GOBJ_HSD_COBJ(gobj);
     if (HSD_CObjSetCurrent(cobj)) {

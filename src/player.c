@@ -259,7 +259,7 @@ void Player_CheckFastFallAndUpdate(HSD_GObj* gobj)
     } else {
         Player_UpdateFallingVelocity(ply, ply->attribs.gravity, ply->attribs.termVel);
     }
-    return Player_UpdateHorzVelocity(ply);
+    Player_UpdateHorzVelocity(ply);
 }
 
 //80085FD4
