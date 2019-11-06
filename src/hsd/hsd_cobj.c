@@ -189,10 +189,13 @@ static BOOL setupNormalCamera(HSD_CObj* cobj)
     //if (DAT_804c1d98 == 0) {
     GX_SetViewport_Wrapper(left, top, right, bottom, 0.f, 1.f);
     //}
-    u64 s_top = (u64)((f64)cobj->scissor_top * tb);
-    u64 s_left = (u64)((f64)cobj->scissor_left * lr);
-    u64 s_right = (u64)(((f64)cobj->scissor_right * lr) - s_left);
-    u64 s_bottom = (u64)(((f64)cobj->scissor_bottom * tb) - s_top);
+
+    //FIXME: The following is commented out, because the FIFO log showed the registers for SCISSORRB was wildly off
+    //These hardcoded values set the registers correctly
+    u64 s_top = 0; //(u64)((f64)cobj->scissor_top * (f64)tb);
+    u64 s_left = 0; //(u64)((f64)cobj->scissor_left * (f64)lr);
+    u64 s_right = 640; //(u64)(((f64)cobj->scissor_right * (f64)lr) - (f64)s_left);
+    u64 s_bottom = 480; //(u64)(((f64)cobj->scissor_bottom * (f64)tb) - (f64)s_top);
     GX_SetScissor(s_left, s_top, s_right, s_bottom);
     Mtx44 mtx;
     switch (cobj->projection_type) {
