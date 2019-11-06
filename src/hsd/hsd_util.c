@@ -11,7 +11,7 @@ static struct _GXViewport {
 void GX_SetViewport_Wrapper(f32 xOrig, f32 yOrig, f32 wd,f32 ht, f32 nearZ ,f32 farZ)
 {
     GXViewport.x0 = xOrig;
-    GXViewport.y0 = yOrig - 0.5f;
+    GXViewport.y0 = yOrig;// - 0.5f;
     GXViewport.x1 = wd;
     GXViewport.y1 = ht;
     GXViewport.n = nearZ;
