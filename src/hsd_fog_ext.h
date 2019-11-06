@@ -10,6 +10,6 @@
 #define GOBJ_HSD_FOG(s) ((HSD_Fog*)s->data)
 
 void Fog_InterpretAnim_Callback(HSD_GObj*);
-void Fog_Set_Callback(HSD_GObj*);
+void Fog_Set_Callback(HSD_GObj*, s32);
 
 #endif

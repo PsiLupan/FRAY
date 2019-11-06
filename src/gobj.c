@@ -19,9 +19,9 @@ static HSD_GObj* lowestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E80
 static HSD_GObj* current_gobj = NULL; //r13_3E84 - Really just a guess
 static HSD_GObj* active_gx_gobj = NULL; //r13_3E88
 static HSD_GObj* prev_gobj = NULL;
-static void* hsd_destructors[14]; //r13_3E90 - Length is currently made up, TODO: need to explictly assign the functions to this at some point
+static void (*hsd_destructors[14])(void*); //r13_3E90 - Length is currently made up, TODO: need to explictly assign the functions to this at some point
 
-u32 flag_array[4] = { 1, 4, 2, 0 }; //804085F0
+s32 flag_array[4] = { 1, 4, 2, 0 }; //804085F0
 
 u32 gobj_prep[3] = { 0x3F3F0200, 0, 0 }; //DAT_80408620
 
@@ -317,7 +317,7 @@ void GObj_GXReorder(HSD_GObj* gobj, HSD_GObj* hiprio_gobj)
 }
 
 //8039069C
-void GObj_SetupGXLink(HSD_GObj* gobj, void* render_cb, u32 gx_link, u32 priority)
+void GObj_SetupGXLink(HSD_GObj* gobj, void (*render_cb)(HSD_GObj*, s32), u32 gx_link, u32 priority)
 {
     assert(gx_link < GX_LINK_MAX);
     gobj->render_cb = render_cb;
@@ -333,7 +333,7 @@ void GObj_SetupGXLink(HSD_GObj* gobj, void* render_cb, u32 gx_link, u32 priority
 }
 
 //8039075C
-void GObj_SetupGXLink_Max(HSD_GObj* gobj, void* render_cb, u32 priority)
+void GObj_SetupGXLink_Max(HSD_GObj* gobj, void (*render_cb)(HSD_GObj*, s32), u32 priority)
 {
     gobj->render_cb = render_cb;
     gobj->gx_link = GX_LINK_MAX + 1;
@@ -400,7 +400,7 @@ void GObj_CallHSDDestructor(HSD_GObj* gobj)
 }
 
 //80390B68
-void GObj_InitKindData(HSD_GObj* gobj, s8 data_kind, void* destructor_func, void* data_ptr)
+void GObj_InitKindData(HSD_GObj* gobj, s8 data_kind, void (*destructor_func)(void*), void* data_ptr)
 {
     HSD_CheckAssert("GObj_InitKindData: gobj->data_kind == NULL", gobj->data_kind == GOBJ_NOREF);
     gobj->data_kind = data_kind;
@@ -470,7 +470,7 @@ void GObj_RunProcs(void)
 }
 
 //80390EB8
-u32 GObj_GetFlagFromArray(u32 offset)
+s32 GObj_GetFlagFromArray(s32 offset)
 {
     return flag_array[offset];
 }

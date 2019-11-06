@@ -25,7 +25,7 @@ HSD_LObj* LObj_LoadLightDescs(HSD_Lights* lights)
 }
 
 //80391044
-void LObj_Setup_Callback(HSD_GObj* gobj)
+void LObj_Setup_Callback(HSD_GObj* gobj, s32 unused)
 {
     HSD_LObj* lobj = GOBJ_HSD_LOBJ(gobj);
     HSD_LObjSetCurrentAll(lobj);

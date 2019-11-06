@@ -13,7 +13,7 @@ HSD_ObjAllocData* HSD_FObjGetAllocData(void)
 //8036A944
 void HSD_FObjInitAllocData(void)
 {
-    return HSD_ObjAllocInit(&fobj_alloc_data, sizeof(HSD_FObj), 4);
+    HSD_ObjAllocInit(&fobj_alloc_data, sizeof(HSD_FObj), 4);
 }
 
 //8036A974
