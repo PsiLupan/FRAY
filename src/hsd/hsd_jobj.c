@@ -832,6 +832,9 @@ void JObj_SetupInstanceMtx(HSD_JObj* jobj, MtxP vmtx, u32 flags, u32 rendermode)
 // 80370B90
 void HSD_JObjSetDefaultClass(HSD_JObjInfo* info)
 {
+    if(info != NULL){
+        assert(hsdIsDescendantOf((HSD_ClassInfo*)info, (HSD_ClassInfo*)&hsdJObj));
+    }
     default_class = info;
 }
 
