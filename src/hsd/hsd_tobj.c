@@ -567,6 +567,14 @@ void HSD_TObjSetupTextureCoordGen(HSD_TObj* tobj)
                 GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_DISABLE, tobj->mtxid);
                 break;
 
+            case TEX_COORD_GRADATION:
+                GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_DISABLE, tobj->mtxid);
+                break;
+
+            case TEX_COORD_BACKLIGHT:
+                GX_SetTexCoordGen(tobj->coord, GX_TG_MTX2x4, GX_TG_NRM, tobj->mtxid);
+                break;
+
             case TEX_COORD_REFLECTION:
             case TEX_COORD_HILIGHT:
                 GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_NRM, GX_TEXMTX0, GX_ENABLE, tobj->mtxid);
@@ -1323,6 +1331,7 @@ void HSD_TObjSetup(HSD_TObj* tobj)
         GX_InitTexObjLOD(&texobj, min_filter, tobj->magFilt,
             imagedesc->minLOD, imagedesc->maxLOD, lod->LODBias,
             lod->bias_clamp, lod->edgeLODEnable, lod->max_anisotropy);
+        GX_LoadTexObj(&texobj, tobj->id);
     }
 }
 
@@ -1568,8 +1577,8 @@ HSD_TObj* HSD_TObjGetNext(HSD_TObj* tobj)
 void HSD_TObjSetDefaultClass(HSD_TObjInfo* info)
 {
     if (info != NULL) {
-		assert(hsdIsDescendantOf((HSD_ClassInfo*)info, (HSD_ClassInfo*)&hsdTObj));
-	}
+        assert(hsdIsDescendantOf((HSD_ClassInfo*)info, (HSD_ClassInfo*)&hsdTObj));
+    }
     default_class = info;
 }
 
