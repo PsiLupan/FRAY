@@ -403,7 +403,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
 //8036B6CC
 void HSD_FObjInterpretAnimAll(HSD_FObj* fobj, void* caller_obj, void (*callback)(), f32 frame)
 {
-    for (HSD_FObj* curr = fobj; fobj != NULL; curr = fobj->next) {
+    for (HSD_FObj* curr = fobj; curr != NULL; curr = fobj->next) {
         HSD_FObjInterpretAnim(curr, caller_obj, callback, frame);
     }
 }

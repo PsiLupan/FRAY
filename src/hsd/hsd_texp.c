@@ -226,7 +226,6 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
     HSD_TExp* next;
     int iVar3;
     int texp_type;
-    int in_r13;
     HSD_TExp* pabVar4;
     HSD_TExp** handle;
     HSD_TExp* local_20[5];
@@ -2413,7 +2412,6 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
     BOOL bVar2;
     BOOL bVar3;
     u32 type;
-    HSD_TExp* uVar7;
     s32 iVar8;
     u32 uVar11;
 
