@@ -368,6 +368,24 @@ static void setup_spec_lightobj(HSD_LObj* lobj, Mtx vmtx, u8 spec_id)
     }
 }
 
+static void setup_infinite_lightobj(HSD_LObj* lobj, MtxP vmtx)
+{
+    guVector lpos;
+
+    HSD_LObjGetPosition(lobj, &lpos);
+    lpos.x *= (f32)(1024 * 1024);
+    lpos.y *= (f32)(1024 * 1024);
+    lpos.z *= (f32)(1024 * 1024);
+    guVecMultiply(vmtx, &lpos, &lpos);
+    if (lobj->flags & LOBJ_DIFFUSE) {
+        GX_InitLightPosv(&lobj->lightobj, &lpos);
+        GX_InitLightAttn(&lobj->lightobj, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+    }
+    if (lobj->flags & LOBJ_SPECULAR) {
+        GX_InitLightPosv(&lobj->spec_lightobj, &lpos);
+    }
+}
+
 //80365C50
 static void setup_point_lightobj(HSD_LObj* l, MtxP vmtx)
 {
@@ -487,7 +505,7 @@ void HSD_LObjSetupInit(HSD_CObj* cobj)
 
         switch (type) {
         case LOBJ_INFINITE:
-            //setup_infinite_lightobj(lobj, vmtx); - UNUSED
+            setup_infinite_lightobj(lobj, vmtx);
             break;
         case LOBJ_POINT:
             setup_point_lightobj(lobj, vmtx);
@@ -659,21 +677,41 @@ HSD_LObj* HSD_LObjGetCurrentByType(u32 type)
 }*/
 
 //80366B64
-u32 HSD_Index2LightID(u32 index){
-	u32 id;
-	switch (index) {
-		case 0: id = GX_LIGHT0; break;
-		case 1: id = GX_LIGHT1; break;
-		case 2: id = GX_LIGHT2; break;
-		case 3: id = GX_LIGHT3; break;
-		case 4: id = GX_LIGHT4; break;
-		case 5: id = GX_LIGHT5; break;
-		case 6: id = GX_LIGHT6; break;
-		case 7: id = GX_LIGHT7; break;
-		case MAX_GXLIGHT-1: id = GX_MAXLIGHT; break;
-		default: id = GX_LIGHTNULL;
-	}
-	return id;
+u32 HSD_Index2LightID(u32 index)
+{
+    u32 id;
+    switch (index) {
+    case 0:
+        id = GX_LIGHT0;
+        break;
+    case 1:
+        id = GX_LIGHT1;
+        break;
+    case 2:
+        id = GX_LIGHT2;
+        break;
+    case 3:
+        id = GX_LIGHT3;
+        break;
+    case 4:
+        id = GX_LIGHT4;
+        break;
+    case 5:
+        id = GX_LIGHT5;
+        break;
+    case 6:
+        id = GX_LIGHT6;
+        break;
+    case 7:
+        id = GX_LIGHT7;
+        break;
+    case MAX_GXLIGHT - 1:
+        id = GX_MAXLIGHT;
+        break;
+    default:
+        id = GX_LIGHTNULL;
+    }
+    return id;
 }
 
 //80366BD4

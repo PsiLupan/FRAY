@@ -283,7 +283,6 @@ void HSD_MtxGetRotation(Mtx mtx, guVector* rotation)
     rotation->x = fVar1;
     rotation->y = fVar1;
     rotation->z = fVar1;
-    return;
 }
 
 //8037A120

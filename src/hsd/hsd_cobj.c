@@ -35,7 +35,7 @@ void HSD_CObjEraseScreen(HSD_CObj* cobj, s32 enable_color, s32 enable_alpha, s32
             top_res = val * cobj->projection_param.frustrum.top;
             bottom_res = val * cobj->projection_param.frustrum.bottom;
         } else if (proj_type == PROJ_PERSPECTIVE) {
-            top_res = (z_val * tan(0.5f * (cobj->projection_param.perspective.fov * 0.017453292f)));
+            top_res = (z_val * tan(0.5f * DegToRad(cobj->projection_param.perspective.fov)));
             bottom_res = -top_res;
             right_res = cobj->projection_param.perspective.aspect * top_res;
             left_res = -right_res;
