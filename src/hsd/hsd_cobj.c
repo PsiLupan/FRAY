@@ -178,26 +178,31 @@ u8 makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx)
 }
 
 //80367C28
-static BOOL setupNormalCamera(HSD_CObj* cobj)
+__attribute__((noinline)) static BOOL setupNormalCamera(HSD_CObj* cobj)
 {
     u16 lr = 640; //804C1D84 and 804C1D8C
     u16 tb = 480; //804C1D86 and 804C1D90
-    f64 left = (f64)cobj->viewport_left * (f64)lr;
-    f64 right = ((f64)cobj->viewport_right * (f64)lr) - left;
-    f64 top = cobj->viewport_top * (f64)tb;
-    f64 bottom = (cobj->viewport_bottom * (f64)tb) - top;
+
+    f32 left = (f32)cobj->viewport_left;
+    f32 right = (f32)cobj->viewport_right;
+    f32 top = (f32)cobj->viewport_top;
+    f32 bottom = (f32)cobj->viewport_bottom;
     //if (DAT_804c1d98 == 0) {
     GX_SetViewport_Wrapper(left, top, right, bottom, 0.f, 1.f);
     //}
+    /*else{
+        GX_SetViewportJitter(left, right, top, bottom, 0.f, 1.f, VIDEO_GetNextField());
+    }
+    */
 
-    //FIXME: The following is commented out, because the FIFO log showed the registers for SCISSORRB was wildly off
-    //These hardcoded values set the registers correctly
-    u64 s_top = 0; //(u64)((f64)cobj->scissor_top * (f64)tb);
-    u64 s_left = 0; //(u64)((f64)cobj->scissor_left * (f64)lr);
-    u64 s_right = 640; //(u64)(((f64)cobj->scissor_right * (f64)lr) - (f64)s_left);
-    u64 s_bottom = 480; //(u64)(((f64)cobj->scissor_bottom * (f64)tb) - (f64)s_top);
-    GX_SetScissor(s_left, s_top, s_right, s_bottom);
+    u32 s_top = cobj->scissor_top;
+    u32 s_left = cobj->scissor_left;
+    u32 s_right = cobj->scissor_right;
+    u32 s_bottom = cobj->scissor_bottom;
+    GX_SetScissor(s_right, s_bottom, s_left, s_top);
+
     Mtx44 mtx;
+    BOOL ortho = FALSE;
     switch (cobj->projection_type) {
     case PROJ_PERSPECTIVE:
         guPerspective(mtx, cobj->projection_param.perspective.fov, cobj->projection_param.perspective.aspect, cobj->near, cobj->far);
@@ -209,11 +214,12 @@ static BOOL setupNormalCamera(HSD_CObj* cobj)
         break;
 
     case PROJ_ORTHO:
+        ortho = TRUE;
         guOrtho(mtx, cobj->projection_param.ortho.top, cobj->projection_param.ortho.bottom, cobj->projection_param.ortho.left,
             cobj->projection_param.ortho.right, cobj->near, cobj->far);
         break;
     }
-    GX_LoadProjectionMtx(mtx, GX_PERSPECTIVE);
+    GX_LoadProjectionMtx(mtx, ortho);
     return TRUE;
 }
 
