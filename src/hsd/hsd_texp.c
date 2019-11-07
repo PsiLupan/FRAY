@@ -355,9 +355,10 @@ void HSD_TExpColorOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 clamp)
     if (op < 2) {
         texp->tev.c_bias = bias;
         texp->tev.c_scale = scale;
+    }else{
+        texp->tev.c_bias = 0;
+        texp->tev.c_scale = 0;
     }
-    texp->tev.c_bias = 0;
-    texp->tev.c_scale = 0;
 }
 
 //803833AC
@@ -369,9 +370,10 @@ void HSD_TExpAlphaOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 clamp)
     if (op < 2) {
         texp->tev.a_bias = bias;
         texp->tev.a_scale = scale;
+    }else{
+        texp->tev.a_bias = 0;
+        texp->tev.a_scale = 0;
     }
-    texp->tev.a_bias = 0;
-    texp->tev.a_scale = 0;
 }
 
 //80383488
