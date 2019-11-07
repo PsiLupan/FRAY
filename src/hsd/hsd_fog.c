@@ -38,11 +38,13 @@ void HSD_FogSet(HSD_Fog* fog)
             }
 
             if (fogadj->width == 0) {
-                //TODO
+                Mtx44 mtx;
+                GX_LoadProjectionMtx(mtx, GX_PERSPECTIVE);
+                GX_InitFogAdjTable(&table, (u16)v[2], mtx);
             }else{
                 GX_InitFogAdjTable(&table, fogadj->width, fogadj->mtx);
             }
-            GX_SetFogRangeAdj(GX_ENABLE, offset, &table);
+            GX_SetFogRangeAdj(GX_ENABLE, (u16)offset, &table);
         }
     }
 }
