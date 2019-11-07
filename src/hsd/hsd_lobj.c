@@ -74,7 +74,7 @@ void HSD_LObjSetActive(HSD_LObj* lobj)
         idx = nb_active_lights++;
     }
     active_lights[idx] = lobj;
-    lobj->id = idx;
+    lobj->id = HSD_Index2LightID(idx);
 }
 
 //80365404
@@ -377,8 +377,9 @@ static void setup_point_lightobj(HSD_LObj* l, MtxP vmtx)
     l->hw_color = l->color;
     HSD_LObjGetPosition(l, &lpos);
     guVecMultiply(vmtx, &lpos, &lpos);
-    GX_InitLightPosv(&l->lightobj, &lpos);
-    GX_InitLightPosv(&l->spec_lightobj, &lpos);
+    GX_InitLightPos(&l->lightobj, lpos.x, lpos.y, lpos.z);
+    GX_InitLightPos(&l->spec_lightobj, lpos.x, lpos.y, lpos.z);
+    GX_InitLightDir(&l->lightobj, lpos.x, lpos.y, lpos.z);
 
     if (l->flags & LOBJ_RAW_PARAM) {
         GX_InitLightAttn(&l->lightobj,
@@ -414,9 +415,9 @@ static void setup_spot_lightobj(HSD_LObj* l, MtxP vmtx)
     HSD_LObjGetLightVector(l, &ldir);
     guVecMultiplySR(vmtx, &ldir, &ldir);
     guVecNormalize(&ldir);
-    GX_InitLightPosv(&l->lightobj, &lpos);
-    GX_InitLightPosv(&l->spec_lightobj, &lpos);
-    GX_InitLightDirv(&l->lightobj, &ldir);
+    GX_InitLightPos(&l->lightobj, lpos.x, lpos.y, lpos.z);
+    GX_InitLightPos(&l->spec_lightobj, lpos.x, lpos.y, lpos.z);
+    GX_InitLightDir(&l->lightobj, lpos.x, lpos.y, lpos.z);
     if (l->flags & LOBJ_RAW_PARAM) {
         GX_InitLightAttn(&l->lightobj,
             l->u.attn.a0,
@@ -530,7 +531,7 @@ void HSD_LObjSetupInit(HSD_CObj* cobj)
         flags = lobj->flags;
 
         if ((flags & LOBJ_SPECULAR) && (flags & (LOBJ_DIFFUSE | LOBJ_ALPHA))) {
-            setup_spec_lightobj(lobj, vmtx, idx++);
+            setup_spec_lightobj(lobj, vmtx, HSD_Index2LightID(idx++));
         }
     }
 
@@ -657,9 +658,9 @@ HSD_LObj* HSD_LObjGetCurrentByType(u32 type)
 	return index;
 }*/
 
-//80366B64 - Unused due to Libogc in our version
-/*u8 HSD_Index2LightID(u32 index){
-	u8 id;
+//80366B64
+u32 HSD_Index2LightID(u32 index){
+	u32 id;
 	switch (index) {
 		case 0: id = GX_LIGHT0; break;
 		case 1: id = GX_LIGHT1; break;
@@ -673,7 +674,7 @@ HSD_LObj* HSD_LObjGetCurrentByType(u32 type)
 		default: id = GX_LIGHTNULL;
 	}
 	return id;
-}*/
+}
 
 //80366BD4
 void HSD_LObjRemoveAll(HSD_LObj* lobj)

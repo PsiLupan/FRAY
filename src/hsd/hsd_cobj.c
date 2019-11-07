@@ -239,10 +239,12 @@ BOOL HSD_CObjSetCurrent(HSD_CObj* cobj)
         break;
 
     case HSD_RP_TOPHALF:
+        HSD_Report("setupTopHalfCamera not implemented");
         //res = setupTopHalfCamera(cobj);
         break;
 
     case HSD_RP_BOTTOMHALF:
+        HSD_Report("setupBottomHalfCamera not implemented");
         //res = setupBottomHalfCamera(cobj);
         break;
 
@@ -388,7 +390,7 @@ f32 HSD_CObjGetEyeDistance(HSD_CObj* cobj)
 //80378E70
 s32 HSD_CObjGetUpVector(HSD_CObj* cobj, guVector* vec)
 {
-    if (cobj != NULL && vec != NULL) {
+    /*if (cobj != NULL && vec != NULL) {
         if ((cobj->flags & 1) != 0) {
             vec->x = cobj->u.up.x;
             vec->y = cobj->u.up.y;
@@ -401,7 +403,7 @@ s32 HSD_CObjGetUpVector(HSD_CObj* cobj, guVector* vec)
             //TODO
         }
         return 0;
-    }
+    }*/
     if (vec != NULL) {
         vec->x = 0.f;
         vec->y = 1.f;
