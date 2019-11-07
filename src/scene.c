@@ -460,7 +460,7 @@ void Scene_ProcessMinor(MajorScene* scene)
     MinorScene* minor_scenes;
     MinorScene* minor_scene = NULL;
     MinorSceneHandler* scene_handler;
-    u8 minor_idx;
+    u8 minor_idx = 0;
 
     curr_minor = gamestate.curr_minor;
     minor_scenes = (MinorScene*)scene->minor_scenes;
@@ -854,7 +854,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
                 }
             }
 
-            s64 res;
+            s64 res = 0;
             if (match_controller.frozen != match_controller.unk11 || match_controller.pause != match_controller.unk13) {
                 res = sub_801A48A4(match_controller.frozen);
                 if (match_controller.flags >> 7 == 0) {

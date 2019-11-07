@@ -423,8 +423,8 @@ void GObj_CallDestructor(HSD_GObj* gobj)
 //80390CFC
 void GObj_RunProcs(void)
 {
-    u32 unk1;
-    u32 unk2;
+    u32 unk1 = 0;
+    u32 unk2 = 0;
     /*if(unk_804CE388 == 0){
 		unk1 = NULL;
 		unk2 = 0;
