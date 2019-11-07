@@ -1092,7 +1092,6 @@ void HSD_JObjRemoveAll(HSD_JObj* jobj)
             }
         }
         for (HSD_JObj* curr = jobj; curr != NULL; curr = curr->next) {
-            HSD_JObj* next = curr->next;
             curr->prev = NULL;
             curr->next = NULL;
 

@@ -95,7 +95,6 @@ f32 JObj_GetFrame(HSD_JObj* jobj)
     }
     if ((jobj->flags & 0x1000) == 0) {
         HSD_JObj* child = jobj->child;
-        f32 val = -1;
         while (child != NULL) {
             f32 frame = JObj_GetFrame(child);
             if (-1.f != frame) {

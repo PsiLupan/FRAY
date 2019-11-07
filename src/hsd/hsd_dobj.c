@@ -51,7 +51,7 @@ void HSD_DObjModifyFlags(HSD_DObj* dobj, u32 flags_1, u32 flags_2)
 void HSD_DObjRemoveAnimAllByFlags(HSD_DObj* dobj, u32 flags)
 {
     if (dobj != NULL) {
-        for (HSD_DObj* i; i != NULL; i = i->next) {
+        for (HSD_DObj* i = dobj; i != NULL; i = i->next) {
             if ((flags & 2) != 0) {
                 HSD_AObjRemove(dobj->aobj);
                 dobj->aobj = NULL;
