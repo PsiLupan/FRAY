@@ -174,6 +174,7 @@ void HSD_LObjDeleteCurrentAll(HSD_LObj*);
 void HSD_LObjSetCurrent(HSD_LObj*);
 void HSD_LObjSetCurrentAll(HSD_LObj*);
 HSD_LObj* HSD_LObjGetCurrentByType(u32);
+u32 HSD_Index2LightID(u32);
 void HSD_LObjRemoveAll(HSD_LObj*);
 void HSD_LObjSetColor(HSD_LObj*, GXColor);
 void HSD_LObjGetColor(HSD_LObj*, GXColor*);

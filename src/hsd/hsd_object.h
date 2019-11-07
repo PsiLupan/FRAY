@@ -88,6 +88,7 @@ void HSD_ObjAllocInit(HSD_ObjAllocData*, u32, u32);
 
 void hsdInitClassInfo(HSD_ClassInfo*, HSD_ClassInfo*, char*, char*, s32, s32);
 void* hsdNew(HSD_ClassInfo*);
+BOOL hsdIsDescendantOf(HSD_ClassInfo*, HSD_ClassInfo*);
 HSD_ClassInfo* hsdSearchClassInfo(char*);
 
 #endif

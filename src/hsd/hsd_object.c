@@ -307,6 +307,29 @@ void* hsdNew(HSD_ClassInfo* info)
     return class;
 }
 
+//80382538
+BOOL hsdIsDescendantOf(HSD_ClassInfo* i, HSD_ClassInfo* p){
+    if(i != NULL && p != NULL){
+        if((i->head.flags & 1) == 0){
+            (*i->head.info_init)();
+        }
+        if((p->head.flags & 1) == 0){
+            (*p->head.info_init)();
+        }
+        while (true) {
+            if(i == NULL){
+                return FALSE;
+            }
+            if(i == p){
+                break;
+            }
+            i = i->head.parent;
+        }
+        return TRUE;
+    }
+    return FALSE;
+}
+
 //80382814
 HSD_ClassInfo* hsdSearchClassInfo(char* class_name)
 {
