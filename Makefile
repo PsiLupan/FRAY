@@ -32,7 +32,7 @@ INCLUDES	:=
 CFLAGS	= -g -O1 -std=gnu18 -Wno-implicit-function-declaration -Wno-switch $(MACHDEP) $(INCLUDE) $(NODEBUG)
 CXXFLAGS	= $(CFLAGS)
 
-LDFLAGS	= -g $(MACHDEP) -Wl,-Map,$(notdir $@).map,--section-start,.init=0x80003100
+LDFLAGS	= -g $(MACHDEP) -Wl,--unresolved-symbols=ignore-in-object-files,-Map,$(notdir $@).map,--section-start,.init=0x80003100
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
