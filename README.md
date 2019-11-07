@@ -6,12 +6,12 @@ Unlike other projects, FRAY does not currently intend to integrate a mix of ASM 
 
 ## Is there a Patcher to drop in these functions to the existing game?
 
-Not at present, though if someone has or is willing to create one, I'm open to it. 
-
-I've looked at Hanafuda (https://github.com/AxioDL/hanafuda) and besides the LLVM toolchain crashing outright with an undecipherable exception, it'd take too much work for me to get it working for me.
+Not at present, though if someone has or is willing to create one, I'm open to it. I've looked at Hanafuda (https://github.com/AxioDL/hanafuda) and besides the LLVM toolchain crashing outright with an undecipherable exception, it'd take too much work for me to get it working for me. I'll possibly come back to it in the future.
 
 ## What is the current progress?
-The codebase fluctuates quite often between compilable and non-compilable due to my regular contribution of bad/broken code. A rough estimate of progress around the codebase itself is that HAL's sysdolphin library is nearly recreated and the boot code, with a skip directly to the Title Screen scene, is close to rendering the Title.
+The codebase fluctuates quite often between compilable and non-compilable due to my regular contribution of bad/broken code. A rough estimate of progress around the codebase itself is that HAL's sysdolphin library is recreated to the extent that Melee uses, save for Shadow, Audio, and other small bits and pieces of incomplete code.
+
+At this point in time, the Title Screen renders several textures briefly before crashing. https://youtu.be/UIawNVK_rYM
 
 ## How much different from the original game will this be?
 FRAY does not presently attempt to reimplement playing the movie files, creating/manipulating memory card data, the Tournament system, or implementing the game's debug menu. 
