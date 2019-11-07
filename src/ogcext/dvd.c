@@ -219,7 +219,6 @@ s32 DVDConvertPathToEntrynum(char* filepath)
     if (filepath == NULL) {
         return -1;
     }
-    FSTEntry* p = entry_table;
     char* file = NULL;
 
     char* dir = strtok(filepath, "/");

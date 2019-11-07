@@ -11,6 +11,11 @@ HSD_VIStatus vi;
 
 static u8 garbage[HSD_ANTIALIAS_GARBAGE_SIZE] ATTRIBUTE_ALIGN(32);
 
+static u32 HSD_VIGetNbXFB(void)
+{
+    return _p->nb_xfb;
+}
+
 //8037588C
 static s32 HSD_VISearchXFBByStatus(HSD_VIXFBDrawDispStatus status)
 {
@@ -387,9 +392,4 @@ void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
 
     idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_FREE);
     HSD_VICopyEFB2XFBPtr(&_p->efb.vi_all.vi, _p->xfb[idx].buffer, HSD_RP_SCREEN);
-}
-
-static u32 HSD_VIGetNbXFB(void)
-{
-    return _p->nb_xfb;
 }

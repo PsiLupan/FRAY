@@ -288,7 +288,6 @@ void HSD_MtxGetRotation(Mtx mtx, guVector* rotation)
 //8037A120
 void HSD_MkRotationMtx(Mtx mtx, guVector* vec)
 {
-    f32 fVar1;
     f32 dVar2;
     f32 dVar3;
     f32 dVar4;

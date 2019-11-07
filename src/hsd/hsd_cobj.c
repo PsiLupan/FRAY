@@ -22,10 +22,10 @@ void HSD_CObjEraseScreen(HSD_CObj* cobj, s32 enable_color, s32 enable_alpha, s32
         f64 constant = 0.5;
         f64 z_val = (constant * (near + far));
 
-        f32 right_res; //f29
-        f32 left_res; //f30
-        f32 top_res; //f28
-        f32 bottom_res; //f27
+        f32 right_res = 0.0f; //f29
+        f32 left_res  = 0.0f; //f30
+        f32 top_res  = 0.0f; //f28
+        f32 bottom_res  = 0.0f; //f27
 
         u8 proj_type = HSD_CObjGetProjectionType(cobj);
         if (proj_type == PROJ_FRUSTRUM) {
@@ -151,16 +151,14 @@ void HSD_CObjReqAnim(HSD_CObj* cobj, f32 frame)
 //80367B68
 u8 makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx)
 {
-    u8 isOrtho;
+    u8 isOrtho = 0;
     switch (cobj->projection_type) {
     case PROJ_PERSPECTIVE:
-        isOrtho = 0;
         guPerspective(mtx, cobj->projection_param.perspective.fov, cobj->projection_param.perspective.aspect,
             cobj->near, cobj->far);
         break;
 
     case PROJ_FRUSTRUM:
-        isOrtho = 0;
         guFrustum(mtx, cobj->projection_param.frustrum.top, cobj->projection_param.frustrum.bottom, cobj->projection_param.frustrum.left,
             cobj->projection_param.frustrum.right, cobj->near, cobj->far);
         break;
@@ -418,14 +416,14 @@ void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec)
     if (cobj != NULL && vec != NULL) {
         if ((cobj->flags & 1) == 0) {
             guVector uvec;
-            f32 val;
+            f32 val = 0.0f;
             s32 res = HSD_CObjGetEyeVector(cobj, &uvec);
             if (res == 0) {
-                f32 val = guVecDotProduct(vec, &uvec);
+                val = guVecDotProduct(vec, &uvec);
                 if (FLT_MIN <= 1.0f - fabsf(val)) {
                     guVector zero = { 0.f, 0.f, 0.f };
                     guVector upvec = { 0.f, 1.f, 0.f };
-                    MtxP mtx;
+                    Mtx mtx;
                     guLookAt(mtx, &zero, &upvec, &uvec);
                     guVector rvec = { 0.0f, 0.0f, 0.0f };
                     guVecMultiplySR(mtx, vec, &rvec);
@@ -439,8 +437,6 @@ void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec)
                 } else {
                     val = 0.0f;
                 }
-            } else {
-                val = 0.0f;
             }
             HSD_CObjSetRoll(cobj, val);
         } else {

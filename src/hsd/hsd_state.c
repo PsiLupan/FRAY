@@ -536,7 +536,7 @@ u8 HSD_StateAssignTev(void)
 {
     u8 tevstage = state_num_tevstages;
     state_num_tevstages += 1;
-    return HSD_Index2TevStage(state_num_tevstages);
+    return HSD_Index2TevStage(tevstage);
 }
 
 //80362518

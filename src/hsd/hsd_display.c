@@ -194,7 +194,6 @@ void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx)
     } else {
         Mtx tmtx;
         guMtxConcat(mtx, jobj->mtx, tmtx);
-        u32 flags = jobj->flags & 0xE00;
         Mtx rot, scl;
         f32 x, y, z;
         switch (jobj->flags & JOBJ_BILLBOARD_FIELD) {
