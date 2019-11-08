@@ -5,7 +5,7 @@
 
 static u32 num_texgens = 0; //r13_40A4
 
-u8 TevReg[48]; //Technically a struct
+HSD_TevReg TevReg[4];
 
 //80362478
 void HSD_StateRegisterTexGen(u32 coord)
@@ -43,16 +43,10 @@ static u32 HSD_Index2TevRegID(u32 idx)
 void HSD_SetTevRegAll(void)
 {
     for (u32 i = 0; i < 4; i++) {
-        if (*(s32*)(TevReg + i * 0xc + 8) != 0) {
-            u32 offset = i * 0xc;
-            GXColorS10 color;
-            color.r = *(u16*)(TevReg + offset);
-            color.g = *(u16*)(TevReg + offset + 2);
-            color.b = *(u16*)(TevReg + offset + 4);
-            color.a = *(u16*)(TevReg + offset + 6);
+        if (TevReg[i].enable == GX_ENABLE) {
             u32 reg = HSD_Index2TevRegID(i);
-            GX_SetTevKColorS10(reg, color);
-            *(u32*)(TevReg + offset + 8) = 0;
+            GX_SetTevKColorS10(reg, TevReg[i].color);
+            TevReg[i].enable = GX_DISABLE;
         }
     }
 }
@@ -148,25 +142,12 @@ void HSD_TExpUnref(HSD_TExp* texp, u8 sel)
 //80362D04
 void _HSD_StateInvalidateTevRegister(void)
 {
-    TevReg[8] = 0;
-    TevReg[9] = 0;
-    TevReg[0xA] = 0;
-    TevReg[0xB] = 0;
-
-    TevReg[0x14] = 0;
-    TevReg[0x15] = 0;
-    TevReg[0x16] = 0;
-    TevReg[0x17] = 0;
-
-    TevReg[0x20] = 0;
-    TevReg[0x21] = 0;
-    TevReg[0x22] = 0;
-    TevReg[0x23] = 0;
-
-    TevReg[0x2C] = 0;
-    TevReg[0x2D] = 0;
-    TevReg[0x2E] = 0;
-    TevReg[0x2F] = 0;
+    for(u32 i = 0; i < 4; i++){
+        TevReg[i].color.r = 0;
+        TevReg[i].color.g = 0;
+        TevReg[i].color.b = 0;
+        TevReg[i].color.a = 0;
+    }
 }
 
 //80362D24
