@@ -37,7 +37,7 @@ LDFLAGS	= -g $(MACHDEP) -Wl,--unresolved-symbols=ignore-in-object-files,-Map,$(n
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:= -lc -logc -lm
+LIBS	:= -logc -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
