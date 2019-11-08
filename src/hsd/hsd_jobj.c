@@ -930,7 +930,7 @@ HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc* desc)
         jobj = (HSD_JObj*)(hsdNew(info));
         assert(jobj != NULL);
     }
-    HSD_JOBJ_METHOD(jobj)->load(jobj, desc, 0);
+    HSD_JOBJ_METHOD(jobj)->load(jobj, desc, NULL);
     HSD_JObjResolveRefsAll(jobj, desc);
     return jobj;
 }
