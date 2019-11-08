@@ -628,16 +628,16 @@ void Scene_StoreTo10(u8 (*func)())
 //801A4340
 BOOL Scene_IsSinglePlayer(u8 scene)
 {
-    if (scene == 28)
-        return TRUE;
-    if (scene >= 28) {
-        if (scene != 43 && (scene >= 43 || scene >= 39 || scene < 32))
+    if (scene != 28) {
+        if (scene < 28) {
+            if (scene != 15 || (scene > 5 || scene < 3)) {
+                return FALSE;
+            }
+        } else if (scene != 43 && (scene > 38 || scene < 32)) {
             return FALSE;
-        return TRUE;
+        }
     }
-    if (scene == 15 || (scene < 15 && scene < 6 && scene >= 3))
-        return TRUE;
-    return FALSE;
+    return TRUE;
 }
 
 //801A43A0
@@ -653,6 +653,7 @@ u8* Scene_ProcessMajor(u8 scene)
             break;
         }
     }
+    HSD_CheckAssert("Scene_ProcessMajor: scene_ptr == NULL", scene_ptr != NULL);
     gamestate.pending = FALSE;
     gamestate.curr_major = 0;
     gamestate.unk04 = 0;
@@ -702,13 +703,11 @@ u8* Scene_ProcessMajor(u8 scene)
 //801A46F4
 void sub_801A46F4()
 {
-
 }
 
 //801A47E4
 void sub_801A47E4()
 {
-
 }
 
 //801A48A4
@@ -813,7 +812,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
             HSD_VISetXFBDrawDone();
             return;
         }
-        //For clarity sake, this the game does the following with the PAD Alarm. 
+        //For clarity sake, this the game does the following with the PAD Alarm.
         //Doing it here is technically the fix for poll drift.
         HSD_PadRenewRawStatus();
         //sub_80392E80(); Something memory card related
@@ -1045,12 +1044,11 @@ s32 sub_8022C010(s32 result, s32 a2)
 }
 
 //8022ED6C
-void Scene_ReqAnimAll(HSD_JObj* jobj, f32* frames)
+f32 Scene_ReqAnimAll(HSD_JObj* jobj, f32* frames)
 {
-    f32 dVar1;
-    f32 frame;
-
-    frame = JObj_GetFrame(jobj);
+    f32 anim_speed;
+    f32 frame = JObj_GetFrame(jobj);
+    
     if ((frame < frames[0]) || (frames[1] < frame)) {
         HSD_JObjReqAnimAll(jobj, frames[0]);
     }
@@ -1059,11 +1057,11 @@ void Scene_ReqAnimAll(HSD_JObj* jobj, f32* frames)
         if (frame < frames[1]) {
             HSD_JObjAnimAll(jobj);
             frame = JObj_GetFrame(jobj);
-            dVar1 = frames[1];
-            if (dVar1 < frame) {
-                HSD_JObjReqAnimAll(jobj, dVar1);
+            anim_speed = frames[1];
+            if (anim_speed < frame) {
+                HSD_JObjReqAnimAll(jobj, anim_speed);
                 HSD_JObjAnimAll(jobj);
-                frame = dVar1;
+                frame = anim_speed;
             }
         }
     } else {
@@ -1075,4 +1073,5 @@ void Scene_ReqAnimAll(HSD_JObj* jobj, f32* frames)
             HSD_JObjAnimAll(jobj);
         }
     }
+    return frame;
 }

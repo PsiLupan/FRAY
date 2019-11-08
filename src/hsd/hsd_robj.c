@@ -321,13 +321,10 @@ static f32 dummy_func()
 //8037C958
 void HSD_RvalueRemoveAll(HSD_Rvalue* rvalue)
 {
-    HSD_Rvalue* next;
-    while (next = rvalue, next != NULL) {
+    for(HSD_Rvalue* next = rvalue; next != NULL; next = rvalue) {
         rvalue = next->next;
-        if (next != NULL) {
-            HSD_JObjUnrefThis(next->jobj);
-            HSD_ObjFree(&rvalue_alloc_data, (HSD_ObjAllocLink*)next);
-        }
+        HSD_JObjUnrefThis(next->jobj);
+        HSD_ObjFree(&rvalue_alloc_data, (HSD_ObjAllocLink*)next);
     }
 }
 

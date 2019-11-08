@@ -915,17 +915,13 @@ void HSD_LObjAddAnim(HSD_LObj* lobj, HSD_LightAnim* lanim)
     HSD_LObj* lp;
     HSD_LightAnim* la;
 
-    for (lp = lobj, la = lanim; lp; lp = lp->next, la = la->next) {
-        if (lp) {
-            if (la) {
-                if (lp->aobj) {
-                    HSD_AObjRemove(lp->aobj);
-                }
-                lp->aobj = HSD_AObjLoadDesc(la->aobjdesc);
-                HSD_WObjAddAnim(HSD_LObjGetPositionWObj(lp), la->position_anim);
-                HSD_WObjAddAnim(HSD_LObjGetInterestWObj(lp), la->interest_anim);
-            }
+    for (lp = lobj, la = lanim; lp != NULL && la != NULL; lp = lp->next, la = la->next) {
+        if (lp->aobj) {
+            HSD_AObjRemove(lp->aobj);
         }
+        lp->aobj = HSD_AObjLoadDesc(la->aobjdesc);
+        HSD_WObjAddAnim(HSD_LObjGetPositionWObj(lp), la->position_anim);
+        HSD_WObjAddAnim(HSD_LObjGetInterestWObj(lp), la->interest_anim);
     }
 }
 

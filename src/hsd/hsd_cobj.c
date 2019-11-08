@@ -149,7 +149,7 @@ void HSD_CObjReqAnim(HSD_CObj* cobj, f32 frame)
 }
 
 //80367B68
-u8 makeProjectionMtx(HSD_CObj* cobj, Mtx44 mtx)
+u8 makeProjectionMtx(HSD_CObj* cobj, MtxP mtx)
 {
     u8 isOrtho = 0;
     switch (cobj->projection_type) {
@@ -254,7 +254,7 @@ BOOL HSD_CObjSetCurrent(HSD_CObj* cobj)
         GX_SetScissor(cobj->scissor_left, cobj->scissor_top,
             cobj->scissor_right - cobj->scissor_left,
             cobj->scissor_bottom - cobj->scissor_top);
-        Mtx44 mtx;
+        Mtx44 mtx = {0};
         u8 type = makeProjectionMtx(cobj, mtx);
         GX_LoadProjectionMtx(mtx, type);
         res = TRUE;
@@ -972,6 +972,7 @@ static int CObjLoad(HSD_CObj* cobj, HSD_CObjDesc* desc)
         cobj->projection_param.frustrum.bottom = desc->projection_param.frustrum.bottom;
         cobj->projection_param.frustrum.left = desc->projection_param.frustrum.left;
         cobj->projection_param.frustrum.right = desc->projection_param.frustrum.right;
+        break;
     case PROJ_ORTHO:
         cobj->projection_type = PROJ_ORTHO;
         cobj->projection_param.ortho.top = desc->projection_param.ortho.top;

@@ -202,11 +202,9 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
     }
     return texp_list;
 #else
-    bool bVar1;
     HSD_TExp* pabVar2;
     HSD_TExp* next;
-    int iVar3;
-    int texp_type;
+    HSD_TExpType texp_type;
     HSD_TExp* pabVar4;
     HSD_TExp** handle;
     HSD_TExp* local_20[5];
@@ -216,7 +214,7 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
     if (all == 0) {
         if ((type == 7) || (type == 1)) {
             while (texp_list != NULL) {
-                if (((texp_list->type == HSD_TE_TEV) && (bVar1 = texp_list->tev.c_ref == 0, bVar1)) && (bVar1)) {
+                if ((texp_list->type == HSD_TE_TEV) && texp_list->tev.c_ref == 0) {
                     HSD_TExpUnref(texp_list, 1);
                     HSD_TExpUnref(texp_list, 5);
                 }
@@ -248,13 +246,13 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
     } else {
         while (pabVar2 = *handle, pabVar2 != NULL) {
             if ((type == 7) || (type == pabVar2->type)) {
-                iVar3 = pabVar2->type;
-                if (iVar3 == HSD_TE_CNST) {
+                texp_type = pabVar2->type;
+                if (texp_type == HSD_TE_CNST) {
                     pabVar4 = pabVar2->cnst.next;
                     hsdFreeMemPiece(pabVar2, sizeof(HSD_TECnst));
                     *handle = pabVar4;
                 } else {
-                    HSD_CheckAssert("TExpFreeList: type != HSD_TE_TEV", iVar3 == HSD_TE_TEV);
+                    HSD_CheckAssert("TExpFreeList: type != HSD_TE_TEV", texp_type == HSD_TE_TEV);
                     pabVar4 = (*handle)->tev.next;
                     hsdFreeMemPiece(pabVar2, sizeof(HSD_TETev));
                     *handle = pabVar4;
@@ -1246,12 +1244,10 @@ s32 HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_l
     u32 init_aprev = 1;
     HSD_TExp* order[32];
     HSD_TExpDag list[32];
-    u32 type;
 
     assert(tevdesc != NULL);
     assert(list != NULL);
 
-    type = HSD_TExpGetType(texp);
     HSD_TExpRef(texp, 1);
     HSD_TExpRef(texp, 5);
     HSD_TExpSimplify(texp);
@@ -1796,7 +1792,7 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
             dep_mtx[j] = 0;
             for (k = 0; k < list->nb_dep; k++) {
                 HSD_TExpDag* dag = list_cur->depend[k];
-                full_dep_mtx[j] |= 1 << dag->idx;
+                full_dep_mtx[j] = 1 << dag->idx;
             }
         }
     }
@@ -2794,7 +2790,7 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
             if (t->tev.c_op == 0 && t->tev.c_in[0].sel == 7 && t->tev.c_in[1].sel == 7 && t->tev.c_bias == 0 && t->tev.c_scale == 0) {
                 if (t->tev.c_in[3].type == HSD_TE_KONST) {
                     if (texp->tev.tex_swap == 0xFF) {
-                        t->tev.tex_swap = t->tev.tex_swap;
+                        texp->tev.tex_swap = t->tev.tex_swap;
                     } else {
                         if (texp->tev.tex_swap != t->tev.tex_swap) {
                             continue;
@@ -2817,7 +2813,7 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
             if (t->tev.a_op == 0 && t->tev.a_in[0].sel == 7 && t->tev.a_in[1].sel == 7 && t->tev.a_bias == 0 && t->tev.a_scale == 0) {
                 if (t->tev.a_in[3].type == HSD_TE_KONST) {
                     if (texp->tev.kcsel == 0xFF) {
-                        t->tev.kcsel = t->tev.kcsel;
+                        texp->tev.kcsel = t->tev.kcsel;
                     } else {
                         if (texp->tev.kcsel != t->tev.kcsel) {
                             continue;

@@ -104,7 +104,7 @@ static int WObjLoad(HSD_WObj* wobj, HSD_WObjDesc* desc)
 //8037D34C
 void HSD_WObjInit(HSD_WObj* wobj, HSD_WObjDesc* desc)
 {
-    if (wobj != NULL & desc != NULL) {
+    if (wobj != NULL && desc != NULL) {
         HSD_WObjSetPosition(wobj, &desc->pos);
         if (wobj->robj != NULL) {
             HSD_RObjRemoveAll(wobj->robj);

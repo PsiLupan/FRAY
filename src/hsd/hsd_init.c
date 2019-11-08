@@ -68,17 +68,17 @@ void HSD_DVDInit(void)
 //80374F7C
 void** HSD_AllocateXFB(u32 nbBuffer, GXRModeObj* rm)
 {
-    u32 fbSize;
+    //u32 fbSize;
 
     if (!rm)
         return NULL;
 
-    fbSize = (VIDEO_PadFramebufferWidth(rm->fbWidth) * rm->xfbHeight * (u32)VI_DISPLAY_PIX_SZ);
+    //fbSize = (VIDEO_PadFramebufferWidth(rm->fbWidth) * rm->xfbHeight * (u32)VI_DISPLAY_PIX_SZ);
 
     for (u32 i = 0; i < nbBuffer; i++) {
         /*if ((FrameBuffer[i] = (void *) SYS_AllocArena1MemLo(fbSize, 32)) == NULL) {
-      assert(TRUE);
-    }*/
+            assert(TRUE);
+        }*/
         FrameBuffer[i] = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rm));
         if (FrameBuffer[i] == NULL) {
             HSD_Halt("Failed to allocate framebuffer\n");

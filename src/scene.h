@@ -138,7 +138,7 @@ MinorSceneHandler* Scene_GetClassHandler();
 
 MajorScene* Scene_GetMajorScenes();
 
-void Scene_ReqAnimAll(HSD_JObj*, f32*);
+f32 Scene_ReqAnimAll(HSD_JObj*, f32*);
 
 void Scene_80017700(s32);
 void Scene_80018254();

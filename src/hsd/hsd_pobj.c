@@ -293,9 +293,8 @@ void HSD_ClearVtxDesc(void)
 //8036C270
 static void setupArrayDesc(HSD_VtxDescList* desc_list)
 {
-    HSD_VtxDescList* desc;
     if (prev_vtxdesclist_array != desc_list) {
-        for (desc = desc_list; desc->attr != GX_VA_NULL; desc++) {
+        for (HSD_VtxDescList* desc = desc_list; desc->attr != GX_VA_NULL; desc++) {
             if (desc->attr_type != GX_DIRECT) {
                 GX_SetArray(desc->attr, desc->vertex, desc->stride);
             }
@@ -788,14 +787,12 @@ void HSD_PObjClearMtxMark(void* obj, u32 mark)
 //8036E04C
 void HSD_PObjSetMtxMark(s32 idx, void* obj, u32 mark)
 {
-    if (idx >= 2)
+    if (idx <= 0 || idx >= 2){
         return;
-
-    if (0 <= idx && idx < 2) {
-    } else {
-        mtx_mark[idx].obj = obj;
-        mtx_mark[idx].mark = mark;
     }
+
+    mtx_mark[idx].obj = obj;
+    mtx_mark[idx].mark = mark;
 }
 
 //8036E080

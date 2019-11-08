@@ -799,9 +799,8 @@ HSD_Material* HSD_MaterialAlloc(void)
 //80363D60
 void HSD_MObjAddShadowTexture(HSD_TObj* tobj)
 {
-    HSD_TObj* tp;
-    assert(tobj);
-    for (tp = tobj_shadows; tp != NULL; tp = tp->next) {
+    assert(tobj != NULL);
+    for (HSD_TObj* tp = tobj_shadows; tp != NULL; tp = tp->next) {
         if (tp == tobj)
             return;
     }
@@ -812,9 +811,8 @@ void HSD_MObjAddShadowTexture(HSD_TObj* tobj)
 //80363DC4
 void HSD_MObjDeleteShadowTexture(HSD_TObj* tobj)
 {
-    HSD_TObj **tp, *next;
-    if (tobj) {
-        for (tp = &tobj_shadows; *tp != NULL; tp = &(*tp)->next) {
+    if (tobj != NULL) {
+        for (HSD_TObj **tp = &tobj_shadows; *tp != NULL; tp = &(*tp)->next) {
             if (*tp == tobj) {
                 *tp = tobj->next;
                 tobj->next = NULL;
@@ -822,7 +820,7 @@ void HSD_MObjDeleteShadowTexture(HSD_TObj* tobj)
             }
         }
     } else {
-        for (; tobj_shadows != NULL; tobj_shadows = next) {
+        for (HSD_TObj *next = NULL; tobj_shadows != NULL; tobj_shadows = next) {
             next = tobj_shadows->next;
             tobj_shadows->next = NULL;
         }

@@ -78,7 +78,7 @@
     (TOBJ_TEVREG_ACTIVE_TEV1_R | TOBJ_TEVREG_ACTIVE_TEV1_G \
         | TOBJ_TEVREG_ACTIVE_TEV1_B | TOBJ_TEVREG_ACTIVE_TEV1_A)
 #define TOBJ_TEVREG_ACTIVE_COLOR_TEV (0x01 << 30)
-#define TOBJ_TEVREG_ACTIVE_ALPHA_TEV (0x01 << 31)
+#define TOBJ_TEVREG_ACTIVE_ALPHA_TEV (0x01U << 31)
 
 #define TEX_COORD_UV 0
 #define TEX_COORD_REFLECTION 1
@@ -128,7 +128,7 @@
 
 #define TEX_BUMP (0x1 << 24)
 #define tobj_bump(T) ((T)->flags & TEX_BUMP)
-#define TEX_MTX_DIRTY (1 << 31)
+#define TEX_MTX_DIRTY (1U << 31)
 
 //Texture Object
 typedef struct _HSD_TObj {

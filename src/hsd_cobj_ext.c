@@ -12,12 +12,8 @@ HSD_CObj* CObj_Create(HSD_CObjDesc* cdesc)
     }
     u16 scissors[4];
     HSD_CObjGetScissor(cobj, scissors);
-    if (scissors[0] != 640) {
-        scissors[0] = 640;
-    }
-    if (scissors[2] != 480) {
-        scissors[2] = 480;
-    }
+    scissors[0] = 640;
+    scissors[2] = 480;
     HSD_CObjSetScissor(cobj, scissors);
     return cobj;
 }

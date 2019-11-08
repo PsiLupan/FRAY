@@ -18,9 +18,8 @@ static HSD_TObj* tobj_head;
 //8035E560
 void HSD_TObjRemoveAnimAll(HSD_TObj* tobj)
 {
-    HSD_TObj* tp;
-    if (tobj) {
-        for (tp = tobj; tp; tp = tp->next) {
+    if (tobj != NULL) {
+        for (HSD_TObj* tp = tobj; tp; tp = tp->next) {
             HSD_AObjRemove(tobj->aobj);
             tobj->aobj = NULL;
         }
@@ -29,8 +28,7 @@ void HSD_TObjRemoveAnimAll(HSD_TObj* tobj)
 
 static HSD_TexAnim* lookupTextureAnim(s32 id, HSD_TexAnim* texanim)
 {
-    HSD_TexAnim* ta;
-    for (ta = texanim; ta; ta = ta->next) {
+    for (HSD_TexAnim* ta = texanim; ta; ta = ta->next) {
         if (ta->id == id)
             return ta;
     }
@@ -41,7 +39,7 @@ static HSD_TexAnim* lookupTextureAnim(s32 id, HSD_TexAnim* texanim)
 void HSD_TObjAddAnim(HSD_TObj* tobj, HSD_TexAnim* texanim)
 {
     HSD_TexAnim* ta;
-    if (tobj == NULL) {
+    if (tobj != NULL) {
         if ((ta = lookupTextureAnim(tobj->anim_id, texanim)) != NULL) {
             int i;
             if (tobj->aobj) {
@@ -74,9 +72,8 @@ void HSD_TObjAddAnim(HSD_TObj* tobj, HSD_TexAnim* texanim)
 //8035E708
 void HSD_TObjAddAnimAll(HSD_TObj* tobj, HSD_TexAnim* texanim)
 {
-    HSD_TObj* tp;
-    if (tobj) {
-        for (tp = tobj; tp; tp = tp->next) {
+    if (tobj != NULL) {
+        for (HSD_TObj* tp = tobj; tp; tp = tp->next) {
             HSD_TObjAddAnim(tp, texanim);
         }
     }
@@ -85,9 +82,8 @@ void HSD_TObjAddAnimAll(HSD_TObj* tobj, HSD_TexAnim* texanim)
 //8035E760
 void HSD_TObjReqAnimAllByFlags(HSD_TObj* tobj, f32 startframe, u32 flags)
 {
-    HSD_TObj* tp;
-    if (tobj) {
-        for (tp = tobj; tp; tp = tp->next) {
+    if (tobj != NULL) {
+        for (HSD_TObj* tp = tobj; tp; tp = tp->next) {
             if (flags & TOBJ_ANIM) {
                 HSD_AObjReqAnim(tobj->aobj, startframe);
             }
@@ -98,16 +94,15 @@ void HSD_TObjReqAnimAllByFlags(HSD_TObj* tobj, f32 startframe, u32 flags)
 //8035E7D4
 void HSD_TObjReqAnim(HSD_TObj* tobj, f32 startframe)
 {
-    if (tobj)
+    if (tobj != NULL)
         HSD_AObjReqAnim(tobj->aobj, startframe);
 }
 
 //8035E800
 void HSD_TObjReqAnimAll(HSD_TObj* tobj, f32 startframe)
 {
-    HSD_TObj* tp;
-    if (tobj) {
-        for (tp = tobj; tp; tp = tp->next) {
+    if (tobj != NULL) {
+        for (HSD_TObj* tp = tobj; tp; tp = tp->next) {
             HSD_AObjReqAnim(tobj->aobj, startframe);
         }
     }
@@ -117,7 +112,7 @@ void HSD_TObjReqAnimAll(HSD_TObj* tobj, f32 startframe)
 static void TObjUpdateFunc(void* obj, u32 type, FObjData* val)
 {
     HSD_TObj* tobj = obj;
-    if (tobj) {
+    if (tobj != NULL) {
         switch (type) {
         case HSD_A_T_TIMG: {
             int n;
@@ -1207,7 +1202,7 @@ s32 HSD_TObjAssignResources(HSD_TObj* tobj_top)
 
 static int DifferentTluts(HSD_Tlut* t0, HSD_Tlut* t1)
 {
-    return (t0->lut != t0->lut) || (t0->fmt != t1->fmt) || (t0->n_entries != t1->n_entries);
+    return (t0->lut != t1->lut) || (t0->fmt != t1->fmt) || (t0->n_entries != t1->n_entries);
 }
 
 //80360950
