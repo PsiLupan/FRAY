@@ -13,7 +13,7 @@ static HSD_WObjInfo* default_class = NULL;
 //8037D050
 void HSD_WObjRemoveAnim(HSD_WObj* wobj)
 {
-    if (wobj) {
+    if (wobj != NULL) {
         HSD_AObjRemove(wobj->aobj);
         wobj->aobj = NULL;
         HSD_RObjRemoveAnimAll(wobj->robj);
@@ -23,7 +23,7 @@ void HSD_WObjRemoveAnim(HSD_WObj* wobj)
 //8037D094
 void HSD_WObjReqAnim(HSD_WObj* wobj, f32 frame)
 {
-    if (wobj) {
+    if (wobj != NULL) {
         HSD_AObjReqAnim(wobj->aobj, frame);
         HSD_RObjReqAnimAll(wobj->robj, frame);
     }
