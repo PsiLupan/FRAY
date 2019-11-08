@@ -654,10 +654,10 @@ void HSD_SetupChannel(HSD_Chan* chan)
 {
     if (chan != NULL && chan->chan != 0xFF) {
         u32 c_chan = chan->chan & 1;
-        if (chan->enable != GX_DISABLE && chan->amb_src == 0) {
+        if (chan->enable != GX_DISABLE && chan->amb_src == GX_SRC_REG) {
         }
 
-        if (chan->mat_src == 0) {
+        if (chan->mat_src == GX_SRC_REG) {
         }
     }
 }
