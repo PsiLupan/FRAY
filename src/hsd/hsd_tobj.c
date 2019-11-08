@@ -393,11 +393,6 @@ static u32 HSD_TexMapID2PTTexMtx(u32 id)
     return 0;
 }
 
-static int current_TexCoordID_index;
-
-#define initCurrentTexCoordID() (current_TexCoordID_index = 0)
-#define getCurrentTexCoord() HSD_Index2TexCoord(current_TexCoordID_index++)
-
 //8035EF38
 static void MakeTextureMtx(HSD_TObj* tobj)
 {

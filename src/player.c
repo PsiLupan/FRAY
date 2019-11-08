@@ -134,8 +134,8 @@ BOOL Player_Interrupt_Fastfall(Player* player)
     if (player->x84_self_vel_y >= 0.0f) {
         return FALSE;
     }
-    f32* unk = r13_514C;
-    if (player->x624_joystick_y <= -0.6625f || player->x671_frames_tilt_y >= 4) { //Values here are hardcoded - Need to account for individual character data
+    //f32* unk = r13_514C + 0x88;
+    if (player->x624_joystick_y > -0.6625f || player->x671_frames_tilt_y >= 4) { //Values here are hardcoded - Need to account for individual character data
         return FALSE;
     }
     player->x221A_flags = (player->x221A_flags & 0xF7) | 8;

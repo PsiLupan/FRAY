@@ -221,8 +221,8 @@ typedef struct _Player {
 
     u32 x668_instant_buttons;
 
-    u8 x670_frames_tilt_x;
-    u8 x671_frames_tilt_y;
+    s8 x670_frames_tilt_x;
+    s8 x671_frames_tilt_y;
 
     Physics x6F0_physics;
 

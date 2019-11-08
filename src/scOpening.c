@@ -5,7 +5,7 @@
 void Menu_Opening_ProgressiveScan_Prep(void* state)
 {
     GameState* game_state = (GameState*)state;
-    *Scene_Get10(state) = 1;
+    *Scene_Get10(game_state) = 1;
 }
 
 //801BF920

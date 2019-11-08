@@ -379,7 +379,6 @@ void HSD_TExpAlphaOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 clamp)
 static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u32 idx)
 {
     u32 swap;
-    HSD_TExpType o_type = tev->c_in[idx].type;
     HSD_TExp* texp = tev->c_in[idx].exp;
 
     u32 type = HSD_TExpGetType(exp);
@@ -834,7 +833,7 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 //803846C0
 static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 {
-    s32 val;
+    s32 val = 0;
     u32 i;
 
     if (texp->tev.c_ref > 0) {
@@ -1570,7 +1569,7 @@ LAB_80385f0c:
     }
     goto LAB_80385fd0;
     while (true) {
-        HSD_TExpDag* pHVar5 = (HSD_TExpDag*)&pHVar5->idx;
+        pHVar5 = (HSD_TExpDag*)&pHVar5->idx;
         iVar8 = iVar8 + 1;
         uVar10 = uVar10 - 1;
         if (uVar10 == 0)
