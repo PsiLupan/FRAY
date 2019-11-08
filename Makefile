@@ -32,12 +32,12 @@ INCLUDES	:=
 CFLAGS	= -O1 -std=gnu18 -Wall -Wno-implicit-function-declaration -Wno-switch $(MACHDEP) $(INCLUDE) $(NODEBUG)
 CXXFLAGS	= $(CFLAGS)
 
-LDFLAGS	= -g $(MACHDEP) -Wl,--unresolved-symbols=ignore-in-object-files,-Map,$(notdir $@).map,--section-start=.init=0x80003100
+LDFLAGS	= -g $(MACHDEP) -Wl,--unresolved-symbols=ignore-in-object-files,-Map,$(notdir $@).map -T$(PWD)/ogc.ld
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:= -logc -lm
+LIBS	:= -lc -logc -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -72,7 +72,12 @@ BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 # use CXX for linking C++ projects, CC for standard C
 #---------------------------------------------------------------------------------
 ifeq ($(strip $(CPPFILES)),)
-	export LD	:=	$(CC)
+	export LD	:=	$(CC) -Wl,--gc-sections -nostartfiles \
+		$(DEVKITPPC)/lib/gcc/powerpc-eabi/*/crtend.o \
+		$(DEVKITPPC)/lib/gcc/powerpc-eabi/*/ecrtn.o \
+		$(DEVKITPPC)/lib/gcc/powerpc-eabi/*/ecrti.o \
+		$(DEVKITPPC)/lib/gcc/powerpc-eabi/*/crtbegin.o \
+		$(DEVKITPPC)/powerpc-eabi/lib/crtmain.o
 else
 	export LD	:=	$(CXX)
 endif
@@ -87,14 +92,15 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
 					-I$(CURDIR)/$(BUILD) \
-					-isystem /d/LLVM/lib/clang/9.0.0/include -isystem $(DEVKITPPC)/powerpc-eabi/include \
-					-isystem $(DEVKITPRO)/libogc/include
+					-isystem /d/LLVM/lib/clang/9.0.0/include \
+					-isystem $(DEVKITPPC)/powerpc-eabi/include \
+					-I$(LIBOGC_INC)
 					
 #---------------------------------------------------------------------------------
 # build a list of library paths
 #---------------------------------------------------------------------------------
 export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib) \
-					-L/d/devkitpro/libogc/lib/cube
+					-L$(LIBOGC_LIB)
 					
 export OUTPUT	:=	$(CURDIR)/$(TARGET)
 .PHONY: $(BUILD) clean
