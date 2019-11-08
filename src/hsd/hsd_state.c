@@ -47,14 +47,166 @@ static HSD_Chan invalid_prev_ch;
 static void HSD_DisableChannelLighting(u32 channel)
 {
     u32 chan = channel & 3;
-    if(channel < GX_COLORZERO && channel > GX_ALPHA1){
-
+    if (channel < GX_COLORZERO && channel > GX_ALPHA1) {
     }
 }
 
 //803615D0
 void HSD_SetupChannelMode(u32 rendermode)
 {
+#if 1
+    u32 chans = 2;
+    u32 flags = rendermode & RENDER_SPECULAR;
+
+    if (flags == 0) {
+        chans = 1;
+    }
+    HSD_StateSetNumChans(chans);
+
+    if (flags != 0) {
+        static HSD_Chan ch = {
+            NULL,
+            GX_COLOR1,
+            1,
+            { 0, 0, 0, 0 },
+            { 255, 255, 255, 255 },
+            GX_TRUE,
+            GX_SRC_REG,
+            GX_SRC_REG,
+            0,
+            GX_DF_CLAMP,
+            GX_AF_SPEC,
+            NULL
+        };
+
+        ch.light_mask = HSD_LObjGetLightMaskSpecular();
+        HSD_SetupChannel(&ch);
+
+        s32 num = HSD_LObjGetNbActive();
+        for (s32 i = 0; i < num; i++) {
+            HSD_LObj* lobj = HSD_LObjGetActiveByIndex(i);
+
+            if (lobj != NULL) {
+                f32 shininess = matstate.shininess;
+                if (flags == 0) {
+                    shininess = lobj->shininess;
+                }
+                HSD_LObjSetup(lobj, lobj->color, shininess);
+            }
+        }
+    }
+
+    flags = rendermode & 7;
+
+    if (flags == 2) {
+        static HSD_Chan ch = {
+            NULL,
+            GX_COLOR0A0,
+            0,
+            { 0, 0, 0, 0 },
+            { 0, 0, 0, 0 },
+            GX_FALSE,
+            GX_SRC_REG,
+            GX_SRC_VTX,
+            0,
+            GX_DF_CLAMP,
+            GX_AF_NONE,
+            NULL
+        };
+
+        HSD_SetupChannel(&ch);
+    } else if (flags == 4) {
+        static HSD_Chan ch = {
+            NULL,
+            GX_COLOR0,
+            0,
+            { 0, 0, 0, 0 },
+            { 255, 255, 255, 255 },
+            GX_ENABLE,
+            GX_SRC_REG,
+            GX_SRC_REG,
+            0,
+            GX_DF_CLAMP,
+            GX_AF_SPOT,
+            NULL
+        };
+        static HSD_Chan ch_a = {
+            NULL,
+            GX_ALPHA0,
+            0,
+            { 0, 0, 0, 255 },
+            { 0, 0, 0, 255 },
+            GX_ENABLE,
+            GX_SRC_REG,
+            GX_SRC_REG,
+            0,
+            GX_DF_CLAMP,
+            GX_AF_SPOT,
+            NULL
+        };
+        static HSD_Chan ch_vtx_a = {
+            NULL,
+            GX_ALPHA0,
+            0,
+            { 0, 0, 0, 0 },
+            { 0, 0, 0, 255 },
+            GX_DISABLE,
+            GX_SRC_REG,
+            GX_SRC_REG,
+            0,
+            GX_DF_NONE,
+            GX_AF_NONE,
+            NULL
+        };
+
+        static GXColor dark_matter = { 0, 0, 0, 255 };
+
+        HSD_LObj* amb = HSD_LObjGetActiveByID(GX_MAXLIGHT);
+
+        if (amb != NULL && (amb->flags & LOBJ_DIFFUSE)) {
+            HSD_MulColor(&matstate.ambient, &amb->color, &ch.amb_color);
+        } else {
+            ch.amb_color = dark_matter;
+        }
+
+        ch.light_mask = HSD_LObjGetLightMaskDiffuse();
+        HSD_SetupChannel(&ch);
+
+        ch_a.light_mask = HSD_LObjGetLightMaskAlpha();
+
+        if (amb != NULL && (amb->flags & LOBJ_ALPHA) != 0) {
+            ch_a.amb_color.a = amb->color.a;
+            HSD_SetupChannel(&ch_a);
+            return;
+        }
+
+        if (ch_a.light_mask != 0) {
+            ch_a.amb_color.a = 0;
+            HSD_SetupChannel(&ch_a);
+            return;
+        }
+
+        HSD_SetupChannel(&ch_vtx_a);
+        return;
+    }
+
+    static HSD_Chan default_chan = {
+        NULL,
+        GX_COLOR0A0,
+        0,
+        { 0, 0, 0, 0 },
+        { 255, 255, 255, 255 },
+        GX_DISABLE,
+        GX_SRC_REG,
+        GX_SRC_REG,
+        0,
+        GX_DF_CLAMP,
+        GX_AF_NONE,
+        NULL
+    };
+    HSD_SetupChannel(&default_chan);
+
+#else
     u32 diffuse_mode;
     u32 alpha_mode;
     s32 use_color1 = 0;
@@ -229,6 +381,7 @@ void HSD_SetupChannelMode(u32 rendermode)
             HSD_StateSetNumChans(1);
         }
     }
+#endif
 }
 
 //80361778
@@ -499,14 +652,12 @@ void HSD_StateInvalidate(HSD_StateMask state)
 //803620A4
 void HSD_SetupChannel(HSD_Chan* chan)
 {
-    if(chan != NULL && chan->chan != 0xFF){
+    if (chan != NULL && chan->chan != 0xFF) {
         u32 c_chan = chan->chan & 1;
-        if(chan->enable != GX_DISABLE && chan->amb_src == 0){
-
+        if (chan->enable != GX_DISABLE && chan->amb_src == GX_SRC_REG) {
         }
-        
-        if(chan->mat_src == 0){
 
+        if (chan->mat_src == GX_SRC_REG) {
         }
     }
 }
