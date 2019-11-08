@@ -262,11 +262,11 @@ SECTIONS
 }
 
 __isIPL = 0;
-__stack_addr = (__bss_start + SIZEOF(.bss) + 0x20000 + 7) & (-8);
+__stack_addr = (__bss_start + SIZEOF(.bss) + 0x20000 + 7) & ~0x7;
 __stack_end = (__bss_start + SIZEOF(.bss));
 __intrstack_addr = (__stack_addr + 0x4000);
 __intrstack_end = (__stack_addr);
-__Arena1Lo = (__intrstack_addr + 31) & (-32);
+__Arena1Lo = (__intrstack_addr + 0x1f) & ~0x1f;
 __Arena1Hi = (0x817FEFF0);
 
 __gxregs = (__Arena1Hi + 31) & (-32);
