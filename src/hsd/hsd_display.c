@@ -114,7 +114,7 @@ static void mkHBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx)
     }
     sz /= mag;
     guVecCross(&az, &ux, &ay);
-    f32 ay_mag = sqrt(ay.x * ay.x + ay.y * ay.y + ay.z * ay.z);
+    f32 ay_mag = sqrtf(ay.x * ay.x + ay.y * ay.y + ay.z * ay.z);
     sy /= ay_mag + FLT_EPSILON;
 
     guMtxRowCol(pmtx, 0, 0) = ax.x;
@@ -224,7 +224,7 @@ void mkRBillBoardMtx(HSD_JObj* jobj, Mtx mtx, Mtx rmtx)
 static HSD_JObj* HSD_JObjFindSkeleton(HSD_JObj* jobj)
 {
     assert(jobj != NULL);
-    for (; jobj; jobj = jobj->prev) {
+    for (; jobj != NULL; jobj = jobj->prev) {
         if (jobj->flags & (SKELETON | SKELETON_ROOT)) {
             return jobj;
         }
@@ -344,13 +344,13 @@ void HSD_ZListInitAllocData(void)
 }
 
 //80374680
-static HSD_ZList* zlist_sort(HSD_ZList* list, int nb, int offset)
+static HSD_ZList* zlist_sort(HSD_ZList* list, s32 nb, s32 offset)
 {
     HSD_ZList *fore, *hind, **ptr;
-    int nb_fore, nb_hind;
+    s32 nb_fore, nb_hind;
 
     if (nb <= 1) {
-        if (list) {
+        if (list != NULL) {
             ZLIST_NEXT(list, offset) = NULL;
         }
         return list;
@@ -360,7 +360,7 @@ static HSD_ZList* zlist_sort(HSD_ZList* list, int nb, int offset)
     nb_hind = nb - nb_fore;
 
     hind = list;
-    for (int i = 0; i < nb_fore; i++) {
+    for (u32 i = 0; i < nb_fore; i++) {
         hind = ZLIST_NEXT(hind, offset);
     }
 
@@ -370,7 +370,7 @@ static HSD_ZList* zlist_sort(HSD_ZList* list, int nb, int offset)
     list = NULL;
     ptr = &list;
 
-    while (fore && hind) {
+    while (fore != NULL && hind != NULL) {
         if (guMtxRowCol(fore->pmtx, 2, 3) <= guMtxRowCol(hind->pmtx, 2, 3)) {
             *ptr = fore;
             fore = ZLIST_NEXT(fore, offset);
@@ -381,9 +381,9 @@ static HSD_ZList* zlist_sort(HSD_ZList* list, int nb, int offset)
         ptr = &ZLIST_NEXT(*ptr, offset);
     }
 
-    if (fore) {
+    if (fore != NULL) {
         *ptr = fore;
-    } else if (hind) {
+    } else if (hind != NULL) {
         *ptr = hind;
     }
 
@@ -412,13 +412,13 @@ void _HSD_ZListDisp(void)
     vmtx = cobj->view_mtx;
 
     list = zlist_texedge_top;
-    while (list) {
+    while (list != NULL) {
         HSD_JOBJ_METHOD(list->jobj)->disp(list->jobj, (list->vmtx) ? list->vmtx : vmtx, list->pmtx, HSD_TRSP_TEXEDGE, list->rendermode);
         list = list->sort.texedge;
     }
 
     list = zlist_xlu_top;
-    while (list) {
+    while (list != NULL) {
         HSD_JOBJ_METHOD(list->jobj)->disp(list->jobj, (list->vmtx) ? list->vmtx : vmtx, list->pmtx, HSD_TRSP_XLU, list->rendermode);
         list = list->sort.xlu;
     }
@@ -454,7 +454,7 @@ void _HSD_ZListClear(void)
 //803749B0
 void HSD_JObjDisp(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 rendermode)
 {
-    if (jobj) {
+    if (jobj != NULL) {
         if (union_type_dobj(jobj)) {
             HSD_JObjDispDObj(jobj, vmtx, trsp_mask, rendermode);
         } else if (union_type_ptcl(jobj) && sptcl_callback != NULL) {
