@@ -44,10 +44,8 @@ void HSD_JObjCheckDepend(HSD_JObj* jobj)
 }
 
 // 8036ED3C
-void HSD_JObjMtxIsDirty(HSD_JObj* jobj,
-    HSD_JObjDesc* desc)
-{ // This function doesn't have a
-    // desc ptr in later versions
+void HSD_JObjMtxIsDirty(HSD_JObj* jobj, HSD_JObjDesc* desc)
+{ // This function doesn't have a desc ptr in later versions
     if (jobj != NULL && desc != NULL) {
         jobj->rotation.x = desc->rotation.x;
         jobj->rotation.y = desc->rotation.y;
@@ -208,11 +206,9 @@ void HSD_JObjMakeMatrix(HSD_JObj* jobj)
         vec = parent->pvec;
     }
     if (JOBJ_USE_QUATERNION(jobj) != 0) {
-        HSD_MtxSRTQuat(jobj->mtx, &jobj->scale, &jobj->rotation, &jobj->position,
-            vec);
+        HSD_MtxSRTQuat(jobj->mtx, &jobj->scale, &jobj->rotation, &jobj->position, vec);
     } else {
-        HSD_MtxSRT(jobj->mtx, &jobj->scale, (guVector*)&jobj->rotation,
-            &jobj->position, vec);
+        HSD_MtxSRT(jobj->mtx, &jobj->scale, (guVector*)&jobj->rotation, &jobj->position, vec);
     }
     if (parent != NULL) {
         guMtxConcat(parent->mtx, jobj->mtx, jobj->mtx);
@@ -907,8 +903,8 @@ static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
     guMtxIdentity(jobj->mtx);
     jobj->pvec = NULL;
     if (desc->mtx != NULL) {
-        jobj->vmtx = (MtxP)HSD_MemAlloc(0x30); // HSD_MtxAlloc();
-        memcpy(jobj->vmtx, desc->mtx, 0x30);
+        jobj->vmtx = (MtxP)HSD_MemAlloc(sizeof(Mtx));
+        memcpy(jobj->vmtx, desc->mtx, sizeof(Mtx));
     }
     HSD_IDInsertToTable(NULL, (u32)desc, jobj);
     jobj->desc = desc;
@@ -959,21 +955,18 @@ void HSD_JObjResolveRefsAll(HSD_JObj* jobj, HSD_JObjDesc* desc)
 {
     HSD_JObj* jo = jobj;
     HSD_JObjDesc* jdesc = desc;
-    while (jo != NULL && jdesc != NULL) {
+    for (; jo != NULL && jdesc != NULL; jo = jo->next, jdesc = jdesc->next) {
         HSD_JObjResolveRefs(jo, jdesc);
         if (JOBJ_INSTANCE(jo)) {
             HSD_JObjDesc* dchild = jdesc->child;
             HSD_JObj* child = jo->child;
-            for (; child != NULL && dchild != NULL;
-                 child = child->next, dchild = dchild->next) {
+            for (; child != NULL && dchild != NULL; child = child->next, dchild = dchild->next) {
                 HSD_JObjResolveRefs(child, dchild);
                 if (JOBJ_INSTANCE(child)) {
                     HSD_JObjResolveRefsAll(child->child, dchild->child);
                 }
             }
         }
-        jo = jo->next;
-        jdesc = jdesc->next;
     }
 }
 
@@ -1122,11 +1115,11 @@ void HSD_JObjAddChild(HSD_JObj* jobj, HSD_JObj* child)
     if (jobj != NULL && child != NULL) {
         if (!child->prev) { // child should be a orphan
             if (!child->next) { // child should not have siblings
-                if (jobj->child) {
+                if (jobj->child != NULL) {
                     assert(JOBJ_INSTANCE(jobj)); //!(jobj->flags & JOBJ_INSTANCE)
                     HSD_JObj* i;
-                    for (i = jobj->child; jobj->next; i = jobj->next) {
-                        HSD_Halt("HSD_JObjAddChild: last != child");
+                    for (i = jobj->child; i != NULL; i = i->next) {
+                        HSD_CheckAssert("HSD_JObjAddChild: last == child", i != child);
                     }
                     i->next = child;
                 } else {
@@ -1135,7 +1128,7 @@ void HSD_JObjAddChild(HSD_JObj* jobj, HSD_JObj* child)
                 child->next = jobj;
                 u32 ori_flags = child->flags;
                 u32 flags = (ori_flags | (ori_flags << 10)) & (ROOT_OPA | ROOT_TEXEDGE | ROOT_XLU);
-                for (HSD_JObj* senti = jobj; senti; senti = senti->prev) {
+                for (HSD_JObj* senti = jobj; senti != NULL; senti = senti->prev) {
                     ori_flags = senti->flags;
                     if (!(flags & ~ori_flags))
                         break;
@@ -1160,16 +1153,17 @@ void HSD_JObjReparent(HSD_JObj* jobj, HSD_JObj* pjobj)
                 prev->next = jobj->next;
             }
 
-            for (HSD_JObj* i = jobj->prev; i; i = i->next) {
+            for (HSD_JObj* i = jobj->prev; i != NULL; i = i->next) {
                 prchild = i->child;
                 u32 a3 = 0x8FFFFFFF;
-                while (prchild) {
+                while (prchild != NULL) {
                     u32 flags = prchild->flags;
                     prchild = prchild->next;
                     a3 |= (flags | (flags << 10)) & (ROOT_OPA | ROOT_TEXEDGE | ROOT_XLU);
                 }
-                if (!(i->flags & ~a3))
+                if (!(i->flags & ~a3)) {
                     break;
+                }
                 i->flags = i->flags & a3;
             }
             jobj->prev = NULL;
@@ -1242,7 +1236,7 @@ HSD_JObj* HSD_JObjGetPrev(HSD_JObj* jobj)
         if (jobj->prev->child == jobj)
             return NULL;
 
-        for (HSD_JObj* i = jobj->prev->child; i; i = i->next) {
+        for (HSD_JObj* i = jobj->prev->child; i != NULL; i = i->next) {
             if (i->next == jobj) {
                 return i;
             }
@@ -1283,7 +1277,7 @@ void HSD_JObjDeleteRObj(HSD_JObj* jobj, HSD_RObj* robj)
 {
     HSD_RObj** rp;
     if (jobj != NULL && robj != NULL) {
-        for (rp = &jobj->robj; *rp; rp = &(*rp)->next) {
+        for (rp = &jobj->robj; *rp != NULL; rp = &(*rp)->next) {
             if (*rp == robj) {
                 *rp = robj->next;
                 robj->next = NULL;
@@ -1296,7 +1290,7 @@ void HSD_JObjDeleteRObj(HSD_JObj* jobj, HSD_RObj* robj)
 // 80371CE8
 u32 HSD_JObjGetFlags(HSD_JObj* jobj)
 {
-    return (jobj) ? jobj->flags : 0;
+    return (jobj != NULL) ? jobj->flags : 0;
 }
 
 // 80371D00
@@ -1332,7 +1326,7 @@ void HSD_JObjSetFlagsAll(HSD_JObj* jobj, u32 flags)
         jobj->flags |= flags;
 
         if (JOBJ_INSTANCE(jobj)) {
-            for (HSD_JObj* i = jobj->child; i; i = i->child) {
+            for (HSD_JObj* i = jobj->child; i != NULL; i = i->child) {
                 if (i != NULL) {
                     if ((i->flags ^ flags) & CLASSICAL_SCALE) {
                         bool alreadyDirty = false;
@@ -1346,7 +1340,7 @@ void HSD_JObjSetFlagsAll(HSD_JObj* jobj, u32 flags)
                     i->flags |= flags;
 
                     if (JOBJ_INSTANCE(i)) {
-                        for (HSD_JObj* j = i->child; j; j = j->child) {
+                        for (HSD_JObj* j = i->child; j != NULL; j = j->child) {
                             HSD_JObjSetFlagsAll(j, flags);
                         }
                     }
@@ -1389,8 +1383,7 @@ void HSD_JObjClearFlagsAll(HSD_JObj* jobj, u32 flags)
         jobj->flags &= ~flags;
 
         if (JOBJ_INSTANCE(jobj)) {
-            HSD_JObj* i;
-            for (i = jobj->child; i; i = i->child) {
+            for (HSD_JObj* i = jobj->child; i != NULL; i = i->child) {
                 if (i != NULL) {
                     if ((i->flags ^ flags) & CLASSICAL_SCALE) {
                         bool alreadyDirty = false;
@@ -1404,7 +1397,7 @@ void HSD_JObjClearFlagsAll(HSD_JObj* jobj, u32 flags)
                     i->flags &= ~flags;
 
                     if (JOBJ_INSTANCE(i)) {
-                        for (HSD_JObj* j = i->child; j; j = j->child) {
+                        for (HSD_JObj* j = i->child; j != NULL; j = j->child) {
                             HSD_JObjClearFlagsAll(j, flags);
                         }
                     }
@@ -1419,7 +1412,7 @@ HSD_JObj* HSD_JObjAlloc(void)
 {
     HSD_ClassInfo* info = (HSD_ClassInfo*)(default_class != NULL ? default_class : &hsdJObj);
     HSD_JObj* jobj = (HSD_JObj*)hsdNew(info);
-    assert(jobj);
+    assert(jobj != NULL);
     return jobj;
 }
 
@@ -1562,19 +1555,19 @@ static void resolveIKJoint1(HSD_JObj* jobj)
         guVector fvec;
 
         guVecScale(&fvec, &fvec, dot);
-        jobj->mtx[0][0] = fvec.x * vec.x;
-        jobj->mtx[1][0] = fvec.y * vec.x;
-        jobj->mtx[2][0] = fvec.z * vec.x;
+        guMtxRowCol(jobj->mtx, 0, 0) = fvec.x * vec.x;
+        guMtxRowCol(jobj->mtx, 1, 0) = fvec.y * vec.x;
+        guMtxRowCol(jobj->mtx, 2, 0) = fvec.z * vec.x;
         guVecCross(&z_scale, &fvec, &cvec);
-        jobj->mtx[0][1] = cvec.x * vec.y;
-        jobj->mtx[1][1] = cvec.y * vec.y;
-        jobj->mtx[2][1] = cvec.z * vec.y;
-        jobj->mtx[0][2] = z_scale.x * vec.z;
-        jobj->mtx[1][2] = z_scale.y * vec.z;
-        jobj->mtx[2][2] = z_scale.z * vec.z;
-        jobj->mtx[0][3] = trans.x;
-        jobj->mtx[1][3] = trans.y;
-        jobj->mtx[2][3] = trans.z;
+        guMtxRowCol(jobj->mtx, 0, 1) = cvec.x * vec.y;
+        guMtxRowCol(jobj->mtx, 1, 1) = cvec.y * vec.y;
+        guMtxRowCol(jobj->mtx, 2, 1) = cvec.z * vec.y;
+        guMtxRowCol(jobj->mtx, 0, 2) = z_scale.x * vec.z;
+        guMtxRowCol(jobj->mtx, 1, 2) = z_scale.y * vec.z;
+        guMtxRowCol(jobj->mtx, 2, 2) = z_scale.z * vec.z;
+        guMtxRowCol(jobj->mtx, 0, 3) = trans.x;
+        guMtxRowCol(jobj->mtx, 1, 3) = trans.y;
+        guMtxRowCol(jobj->mtx, 2, 3) = trans.z;
     }
 }
 
@@ -1620,8 +1613,8 @@ void HSD_JObjSetupMatrixSub(HSD_JObj* jobj)
             HSD_JObj* prev = jobj->prev;
             HSD_RObj* robj = HSD_RObjGetByType(prev->robj, 0x40000000, 0);
             if (prev != NULL && robj != NULL) {
-                guVector w_vec = { prev->mtx[0][3], prev->mtx[1][3], prev->mtx[2][3] };
-                guVector x_vec = { prev->mtx[0][0], prev->mtx[1][0], prev->mtx[2][0] };
+                guVector w_vec = { guMtxRowCol(prev->mtx, 0, 3), guMtxRowCol(prev->mtx, 1, 3), guMtxRowCol(prev->mtx, 2, 3) };
+                guVector x_vec = { guMtxRowCol(prev->mtx, 0, 0), guMtxRowCol(prev->mtx, 1, 0), guMtxRowCol(prev->mtx, 2, 0) };
                 f32 dot = guVecDotProduct(&x_vec, &x_vec);
                 dot = 1.f / (1e-10f + dot);
                 if (0.f < dot) {
@@ -1638,9 +1631,9 @@ void HSD_JObjSetupMatrixSub(HSD_JObj* jobj)
                 guVecScale(&x_vec, &x_vec, robj->u.limit);
                 guVector res;
                 guVecAdd(&w_vec, &x_vec, &res);
-                jobj->mtx[0][3] = res.x;
-                jobj->mtx[1][3] = res.y;
-                jobj->mtx[2][3] = res.z;
+                guMtxRowCol(jobj->mtx, 0, 3) = res.x;
+                guMtxRowCol(jobj->mtx, 1, 3) = res.y;
+                guMtxRowCol(jobj->mtx, 2, 3) = res.z;
             }
         } break;
         }
@@ -1653,10 +1646,9 @@ void HSD_JObjSetupMatrixSub(HSD_JObj* jobj)
 void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj)
 {
     BOOL isDirty = FALSE;
-    jobj->flags = jobj->flags | MTX_DIRTY;
+    jobj->flags |= MTX_DIRTY;
     if (JOBJ_INSTANCE(jobj)) {
-        HSD_JObj* child = jobj->child;
-        while (child != NULL) {
+        for (HSD_JObj* child = jobj->child; child != NULL; child = child->next) {
             if ((child->flags & MTX_INDEP_PARENT) == 0) {
                 isDirty = FALSE;
                 if ((child->flags & USER_DEF_MTX) == 0 && (child->flags & MTX_DIRTY) != 0) {
@@ -1665,8 +1657,7 @@ void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj)
                 if (isDirty == FALSE && JOBJ_INSTANCE(child)) {
                     child->flags |= MTX_DIRTY;
 
-                    HSD_JObj* child_child = child->child;
-                    while (child_child != NULL) {
+                    for (HSD_JObj* child_child = child->child; child_child != NULL; child_child = child_child->next) {
                         if ((child_child->flags & MTX_INDEP_PARENT) == 0) {
                             isDirty = FALSE;
                             if ((child_child->flags & USER_DEF_MTX) == 0 && (child_child->flags & MTX_DIRTY) != 0) {
@@ -1676,11 +1667,9 @@ void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj)
                                 HSD_JObjSetMtxDirtySub(child_child);
                             }
                         }
-                        child_child = child_child->next;
                     }
                 }
             }
-            child = child->next;
         }
     }
 }
