@@ -353,7 +353,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                 assert((fobj->flags & 0xF) != 3);
 
                 if ((fobj->ad - fobj->ad_head) < fobj->length) {
-                    u32 fterm;
+                    u32 fterm = 0;
                     u32 lshift = 0;
                     u8 parse;
                     do {

@@ -108,7 +108,6 @@ void GObj_LinkProc(HSD_GObjProc* proc)
     }
 
     offset = (p_link + s_link * (S_LINK_MAX + 1));
-    BOOL no_entries = FALSE;
     do {
         BOOL isZero = p_link == 0;
         offset -= 1;
