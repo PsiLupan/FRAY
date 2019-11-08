@@ -69,20 +69,20 @@ typedef struct _HSD_JObj {
 } HSD_JObj;
 
 typedef struct _HSD_JObjDesc {
-    char* class_name;
-    u32 flags;
-    struct _HSD_JObjDesc* child;
-    struct _HSD_JObjDesc* next;
+    char* class_name; //0x00
+    u32 flags; //0x04
+    struct _HSD_JObjDesc* child; //0x08
+    struct _HSD_JObjDesc* next; //0x0C
     union {
         struct _HSD_DObjDesc* dobjdesc;
         struct _HSD_Spline* spline;
         struct _HSD_SList* ptcl;
-    } u;
-    guVector rotation;
-    guVector scale;
-    guVector position;
-    MtxP mtx;
-    struct _HSD_RObjDesc* robjdesc;
+    } u; //0x10
+    guVector rotation; //0x14 - 0x1C
+    guVector scale; //0x20 - 0x28
+    guVector position; //0x2C - 0x34
+    MtxP mtx; //0x38
+    struct _HSD_RObjDesc* robjdesc; //0x3C
 } HSD_JObjDesc;
 
 typedef struct _HSD_JObjInfo {

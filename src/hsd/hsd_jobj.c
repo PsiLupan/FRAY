@@ -444,7 +444,7 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj,
                 HSD_MatAnimJoint* i_mat_joint = NULL;
                 HSD_ShapeAnimJoint* i_sh_joint = NULL;
 
-                if(i != NULL && (HSD_JObjAddAnim(i, an_joint, mat_joint, sh_joint), JOBJ_INSTANCE(i))){
+                if (i != NULL && (HSD_JObjAddAnim(i, an_joint, mat_joint, sh_joint), JOBJ_INSTANCE(i))) {
                     HSD_JObj* j = i->child;
                     if (an_joint != NULL) {
                         i_an_joint = an_joint->child;
@@ -770,7 +770,8 @@ static void JObjAnimAll(HSD_JObj* jobj)
     if (jobj != NULL) {
         HSD_JObjAnim(jobj);
         if (JOBJ_INSTANCE(jobj)) {
-            for (HSD_JObj* i = jobj->child; i != NULL; i = i->next){;
+            for (HSD_JObj* i = jobj->child; i != NULL; i = i->next) {
+                ;
                 HSD_JObjAnim(i);
                 if (JOBJ_INSTANCE(i)) {
                     for (HSD_JObj* j = i->child; j != NULL; j = j->next) {
@@ -832,7 +833,7 @@ void JObj_SetupInstanceMtx(HSD_JObj* jobj, MtxP vmtx, u32 flags, u32 rendermode)
 // 80370B90
 void HSD_JObjSetDefaultClass(HSD_JObjInfo* info)
 {
-    if(info != NULL){
+    if (info != NULL) {
         assert(hsdIsDescendantOf((HSD_ClassInfo*)info, (HSD_ClassInfo*)&hsdJObj));
     }
     default_class = info;
@@ -1426,7 +1427,7 @@ HSD_JObj* HSD_JObjAlloc(void)
 // 80372168
 void HSD_JObjSetCurrent(HSD_JObj* jobj)
 {
-    if (jobj != NULL){
+    if (jobj != NULL) {
         HSD_JObjRefThis(jobj);
         HSD_JObj* current = current_jobj;
         HSD_JObjUnref(current);
