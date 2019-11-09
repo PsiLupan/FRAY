@@ -11,6 +11,57 @@ HSD_VIStatus vi;
 
 static u8 garbage[HSD_ANTIALIAS_GARBAGE_SIZE] ATTRIBUTE_ALIGN(32);
 
+extern void __exception_sethandler(u32 nExcept, void (*pHndl)(frame_context*));
+
+static void ExceptionHandler(frame_context* pCtx)
+{
+    printf("Exception occured:\n");
+    printf("Last Return Address:\n");
+    printf("\t0x%08x\n", __builtin_return_address(0));
+    printf("\t0x%08x\n", __builtin_return_address(1));
+    printf("\t0x%08x\n", __builtin_return_address(2));
+
+    //printf("\n\n\n\tException (%s) occurred!\n", pCtx->EXCPT_Number);
+
+    /*printf("\tGPR00 %08X GPR08 %08X GPR16 %08X GPR24 %08X\n", pCtx->GPR[0], pCtx->GPR[8], pCtx->GPR[16], pCtx->GPR[24]);
+    printf("\tGPR01 %08X GPR09 %08X GPR17 %08X GPR25 %08X\n", pCtx->GPR[1], pCtx->GPR[9], pCtx->GPR[17], pCtx->GPR[25]);
+    printf("\tGPR02 %08X GPR10 %08X GPR18 %08X GPR26 %08X\n", pCtx->GPR[2], pCtx->GPR[10], pCtx->GPR[18], pCtx->GPR[26]);
+    printf("\tGPR03 %08X GPR11 %08X GPR19 %08X GPR27 %08X\n", pCtx->GPR[3], pCtx->GPR[11], pCtx->GPR[19], pCtx->GPR[27]);
+    printf("\tGPR04 %08X GPR12 %08X GPR20 %08X GPR28 %08X\n", pCtx->GPR[4], pCtx->GPR[12], pCtx->GPR[20], pCtx->GPR[28]);
+    printf("\tGPR05 %08X GPR13 %08X GPR21 %08X GPR29 %08X\n", pCtx->GPR[5], pCtx->GPR[13], pCtx->GPR[21], pCtx->GPR[29]);
+    printf("\tGPR06 %08X GPR14 %08X GPR22 %08X GPR30 %08X\n", pCtx->GPR[6], pCtx->GPR[14], pCtx->GPR[22], pCtx->GPR[30]);
+    printf("\tGPR07 %08X GPR15 %08X GPR23 %08X GPR31 %08X\n", pCtx->GPR[7], pCtx->GPR[15], pCtx->GPR[23], pCtx->GPR[31]);
+    printf("\tLR %08X SRR0 %08x SRR1 %08x MSR %08x\n", pCtx->LR, pCtx->SRR0, pCtx->SRR1, pCtx->MSR);
+    printf("\tDAR %08X DSISR %08X\n", mfspr(19), mfspr(18));
+
+    _cpu_print_stack((void*)pCtx->SRR0, (void*)pCtx->LR, (void*)pCtx->GPR[1]);
+
+    if ((pCtx->EXCPT_Number == EX_DSI) || (pCtx->EXCPT_Number == EX_FP)) {
+        u32 i;
+        u32* pAdd = (u32*)pCtx->SRR0;
+        kprintf("\n\n\tCODE DUMP:\n");
+        for (i = 0; i < 12; i += 4) {
+            kprintf("\t%p:  %08X %08X %08X %08X\n", &(pAdd[i]), pAdd[i], pAdd[i + 1], pAdd[i + 2], pAdd[i + 3]);
+        }
+    }*/
+}
+
+void Install_ExceptionHandler()
+{
+    __exception_sethandler(EX_SYS_RESET, ExceptionHandler);
+    __exception_sethandler(EX_MACH_CHECK, ExceptionHandler);
+    __exception_sethandler(EX_DSI, ExceptionHandler);
+    __exception_sethandler(EX_ISI, ExceptionHandler);
+    __exception_sethandler(EX_ALIGN, ExceptionHandler);
+    __exception_sethandler(EX_PRG, ExceptionHandler);
+    __exception_sethandler(EX_TRACE, ExceptionHandler);
+    __exception_sethandler(EX_PERF, ExceptionHandler);
+    __exception_sethandler(EX_IABR, ExceptionHandler);
+    __exception_sethandler(EX_RESV, ExceptionHandler);
+    __exception_sethandler(EX_THERM, ExceptionHandler);
+}
+
+
 static u32 HSD_VIGetNbXFB(void)
 {
     return _p->nb_xfb;
@@ -347,6 +398,8 @@ void HSD_VISetBlack(u8 black)
 void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
 {
     s32 idx;
+
+    Install_ExceptionHandler();
 
     _p->current.vi = *vi;
     _p->current.chg_flag = FALSE;

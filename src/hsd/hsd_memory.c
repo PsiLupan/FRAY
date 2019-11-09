@@ -119,6 +119,9 @@ void HSD_Free(void* ptr)
 {
     //OSFreeToHeap(HSD_GetHeap(), ptr);
     if (ptr != NULL) {
+        #ifdef DEBUG_MEM
+        printf("[0x%08x] - 0x%08x\n", __builtin_return_address(0), (int)ptr);
+        #endif
         free(ptr);
         //HSD_ObjFree(&free_alloc, (HSD_ObjAllocLink*)ptr);
     }
@@ -133,6 +136,9 @@ void* HSD_MemAlloc(u32 size)
         //result = OSAllocFromHeap(HSD_GetHeap(), size);
         result = memalign(32, size);
         assert(result != NULL);
+        #ifdef DEBUG_MEM
+        printf("[0x%08x] + 0x%08x 0x%x\n", __builtin_return_address(0), (int)result, size);
+        #endif
     }
     return result;
 }
