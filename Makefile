@@ -7,10 +7,11 @@ ifeq ($(strip $(DEVKITPPC)),)
   $(error "Please set DEVKITPPC in your environment. export DEVKITPPC=<path to>devkitPPC")
 endif
 
-export	LIBOGC_INC	:=	$(DEVKITPRO)/libogc/include
-export	LIBOGC_LIB	:=	$(DEVKITPRO)/libogc/lib/cube
-
 include $(DEVKITPPC)/gamecube_rules
+
+export CC := powerpc-eabi-clang
+MACHDEP =  -DGEKKO -mcpu=750 \
+	   -D__gamecube__ -DHW_DOL -ffunction-sections -fdata-sections
 
 #---------------------------------------------------------------------------------
 # TARGET is the name of the output
@@ -28,10 +29,10 @@ INCLUDES	:=
 #---------------------------------------------------------------------------------
 
 #NODEBUG = -DNDEBUG
-CFLAGS	= -O1 -mogc -Wno-implicit-function-declaration -pedantic $(MACHDEP) $(INCLUDE) $(NODEBUG)
+CFLAGS	= -O1 -std=gnu18 -Wall -Wno-implicit-function-declaration -Wno-missing-braces -Wno-switch $(MACHDEP) $(INCLUDE) $(NODEBUG)
 CXXFLAGS	= $(CFLAGS)
 
-LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map,--section-start,.init=0x80003100
+LDFLAGS	= -g $(MACHDEP) -Wl,--unresolved-symbols=ignore-in-object-files,-Map,$(notdir $@).map -T$(PWD)/ogc.ld
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
@@ -42,7 +43,7 @@ LIBS	:= -logc -lm
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:= $(CURDIR)/libs
+LIBDIRS	:= 
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
@@ -71,7 +72,12 @@ BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 # use CXX for linking C++ projects, CC for standard C
 #---------------------------------------------------------------------------------
 ifeq ($(strip $(CPPFILES)),)
-	export LD	:=	$(CC)
+	export LD	:=	$(CC) -Wl,--gc-sections -nostartfiles \
+		$(DEVKITPPC)/lib/gcc/powerpc-eabi/*/crtend.o \
+		$(DEVKITPPC)/lib/gcc/powerpc-eabi/*/ecrtn.o \
+		$(DEVKITPPC)/lib/gcc/powerpc-eabi/*/ecrti.o \
+		$(DEVKITPPC)/lib/gcc/powerpc-eabi/*/crtbegin.o \
+		$(DEVKITPPC)/powerpc-eabi/lib/crtmain.o
 else
 	export LD	:=	$(CXX)
 endif
@@ -83,9 +89,11 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 #---------------------------------------------------------------------------------
 # build a list of include paths
 #---------------------------------------------------------------------------------
-export INCLUDE	:=	$(foreach dir,$(INCLUDES), -iquote $(CURDIR)/$(dir)) \
+export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
-					-I$(CURDIR)/$(BUILD) -I$(CURDIR)/include \
+					-I$(CURDIR)/$(BUILD) \
+					-isystem /d/LLVM/lib/clang/9.0.0/include \
+					-isystem $(DEVKITPPC)/powerpc-eabi/include \
 					-I$(LIBOGC_INC)
 					
 #---------------------------------------------------------------------------------
