@@ -1,5 +1,7 @@
 #include "hsd_init.h"
 
+#include <ogc/cache.h>
+
 #include "hsd_lobj.h"
 #include "hsd_state.h"
 
@@ -83,6 +85,8 @@ void** HSD_AllocateXFB(u32 nbBuffer, GXRModeObj* rm)
         if (FrameBuffer[i] == NULL) {
             HSD_Halt("Failed to allocate framebuffer\n");
         }
+        DCInvalidateRange(FrameBuffer[i], VIDEO_GetFrameBufferSize(rm));
+        FrameBuffer[i] = MEM_K0_TO_K1(FrameBuffer[i]);
     }
 
     for (u32 i = nbBuffer; i < HSD_VI_XFB_MAX; i++) {

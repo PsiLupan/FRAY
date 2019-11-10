@@ -17,7 +17,7 @@
 static u32 arena_size; //-0x5110(r13)
 static u64 sys_time;
 
-GXRModeObj* rmode = &TVNtsc480IntDf;
+GXRModeObj* rmode = NULL;
 
 HSD_PadData pad_queue[PAD_QUEUE_SIZE]; //8046B108
 HSD_PadRumbleListData rumble_list[PAD_RUMBLE_LIST_SIZE]; //8036B1F8
@@ -52,6 +52,7 @@ int main(void)
     DVDInit(); //Calls FRAY's custom OGCExt DVDInit
 
     arena_size = (u32)SYS_GetArena1Hi() - (u32)SYS_GetArena1Lo();
+    rmode = VIDEO_GetPreferredMode(NULL);
 
     HSD_SetInitParameter(1, 2); //Set XFB Max Num
     HSD_SetInitParameter(4, rmode); //Set RModeObj

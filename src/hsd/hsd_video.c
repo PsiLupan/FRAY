@@ -370,7 +370,7 @@ void HSD_VISetEFBDrawDone(void)
         GX_WaitDrawDone();
     _p->drawdone.waiting = 1;
     _p->drawdone.arg = -1;
-    GX_SetDrawDone();
+    GX_DrawDone();
 
     intr = IRQ_Disable();
     _p->efb.vi_all = _p->current;

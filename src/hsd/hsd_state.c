@@ -702,7 +702,7 @@ void HSD_SetupTevStage(HSD_TevDesc* desc)
 {
     GX_SetTevOrder(desc->stage, desc->coord, desc->map, desc->color);
     if (desc->flags == 0) {
-        GX_SetTevOp(desc->stage, desc->u.tevop.tevmode);
+        GX_SetTevOp(desc->stage, desc->u.tevconf.clr_op);
         GX_SetTevSwapMode(desc->stage, 0, 0);
     } else {
         GX_SetTevColorOp(desc->stage, desc->u.tevconf.clr_op, desc->u.tevconf.clr_bias, desc->u.tevconf.clr_scale, desc->u.tevconf.clr_clamp, desc->u.tevconf.clr_out_reg);
