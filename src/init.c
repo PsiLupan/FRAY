@@ -92,7 +92,7 @@ int main(void)
     printf("# -------------------------------------------\n");
     printf("#\tSuper Smash Bros. Melee\n");
     printf("# Arena Size %d MB\n", arena_size >> 0x14);
-    printf("# DATE %s TIME %s", __DATE__, __TIME__);
+    printf("# DATE %s TIME %s\n", __DATE__, __TIME__);
 
     Init_Game();
     return 0;
