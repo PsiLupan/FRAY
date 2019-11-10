@@ -11,50 +11,6 @@ HSD_VIStatus vi;
 
 static u8 garbage[HSD_ANTIALIAS_GARBAGE_SIZE] ATTRIBUTE_ALIGN(32);
 
-extern void __exception_sethandler(u32 nExcept, void (*pHndl)(frame_context*));
-
-//80394848
-static void PrintStackTrace(frame_context* pCtx){
-    printf("- STACK -------------------------------------\n");
-    printf(" Address:  Back Chain  LR Save\n");
-}
-
-//80394B18
-static void PrintExceptionDetails(frame_context* pCtx){
-    printf("- UNHANDLED EXCEPTION -----------------------\n");
-    printf("DAR=%08X\n", pCtx->DAR);
-    printf("ERROR %d: ", pCtx->EXCPT_Number);
-
-}
-
-//80228B28
-static void ExceptionHandler(frame_context* pCtx)
-{
-    HSD_VISetUserPreRetraceCallback(NULL);
-    HSD_VISetUserPostRetraceCallback(NULL);
-
-    printf("DATE %s TIME %s", __DATE__, __TIME__);
-
-    PrintStackTrace(pCtx);
-    PrintExceptionDetails(pCtx);
-}
-
-void Install_ExceptionHandler()
-{
-    __exception_sethandler(EX_SYS_RESET, ExceptionHandler);
-    __exception_sethandler(EX_MACH_CHECK, ExceptionHandler);
-    __exception_sethandler(EX_DSI, ExceptionHandler);
-    __exception_sethandler(EX_ISI, ExceptionHandler);
-    __exception_sethandler(EX_ALIGN, ExceptionHandler);
-    __exception_sethandler(EX_PRG, ExceptionHandler);
-    __exception_sethandler(EX_TRACE, ExceptionHandler);
-    __exception_sethandler(EX_PERF, ExceptionHandler);
-    __exception_sethandler(EX_IABR, ExceptionHandler);
-    __exception_sethandler(EX_RESV, ExceptionHandler);
-    __exception_sethandler(EX_THERM, ExceptionHandler);
-}
-
-
 static u32 HSD_VIGetNbXFB(void)
 {
     return _p->nb_xfb;
@@ -248,7 +204,7 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
 
     case HSD_RP_TOPHALF:
         GX_SetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-        n_xfb_lines = GX_SetDispCopyYScale(1.0);
+        n_xfb_lines = GX_SetDispCopyYScale(1.0f);
         GX_SetDispCopyDst(rmode->fbWidth, n_xfb_lines);
         GX_SetCopyClamp(GX_CLAMP_TOP);
         lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
@@ -258,7 +214,7 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
 
     case HSD_RP_BOTTOMHALF:
         GX_SetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-        GX_SetDispCopyDst(rmode->fbWidth, GX_SetDispCopyYScale(1.0));
+        GX_SetDispCopyDst(rmode->fbWidth, GX_SetDispCopyYScale(1.0f));
         GX_SetCopyClamp(GX_CLAMP_BOTTOM);
         lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
         GX_SetDispCopySrc(0, HSD_ANTIALIAS_OVERLAP, rmode->fbWidth, lines);
@@ -387,6 +343,8 @@ void HSD_VISetBlack(u8 black)
     _p->current.chg_flag = TRUE;
 }
 
+void Install_ExceptionHandler(void);
+
 //803767B8
 void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
 {
@@ -438,4 +396,46 @@ void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
 
     idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_FREE);
     HSD_VICopyEFB2XFBPtr(&_p->efb.vi_all.vi, _p->xfb[idx].buffer, HSD_RP_SCREEN);
+}
+
+extern void __exception_sethandler(u32 nExcept, void (*pHndl)(frame_context*));
+
+//80394848
+static void PrintStackTrace(frame_context* pCtx){
+    printf("- STACK -------------------------------------\n");
+    printf(" Address:  Back Chain  LR Save\n");
+}
+
+//80394B18
+static void PrintExceptionDetails(frame_context* pCtx){
+    printf("- UNHANDLED EXCEPTION -----------------------\n");
+    printf("DAR=%08X\n", pCtx->DAR);
+    printf("ERROR %d: ", pCtx->EXCPT_Number);
+}
+
+//80228B28
+static void ExceptionHandler(frame_context* pCtx)
+{
+    HSD_VISetUserPreRetraceCallback(NULL);
+    HSD_VISetUserPostRetraceCallback(NULL);
+
+    //printf("DATE %s TIME %s", __DATE__, __TIME__);
+
+    //PrintStackTrace(pCtx);
+    //PrintExceptionDetails(pCtx);
+}
+
+void Install_ExceptionHandler()
+{
+    __exception_sethandler(EX_SYS_RESET, ExceptionHandler);
+    __exception_sethandler(EX_MACH_CHECK, ExceptionHandler);
+    __exception_sethandler(EX_DSI, ExceptionHandler);
+    __exception_sethandler(EX_ISI, ExceptionHandler);
+    __exception_sethandler(EX_ALIGN, ExceptionHandler);
+    __exception_sethandler(EX_PRG, ExceptionHandler);
+    __exception_sethandler(EX_TRACE, ExceptionHandler);
+    __exception_sethandler(EX_PERF, ExceptionHandler);
+    __exception_sethandler(EX_IABR, ExceptionHandler);
+    __exception_sethandler(EX_RESV, ExceptionHandler);
+    __exception_sethandler(EX_THERM, ExceptionHandler);
 }
