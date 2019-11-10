@@ -52,7 +52,7 @@ int main(void)
     DVDInit(); //Calls FRAY's custom OGCExt DVDInit
 
     arena_size = (u32)SYS_GetArena1Hi() - (u32)SYS_GetArena1Lo();
-    rmode = VIDEO_GetPreferredMode(NULL);
+    rmode = &TVNtsc480IntDf;
 
     HSD_SetInitParameter(1, 2); //Set XFB Max Num
     HSD_SetInitParameter(4, rmode); //Set RModeObj
