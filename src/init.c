@@ -89,6 +89,10 @@ int main(void)
 
     //sub_803A6048(0xC000); FirstHeapAlloc
     //InitializeStaticMemRegions();
+    printf("# -------------------------------------------\n");
+    printf("#\tSuper Smash Bros. Melee\n");
+    printf("# Arena Size %d MB\n", arena_size >> 0x14);
+    printf("# DATE %s TIME %s", __DATE__, __TIME__);
 
     Init_Game();
     return 0;

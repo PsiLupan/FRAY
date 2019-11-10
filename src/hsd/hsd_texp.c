@@ -43,10 +43,10 @@ static u32 HSD_Index2TevRegID(u32 idx)
 void HSD_SetTevRegAll(void)
 {
     for (u32 i = 0; i < 4; i++) {
-        if (TevReg[i].enable == GX_ENABLE) {
+        if (TevReg[i].color.b != 0) {
             u32 reg = HSD_Index2TevRegID(i);
             GX_SetTevKColorS10(reg, TevReg[i].color);
-            TevReg[i].enable = GX_DISABLE;
+            TevReg[i].color.b = 0;
         }
     }
 }

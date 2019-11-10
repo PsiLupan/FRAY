@@ -521,11 +521,7 @@ void HSD_TObjSetupTextureCoordGen(HSD_TObj* tobj)
                 break;
 
             default:
-                if (tobj_bump(tobj)) {
-                    GX_SetTexCoordGen(tobj->coord, GX_TG_MTX2x4, tobj->src, tobj->mtxid);
-                } else {
-                    GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX2x4, tobj->src, GX_IDENTITY, GX_FALSE, tobj->mtxid);
-                }
+                GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX2x4, tobj->src, tobj->mtxid, GX_DISABLE, GX_DTTIDENTITY);
             }
 
             static u8 func[] = {
@@ -550,7 +546,7 @@ void HSD_TObjSetupTextureCoordGen(HSD_TObj* tobj)
             if (i >= MAX_GXLIGHT - 1) {
                 i = 0;
             }
-            GX_SetTexCoordGen((tobj->coord + 1), func[i], HSD_TexCoordID2TexGenSrc(tobj->coord), GX_IDENTITY);
+            GX_SetTexCoordGen2((tobj->coord + 1), func[i], HSD_TexCoordID2TexGenSrc(tobj->coord), GX_IDENTITY, GX_DISABLE, GX_DTTIDENTITY);
         } else {
             switch (tobj_coord(tobj)) {
             case TEX_COORD_SHADOW:
@@ -558,11 +554,7 @@ void HSD_TObjSetupTextureCoordGen(HSD_TObj* tobj)
                 break;
 
             case TEX_COORD_GRADATION:
-                GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_DISABLE, tobj->mtxid);
-                break;
-
-            case TEX_COORD_BACKLIGHT:
-                GX_SetTexCoordGen(tobj->coord, GX_TG_MTX2x4, GX_TG_NRM, tobj->mtxid);
+                GX_SetTexCoordGen2(tobj->coord, GX_TG_SRTG, tobj->src, GX_IDENTITY, GX_DISABLE, GX_DTTIDENTITY);
                 break;
 
             case TEX_COORD_REFLECTION:
@@ -571,11 +563,7 @@ void HSD_TObjSetupTextureCoordGen(HSD_TObj* tobj)
                 break;
 
             default:
-                if (tobj_bump(tobj)) {
-                    GX_SetTexCoordGen(tobj->coord, GX_TG_MTX2x4, tobj->src, tobj->mtxid);
-                } else {
-                    GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX2x4, tobj->src, GX_IDENTITY, GX_FALSE, tobj->mtxid);
-                }
+                GX_SetTexCoordGen2(tobj->coord, GX_TG_MTX2x4, tobj->src, GX_IDENTITY, GX_DISABLE, tobj->mtxid);
             }
         }
     }

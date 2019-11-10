@@ -17,8 +17,8 @@
 #define HSD_TEXP_MAX_NUM 31
 
 typedef struct _HSD_TevReg {
+    u32 id;
     GXColorS10 color;
-    u32 enable;
     struct _HSD_TevReg* next;
 } HSD_TevReg;
 
