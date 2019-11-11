@@ -2,6 +2,9 @@
 
 #include "hsd/hsd_cobj.h"
 
+#include "hsd_cobj_ext.h"
+#include "hsd_jobj_ext.h"
+
 #define P_LINK_MAX 63
 #define GX_LINK_MAX 63
 #define S_LINK_MAX 63
@@ -46,7 +49,7 @@ BOOL GObj_IsPlayer(HSD_GObj* gobj)
 //80176D18
 void GObj_AnimAll_Callback(HSD_GObj* gobj)
 {
-    HSD_JObjAnimAll((HSD_JObj*)gobj->hsd_obj);
+    HSD_JObjAnimAll(GOBJ_HSD_JOBJ(gobj));
 }
 
 //80272D1C
@@ -371,7 +374,7 @@ void GObj_InitKindObj(HSD_GObj* gobj, s8 obj_kind, void* obj_ptr)
     HSD_CheckAssert("GObj_InitKindObj: gobj->obj_kind != GOBJ_NOREF", gobj->obj_kind == GOBJ_NOREF);
     HSD_CheckAssert("GObj_InitKindObj: obj_ptr == NULL", obj_ptr != NULL);
     gobj->obj_kind = obj_kind;
-    gobj->data = obj_ptr;
+    gobj->hsd_obj = obj_ptr;
 }
 
 //80390ADC
@@ -528,7 +531,7 @@ void GObj_RunGXLinkMaxCallbacks(void)
 //803910D8
 void GObj_SetCamera(HSD_GObj* gobj)
 {
-    BOOL res = HSD_CObjSetCurrent((HSD_CObj*)gobj->data);
+    BOOL res = HSD_CObjSetCurrent(GOBJ_HSD_COBJ(gobj));
     if (res == FALSE) {
         GObj_SetTextureCamera(gobj, 7);
         HSD_CObjEndCurrent();

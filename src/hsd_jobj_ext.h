@@ -8,7 +8,7 @@
 
 #include "gobj.h"
 
-#define GOBJ_HSD_JOBJ(s) ((HSD_JObj*)s->data)
+#define GOBJ_HSD_JOBJ(s) ((HSD_JObj*)s->hsd_obj)
 
 void JObj_Spawn(HSD_JObj*, guVector*, guVector*);
 void JObj_SetAnimSpeed(HSD_JObj*, f32[3]);

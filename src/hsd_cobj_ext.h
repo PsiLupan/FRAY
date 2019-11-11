@@ -7,7 +7,7 @@
 
 #include "gobj.h"
 
-#define GOBJ_HSD_COBJ(s) ((HSD_CObj*)s->data)
+#define GOBJ_HSD_COBJ(s) ((HSD_CObj*)s->hsd_obj)
 
 HSD_CObj* CObj_Create(HSD_CObjDesc*);
 void CObj_Texture_Callback(HSD_GObj*, s32);
