@@ -831,48 +831,43 @@ void HSD_JObjSetDefaultClass(HSD_JObjInfo* info)
     default_class = info;
 }
 
+static HSD_JObj* JObjLoadJointSub(HSD_JObjDesc* joint, HSD_JObj* parent){
+    HSD_JObj* child = NULL;
+    if (joint != NULL) {
+        HSD_ClassInfo* info;
+        if (!joint->class_name || !(info = hsdSearchClassInfo(joint->class_name))) {
+            child = (HSD_JObj*)HSD_JObjAlloc();
+        } else {
+            child = (HSD_JObj*)hsdNew(info);
+            assert(child != NULL);
+        }
+        HSD_JOBJ_METHOD(child)->load(child, joint, parent);
+    }
+    return child;
+}
+
 // 80370BEC
 static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
 {
-    HSD_JObj* res_jobj;
-    if (JOBJ_INSTANCE(desc)) {
-        HSD_JObjDesc* child = desc->child;
-        if (child == NULL) {
-            res_jobj = NULL;
-        } else {
-            HSD_ClassInfo* info;
-            if (!child->class_name || !(info = hsdSearchClassInfo(child->class_name))) {
-                res_jobj = (HSD_JObj*)HSD_JObjAlloc();
-            } else {
-                res_jobj = (HSD_JObj*)hsdNew(info);
-                assert(res_jobj != NULL);
-            }
-            HSD_JOBJ_METHOD(res_jobj)->load(res_jobj, child, jobj);
-        }
-        jobj->child = res_jobj;
-    }
-
+    HSD_JObj* c_jobj = NULL;
     HSD_JObjDesc* next = desc->next;
-    HSD_JObj* next_jobj;
-    if (next == NULL) {
-        next_jobj = NULL;
-    } else {
+    if (next != NULL) {
         HSD_ClassInfo* info;
         if (!next->class_name || !(info = hsdSearchClassInfo(next->class_name))) {
-            next_jobj = (HSD_JObj*)HSD_JObjAlloc();
+            c_jobj = (HSD_JObj*)HSD_JObjAlloc();
         } else {
-            next_jobj = (HSD_JObj*)hsdNew(info);
-            assert(next_jobj != NULL);
+            c_jobj = (HSD_JObj*)hsdNew(info);
+            assert(c_jobj != NULL);
         }
-        HSD_JOBJ_METHOD(next_jobj)->load(next_jobj, next, prev);
+        HSD_JOBJ_METHOD(c_jobj)->load(c_jobj, next, prev);
     }
-    jobj->next = next_jobj;
+    jobj->next = c_jobj;
     jobj->prev = prev;
     jobj->flags |= desc->flags;
-    if ((jobj->flags & 0x4000) == 0) {
-        if ((jobj->flags & 0x20) == 0) {
+    if ((jobj->flags & SPLINE) == 0) {
+        if ((jobj->flags & PTCL) != 0){
             jobj->u.dobj = HSD_DObjLoadDesc(desc->u.dobjdesc);
-        } else {
+        }else {
             jobj->u.ptcl = desc->u.ptcl;
             HSD_SList* slist = desc->u.ptcl;
             while (slist != NULL) {
@@ -905,6 +900,17 @@ static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
     }
     HSD_IDInsertToTable(NULL, (u32)desc, jobj);
     jobj->desc = desc;
+
+    if (JOBJ_INSTANCE(desc)) {
+        for (HSD_JObjDesc* child = desc->child; child != NULL; child = child->next){
+            HSD_JObj* jchild = JObjLoadJointSub(child, jobj);
+            if(jchild == NULL){
+                return -1;
+            }
+            HSD_JObjAddChild(jobj, jchild);
+        }
+    }
+
     return 0;
 }
 
