@@ -16,7 +16,7 @@ static void Menu_Title_801A1498(HSD_GObj* gobj)
 //801A1630
 static void Menu_Title_JObjAnimCallback(HSD_GObj* gobj)
 {
-    JObj_SetAnimSpeed((HSD_JObj*)gobj->data, title_anim_speed);
+    JObj_SetAnimSpeed(GOBJ_HSD_JOBJ(gobj), title_anim_speed);
 }
 
 //801A165C
