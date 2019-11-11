@@ -232,30 +232,47 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
     GX_PixModeSync();
 }
 
+s32 HSD_VIWaitXFBDrawEnable(void)
+{
+    s32 idx = -1;
+    if (HSD_VIGetNbXFB() < 2)
+        return idx;
+    while((idx = HSD_VIGetXFBDrawEnable()) == -1)
+        VIDEO_WaitVSync();
+    return idx;
+}
+
+void HSD_VIGXSetDrawDone(int arg)
+{
+    while (HSD_VIGetDrawDoneWaitingFlag())
+        GX_WaitDrawDone();
+    _p->drawdone.waiting = 1;
+    _p->drawdone.arg = arg;
+    GX_SetDrawDone();
+}
+
+void HSD_VIGXDrawDone(s32 arg)
+{
+    while (HSD_VIGetDrawDoneWaitingFlag())
+        GX_WaitDrawDone();
+    _p->drawdone.waiting = 1;
+    _p->drawdone.arg = arg;
+    GX_DrawDone();
+}
+
 //803761C0
 void HSD_VICopyXFBASync(HSD_RenderPass rpass)
 {
     s32 idx = -1;
 
     if (HSD_VIGetNbXFB() >= 2) {
-        while ((idx = HSD_VIGetXFBDrawEnable()) == -1)
-            VIDEO_WaitVSync();
+        idx = HSD_VIWaitXFBDrawEnable();
 
         HSD_VICopyEFB2XFBPtr(&_p->efb.vi_all.vi, _p->xfb[idx].buffer, rpass);
 
-        u32 intr;
-        intr = IRQ_Disable();
-        HSD_CheckAssert("HSD_VICopyXFBASync: status != HSD_VI_XFB_DRAWING", _p->xfb[idx].status == HSD_VI_XFB_DRAWING);
-        _p->xfb[idx].status = HSD_VI_XFB_WAITDONE;
-        _p->xfb[idx].vi_all = _p->current;
-        _p->current.chg_flag = FALSE;
-        IRQ_Restore(intr);
+        HSD_VISetXFBWaitDone(idx);
 
-        while (HSD_VIGetDrawDoneWaitingFlag())
-            GX_WaitDrawDone();
-        _p->drawdone.waiting = 1;
-        _p->drawdone.arg = idx;
-        GX_SetDrawDone();
+        HSD_VIGXSetDrawDone(idx);
     }
 }
 
@@ -270,6 +287,17 @@ void HSD_VIDrawDoneXFB(s32 idx)
     IRQ_Restore(intr);
 }
 
+void HSD_VISetXFBWaitDone(s32 idx)
+{
+    u32 intr;
+    intr = IRQ_Disable();
+    assert(_p->xfb[idx].status == HSD_VI_XFB_DRAWING);
+    _p->xfb[idx].status = HSD_VI_XFB_WAITDONE;
+    _p->xfb[idx].vi_all = _p->current;
+    _p->current.chg_flag = 0;
+    IRQ_Restore(intr);
+}
+
 //8037639C
 void HSD_VISetXFBDrawDone(void)
 {
@@ -281,11 +309,7 @@ void HSD_VISetXFBDrawDone(void)
         idx = HSD_VISearchXFBByStatus(HSD_VI_XFB_DRAWING);
         assert(idx != -1);
 
-        //HSD_VISetXFBWaitDone
-        assert(_p->xfb[idx].status == HSD_VI_XFB_DRAWING);
-        _p->xfb[idx].status = HSD_VI_XFB_WAITDONE;
-        _p->xfb[idx].vi_all = _p->current;
-        _p->current.chg_flag = 0;
+        HSD_VISetXFBWaitDone(idx);
 
         HSD_VIDrawDoneXFB(idx);
 
@@ -315,11 +339,7 @@ void HSD_VISetEFBDrawDone(void)
     if (HSD_VIGetNbXFB() > 1)
         return;
 
-    while (HSD_VIGetDrawDoneWaitingFlag())
-        GX_WaitDrawDone();
-    _p->drawdone.waiting = 1;
-    _p->drawdone.arg = -1;
-    GX_DrawDone();
+    HSD_VIGXDrawDone(-1);
 
     intr = IRQ_Disable();
     _p->efb.vi_all = _p->current;
