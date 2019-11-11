@@ -42,7 +42,7 @@ void HSD_IDInsertToTable(HSD_IDTable* id_table, u32 id, void* data)
         entry = entry->next;
     }
     if (entry == NULL) {
-        entry = HSD_ObjAlloc(&hsd_iddata);
+        entry = HSD_MemAlloc(12);//HSD_ObjAlloc(&hsd_iddata);
         assert(entry != NULL);
         memset(entry, 0, sizeof(IDEntry));
         entry->id = id;
