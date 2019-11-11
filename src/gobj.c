@@ -321,7 +321,7 @@ void GObj_GXReorder(HSD_GObj* gobj, HSD_GObj* hiprio_gobj)
 //8039069C
 void GObj_SetupGXLink(HSD_GObj* gobj, void (*render_cb)(HSD_GObj*, s32), u32 gx_link, u32 priority)
 {
-    assert(gx_link < GX_LINK_MAX);
+    assert(gx_link <= GX_LINK_MAX);
     gobj->render_cb = render_cb;
     gobj->gx_link = gx_link;
     gobj->render_priority = priority;
@@ -438,17 +438,17 @@ void GObj_RunProcs(void)
     if (curr_proc_prio > 2) {
         curr_proc_prio = 0;
     }
-    for (u32 i = 0; i < curr_slink; ++i) {
+    for (u32 i = 0; i <= curr_slink; ++i) {
         last_s_link = i;
         HSD_GObjProc* proc = slinkhigh_procs[i];
         while (proc != NULL) {
             next_gobjproc = proc->next;
-            if ((proc->flags >> 4 & 3) != curr_proc_prio) {
+            if (((proc->flags >> 4) & 3) != curr_proc_prio) {
                 proc->flags = ((curr_proc_prio << 4) & 0x30) | (proc->flags & 0xCF);
                 HSD_GObj* gobj = proc->gobj;
-                u32 res = GObj_GetProcFlags(0, 1, gobj->p_link);
-                if (((unk2 & res) | (unk1 & ((u64)res >> 0x20))) == 0) {
-                    if ((proc->flags >> 7 == 0) && ((proc->flags >> 6 & 1) == 0)) {
+                u64 res = GObj_GetProcFlags(0, 1, gobj->p_link);
+                if (((unk2 & res) | (unk1 & (res >> 32))) == 0) {
+                    if (proc->flags > -1 && ((proc->flags >> 6 & 1) == 0)) {
                         current_gobj = gobj;
                         curr_gobjproc = proc;
                         (*proc->callback)(proc->gobj);
@@ -463,6 +463,8 @@ void GObj_RunProcs(void)
                         } else {
                             GObj_Free(proc->gobj);
                         }*/
+                        current_gobj = NULL;
+                        curr_gobjproc = NULL;
                     }
                 }
             }
