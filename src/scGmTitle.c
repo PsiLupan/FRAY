@@ -16,7 +16,7 @@ static void Menu_Title_801A1498(HSD_GObj* gobj)
 //801A1630
 static void Menu_Title_JObjAnimCallback(HSD_GObj* gobj)
 {
-    JObj_SetAnimSpeed((HSD_JObj*)gobj->data, title_anim_speed);
+    JObj_SetAnimSpeed(GOBJ_HSD_JOBJ(gobj), title_anim_speed);
 }
 
 //801A165C
@@ -25,7 +25,7 @@ void Menu_Title_SetupLogos()
     HSD_GObj* gobj = GObj_Create(0xE, 0xF, 0);
     HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.top_joint);
     GObj_InitKindObj(gobj, GOBJ_KIND_JOBJ, jobj);
-    GObj_SetupGXLink(gobj, JObj_SetupInstanceMtx_Callback, 0/*9*/, 0);
+    GObj_SetupGXLink(gobj, JObj_SetupInstanceMtx_Callback, 9, 0);
     HSD_JObjAddAnimAll(jobj, (HSD_AnimJoint*)title_ptrs.top_animjoint,
         (HSD_MatAnimJoint*)title_ptrs.top_matanim_joint, (HSD_ShapeAnimJoint*)title_ptrs.top_shapeanim_joint);
     u8 major = Scene_GetCurrentMajor();

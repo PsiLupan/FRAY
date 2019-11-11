@@ -8,7 +8,7 @@
 
 #include "gobj.h"
 
-#define GOBJ_HSD_LOBJ(s) ((HSD_LObj*)s->data)
+#define GOBJ_HSD_LOBJ(s) ((HSD_LObj*)s->hsd_obj)
 
 typedef struct _AnimList {
     HSD_LightAnim* lightanim;

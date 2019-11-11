@@ -2,6 +2,9 @@
 
 #include "hsd/hsd_cobj.h"
 
+#include "hsd_cobj_ext.h"
+#include "hsd_jobj_ext.h"
+
 #define P_LINK_MAX 63
 #define GX_LINK_MAX 63
 #define S_LINK_MAX 63
@@ -46,7 +49,7 @@ BOOL GObj_IsPlayer(HSD_GObj* gobj)
 //80176D18
 void GObj_AnimAll_Callback(HSD_GObj* gobj)
 {
-    HSD_JObjAnimAll((HSD_JObj*)gobj->hsd_obj);
+    HSD_JObjAnimAll(GOBJ_HSD_JOBJ(gobj));
 }
 
 //80272D1C
@@ -318,7 +321,7 @@ void GObj_GXReorder(HSD_GObj* gobj, HSD_GObj* hiprio_gobj)
 //8039069C
 void GObj_SetupGXLink(HSD_GObj* gobj, void (*render_cb)(HSD_GObj*, s32), u32 gx_link, u32 priority)
 {
-    assert(gx_link < GX_LINK_MAX);
+    assert(gx_link <= GX_LINK_MAX);
     gobj->render_cb = render_cb;
     gobj->gx_link = gx_link;
     gobj->render_priority = priority;
@@ -371,7 +374,7 @@ void GObj_InitKindObj(HSD_GObj* gobj, s8 obj_kind, void* obj_ptr)
     HSD_CheckAssert("GObj_InitKindObj: gobj->obj_kind != GOBJ_NOREF", gobj->obj_kind == GOBJ_NOREF);
     HSD_CheckAssert("GObj_InitKindObj: obj_ptr == NULL", obj_ptr != NULL);
     gobj->obj_kind = obj_kind;
-    gobj->data = obj_ptr;
+    gobj->hsd_obj = obj_ptr;
 }
 
 //80390ADC
@@ -435,17 +438,17 @@ void GObj_RunProcs(void)
     if (curr_proc_prio > 2) {
         curr_proc_prio = 0;
     }
-    for (u32 i = 0; i < curr_slink; ++i) {
+    for (u32 i = 0; i <= curr_slink; ++i) {
         last_s_link = i;
         HSD_GObjProc* proc = slinkhigh_procs[i];
         while (proc != NULL) {
             next_gobjproc = proc->next;
-            if ((proc->flags >> 4 & 3) != curr_proc_prio) {
+            if (((proc->flags >> 4) & 3) != curr_proc_prio) {
                 proc->flags = ((curr_proc_prio << 4) & 0x30) | (proc->flags & 0xCF);
                 HSD_GObj* gobj = proc->gobj;
-                u32 res = GObj_GetProcFlags(0, 1, gobj->p_link);
-                if (((unk2 & res) | (unk1 & ((u64)res >> 0x20))) == 0) {
-                    if ((proc->flags >> 7 == 0) && ((proc->flags >> 6 & 1) == 0)) {
+                u64 res = GObj_GetProcFlags(0, 1, gobj->p_link);
+                if (((unk2 & res) | (unk1 & (res >> 32))) == 0) {
+                    if (proc->flags > -1 && ((proc->flags >> 6 & 1) == 0)) {
                         current_gobj = gobj;
                         curr_gobjproc = proc;
                         (*proc->callback)(proc->gobj);
@@ -460,6 +463,8 @@ void GObj_RunProcs(void)
                         } else {
                             GObj_Free(proc->gobj);
                         }*/
+                        current_gobj = NULL;
+                        curr_gobjproc = NULL;
                     }
                 }
             }
@@ -528,7 +533,7 @@ void GObj_RunGXLinkMaxCallbacks(void)
 //803910D8
 void GObj_SetCamera(HSD_GObj* gobj)
 {
-    BOOL res = HSD_CObjSetCurrent((HSD_CObj*)gobj->data);
+    BOOL res = HSD_CObjSetCurrent(GOBJ_HSD_COBJ(gobj));
     if (res == FALSE) {
         GObj_SetTextureCamera(gobj, 7);
         HSD_CObjEndCurrent();

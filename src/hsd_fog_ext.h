@@ -7,7 +7,7 @@
 
 #include "gobj.h"
 
-#define GOBJ_HSD_FOG(s) ((HSD_Fog*)s->data)
+#define GOBJ_HSD_FOG(s) ((HSD_Fog*)s->hsd_obj)
 
 void Fog_InterpretAnim_Callback(HSD_GObj*);
 void Fog_Set_Callback(HSD_GObj*, s32);
