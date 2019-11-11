@@ -36,13 +36,13 @@ void HSD_IDInsertToTable(HSD_IDTable* id_table, u32 id, void* data)
     if (id_table == NULL) {
         id_table = &default_table;
     }
-    IDEntry* t_entry = &id_table->table[id % 65];
+    IDEntry* t_entry = &id_table->table[hash(id)];
     IDEntry* entry = t_entry;
-    while (entry != NULL && entry->id == id) {
+    while (entry != NULL && entry->id != id) {
         entry = entry->next;
     }
     if (entry == NULL) {
-        entry = HSD_ObjAlloc(&hsd_iddata);
+        entry = HSD_MemAlloc(12);//HSD_ObjAlloc(&hsd_iddata);
         assert(entry != NULL);
         memset(entry, 0, sizeof(IDEntry));
         entry->id = id;
