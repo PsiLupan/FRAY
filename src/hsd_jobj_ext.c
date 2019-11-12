@@ -49,6 +49,11 @@ void JObj_Spawn(HSD_JObj* jobj, guVector* unk, guVector* pos)
     }
 }
 
+//8016895C
+void JObj_AddAnims(HSD_JObj* jobj, void* unk_struct, u32 idx){
+    
+}
+
 //8022ED6C
 void JObj_SetAnimSpeed(HSD_JObj* jobj, f32 anim_speed[3])
 {

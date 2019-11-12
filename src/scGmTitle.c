@@ -25,7 +25,7 @@ void Menu_Title_SetupLogos()
     HSD_GObj* gobj = GObj_Create(0xE, 0xF, 0);
     HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.top_joint);
     GObj_InitKindObj(gobj, GOBJ_KIND_JOBJ, jobj);
-    GObj_SetupGXLink(gobj, JObj_SetupInstanceMtx_Callback, 9, 0);
+    GObj_SetupGXLink(gobj, JObj_SetupInstanceMtx_Callback, 0/*9*/, 0);
     HSD_JObjAddAnimAll(jobj, (HSD_AnimJoint*)title_ptrs.top_animjoint,
         (HSD_MatAnimJoint*)title_ptrs.top_matanim_joint, (HSD_ShapeAnimJoint*)title_ptrs.top_shapeanim_joint);
     u8 major = Scene_GetCurrentMajor();
@@ -120,4 +120,10 @@ void Menu_Title_Decide(void* state)
 //801BF3F8
 void Menu_Title_LoadDemo()
 {
+    /*s32* cache_ptr = Scene_GetPreloadCache_04();
+    Scene_CopyDataToCache();
+    s32* ptr = cache_ptr;
+    for(u32 i = 0; i < 4; ++i, ptr += 2){
+
+    }*/
 }
