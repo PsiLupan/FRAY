@@ -82,8 +82,8 @@ typedef struct _HSD_VIInfo {
     VIRetraceCallback post_cb;
     
     struct drawdone {
-        BOOL waiting;
-        int arg;
+        s32 waiting;
+        s32 arg;
         HSD_VIGXDrawDoneCallback cb;
     } drawdone;
 

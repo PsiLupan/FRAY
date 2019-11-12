@@ -493,39 +493,30 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             assert(JOBJ_USE_QUATERNION(jobj) == 0);
             jobj->rotation.x = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                BOOL already_dirty = FALSE;
                 if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    already_dirty = TRUE;
+                    break;
                 }
-                if (already_dirty == FALSE) {
-                    HSD_JObjSetMtxDirtySub(jobj);
-                }
+                HSD_JObjSetMtxDirtySub(jobj);
             }
             break;
         case 2:
             assert(JOBJ_USE_QUATERNION(jobj) == 0);
             jobj->rotation.y = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                BOOL already_dirty = FALSE;
                 if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    already_dirty = TRUE;
+                    break;
                 }
-                if (already_dirty == FALSE) {
-                    HSD_JObjSetMtxDirtySub(jobj);
-                }
+                HSD_JObjSetMtxDirtySub(jobj);
             }
             break;
         case 3:
             assert(JOBJ_USE_QUATERNION(jobj) == 0);
             jobj->rotation.z = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                BOOL already_dirty = FALSE;
                 if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    already_dirty = TRUE;
+                    break;
                 }
-                if (already_dirty == FALSE) {
-                    HSD_JObjSetMtxDirtySub(jobj);
-                }
+                HSD_JObjSetMtxDirtySub(jobj);
             }
             break;
         case 4:
@@ -542,49 +533,37 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             splArcLengthPoint(jp->u.spline, val->fv, &result);
             jobj->position = result;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                BOOL already_dirty = FALSE;
                 if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    already_dirty = TRUE;
+                    break;
                 }
-                if (already_dirty == FALSE) {
-                    HSD_JObjSetMtxDirtySub(jobj);
-                }
+                HSD_JObjSetMtxDirtySub(jobj);
             }
             break;
         case 5:
             jobj->position.x = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                BOOL already_dirty = FALSE;
                 if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    already_dirty = TRUE;
+                    break;
                 }
-                if (already_dirty == FALSE) {
-                    HSD_JObjSetMtxDirtySub(jobj);
-                }
+                HSD_JObjSetMtxDirtySub(jobj);
             }
             break;
         case 6:
             jobj->position.y = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                BOOL already_dirty = FALSE;
                 if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    already_dirty = TRUE;
+                    break;
                 }
-                if (already_dirty == FALSE) {
-                    HSD_JObjSetMtxDirtySub(jobj);
-                }
+                HSD_JObjSetMtxDirtySub(jobj);
             }
             break;
         case 7:
             jobj->position.z = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                BOOL already_dirty = FALSE;
                 if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    already_dirty = TRUE;
+                    break;
                 }
-                if (already_dirty == FALSE) {
-                    HSD_JObjSetMtxDirtySub(jobj);
-                }
+                HSD_JObjSetMtxDirtySub(jobj);
             }
             break;
         case 8:
@@ -593,13 +572,10 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             }
             jobj->scale.x = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                BOOL already_dirty = FALSE;
                 if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    already_dirty = TRUE;
+                    break;
                 }
-                if (already_dirty == FALSE) {
-                    HSD_JObjSetMtxDirtySub(jobj);
-                }
+                HSD_JObjSetMtxDirtySub(jobj);
             }
             break;
         case 9:
@@ -608,13 +584,10 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             }
             jobj->scale.y = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                BOOL already_dirty = FALSE;
                 if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    already_dirty = TRUE;
+                    break;
                 }
-                if (already_dirty == FALSE) {
-                    HSD_JObjSetMtxDirtySub(jobj);
-                }
+                HSD_JObjSetMtxDirtySub(jobj);
             }
             break;
         case 10:
@@ -623,13 +596,10 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             }
             jobj->scale.z = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                BOOL already_dirty = FALSE;
                 if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    already_dirty = TRUE;
+                    break;
                 }
-                if (already_dirty == FALSE) {
-                    HSD_JObjSetMtxDirtySub(jobj);
-                }
+                HSD_JObjSetMtxDirtySub(jobj);
             }
             break;
         case 11:

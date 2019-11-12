@@ -115,7 +115,7 @@ static void Scene_ReqAnimAll_Callback(HSD_GObj*);
 static void Scene_RunStartupInit();
 void Scene_CompareCacheOnChange(MinorScene*);
 
-u32* Scene_Get10(GameState*);
+u8* Scene_Get10(GameState*);
 u32* Scene_GetPadStatus(GameState*);
 void Scene_Set05(u8);
 u8 Scene_Get04();

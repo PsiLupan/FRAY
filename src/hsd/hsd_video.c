@@ -153,7 +153,7 @@ static void HSD_VIGXDrawDoneCB(void)
 }
 
 //80375E60
-static BOOL HSD_VIGetDrawDoneWaitingFlag(void)
+static s32 HSD_VIGetDrawDoneWaitingFlag(void)
 {
     return _p->drawdone.waiting;
 }

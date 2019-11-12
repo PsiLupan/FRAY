@@ -120,4 +120,10 @@ void Menu_Title_Decide(void* state)
 //801BF3F8
 void Menu_Title_LoadDemo()
 {
+    /*s32* cache_ptr = Scene_GetPreloadCache_04();
+    Scene_CopyDataToCache();
+    s32* ptr = cache_ptr;
+    for(u32 i = 0; i < 4; ++i, ptr += 2){
+
+    }*/
 }

@@ -338,7 +338,7 @@ static void Scene_Minor_Class0_OnLoad(void* unk_struct)
 
     HSD_GObj* fog_gobj = GObj_Create(GOBJ_CLASS_HSD_FOG, 3, 0);
     HSD_Fog* fog = HSD_FogLoadDesc(scene_fog_desc);
-    GObj_InitKindObj(fog_gobj, GOBJ_KIND_FOG, (void*)fog);
+    GObj_InitKindObj(fog_gobj, GOBJ_KIND_FOG, fog);
     GObj_SetupGXLink(fog_gobj, Fog_Set_Callback, 0, 0);
     GObj_CreateProcWithCallback(fog_gobj, Fog_InterpretAnim_Callback, 0);
 
@@ -367,7 +367,7 @@ static void Scene_Minor_Class0_OnLoad(void* unk_struct)
     HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
     HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.bg_top_joint);
     GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
-    GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 0/*3*/, 0);
+    GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 0 /*3*/, 0);
     HSD_JObjAddAnimAll(jobj, (HSD_AnimJoint*)title_ptrs.bg_top_animjoint,
         (HSD_MatAnimJoint*)title_ptrs.bg_top_matanim_joint, (HSD_ShapeAnimJoint*)title_ptrs.bg_top_shapeanim_joint);
     GObj_CreateProcWithCallback(gobj_2, Scene_ReqAnimAll_Callback, 0);
@@ -550,9 +550,9 @@ OUT:
 }
 
 //801A427C
-u32* Scene_Get10(GameState* state)
+u8* Scene_Get10(GameState* state)
 {
-    return (u32*)state->unk10;
+    return state->unk10;
 }
 
 //801A4284
@@ -941,6 +941,114 @@ u8* Scene_ZeroFillPtr()
     return &menu_804D6730[5];
 }
 
+//801AD088
+static void Scene_Minor_Class40_LoadDAT()
+{
+    /*void* sections[2];
+    FUN_80016dbc("NtProge.dat", 4, sections[0], "", sections[1], "");
+    HSD_GObj* gobj = GObj_Create(GOBJ_CLASS_HSD_COBJ_TITLE, 0x14, 0);
+    HSD_CObj* cobj = HSD_CObjLoadDesc(local_14[0][1]->class_name);
+    GObj_InitKindObj(gobj, GOBJ_KIND_MENU_COBJ, cobj);
+    GObj_SetupGXLink_Max(gobj, GObj_SetCamera, 0);
+    gobj->x24_unk = 0x4801;
+    gobj->x20_unk = 0;
+    DAT_80480d7c = Menu_CreateTextObj(0, (int*)0x0, 0xe, 0xf, 0, 0xe, 8, 0);
+    FUN_803a62a0(0, "SdProge.usd", "SIS_ProgeData");
+    iVar2 = FUN_803a5acc(0.f, 0.f, 0.f, 640.f, 480.f, 0, DAT_80480d7c);
+    DAT_80480d78 = iVar2;
+    *(undefined4*)(iVar2 + 0x24) = 1.0f;
+    *(undefined4*)(iVar2 + 0x28) = 1.0f;
+    HSD_GObj* gobj_2 = GObj_Create(0XE, 0xF, 0);
+    HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)((HSD_JObjDesc*)(*local_14[0])->class_name)->class_name);
+    GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
+    GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 0xB, 0);
+    JObj_AddAnims(jobj, (*local_14[0])->class_name, 0);
+    HSD_JObjReqAnimAll(jobj, );
+    HSD_JObjAnimAll(jobj);
+    DAT_80480d74 = jobj;*/
+}
+
+//801AD254
+static void Scene_Minor_Class40_JObjUpdate(u32 sel)
+{
+    /*HSD_JObj* jobj;
+
+    jobj = PTR_80480d74;
+    switch (sel) {
+    case 0:
+        *(undefined*)(DAT_80480d78 + 0x4d) = 0;
+        HSD_JObjClearFlagsAll(jobj, HIDDEN);
+        FUN_803a6368(DAT_80480d78, 6);
+        HSD_JObjReqAnimAll(jobj, 0.f);
+        jobj->position.y = -15.f;
+        if (((jobj->flags & MTX_INDEP_SRT) == 0) && jobj != NULL) {
+            if (((jobj->flags & USER_DEF_MTX) == 0) && ((jobj->flags & 0x40) != 0)) {
+                break;
+            }
+            HSD_JObjSetMtxDirtySub(jobj);
+        }
+        break;
+
+    case 1:
+        *(undefined*)(DAT_80480d78 + 0x4d) = 0;
+        HSD_JObjClearFlagsAll(jobj, HIDDEN);
+        FUN_803a6368(DAT_80480d78, 2);
+        HSD_JObjReqAnimAll(jobj, 1.0f);
+        jobj->position.y = 0.f;
+        if ((jobj->flags & MTX_INDEP_SRT) == 0 && jobj != NULL) {
+            if ((jobj->flags & USER_DEF_MTX) == 0 && ((jobj->flags & MTX_DIRTY) != 0)) {
+                break;
+            }
+            HSD_JObjSetMtxDirtySub(jobj);
+        }
+        break;
+
+    case 2:
+        *(undefined*)(DAT_80480d78 + 0x4d) = 0;
+        HSD_JObjClearFlagsAll(jobj, HIDDEN);
+        FUN_803a6368(DAT_80480d78, 3);
+        HSD_JObjReqAnimAll(jobj, 2.0f);
+        jobj->position.y = 0.f;
+        if ((jobj->flags & MTX_INDEP_SRT) == 0 && jobj != NULL) {
+            if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
+                break;
+            }
+            HSD_JObjSetMtxDirtySub(jobj);
+        }
+        break;
+
+    case 4:
+        *(undefined*)(DAT_80480d78 + 0x4d) = 0;
+        HSD_JObjClearFlagsAll(jobj, HIDDEN);
+        FUN_803a6368(DAT_80480d78, 5);
+        HSD_JObjReqAnimAll(jobj, 0.f);
+        jobj->position.y = 0.f;
+        if ((jobj->flags & MTX_INDEP_SRT) == 0 && jobj != NULL) {
+            if (((jobj->flags & USER_DEF_MTX) == 0) && ((jobj->flags & MTX_DIRTY) != 0)) {
+                break;
+            }
+            HSD_JObjSetMtxDirtySub(jobj);
+        }
+        break;
+
+    case 5:
+        *(undefined*)(DAT_80480d78 + 0x4d) = 0;
+        HSD_JObjClearFlagsAll(jobj, HIDDEN);
+        FUN_803a6368(DAT_80480d78, 4);
+        HSD_JObjReqAnimAll(jobj,0.f);
+        jobj->position.y = 0.f;
+        if ((jobj->flags & MTX_INDEP_SRT) == 0 && jobj != NULL) {
+            if (((jobj->flags & USER_DEF_MTX) == 0) && ((jobj->flags & MTX_DIRTY) != 0)) {
+                break;
+            }
+            HSD_JObjSetMtxDirtySub(jobj);
+        }
+        break;
+    }
+
+    HSD_JObjAnimAll(jobj);*/
+}
+
 //801AD620
 static void Scene_Minor_Class40_OnFrame()
 {
@@ -949,18 +1057,18 @@ static void Scene_Minor_Class40_OnFrame()
 //801AD874
 static void Scene_Minor_Class40_OnLoad(void* unk_struct)
 {
-    //sub_801AD088(); Does the DAT loading
-    //sub_801AD254();
+    Scene_Minor_Class40_LoadDAT();
+    Scene_Minor_Class40_JObjUpdate(*(u32*)unk_struct);
     /* if(*unk_struct == 1){
-    80480d84 = 0;
-  }else{
-    80480d84 = 2;
-  }
-  80480d80 = *unk_struct;
-  80480d88 = 0;
-  80480d8C = 0;
-  80480d90 = 0;
-  */
+        80480d84 = 0;
+    }else{
+        80480d84 = 2;
+    }
+    80480d80 = *unk_struct;
+    80480d88 = 0;
+    80480d8C = 0;
+    80480d90 = 0;
+    */
 }
 
 //801AD8EC
@@ -1048,7 +1156,7 @@ f32 Scene_ReqAnimAll(HSD_JObj* jobj, f32* frames)
 {
     f32 anim_speed;
     f32 frame = JObj_GetFrame(jobj);
-    
+
     if ((frame < frames[0]) || (frames[1] < frame)) {
         HSD_JObjReqAnimAll(jobj, frames[0]);
     }
