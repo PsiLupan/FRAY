@@ -207,15 +207,8 @@ HSD_MObjInfo* HSD_MObjGetDefaultClass()
 //803631E4
 HSD_MObj* HSD_MObjLoadDesc(HSD_MObjDesc* mobjdesc)
 {
-    if (mobjdesc) {
-        HSD_MObj* mobj;
-        HSD_ClassInfo* info;
-        if (!mobjdesc->class_name || !(info = hsdSearchClassInfo(mobjdesc->class_name))) {
-            mobj = HSD_MObjAlloc();
-        } else {
-            mobj = hsdNew(info);
-            assert(mobj);
-        }
+    if (mobjdesc != NULL) {
+        HSD_MObj* mobj = HSD_MObjAlloc();
         HSD_MOBJ_METHOD(mobj)->load(mobj, mobjdesc);
         HSD_MObjCompileTev(mobj);
         return mobj;

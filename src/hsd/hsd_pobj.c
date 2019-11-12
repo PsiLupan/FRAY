@@ -187,15 +187,7 @@ static s32 PObjLoad(HSD_PObj* pobj, HSD_PObjDesc* desc)
 HSD_PObj* HSD_PObjLoadDesc(HSD_PObjDesc* pobjdesc)
 {
     if (pobjdesc != NULL) {
-        HSD_PObj* pobj;
-        HSD_ClassInfo* info;
-
-        if (pobjdesc->class_name == NULL || !(info = hsdSearchClassInfo(pobjdesc->class_name))) {
-            pobj = HSD_PObjAlloc();
-        } else {
-            pobj = (HSD_PObj*)hsdNew(info);
-            HSD_CheckAssert("PObjLoadDesc could not alloc pobj", pobj != NULL);
-        }
+        HSD_PObj* pobj = HSD_PObjAlloc();
         HSD_POBJ_METHOD(pobj)->load(pobj, pobjdesc);
         return pobj;
     }
