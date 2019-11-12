@@ -861,13 +861,7 @@ static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
 // 80370E44
 HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc* desc)
 {
-    HSD_JObj* jobj = NULL;
-    if (desc == NULL) {
-        HSD_JObjResolveRefsAll(jobj, desc);
-        return jobj;
-    }
-    jobj = HSD_JObjAlloc();
-    HSD_JOBJ_METHOD(jobj)->load(jobj, desc, NULL);
+    HSD_JObj* jobj = JObjLoadJointSub(desc, NULL);
     HSD_JObjResolveRefsAll(jobj, desc);
     return jobj;
 }
