@@ -831,7 +831,8 @@ void HSD_JObjSetDefaultClass(HSD_JObjInfo* info)
     default_class = info;
 }
 
-static HSD_JObj* JObjLoadJointSub(HSD_JObjDesc* joint, HSD_JObj* parent){
+static HSD_JObj* JObjLoadJointSub(HSD_JObjDesc* joint, HSD_JObj* parent)
+{
     HSD_JObj* child = NULL;
     if (joint != NULL) {
         HSD_ClassInfo* info;
@@ -849,6 +850,21 @@ static HSD_JObj* JObjLoadJointSub(HSD_JObjDesc* joint, HSD_JObj* parent){
 // 80370BEC
 static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
 {
+    if (JOBJ_INSTANCE(desc)) {
+        HSD_JObj* child = NULL;
+        if (desc->child != NULL) {
+            HSD_ClassInfo* info;
+            if (!desc->class_name || !(info = hsdSearchClassInfo(desc->class_name))) {
+                child = (HSD_JObj*)HSD_JObjAlloc();
+            } else {
+                child = (HSD_JObj*)hsdNew(info);
+                assert(child != NULL);
+            }
+            HSD_JOBJ_METHOD(child)->load(child, desc->child, jobj);
+        }
+        jobj->child = child;
+    }
+
     HSD_JObj* c_jobj = NULL;
     HSD_JObjDesc* next = desc->next;
     if (next != NULL) {
@@ -865,9 +881,9 @@ static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
     jobj->prev = prev;
     jobj->flags |= desc->flags;
     if ((jobj->flags & SPLINE) == 0) {
-        if ((jobj->flags & PTCL) != 0){
+        if ((jobj->flags & PTCL) != 0) {
             jobj->u.dobj = HSD_DObjLoadDesc(desc->u.dobjdesc);
-        }else {
+        } else {
             jobj->u.ptcl = desc->u.ptcl;
             HSD_SList* slist = desc->u.ptcl;
             while (slist != NULL) {
@@ -900,16 +916,6 @@ static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
     }
     HSD_IDInsertToTable(NULL, (u32)desc, jobj);
     jobj->desc = desc;
-
-    if (JOBJ_INSTANCE(desc)) {
-        for (HSD_JObjDesc* child = desc->child; child != NULL; child = child->next){
-            HSD_JObj* jchild = JObjLoadJointSub(child, jobj);
-            if(jchild == NULL){
-                return -1;
-            }
-            HSD_JObjAddChild(jobj, jchild);
-        }
-    }
 
     return 0;
 }
@@ -1116,28 +1122,24 @@ void RecalcParentTrspBits(HSD_JObj* jobj)
 void HSD_JObjAddChild(HSD_JObj* jobj, HSD_JObj* child)
 {
     if (jobj != NULL && child != NULL) {
-        if (!child->prev) { // child should be a orphan
-            if (!child->next) { // child should not have siblings
-                if (jobj->child != NULL) {
-                    assert(JOBJ_INSTANCE(jobj)); //!(jobj->flags & JOBJ_INSTANCE)
-                    HSD_JObj* i;
-                    for (i = jobj->child; i != NULL; i = i->next) {
-                        HSD_CheckAssert("HSD_JObjAddChild: last == child", i != child);
-                    }
-                    i->next = child;
-                } else {
-                    jobj->child = child;
-                }
-                child->next = jobj;
-                u32 ori_flags = child->flags;
-                u32 flags = (ori_flags | (ori_flags << 10)) & (ROOT_OPA | ROOT_TEXEDGE | ROOT_XLU);
-                for (HSD_JObj* senti = jobj; senti != NULL; senti = senti->prev) {
-                    ori_flags = senti->flags;
-                    if (!(flags & ~ori_flags))
-                        break;
-                    senti->flags = ori_flags | flags;
-                }
+        HSD_CheckAssert("HSD_JObjAddChild: child should be an orphan", child->prev == NULL);
+        HSD_CheckAssert("HSD_JObjAddChild: child should not have siblings", child->next == NULL);
+        if (jobj->child != NULL) {
+            assert(JOBJ_INSTANCE(jobj)); //!(jobj->flags & JOBJ_INSTANCE)
+            HSD_JObj* i;
+            for (i = jobj->child; i != NULL; i = i->next) {
+                HSD_CheckAssert("HSD_JObjAddChild: last == child", i != child);
             }
+            i->next = child;
+        } else {
+            jobj->child = child;
+        }
+        child->prev = jobj;
+        u32 flags = (child->flags | (child->flags << 10)) & (ROOT_OPA | ROOT_TEXEDGE | ROOT_XLU);
+        HSD_JObj* senti = jobj;
+        while (senti != NULL && (flags & ~senti->flags) != 0) {
+            senti->flags |= flags;
+            senti = senti->prev;
         }
     }
 }
