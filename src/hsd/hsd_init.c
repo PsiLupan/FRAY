@@ -27,12 +27,13 @@ static u32 iparam_xfb_max_num = HSD_DEFAULT_XFB_MAX_NUM;
 static u32 iparam_heap_max_num = 0;
 static u32 iparam_audio_heap_size = HSD_DEFAULT_AUDIO_SIZE;
 
+static HSD_VIStatus vi_status;
+
 //80374F28
 void HSD_InitComponent(void)
 {
     //HSD_OSInit();
     {
-        HSD_VIStatus vi_status;
         GXColor black = { 0, 0, 0, 0 };
 
         vi_status.rmode = *rmode;
