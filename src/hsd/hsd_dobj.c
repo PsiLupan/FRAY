@@ -142,14 +142,7 @@ static int DObjLoad(HSD_DObj* dobj, HSD_DObjDesc* desc)
 HSD_DObj* HSD_DObjLoadDesc(HSD_DObjDesc* desc)
 {
     if (desc != NULL) {
-        HSD_ClassInfo* info;
-        HSD_DObj* dobj = NULL;
-        if (desc->class_name == NULL || !(info = hsdSearchClassInfo(desc->class_name))) {
-            dobj = HSD_DObjAlloc();
-        } else {
-            dobj = (HSD_DObj*)hsdNew(info);
-            HSD_CheckAssert("DObjLoadDesc could not alloc DObj", dobj != NULL);
-        }
+        HSD_DObj* dobj = HSD_DObjAlloc();
         HSD_DOBJ_METHOD(dobj)->load(dobj, desc);
         return dobj;
     }
