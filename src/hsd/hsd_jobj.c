@@ -388,8 +388,7 @@ void HSD_JObjAddAnim(HSD_JObj* jobj,
             if (jobj->aobj != NULL) {
                 HSD_AObjRemove(jobj->aobj);
             }
-            HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->aobjdesc);
-            jobj->aobj = aobj;
+            jobj->aobj = HSD_AObjLoadDesc(an_joint->aobjdesc);
             JObjSortAnim(jobj->aobj);
             HSD_RObjAddAnimAll(jobj->robj, an_joint->robj_anim);
             if ((an_joint->flags & JOBJ_ANIM_CLASSICAL_SCALING) == 0) {
@@ -1102,9 +1101,9 @@ void HSD_JObjAddChild(HSD_JObj* jobj, HSD_JObj* child)
         HSD_CheckAssert("HSD_JObjAddChild: child should be an orphan", child->prev == NULL);
         HSD_CheckAssert("HSD_JObjAddChild: child should not have siblings", child->next == NULL);
         if (jobj->child != NULL) {
-            assert(JOBJ_INSTANCE(jobj)); //!(jobj->flags & JOBJ_INSTANCE)
+            assert(JOBJ_INSTANCE(jobj));
             HSD_JObj* i;
-            for (i = jobj->child; i != NULL; i = i->next) {
+            for (i = jobj->child; i->next != NULL; i = i->next) {
                 HSD_CheckAssert("HSD_JObjAddChild: last == child", i != child);
             }
             i->next = child;
