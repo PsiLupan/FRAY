@@ -15,7 +15,7 @@
 #define ALIGNED_BUCKET(size) (ALIGN(size) >> BUCKET_BITS)
 #define GET_BUCKET(size) (ALIGNED_BUCKET(size) - 1)
 
-#define hash(s) (s % 65)
+#define hash(s) (s % 0x65)
 
 typedef u32 HSD_ID;
 
