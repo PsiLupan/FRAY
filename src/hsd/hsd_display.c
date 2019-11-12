@@ -312,8 +312,7 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
                         memset(&zlist->vmtx, 0, 0x18);
                         guMtxCopy(mtx, zlist->pmtx);
                         if (vmtx != NULL) {
-                            MtxP vmatrix = (MtxP)HSD_MemAlloc(sizeof(Mtx)); //HSD_MtxAlloc();
-                            zlist->vmtx = vmatrix;
+                            zlist->vmtx = (MtxP)HSD_MemAlloc(sizeof(Mtx));
                             guMtxCopy(vmtx, zlist->vmtx);
                         }
                         zlist->jobj = jobj;

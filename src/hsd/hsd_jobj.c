@@ -834,13 +834,7 @@ static HSD_JObj* JObjLoadJointSub(HSD_JObjDesc* joint, HSD_JObj* parent)
 {
     HSD_JObj* child = NULL;
     if (joint != NULL) {
-        HSD_ClassInfo* info;
-        if (!joint->class_name || !(info = hsdSearchClassInfo(joint->class_name))) {
-            child = (HSD_JObj*)HSD_JObjAlloc();
-        } else {
-            child = (HSD_JObj*)hsdNew(info);
-            assert(child != NULL);
-        }
+        child = (HSD_JObj*)HSD_JObjAlloc();
         HSD_JOBJ_METHOD(child)->load(child, joint, parent);
     }
     return child;
@@ -855,16 +849,14 @@ static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
 
     jobj->next = JObjLoadJointSub(desc->next, prev);
     jobj->prev = prev;
-    jobj->flags |= desc->flags;
+    jobj->flags = desc->flags;
     if ((jobj->flags & SPLINE) == 0) {
         if ((jobj->flags & PTCL) == 0) {
             jobj->u.dobj = HSD_DObjLoadDesc(desc->u.dobjdesc);
         } else {
             jobj->u.ptcl = desc->u.ptcl;
-            HSD_SList* slist = desc->u.ptcl;
-            while (slist != NULL) {
+            for(HSD_SList* slist = desc->u.ptcl; slist != NULL; slist = slist->next) {
                 slist->data = (void*)((u32)slist->data | 0x80000000);
-                slist = slist->next;
             }
         }
     } else {
@@ -904,13 +896,7 @@ HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc* desc)
         HSD_JObjResolveRefsAll(jobj, desc);
         return jobj;
     }
-    HSD_ClassInfo* info;
-    if (!desc->class_name || !(info = hsdSearchClassInfo(desc->class_name))) {
-        jobj = HSD_JObjAlloc();
-    } else {
-        jobj = (HSD_JObj*)(hsdNew(info));
-        assert(jobj != NULL);
-    }
+    jobj = HSD_JObjAlloc();
     HSD_JOBJ_METHOD(jobj)->load(jobj, desc, NULL);
     HSD_JObjResolveRefsAll(jobj, desc);
     return jobj;
@@ -1094,6 +1080,14 @@ void RecalcParentTrspBits(HSD_JObj* jobj)
     }
 }
 
+static void UpdateParentTrspBits(HSD_JObj* jobj, HSD_JObj* child){
+    u32 flags = (child->flags | (child->flags << 10)) & (ROOT_OPA | ROOT_TEXEDGE | ROOT_XLU);
+    while (jobj != NULL && (flags & ~jobj->flags) != 0) {
+        jobj->flags |= flags;
+        jobj = jobj->prev;
+    }
+}
+
 // 803717A8
 void HSD_JObjAddChild(HSD_JObj* jobj, HSD_JObj* child)
 {
@@ -1111,12 +1105,7 @@ void HSD_JObjAddChild(HSD_JObj* jobj, HSD_JObj* child)
             jobj->child = child;
         }
         child->prev = jobj;
-        u32 flags = (child->flags | (child->flags << 10)) & (ROOT_OPA | ROOT_TEXEDGE | ROOT_XLU);
-        HSD_JObj* senti = jobj;
-        while (senti != NULL && (flags & ~senti->flags) != 0) {
-            senti->flags |= flags;
-            senti = senti->prev;
-        }
+        UpdateParentTrspBits(jobj, child);
     }
 }
 
