@@ -851,18 +851,7 @@ static HSD_JObj* JObjLoadJointSub(HSD_JObjDesc* joint, HSD_JObj* parent)
 static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
 {
     if (JOBJ_INSTANCE(desc)) {
-        HSD_JObj* child = NULL;
-        if (desc->child != NULL) {
-            HSD_ClassInfo* info;
-            if (!desc->class_name || !(info = hsdSearchClassInfo(desc->class_name))) {
-                child = (HSD_JObj*)HSD_JObjAlloc();
-            } else {
-                child = (HSD_JObj*)hsdNew(info);
-                assert(child != NULL);
-            }
-            HSD_JOBJ_METHOD(child)->load(child, desc->child, jobj);
-        }
-        jobj->child = child;
+        jobj->child = JObjLoadJointSub(desc->child, jobj);
     }
 
     HSD_JObj* c_jobj = NULL;
