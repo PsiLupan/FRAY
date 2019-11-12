@@ -367,7 +367,7 @@ static void Scene_Minor_Class0_OnLoad(void* unk_struct)
     HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
     HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.bg_top_joint);
     GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
-    GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
+    GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 0/*3*/, 0);
     HSD_JObjAddAnimAll(jobj, (HSD_AnimJoint*)title_ptrs.bg_top_animjoint,
         (HSD_MatAnimJoint*)title_ptrs.bg_top_matanim_joint, (HSD_ShapeAnimJoint*)title_ptrs.bg_top_shapeanim_joint);
     GObj_CreateProcWithCallback(gobj_2, Scene_ReqAnimAll_Callback, 0);
