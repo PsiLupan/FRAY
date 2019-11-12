@@ -854,19 +854,7 @@ static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
         jobj->child = JObjLoadJointSub(desc->child, jobj);
     }
 
-    HSD_JObj* c_jobj = NULL;
-    HSD_JObjDesc* next = desc->next;
-    if (next != NULL) {
-        HSD_ClassInfo* info;
-        if (!next->class_name || !(info = hsdSearchClassInfo(next->class_name))) {
-            c_jobj = (HSD_JObj*)HSD_JObjAlloc();
-        } else {
-            c_jobj = (HSD_JObj*)hsdNew(info);
-            assert(c_jobj != NULL);
-        }
-        HSD_JOBJ_METHOD(c_jobj)->load(c_jobj, next, prev);
-    }
-    jobj->next = c_jobj;
+    jobj->next = JObjLoadJointSub(desc->next, prev);
     jobj->prev = prev;
     jobj->flags |= desc->flags;
     if ((jobj->flags & SPLINE) == 0) {
