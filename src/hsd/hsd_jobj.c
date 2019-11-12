@@ -388,8 +388,7 @@ void HSD_JObjAddAnim(HSD_JObj* jobj,
             if (jobj->aobj != NULL) {
                 HSD_AObjRemove(jobj->aobj);
             }
-            HSD_AObj* aobj = HSD_AObjLoadDesc(an_joint->aobjdesc);
-            jobj->aobj = aobj;
+            jobj->aobj = HSD_AObjLoadDesc(an_joint->aobjdesc);
             JObjSortAnim(jobj->aobj);
             HSD_RObjAddAnimAll(jobj->robj, an_joint->robj_anim);
             if ((an_joint->flags & JOBJ_ANIM_CLASSICAL_SCALING) == 0) {
