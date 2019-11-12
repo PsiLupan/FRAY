@@ -881,7 +881,7 @@ static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
     jobj->prev = prev;
     jobj->flags |= desc->flags;
     if ((jobj->flags & SPLINE) == 0) {
-        if ((jobj->flags & PTCL) != 0) {
+        if ((jobj->flags & PTCL) == 0) {
             jobj->u.dobj = HSD_DObjLoadDesc(desc->u.dobjdesc);
         } else {
             jobj->u.ptcl = desc->u.ptcl;
