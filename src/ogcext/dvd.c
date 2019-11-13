@@ -5,6 +5,7 @@
 #include <math.h>
 #include <string.h>
 
+#include <gcutil.h>
 #include <ogc/irq.h>
 #include <ogc/lwp.h>
 
@@ -18,8 +19,8 @@ static FSTEntry* entry_table = NULL; //r13_4424
 static u32* start_memory = NULL; //r13_4428
 static lwpq_t dvd_wait_queue;
 
-u8* fst;
-u8* fst_info;
+static u8* fst;
+static u8 fst_info[32] ATTRIBUTE_ALIGN(32);
 
 dvdcmdblk cmdblk;
 
@@ -27,25 +28,23 @@ static void __DVDFSInit(void)
 {
     start_memory = (u32*)(0x80000000);
 
-    fst_info = memalign(32, 32);
+    DVD_ReadPrio(&cmdblk, fst_info, 32, 0x424, 2);
 
-    assert(DVD_ReadPrio(&cmdblk, fst_info, 32, 0x424 / 4 << 2, 2) > 0);
-
-    s64 fst_offset = ((u32*)fst_info)[0];
+    u32 fst_offset = ((u32*)(fst_info))[0];
     u32 fst_size = ((u32*)(fst_info))[1];
-    start_memory[15] = fst_size;
 
     fst = memalign(32, fst_size + 0x1F & 0xFFFFFFE0);
     start_memory[14] = (u32)fst;
+    start_memory[15] = fst_size;
 
     if(fst_size > 0x4000){
         u32 max_iterations = (u32)ceil((double)fst_size / (double)0x4000);
         u32 size = fst_size + 0x1F & 0xFFFFFFE0;
         for(u32 i = 0; i < max_iterations; i++){
             if(size > 0x4000){
-                assert(DVD_ReadPrio(&cmdblk, fst + (i * 0x4000), 0x4000, fst_offset + (0x4000 * i), 2) > 0);
+                DVD_ReadPrio(&cmdblk, fst + (i * 0x4000), 0x4000, (fst_offset + (0x4000 * i)), 2);
             }else{
-                assert(DVD_ReadPrio(&cmdblk, fst + (i * 0x4000), size, fst_offset + (0x4000 * i), 2) > 0);
+                DVD_ReadPrio(&cmdblk, fst + (i * 0x4000), size, (fst_offset + (0x4000 * i)), 2);
             }
             size -= 0x4000;
         }

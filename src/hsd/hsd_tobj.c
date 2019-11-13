@@ -571,7 +571,7 @@ void HSD_TObjSetupTextureCoordGen(HSD_TObj* tobj)
 
 //8035F6B4
 void HSD_TObjSetupVolatileTev(HSD_TObj* tobj, u32 rendermode)
-{ //TODO: Verify - Very different from decompilation
+{
 #pragma unused(rendermode)
     for (; tobj != NULL; tobj = tobj->next) {
         if (tobj->id == GX_TEXMAP_NULL)
@@ -1190,7 +1190,7 @@ s32 HSD_TObjAssignResources(HSD_TObj* tobj_top)
 
 static int DifferentTluts(HSD_Tlut* t0, HSD_Tlut* t1)
 {
-    return (t0->lut != t1->lut) || (t0->fmt != t1->fmt) || (t0->n_entries != t1->n_entries);
+    return (t0->lut != t1->lut) /*|| (t0->fmt != t1->fmt)*/ || (t0->n_entries != t1->n_entries);
 }
 
 //80360950
@@ -1216,7 +1216,7 @@ void HSD_TObjSetup(HSD_TObj* tobj)
         HSD_StateRegisterTexGen(HSD_Index2TexCoord(num - 1u));
     }
 
-    for (; tobj; tobj = tobj->next) {
+    for (; tobj != NULL; tobj = tobj->next) {
         static HSD_TexLODDesc default_lod = {
             GX_LIN_MIP_LIN,
             0.0F,
