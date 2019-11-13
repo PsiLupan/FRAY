@@ -28,7 +28,7 @@ INCLUDES	:=
 #---------------------------------------------------------------------------------
 
 #NODEBUG = -DNDEBUG
-CFLAGS	= -O1 -mogc -Wno-implicit-function-declaration -pedantic $(MACHDEP) $(INCLUDE) $(NODEBUG)
+CFLAGS	= -O1 -mogc -fstack-protector-all -Wno-implicit-function-declaration -pedantic $(MACHDEP) $(INCLUDE) $(NODEBUG)
 CXXFLAGS	= $(CFLAGS)
 
 LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map,--section-start,.init=0x80003100
