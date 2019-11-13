@@ -31,7 +31,7 @@ void Menu_Title_SetupLogos()
     u8 major = Scene_GetCurrentMajor();
     u8 minor = Scene_GetCurrentMinor();
 
-    if (major == 0 || (major == 0x18 && minor == 2)) {
+    if (major == 0 || (major == 24 && minor == 2)) {
         HSD_JObjReqAnimAll(jobj, 400.f);
         GObj_CreateProcWithCallback(gobj, Menu_Title_JObjAnimCallback, 0);
     } else {
