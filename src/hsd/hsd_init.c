@@ -183,6 +183,12 @@ void HSD_StartRender(HSD_RenderPass pass)
     GX_SetFieldMode(rmode->field_rendering, rmode->xfbHeight < rmode->viHeight);
 }
 
+//803755A8
+void HSD_IsScreenRenderPass(void)
+{
+    return;
+}
+
 //803755B4
 void HSD_ObjInit(void)
 {

@@ -911,6 +911,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
         GX_InvalidateTexAll();
         HSD_StartRender(HSD_RP_SCREEN);
         GObj_RunGXLinkMaxCallbacks();
+        //HSD_IsScreenRenderPass(); - This function just stores the result of rp == 0 in the cmp register
         //HSD_PerfSetDrawTime();
         HSD_VICopyXFBASync(HSD_RP_SCREEN);
         if (match_controller.unk04 != -2) {
