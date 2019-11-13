@@ -279,10 +279,10 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
 {
     if (jobj != NULL) {
         if ((jobj->flags & JOBJ_HIDDEN) == 0) {
-            u32 m_flags = jobj->flags & trsp_mask << JOBJ_TRSP_SHIFT;
+            u32 m_flags = jobj->flags & (trsp_mask << JOBJ_TRSP_SHIFT);
             if (m_flags != 0) {
                 BOOL need_matrix = FALSE;
-                if ((jobj->flags & 0x800000) == 0 && (jobj->flags & 0x40) != 0) {
+                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
                     need_matrix = TRUE;
                 }
                 if (need_matrix == TRUE) {
@@ -308,8 +308,8 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
                     }
                 } else {
                     if ((m_flags & (JOBJ_TEXEDGE | JOBJ_XLU)) != 0) {
-                        HSD_ZList* zlist = (HSD_ZList*)HSD_ObjAlloc(&zlist_alloc_data);
-                        memset(&zlist->vmtx, 0, 0x18);
+                        HSD_ZList* zlist = (HSD_ZList*)HSD_MemAlloc(sizeof(HSD_ZList)); //(HSD_ZList*)HSD_ObjAlloc(&zlist_alloc_data);
+                        memset(&zlist->vmtx, 0, (sizeof(HSD_ZList) - sizeof(Mtx)));
                         guMtxCopy(mtx, zlist->pmtx);
                         if (vmtx != NULL) {
                             zlist->vmtx = (MtxP)HSD_MemAlloc(sizeof(Mtx));
