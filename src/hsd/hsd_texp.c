@@ -434,8 +434,8 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
 
         case HSD_TE_TEV:
             HSD_CheckAssert("HSD_TExpColorInSub: sel != HSD_TE_RGB or HSD_TE_A", sel == HSD_TE_RGB || sel == HSD_TE_A);
-            HSD_CheckAssert("HSD_TExpColorInSub: ", idx == 3 || sel != HSD_TE_RGB || texp->tev.c_clamp != 0);
-            HSD_CheckAssert("HSD_TExpColorInSub: ", idx == 3 || sel != HSD_TE_A || texp->tev.a_clamp != 0);
+            HSD_CheckAssert("HSD_TExpColorInSub: idx == 3 || sel != HSD_TE_RGB || exp->tev.c_clamp != 0", idx == 3 || sel != HSD_TE_RGB || exp->tev.c_clamp != 0);
+            HSD_CheckAssert("HSD_TExpColorInSub: idx == 3 || sel != HSD_TE_A || exp->tev.a_clamp != 0", idx == 3 || sel != HSD_TE_A || exp->tev.a_clamp != 0);
             HSD_TExpRef(tev->c_in[idx].exp, tev->c_in[idx].sel);
             goto END;
 
@@ -561,7 +561,7 @@ static void HSD_TExpAlphaInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
 
             case HSD_TE_TEV:
                 HSD_CheckAssert("HSD_TExpAlphaInSub: sel != HSD_TE_A", sel == HSD_TE_A);
-                HSD_CheckAssert("HSD_TExpAlphaInSub: idx != 3 || exp->tev.a_clamp != 0", idx == 3 || texp->tev.a_clamp != 0);
+                HSD_CheckAssert("HSD_TExpAlphaInSub: idx != 3 || exp->tev.a_clamp != 0", idx == 3 || exp->tev.a_clamp != 0);
                 HSD_TExpRef(tev->a_in[idx].exp, tev->a_in[idx].sel);
                 break;
 
