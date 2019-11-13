@@ -132,10 +132,9 @@
 
 //Texture Object
 typedef struct _HSD_TObj {
-    HSD_Class parent;
-    u16 flags;
+    HSD_Obj parent;
     struct _HSD_TObj* next;
-    u8 id; //GXTexMapID
+    u32 id; //GXTexMapID
     u32 src; //GXTexGenSrc
     u32 mtxid;
     guQuaternion rotate;
@@ -145,8 +144,7 @@ typedef struct _HSD_TObj {
     u32 wrap_t; //GXTexWrapMode
     u8 repeat_s;
     u8 repeat_t;
-    u16 anim_id;
-    u32 blend_flags;
+    u32 flags;
     f32 blending;
     u32 magFilt; //GXTexFilter
     struct _HSD_ImageDesc* imagedesc;
@@ -157,14 +155,14 @@ typedef struct _HSD_TObj {
     struct _HSD_Tlut** tluttbl;
     u8 tlut_no;
     Mtx mtx;
-    u16 coord; //GXTexCoordID
+    u32 coord; //GXTexCoordID
     struct _HSD_TObjTev* tev;
 } HSD_TObj;
 
 typedef struct _HSD_TObjDesc {
     char* class_name;
     struct _HSD_TObjDesc* next;
-    u8 id; //GXTexMapID
+    u32 id; //GXTexMapID
     u32 src; //GXTexGenSrc
     guVector rotate;
     guVector scale;
@@ -173,7 +171,6 @@ typedef struct _HSD_TObjDesc {
     u32 wrap_t; //GXTexWrapMode
     u8 repeat_s;
     u8 repeat_t;
-    u16 pad;
     u32 blend_flags;
     f32 blending;
     u32 magFilt; //GXTexFilter
@@ -267,7 +264,7 @@ extern HSD_TObjInfo hsdTObj;
 
 #define HSD_TOBJ(o) ((HSD_TObj*)(o))
 #define HSD_TOBJ_INFO(i) ((HSD_TObjInfo*)(i))
-#define HSD_TOBJ_METHOD(o) HSD_TOBJ_INFO(HSD_CLASS_METHOD(o))
+#define HSD_TOBJ_METHOD(o) HSD_TOBJ_INFO(HSD_OBJECT_METHOD(o))
 
 void HSD_TObjRemoveAnimAll(HSD_TObj* tobj);
 void HSD_TObjAddAnim(HSD_TObj* tobj, HSD_TexAnim* texanim);

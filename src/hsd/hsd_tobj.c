@@ -40,15 +40,15 @@ void HSD_TObjAddAnim(HSD_TObj* tobj, HSD_TexAnim* texanim)
 {
     HSD_TexAnim* ta;
     if (tobj != NULL) {
-        if ((ta = lookupTextureAnim(tobj->anim_id, texanim)) != NULL) {
+        if ((ta = lookupTextureAnim(tobj->id, texanim)) != NULL) {
             int i;
-            if (tobj->aobj) {
+            if (tobj->aobj != NULL) {
                 HSD_AObjRemove(tobj->aobj);
             }
             tobj->aobj = HSD_AObjLoadDesc(ta->aobjdesc);
             tobj->imagetbl = ta->imagetbl;
 
-            if (tobj->tluttbl) {
+            if (tobj->tluttbl != NULL) {
                 for (i = 0; tobj->tluttbl[i]; i++) {
                     HSD_TlutFree(tobj->tluttbl[i]);
                 }
@@ -271,7 +271,7 @@ void HSD_TObjAnimAll(HSD_TObj* tobj)
 static int TObjLoad(HSD_TObj* tobj, HSD_TObjDesc* td)
 {
     tobj->next = HSD_TObjLoadDesc(td->next);
-    tobj->id = (u16)td->id;
+    tobj->id = td->id;
     tobj->src = td->src;
     tobj->mtxid = GX_IDENTITY;
     tobj->rotate.x = td->rotate.x;
@@ -283,7 +283,7 @@ static int TObjLoad(HSD_TObj* tobj, HSD_TObjDesc* td)
     tobj->wrap_t = td->wrap_t;
     tobj->repeat_s = td->repeat_s;
     tobj->repeat_t = td->repeat_t;
-    tobj->blend_flags = td->blend_flags;
+    tobj->flags = td->blend_flags;
     tobj->blending = td->blending;
     tobj->magFilt = td->magFilt;
     tobj->imagedesc = td->imagedesc;
@@ -301,14 +301,7 @@ static int TObjLoad(HSD_TObj* tobj, HSD_TObjDesc* td)
 HSD_TObj* HSD_TObjLoadDesc(HSD_TObjDesc* td)
 {
     if (td != NULL) {
-        HSD_TObj* tobj;
-        HSD_ClassInfo* info;
-        if (!td->class_name || !(info = hsdSearchClassInfo(td->class_name))) {
-            tobj = HSD_TObjAlloc();
-        } else {
-            tobj = (HSD_TObj*)hsdNew(info);
-            assert(tobj);
-        }
+        HSD_TObj* tobj = HSD_TObjAlloc();
         HSD_TOBJ_METHOD(tobj)->load(tobj, td);
         return tobj;
     }
@@ -1122,7 +1115,7 @@ s32 HSD_TObjAssignResources(HSD_TObj* tobj_top)
     if (tobj_top == NULL)
         return 0;
 
-    for (tobj = tobj_top; tobj; tobj = tobj->next) {
+    for (tobj = tobj_top; tobj != NULL; tobj = tobj->next) {
         if (tobj_coord(tobj) == TEX_COORD_TOON) {
             toon = tobj;
         } else if (tobj_bump(tobj)) {
@@ -1135,7 +1128,7 @@ s32 HSD_TObjAssignResources(HSD_TObj* tobj_top)
     if (bump != NULL)
         limit -= 2;
 
-    for (tobj = tobj_top; tobj; tobj = tobj->next) {
+    for (tobj = tobj_top; tobj != NULL; tobj = tobj->next) {
         if (tobj_coord(tobj) == TEX_COORD_TOON) {
             if (tobj != toon) {
                 tobj->id = GX_TEXMAP_NULL;
@@ -1537,8 +1530,8 @@ void HSD_TObjRemoveAll(HSD_TObj* tobj)
 {
     while (tobj) {
         HSD_TObj* next = tobj->next;
-        HSD_CLASS_METHOD(tobj)->release((HSD_Class*)tobj);
-        HSD_CLASS_METHOD(tobj)->destroy((HSD_Class*)tobj);
+        HSD_OBJECT_METHOD(tobj)->release((HSD_Class*)tobj);
+        HSD_OBJECT_METHOD(tobj)->destroy((HSD_Class*)tobj);
         tobj = next;
     }
 }
@@ -1577,7 +1570,7 @@ HSD_TObj* HSD_TObjAlloc(void)
 void HSD_TObjFree(HSD_TObj* tobj)
 {
     if (tobj != NULL) {
-        HSD_CLASS_METHOD(tobj)->destroy((HSD_Class*)tobj);
+        HSD_OBJECT_METHOD(tobj)->destroy((HSD_Class*)tobj);
     }
 }
 
