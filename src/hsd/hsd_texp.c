@@ -142,7 +142,7 @@ void HSD_TExpUnref(HSD_TExp* texp, u8 sel)
 //80362D04
 void _HSD_StateInvalidateTevRegister(void)
 {
-    for(u32 i = 0; i < 4; i++){
+    for (u32 i = 0; i < 4; i++) {
         TevReg[i].color.r = 0;
         TevReg[i].color.g = 0;
         TevReg[i].color.b = 0;
@@ -333,7 +333,7 @@ void HSD_TExpColorOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 clamp)
     if (op < 2) {
         texp->tev.c_bias = bias;
         texp->tev.c_scale = scale;
-    }else{
+    } else {
         texp->tev.c_bias = 0;
         texp->tev.c_scale = 0;
     }
@@ -348,7 +348,7 @@ void HSD_TExpAlphaOp(HSD_TExp* texp, u8 op, u8 bias, u8 scale, u8 clamp)
     if (op < 2) {
         texp->tev.a_bias = bias;
         texp->tev.a_scale = scale;
-    }else{
+    } else {
         texp->tev.a_bias = 0;
         texp->tev.a_scale = 0;
     }
@@ -1718,62 +1718,32 @@ static void order_dag(s32 num, u32* dep_mtx, u32* full_dep_mtx, HSD_TExpDag* lis
     }
 }
 
+static void make_dependency_mtx(s32 num, HSD_TExpDag* list,  u32* dep_mtx){
+    for (u32 i = 0; i < num; ++i) {
+        dep_mtx[i] = 0;
+        for (u32 j = 0; j < list[i].nb_dep; ++j) {
+            dep_mtx[i] |= 1 << list[i].depend[j]->idx;
+        }
+    }
+}
+
 //80386100
 static void make_full_dependency_mtx(s32 num, u32* dep, u32* full)
 {
     BOOL bVar2;
-    s32 iVar3;
-    u32* puVar4;
-    u32* puVar5;
-    s32 iVar6;
     u32 uVar7;
-    u32 uVar8;
 
-    if (num > 0) {
-        iVar6 = 0;
-        if ((8 < num) && (puVar4 = dep, puVar5 = full, 0 < num + -8)) {
-            for (uVar8 = (num - 1) >> 3; uVar8 > 0; --uVar8) {
-                puVar5[iVar6] = puVar4[iVar6];
-                puVar5[iVar6 + 1] = puVar4[iVar6 + 1];
-                puVar5[iVar6 + 2] = puVar4[iVar6 + 2];
-                puVar5[iVar6 + 3] = puVar4[iVar6 + 3];
-                puVar5[iVar6 + 4] = puVar4[iVar6 + 4];
-                puVar5[iVar6 + 5] = puVar4[iVar6 + 5];
-                puVar5[iVar6 + 6] = puVar4[iVar6 + 6];
-                puVar5[iVar6 + 7] = puVar4[iVar6 + 7];
-                iVar6 = iVar6 + 8;
-            }
-        }
-        dep = dep + iVar6;
-        puVar4 = full + iVar6;
-        iVar3 = num - iVar6;
-        if (iVar6 < num) {
-            do {
-                uVar8 = *dep;
-                dep = dep + 1;
-                *puVar4 = uVar8;
-                puVar4 = puVar4 + 1;
-                iVar3 = iVar3 + -1;
-            } while (iVar3 != 0);
-        }
+    for (u32 i = 0; i < num; ++i) {
+        full[i] = dep[i];
     }
     do {
         bVar2 = FALSE;
-        puVar4 = full;
-        for (iVar6 = 0; iVar6 < num; ++iVar6) {
-            uVar8 = *puVar4;
-            puVar5 = full;
-            if (num > 0) {
-                for (iVar3 = num; iVar3 > 0; --iVar3) {
-                    uVar7 = *puVar5;
-                    if (((1 << iVar6 & uVar7) != 0) && (*puVar5 = uVar7 | uVar8, uVar7 != *puVar5)) {
-                        bVar2 = TRUE;
-                    }
-                    puVar5 = puVar5 + 1;
-                    iVar3 = iVar3 + -1;
+        for (u32 i = 0; i < num; ++i) {
+            for (u32 j = 0; j < num; ++j) {
+                if (((1 << i & full[j]) != 0) && (uVar7 = full[j], full[j] = uVar7 | full[i], uVar7 != full[j])) {
+                    bVar2 = TRUE;
                 }
             }
-            puVar4 = puVar4 + 1;
         }
     } while (bVar2);
 }
@@ -1781,24 +1751,16 @@ static void make_full_dependency_mtx(s32 num, u32* dep, u32* full)
 //80386234
 void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes* resource)
 {
+#if 1
     u32 dep_mtx[32];
     u32 full_dep_mtx[32];
     s32 order[32];
     s32 min_order[32];
     s32 min = 5;
-    u32 i, j, k;
+    u32 i, j;
 
-    memset(min_order, 0, 32 * 4);
-    if (num > 0) {
-        for (i = num, j = 0; i > 0; --i, ++j) {
-            HSD_TExpDag* list_cur = &list[j];
-            dep_mtx[j] = 0;
-            for (k = 0; k < list->nb_dep; k++) {
-                HSD_TExpDag* dag = list_cur->depend[k];
-                full_dep_mtx[j] = 1 << dag->idx;
-            }
-        }
-    }
+    memset(min_order, 0, 32 * sizeof(s32));
+    make_dependency_mtx(num, list, dep_mtx);
     make_full_dependency_mtx(num, dep_mtx, full_dep_mtx);
     order_dag(num, dep_mtx, full_dep_mtx, list, 0, 0, 0, 0, order, &min, min_order);
 
@@ -1810,9 +1772,35 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
             for (j = 0; j < 4; j++) {
                 if (HSD_TExpGetType(result[i]->tev.c_in[j].exp) == HSD_TE_TEV) {
                     if (result[i]->tev.c_in[j].sel == 1) {
-                        result[i]->tev.c_in[j].arg = 0; //WRONG
+                        switch (result[i]->tev.c_in[j].exp->tev.c_dst) {
+                        case 0:
+                            result[i]->tev.c_in[j].arg = 2;
+                            break;
+                        case 1:
+                            result[i]->tev.c_in[j].arg = 4;
+                            break;
+                        case 2:
+                            result[i]->tev.c_in[j].arg = 6;
+                            break;
+                        default:
+                            result[i]->tev.c_in[j].arg = 0;
+                            break;
+                        }
                     } else {
-                        result[i]->tev.c_in[j].arg = 0; //WRONG
+                        switch (result[i]->tev.c_in[j].exp->tev.c_dst) {
+                        case 0:
+                            result[i]->tev.c_in[j].arg = 3;
+                            break;
+                        case 1:
+                            result[i]->tev.c_in[j].arg = 5;
+                            break;
+                        case 2:
+                            result[i]->tev.c_in[j].arg = 7;
+                            break;
+                        default:
+                            result[i]->tev.c_in[j].arg = 1;
+                            break;
+                        }
                     }
                 }
             }
@@ -1823,12 +1811,145 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
             for (j = 0; j < 4; j++) {
                 if (HSD_TExpGetType(result[i]->tev.a_in[j].exp) == HSD_TE_TEV) {
                     if (result[i]->tev.a_in[j].sel == 1) {
-                        result[i]->tev.a_in[j].arg = 0; //WRONG
+                        switch (result[i]->tev.a_in[j].exp->tev.a_dst) {
+                        case 0:
+                            result[i]->tev.c_in[j].arg = 1;
+                            break;
+                        case 1:
+                            result[i]->tev.c_in[j].arg = 2;
+                            break;
+                        case 2:
+                            result[i]->tev.c_in[j].arg = 3;
+                            break;
+                        default:
+                            result[i]->tev.c_in[j].arg = 0;
+                            break;
+                        }
                     }
                 }
             }
         }
     }
+#else
+    HSD_TExpDag** ppHVar1;
+    u32 uVar2;
+    s32 iVar3;
+    s32 iVar4;
+    HSD_TExpDag* pHVar5;
+    u32* min_order_i;
+    HSD_TExpDag* pHVar6;
+    s32 iVar7;
+    s32 iVar8;
+    u32 i;
+    s32 min;
+    u32 min_order[32];
+    s32 order[32];
+    u32 full_dep_mtx[32];
+    u32 dep_mtx[32];
+
+    min = 5;
+    memset(min_order, 0, sizeof(u32) * 32);
+    min_order_i = dep_mtx;
+    pHVar6 = list;
+    i = num;
+    if (0 < (s32)num) {
+        do {
+            *min_order_i = 0;
+            iVar4 = 0;
+            pHVar5 = pHVar6;
+            while (iVar4 < (s32)(u32)pHVar6->nb_dep) {
+                ppHVar1 = pHVar5->depend;
+                pHVar5 = (HSD_TExpDag*)&pHVar5->idx;
+                iVar4 = iVar4 + 1;
+                *min_order_i = *min_order_i | 1 << (u32)(*ppHVar1)->idx;
+            }
+            min_order_i = min_order_i + 1;
+            pHVar6 = pHVar6 + 1;
+            i = i - 1;
+        } while (i != 0);
+    }
+    make_full_dependency_mtx(num, dep_mtx, full_dep_mtx);
+    min_order_i = min_order;
+    order_dag(num, dep_mtx, full_dep_mtx, list, 0, 0, 0, 0, order, &min, (s32*)min_order_i);
+    iVar4 = 0;
+    while (iVar4 < (s32)num) {
+        *(HSD_TETev**)result = list[*min_order_i].tev;
+        if (*(u8*)(&((HSD_TETev*)*result)->type + 3) != 0xff) {
+            iVar7 = 0;
+            resource->reg[(u32) * (u8*)(&((HSD_TETev*)*result)->type + 3) + 4].color = 3;
+            iVar8 = 0;
+            do {
+                uVar2 = HSD_TExpGetType(*(HSD_TExp**)((s32) & ((HSD_TETev*)*result)->type + iVar8 + 0x28));
+                if (uVar2 == 1) {
+                    iVar3 = (s32) & ((HSD_TETev*)*result)->type + iVar8;
+                    if (*(s8*)(iVar3 + 0x25) == 1) {
+                        switch ((*(s32*)(iVar3 + 0x28) + 0xc)) {
+                        case 0:
+                            *(u8*)(iVar3 + 0x26) = 2;
+                            break;
+                        case 1:
+                            *(u8*)(iVar3 + 0x26) = 4;
+                            break;
+                        case 2:
+                            *(u8*)(iVar3 + 0x26) = 6;
+                            break;
+                        default:
+                            *(u8*)(iVar3 + 0x26) = 0;
+                            break;
+                        }
+                    } else {
+                        switch ((*(s32*)(iVar3 + 0x28) + 0xc)) {
+                        case 0:
+                            *(u8*)(iVar3 + 0x26) = 3;
+                            break;
+                        case 1:
+                            *(u8*)(iVar3 + 0x26) = 5;
+                            break;
+                        case 2:
+                            *(u8*)(iVar3 + 0x26) = 7;
+                            break;
+                        default:
+                            *(u8*)(iVar3 + 0x26) = 1;
+                            break;
+                        }
+                    }
+                }
+                iVar7 = iVar7 + 1;
+                iVar8 = iVar8 + 8;
+            } while (iVar7 < 4);
+        }
+        if (*(u8*)(&((HSD_TETev*)*result)->type + 6) != 0xff) {
+            iVar7 = 0;
+            resource->reg[(u32) * (u8*)(&((HSD_TETev*)*result)->type + 6) + 4].alpha = 1;
+            iVar8 = 0;
+            do {
+                uVar2 = HSD_TExpGetType(*(HSD_TExp**)((s32) & ((HSD_TETev*)*result)->type + iVar8 + 0x48));
+                if (uVar2 == 1) {
+                    iVar3 = (s32) & ((HSD_TETev*)*result)->type + iVar8;
+                    switch ((*(s32*)(iVar3 + 0x28) + 0xc)) {
+                    case 0:
+                        *(u8*)(iVar3 + 0x46) = 1;
+                        break;
+                    case 1:
+                        *(u8*)(iVar3 + 0x46) = 2;
+                        break;
+                    case 2:
+                        *(u8*)(iVar3 + 0x46) = 3;
+                        break;
+                    default:
+                        *(u8*)(iVar3 + 0x46) = 0;
+                        break;
+                    }
+                }
+                iVar7 = iVar7 + 1;
+                iVar8 = iVar8 + 8;
+            } while (iVar7 < 4);
+        }
+        min_order_i = min_order_i + 1;
+        result = (HSD_TExp**)((HSD_TETev**)result + 1);
+        iVar4 = iVar4 + 1;
+    }
+#endif
 }
 
 //80386470
