@@ -374,10 +374,10 @@ static void Scene_Minor_Class0_OnLoad(void* unk_struct)
 
     u8 major = Scene_GetCurrentMajor();
     u8 minor = Scene_GetCurrentMinor();
-    if ((major != 0 && major != 24) || minor != 2) { //Even forcing this condition, I couldn't see a visible difference
-        HSD_JObjReqAnimAll(jobj, title_frames[0]);
-    } else {
+    if (major == 0 || (major == 24 && minor == 2)) { //Even forcing this condition, I couldn't see a visible difference
         HSD_JObjReqAnimAll(jobj, 130.0f);
+    } else {
+        HSD_JObjReqAnimAll(jobj, title_frames[0]);
     }
     HSD_JObjAnimAll(jobj);
 
@@ -911,6 +911,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
         GX_InvalidateTexAll();
         HSD_StartRender(HSD_RP_SCREEN);
         GObj_RunGXLinkMaxCallbacks();
+        //HSD_IsScreenRenderPass(); - This function just stores the result of rp == 0 in the cmp register
         //HSD_PerfSetDrawTime();
         HSD_VICopyXFBASync(HSD_RP_SCREEN);
         if (match_controller.unk04 != -2) {
