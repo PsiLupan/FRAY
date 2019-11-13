@@ -6,8 +6,8 @@
 static u32 num_texgens = 0; //r13_40A4
 
 HSD_TevReg TevReg[4];
-static u8 a_reg[4] = {0, 0, 0, 0}; //r2_11F4
-static u8 c_reg[4] = {0, 0, 0, 0}; //r2_11F8
+static u8 a_reg[4] = { 0, 0, 0, 0 }; //r2_11F4
+static u8 c_reg[4] = { 0, 0, 0, 0 }; //r2_11F8
 
 //80362478
 void HSD_StateRegisterTexGen(u32 coord)
@@ -929,7 +929,7 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 }
 
 //80384B20
-__attribute__((noinline)) static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev, u32* init_aprev)
+static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev, u32* init_aprev)
 {
     u32 swap;
 
@@ -1406,7 +1406,7 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
             do {
                 if (*pbVar1 == 0) {
                     c_reg[i] = (u8)tev->c_ref;
-                    tev->c_dst = 3;//(u8)i;
+                    tev->c_dst = 3; //(u8)i;
                     if (i < iVar3) {
                         iVar3 = i;
                     }
