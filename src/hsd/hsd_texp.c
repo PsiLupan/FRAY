@@ -274,7 +274,7 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list)
     HSD_TExp* texp = (HSD_TExp*)hsdAllocMemPiece(sizeof(HSD_TETev));
     HSD_CheckAssert("HSD_TExpTev: No free memory", texp != NULL);
 
-    memset(texp, 0xFF, sizeof(HSD_TExp));
+    memset(texp, -1, sizeof(HSD_TExp));
     texp->type = HSD_TE_TEV;
     texp->tev.next = *list;
     *list = texp;
@@ -598,6 +598,9 @@ static void HSD_TExpAlphaInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
             case HSD_TE_3_8:
                 swap = 5;
                 break;
+            case HSD_TE_4_8:
+                swap = 4;
+                break;
             case HSD_TE_5_8:
                 swap = 3;
                 break;
@@ -608,7 +611,7 @@ static void HSD_TExpAlphaInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
                 swap = 1;
                 break;
             default:
-                HSD_Halt("HSD_TExpAlphaInSub: Unexpected kcsel");
+                swap = 0;
             }
 
             if (tev->kasel == HSD_TE_UNDEF) {
@@ -703,7 +706,7 @@ static s32 AssignAlphaReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                 cnst->reg = j;
                 cnst->idx = 3;
                 tev->a_in[idx].type = HSD_TE_IMM;
-                tev->a_in[idx].arg = 0; //WRONG
+                tev->a_in[idx].arg = 1;
                 return 0;
             }
         }
@@ -712,7 +715,7 @@ static s32 AssignAlphaReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
         return -1;
     }
     tev->a_in[idx].type = HSD_TE_IMM;
-    tev->a_in[idx].arg = 0; //WRONG
+    tev->a_in[idx].arg = 1;
     return 0;
 }
 
@@ -727,7 +730,7 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                     res->reg[i].alpha = 1;
                     cnst->reg = i;
                     cnst->idx = 3;
-                    tev->kcsel = cnst->reg; //WRONG
+                    tev->kcsel = GX_TEV_KCSEL_K0;
                     tev->c_in[idx].type = HSD_TE_KONST;
                     tev->c_in[idx].arg = 0xE;
                     return 0;
@@ -739,7 +742,7 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                     cnst->reg = i;
                     cnst->idx = res->reg[i].color;
                     res->reg[i].color += 1;
-                    tev->kcsel = cnst->reg; //WRONG
+                    tev->kcsel = GX_TEV_KCSEL_K0;
                     tev->c_in[idx].type = HSD_TE_KONST;
                     tev->c_in[idx].arg = 0xE;
                     return 0;
@@ -751,7 +754,7 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                     res->reg[i].color = 3;
                     cnst->reg = i;
                     cnst->idx = 0;
-                    tev->kcsel = cnst->reg; //WRONG
+                    tev->kcsel = GX_TEV_KCSEL_K0;
                     tev->c_in[idx].type = HSD_TE_KONST;
                     tev->c_in[idx].arg = 0xE;
                     return 0;
@@ -760,11 +763,11 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
         }
     } else if (cnst->reg < 4) {
         if (cnst->comp == HSD_TE_X) {
-            tev->kcsel = cnst->idx; //WRONG
+            tev->kcsel = GX_TEV_KCSEL_K0;
             tev->c_in[idx].type = HSD_TE_KONST;
             tev->c_in[idx].arg = 0xE;
         } else {
-            tev->kcsel = cnst->reg;
+            tev->kcsel = GX_TEV_KCSEL_K0;
             tev->c_in[idx].type = HSD_TE_KONST;
             tev->c_in[idx].arg = 0xE;
         }
@@ -783,7 +786,7 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                 res->reg[i].alpha = 1;
                 cnst->reg = i;
                 cnst->idx = 3;
-                tev->kasel = cnst->reg; //WRONG
+                tev->kasel = GX_TEV_KASEL_K1_A;
                 tev->a_in[idx].type = HSD_TE_KONST;
                 tev->a_in[idx].arg = 0x6;
                 return 0;
@@ -794,14 +797,14 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                 cnst->reg = i;
                 cnst->idx = res->reg[i].color;
                 res->reg[i].color += 1;
-                tev->kasel = cnst->reg; //WRONG
+                tev->kasel = GX_TEV_KASEL_K1_A; //WRONG
                 tev->a_in[idx].type = HSD_TE_KONST;
                 tev->a_in[idx].arg = 0x6;
                 return 0;
             }
         }
     } else if (cnst->reg < 4) {
-        tev->kasel = cnst->reg; //WRONG
+        tev->kasel = GX_TEV_KASEL_K1_A; //WRONG
         tev->a_in[idx].type = HSD_TE_KONST;
         tev->a_in[idx].arg = 6;
         return 0;

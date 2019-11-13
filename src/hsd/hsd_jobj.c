@@ -772,21 +772,21 @@ void JObj_SetupInstanceMtx(HSD_JObj* jobj, MtxP vmtx, u32 flags, u32 rendermode)
                 if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
                     HSD_JObjSetupMatrixSub(jobj);
                 }
-            }
 
-            HSD_JObj* child = jobj->child;
-            if (child != NULL) {
-                if ((child->flags & USER_DEF_MTX) == 0 && (child->flags & MTX_DIRTY) != 0) {
-                    HSD_JObjSetupMatrixSub(child);
+                HSD_JObj* child = jobj->child;
+                if (child != NULL) {
+                    if ((child->flags & USER_DEF_MTX) == 0 && (child->flags & MTX_DIRTY) != 0) {
+                        HSD_JObjSetupMatrixSub(child);
+                    }
                 }
+                Mtx mtx;
+                guMtxInverse(child->mtx, mtx);
+                guMtxConcat(jobj->mtx, mtx, mtx);
+                HSD_CObj* cobj = HSD_CObjGetCurrent();
+                assert(cobj != NULL);
+                guMtxConcat(cobj->view_mtx, mtx, mtx);
+                JObj_SetupInstanceMtx(child, mtx, flags, rendermode);
             }
-            Mtx mtx;
-            guMtxInverse(child->mtx, mtx);
-            guMtxConcat(jobj->mtx, mtx, mtx);
-            HSD_CObj* cobj = HSD_CObjGetCurrent();
-            assert(cobj != NULL);
-            guMtxConcat(cobj->view_mtx, mtx, mtx);
-            JObj_SetupInstanceMtx(child, mtx, flags, rendermode);
         }
     }
 }
@@ -825,7 +825,7 @@ static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
             jobj->u.dobj = HSD_DObjLoadDesc(desc->u.dobjdesc);
         } else {
             jobj->u.ptcl = desc->u.ptcl;
-            for(HSD_SList* slist = desc->u.ptcl; slist != NULL; slist = slist->next) {
+            for (HSD_SList* slist = desc->u.ptcl; slist != NULL; slist = slist->next) {
                 slist->data = (void*)((u32)slist->data | 0x80000000);
             }
         }
@@ -1044,7 +1044,8 @@ void RecalcParentTrspBits(HSD_JObj* jobj)
     }
 }
 
-static void UpdateParentTrspBits(HSD_JObj* jobj, HSD_JObj* child){
+static void UpdateParentTrspBits(HSD_JObj* jobj, HSD_JObj* child)
+{
     u32 flags = (child->flags | (child->flags << 10)) & (ROOT_OPA | ROOT_TEXEDGE | ROOT_XLU);
     while (jobj != NULL && (flags & ~jobj->flags) != 0) {
         jobj->flags |= flags;
