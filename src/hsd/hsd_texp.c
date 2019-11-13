@@ -1704,7 +1704,6 @@ code_r0x803860bc:
     HSD_TExpDag* cdag;
     HSD_TExpDag* pHVar9;
     s32 num;
-    s32 in_r13;
     HSD_TExp* te;
     s32 i;
     s32 j;
@@ -1716,7 +1715,6 @@ code_r0x803860bc:
     s32 dist[32];
     HSD_TExp* tevs[33];
     HSD_TExp** tev_start;
-    s32 l;
     HSD_TExp** tev_list;
 
     type = HSD_TExpGetType((HSD_TExp*)root);
@@ -1785,7 +1783,7 @@ code_r0x803860bc:
     iVar6 = 0;
     if (0 < i) {
         if (8 < i) {
-            cnt = i - 1U >> 3;
+            cnt = (i - 1U) >> 3;
             piVar4 = dist;
             if (0 < i + -8) {
                 do {
