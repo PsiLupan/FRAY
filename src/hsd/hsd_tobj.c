@@ -301,14 +301,7 @@ static int TObjLoad(HSD_TObj* tobj, HSD_TObjDesc* td)
 HSD_TObj* HSD_TObjLoadDesc(HSD_TObjDesc* td)
 {
     if (td != NULL) {
-        HSD_TObj* tobj;
-        HSD_ClassInfo* info;
-        if (!td->class_name || !(info = hsdSearchClassInfo(td->class_name))) {
-            tobj = HSD_TObjAlloc();
-        } else {
-            tobj = (HSD_TObj*)hsdNew(info);
-            assert(tobj);
-        }
+        HSD_TObj* tobj = HSD_TObjAlloc();
         HSD_TOBJ_METHOD(tobj)->load(tobj, td);
         return tobj;
     }
