@@ -1302,7 +1302,6 @@ void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tdesc)
 //80385798
 static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
 {
-#if 0
     u32 type, i;
     u8 dst;
     s32 c_use = 4;
@@ -1359,86 +1358,6 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
             }
         }
     } while (true);
-#else
-    s32 i;
-    HSD_TETev* tev;
-    u32 dst;
-    u8* pbVar1;
-    s32 iVar2;
-    s32 iVar3;
-    s32 iVar4;
-
-    num = num + -1;
-    order = order + num;
-    iVar3 = 4;
-    iVar2 = 4;
-    do {
-        if (num < 0) {
-            return (8 - iVar2) - iVar3;
-        }
-        i = *order;
-        iVar4 = 0;
-        tev = list[i].tev;
-        do {
-            dst = HSD_TExpGetType(tev->c_in[0].exp);
-            if (dst == HSD_TE_TEV) {
-                if (tev->c_in[0].sel == 1) {
-                    dst = tev->c_in[0].exp->tev.c_dst;
-                    c_reg[dst] -= 1;
-                } else {
-                    dst = tev->c_in[0].exp->tev.a_dst;
-                    a_reg[dst] -= 1;
-                }
-            }
-            dst = HSD_TExpGetType(tev->a_in[0].exp);
-            if (dst == HSD_TE_TEV) {
-                dst = tev->a_in[0].exp->tev.a_dst;
-                a_reg[dst] -= 1;
-            }
-            iVar4 = iVar4 + 1;
-            tev = (HSD_TETev*)&tev->c_ref;
-        } while (iVar4 < 4);
-        tev = list[i].tev;
-        if (0 < (s32)tev->c_ref) {
-            iVar4 = 4;
-            pbVar1 = c_reg + 3;
-            i = 3;
-            do {
-                if (*pbVar1 == 0) {
-                    c_reg[i] = (u8)tev->c_ref;
-                    tev->c_dst = 3; //(u8)i;
-                    if (i < iVar3) {
-                        iVar3 = i;
-                    }
-                    break;
-                }
-                pbVar1 = pbVar1 + -1;
-                i = i + -1;
-                iVar4 = iVar4 + -1;
-            } while (iVar4 != 0);
-        }
-        if (0 < (s32)tev->a_ref) {
-            iVar4 = 4;
-            pbVar1 = a_reg + 3;
-            i = 3;
-            do {
-                if (*pbVar1 == 0) {
-                    a_reg[i] = (u8)tev->a_ref;
-                    tev->a_dst = 3; //(u8)i;
-                    if (i < iVar2) {
-                        iVar2 = i;
-                    }
-                    break;
-                }
-                pbVar1 = pbVar1 + -1;
-                i = i + -1;
-                iVar4 = iVar4 + -1;
-            } while (iVar4 != 0);
-        }
-        order = order + -1;
-        num = num + -1;
-    } while (true);
-#endif
 }
 
 //80385B8C
