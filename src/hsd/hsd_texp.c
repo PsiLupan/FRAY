@@ -854,7 +854,7 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                     }
                 }
 
-                for (; i < 4; ++i) {
+                for (i = 0; i < 4; ++i) {
                     if (texp->tev.c_in[i].type == HSD_TE_CNST) {
                         val = AssignColorReg(&texp->tev, i, res);
                         HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
@@ -1811,7 +1811,7 @@ code_r0x803860bc:
             } while (iVar2 != 0);
         }
     }
-    CalcDistance((HSD_TETev**)tevs, dist, (HSD_TETev*)tevs[0], i, 0);
+    CalcDistance((HSD_TETev**)tevs, dist, (HSD_TETev*)&tevs[0]->tev, i, 0);
     iVar6 = 0;
     while (iVar6 < i) {
         offset = iVar6 + 1;
@@ -3231,6 +3231,7 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
 }
 
 //80387BA4
+#ifdef NO_ASM
 u32 HSD_TExpSimplify2(HSD_TExp* texp)
 {
     HSD_TExp* t;
@@ -3285,3 +3286,4 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
 
     return 0;
 }
+#endif

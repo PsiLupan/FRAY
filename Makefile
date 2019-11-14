@@ -20,7 +20,7 @@ include $(DEVKITPPC)/gamecube_rules
 #---------------------------------------------------------------------------------
 TARGET		:= main
 BUILD		:= build
-SOURCES		:= asm src/ogcext/ src/hsd/ src
+SOURCES		:= src/asm src/ogcext/ src/hsd/ src
 INCLUDES	:= 
 
 #---------------------------------------------------------------------------------
@@ -28,10 +28,11 @@ INCLUDES	:=
 #---------------------------------------------------------------------------------
 
 #NODEBUG = -DNDEBUG
-CFLAGS	= -O1 -mogc -fstack-protector-all -Wno-implicit-function-declaration -pedantic $(MACHDEP) $(INCLUDE) $(NODEBUG)
-CXXFLAGS	= $(CFLAGS)
+CFLAGS	:= -O1 -mogc -fstack-protector-all -Wno-implicit-function-declaration -pedantic $(MACHDEP) $(INCLUDE) $(NODEBUG)
+CXXFLAGS	:= $(CFLAGS)
 
-LDFLAGS	=	$(MACHDEP) -Wl,-Map,$(notdir $@).map,--section-start,.init=0x80003100
+LDFLAGS	:=	$(MACHDEP) -Wl,-Map,$(notdir $@).map,--section-start,.init=0x80003100
+ASFLAGS :=	$(MACHDEP) -mregnames -D_LANGUAGE_ASSEMBLY $(INCLUDE)
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
