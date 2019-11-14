@@ -712,6 +712,7 @@ static s32 AssignAlphaReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                 return 0;
             }
         }
+        return -1;
     }
     if (cnst->reg < 4) {
         return -1;
@@ -763,7 +764,9 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                 }
             }
         }
-    } else if (cnst->reg < 4) {
+        return -1;
+    } 
+    if (cnst->reg < 4) {
         if (cnst->comp == HSD_TE_X) {
             tev->kcsel = GX_TEV_KCSEL_K0;
             tev->c_in[idx].type = HSD_TE_KONST;
@@ -805,7 +808,9 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                 return 0;
             }
         }
-    } else if (cnst->reg < 4) {
+        return -1;
+    } 
+    if (cnst->reg < 4) {
         tev->kasel = GX_TEV_KASEL_K1_A; //WRONG
         tev->a_in[idx].type = HSD_TE_KONST;
         tev->a_in[idx].arg = 6;
