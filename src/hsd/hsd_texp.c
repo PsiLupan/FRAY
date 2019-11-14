@@ -3236,8 +3236,6 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
 {
     HSD_TExp* t;
 
-    HSD_CheckAssert("HSD_TExpSimplify2: texp == NULL", texp != NULL);
-
     for (u32 i = 0; i < 4; i++) {
         t = texp->tev.c_in[i].exp;
         if (texp->tev.c_in[i].type == HSD_TE_TEV && texp->tev.c_in[i].sel == 1) {
