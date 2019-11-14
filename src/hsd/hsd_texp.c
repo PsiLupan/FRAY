@@ -827,28 +827,14 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 
     if (texp->tev.c_ref > 0) {
         if (texp->tev.kcsel == HSD_TE_UNDEF) {
-            if (texp->tev.c_op == 0 && texp->tev.c_in[0].sel == 7) {
-                if (texp->tev.c_in[1].sel == 7) {
-                    if (texp->tev.c_bias == 0) {
-                        if (texp->tev.c_scale == 0) {
-                            if (texp->tev.c_in[3].type == HSD_TE_CNST) {
-                                if (AssignColorKonst(&texp->tev, 3, res) == -1) {
-                                    val = AssignColorReg(&texp->tev, 3, res);
-                                    HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
-                                    return val;
-                                }
-                            }
-                        } else {
-                            goto ELSE_COLOR;
-                        }
-                    } else {
-                        goto ELSE_COLOR;
-                    }
-                } else {
-                    goto ELSE_COLOR;
+            if (texp->tev.c_op == 0 && texp->tev.c_in[0].sel == 7 && texp->tev.c_in[1].sel == 7
+                && texp->tev.c_bias == 0 && texp->tev.c_scale == 0 && texp->tev.c_in[3].type == HSD_TE_CNST) {
+                if (AssignColorKonst(&texp->tev, 3, res) == -1) {
+                    val = AssignColorReg(&texp->tev, 3, res);
+                    HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
+                    return val;
                 }
             } else {
-            ELSE_COLOR:
                 for (i = 0; i < 4; ++i) {
                     if (texp->tev.c_in[i].type == HSD_TE_CNST) {
                         if (AssignColorKonst(&texp->tev, i, res) == -1) {
@@ -859,7 +845,7 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                     }
                 }
 
-                for (; i < 4; ++i) {
+                for (i = 0; i < 4; ++i) {
                     if (texp->tev.c_in[i].type == HSD_TE_CNST) {
                         val = AssignColorReg(&texp->tev, i, res);
                         HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
@@ -880,28 +866,14 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 
     if (texp->tev.a_ref > 0) {
         if (texp->tev.kasel == HSD_TE_UNDEF) {
-            if (texp->tev.a_op == 0 && texp->tev.a_in[0].sel == 7) {
-                if (texp->tev.a_in[1].sel == 7) {
-                    if (texp->tev.a_bias == 0) {
-                        if (texp->tev.a_scale == 0) {
-                            if (texp->tev.a_in[3].type == HSD_TE_CNST) {
-                                if (AssignAlphaReg(&texp->tev, 3, res) == -1) {
-                                    val = AssignAlphaKonst(&texp->tev, 3, res);
-                                    HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
-                                    return val;
-                                }
-                            }
-                        } else {
-                            goto ELSE_ALPHA;
-                        }
-                    } else {
-                        goto ELSE_ALPHA;
-                    }
-                } else {
-                    goto ELSE_ALPHA;
+            if (texp->tev.a_op == 0 && texp->tev.a_in[0].sel == 7 && texp->tev.a_in[1].sel == 7
+                && texp->tev.a_bias == 0 && texp->tev.a_scale == 0 && texp->tev.a_in[3].type == HSD_TE_CNST) {
+                if (AssignAlphaReg(&texp->tev, 3, res) == -1) {
+                    val = AssignAlphaKonst(&texp->tev, 3, res);
+                    HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
+                    return val;
                 }
             } else {
-            ELSE_ALPHA:
                 for (i = 0; i < 4; ++i) {
                     if (texp->tev.a_in[i].type == HSD_TE_CNST) {
                         if (AssignAlphaKonst(&texp->tev, i, res) == -1) {
