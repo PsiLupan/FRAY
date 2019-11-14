@@ -276,7 +276,7 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list)
     HSD_TExp* texp = (HSD_TExp*)hsdAllocMemPiece(sizeof(HSD_TETev));
     HSD_CheckAssert("HSD_TExpTev: No free memory", texp != NULL);
 
-    memset(texp, -1, sizeof(HSD_TExp));
+    memset(texp, 0xFF, sizeof(HSD_TExp));
     texp->type = HSD_TE_TEV;
     texp->tev.next = *list;
     *list = texp;
@@ -1310,20 +1310,15 @@ void HSD_TExpFreeTevDesc(HSD_TExpTevDesc* tdesc)
 //80385798
 static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
 {
-    u32 type, i;
     u8 dst;
     s32 c_use = 4;
     s32 a_use = 4;
 
-    do {
-        num -= 1;
-        if (num < 0) {
-            return (8 - a_use) - c_use;
-        }
-
+    num -= 1;
+    for(; num < 0; --num){
         HSD_TETev* tev = list[order[num]].tev;
-        for (i = 0; i < 4; ++i) {
-            type = HSD_TExpGetType(tev->c_in[i].exp);
+        for (s32 i = 0; i < 4; ++i) {
+            u32 type = HSD_TExpGetType(tev->c_in[i].exp);
             if (type == HSD_TE_TEV) {
                 if (tev->c_in[i].sel == GX_ENABLE) {
                     dst = tev->c_in[i].exp->tev.c_dst;
@@ -1341,7 +1336,7 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
         }
         
         if (tev->c_ref > 0) {
-            for (i = 3; i >= 0; --i) {
+            for (s32 i = 3; i > -1; --i) {
                 if (c_reg[i] == 0) {
                     c_reg[i] = tev->c_ref;
                     tev->c_dst = i;
@@ -1354,7 +1349,7 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
         }
 
         if (tev->a_ref > 0) {
-            for (i = 3; i >= 0; --i) {
+            for (s32 i = 3; i > -1; --i) {
                 if (a_reg[i] == 0) {
                     a_reg[i] = tev->a_ref;
                     tev->a_dst = i;
@@ -1365,7 +1360,8 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
                 }
             }
         }
-    } while (true);
+    }
+    return (8 - a_use) - c_use;
 }
 
 //80385B8C
