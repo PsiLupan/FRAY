@@ -1453,10 +1453,7 @@ static void resolveIKJoint1(HSD_JObj* jobj)
                 guVecSub(&cvec, &trans, &cvec);
                 Mtx mtx;
                 if (rotate_x != 0) {
-                    guMtxRotAxisRad(
-                        mtx, &trans_2,
-                        rotate_x); // THIS IS PROBABLY WRONG -
-                    // PSMTXRotAxisRad(rotate_x,auStack232,&trans_2);
+                    guMtxRotAxisRad(mtx, &trans_2, rotate_x);
                     guVecMultiply(mtx, &cvec, &cvec);
                 }
                 guVecCross(&trans_2, &cvec, &zvec);
