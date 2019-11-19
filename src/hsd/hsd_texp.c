@@ -1470,7 +1470,7 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
     s32 a_use = 4;
 
     num -= 1;
-    for (; num < 0; --num) {
+    for (; num > 0; --num) {
         HSD_TETev* tev = list[order[num]].tev;
         for (s32 i = 0; i < 4; ++i) {
             u32 type = HSD_TExpGetType(tev->c_in[i].exp);
