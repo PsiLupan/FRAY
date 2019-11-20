@@ -1375,7 +1375,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                 } else {
                     if (texp->cnst.idx == 3) {
                         color[texp->cnst.reg].a = te_res;
-                    }else{
+                    } else {
                         color[texp->cnst.reg].r = te_res;
                         color[texp->cnst.reg].g = te_res;
                         color[texp->cnst.reg].b = te_res;
@@ -2094,12 +2094,8 @@ code_r0x803860bc:
 //80385944
 static void order_dag(s32 num, u32* dep_mtx, u32* full_dep_mtx, HSD_TExpDag* list, s32 depth, s32 idx, u32 done_set, u32 ready_set, s32* order, s32* min, s32* min_order)
 {
-    s32 idx_00;
-    u32* puVar3;
-    s32 iVar5;
-    u32 uVar6;
     s32 depth_00;
-    u32 ready_set_00;
+    u32 total_dep;
 
     depth_00 = depth + 1;
     done_set = done_set | 1 << idx;
@@ -2108,37 +2104,26 @@ static void order_dag(s32 num, u32* dep_mtx, u32* full_dep_mtx, HSD_TExpDag* lis
         depth_00 = assign_reg(num, dep_mtx, list, order);
         if (depth_00 < *min) {
             *min = depth_00;
-            for (depth_00 = 0; depth_00 < num; depth_00++) {
-                min_order[depth_00] = order[depth_00];
+            for (u32 i = 0; i < num; i++) {
+                min_order[i] = order[i];
             }
         }
     } else {
-        ready_set_00 = (ready_set & ~(1 << idx)) | dep_mtx[idx];
-        uVar6 = 0;
-        iVar5 = 0;
-        puVar3 = full_dep_mtx;
-        idx_00 = num;
-        if (0 < num) {
-            do {
-                if ((ready_set_00 & 1 << iVar5) != 0) {
-                    uVar6 = uVar6 | *puVar3;
-                }
-                puVar3 = puVar3 + 1;
-                iVar5 = iVar5 + 1;
-                idx_00 = idx_00 + -1;
-            } while (idx_00 != 0);
+        total_dep = (ready_set & ~(1 << idx)) | dep_mtx[idx];
+        u32 bits = 0;
+        for (u32 i = 0; i < num; i++) {
+            if ((total_dep & 1 << i) != 0) {
+                bits |= full_dep_mtx[i];
+            }
         }
-        ready_set_00 &= ~uVar6;
-        if ((list[idx].nb_dep == 1) && ((ready_set_00 & dep_mtx[idx]) != 0)) {
-            order_dag(num, dep_mtx, full_dep_mtx, list, depth_00, list[idx].depend[0]->idx, done_set, ready_set_00, order, min, min_order);
+        total_dep &= ~bits;
+        if ((list[idx].nb_dep == 1) && ((total_dep & dep_mtx[idx]) != 0)) {
+            order_dag(num, dep_mtx, full_dep_mtx, list, depth_00, list[idx].depend[0]->idx, done_set, total_dep, order, min, min_order);
         } else {
-            idx_00 = 0;
-            while (idx_00 < num) {
-                if ((ready_set_00 & 1 << idx_00) != 0) {
-                    order_dag(num, dep_mtx, full_dep_mtx, list, depth_00, idx_00, done_set, ready_set_00, order, min,
-                        min_order);
+            for (u32 i = 0; i < num; i++) {
+                if ((total_dep & 1 << i) != 0) {
+                    order_dag(num, dep_mtx, full_dep_mtx, list, depth_00, i, done_set, total_dep, order, min, min_order);
                 }
-                idx_00 = idx_00 + 1;
             }
         }
     }
