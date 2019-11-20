@@ -1,5 +1,15 @@
 #include "scene.h"
 
+static void Scene_Minor_Class0_OnFrame();
+static void Scene_Minor_Class0_OnLoad();
+
+static void Scene_Minor_Class40_OnFrame();
+static void Scene_Minor_Class40_OnLoad();
+static void Scene_Minor_Class40_OnLeave();
+
+static void Scene_ReqAnimAll_Callback(HSD_GObj*);
+static void Scene_RunStartupInit();
+
 GameState gamestate;
 
 #define END_MINOR                                      \
