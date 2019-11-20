@@ -1522,8 +1522,6 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
 //80385B8C
 void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
 {
-    HSD_CheckAssert("CalcDistance: tevs == NULL", tevs != NULL);
-    HSD_CheckAssert("CalcDistance: tev == NULL", tev != NULL);
     HSD_TETev** list = tevs;
 
     if (num > 0) {
