@@ -94,7 +94,7 @@ export INCLUDE	:=	$(foreach dir,$(INCLUDES),-I$(CURDIR)/$(dir)) \
 					-I$(CURDIR)/$(BUILD) \
 					-isystem /d/LLVM/lib/clang/9.0.0/include \
 					-isystem $(DEVKITPPC)/powerpc-eabi/include \
-					-I$(LIBOGC_INC)
+					-isystem $(LIBOGC_INC)
 					
 #---------------------------------------------------------------------------------
 # build a list of library paths
