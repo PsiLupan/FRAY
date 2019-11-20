@@ -1090,7 +1090,7 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 //80384B20
 static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev, u32* init_aprev)
 {
-    static u32 args[] = {1, 2, 3, 0};
+    static u32 args[] = { 1, 2, 3, 0 };
     u32 swap;
     u8 arg;
 
@@ -1525,22 +1525,22 @@ void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
     HSD_CheckAssert("CalcDistance: tevs == NULL", tevs != NULL);
     HSD_CheckAssert("CalcDistance: tev == NULL", tev != NULL);
     HSD_TETev** list = tevs;
-    u32 n = 0;
 
     if (num > 0) {
-        for (u32 i = num; i > 0; --i, ++n) {
-            if (list[n] == tev) {
-                if (d <= dist[n]) {
+        for (u32 i = 0; num <= i; ++i) {
+            if (list[i] == tev) {
+                if (dist[i] < d) {
+                    dist[i] = d;
+                    for (i = 0; i < 4; ++i) {
+                        if (tev->c_in[i].type == HSD_TE_TEV) {
+                            CalcDistance(tevs, dist, &tev->c_in[i].exp->tev, num, d + 1);
+                        }
+                        if (tev->a_in[i].type == HSD_TE_TEV) {
+                            CalcDistance(tevs, dist, &tev->c_in[i].exp->tev, num, d + 1);
+                        }
+                    }
+                } else {
                     return;
-                }
-                dist[n] = d;
-                for (u32 j = 0; j < 4; ++j) {
-                    if (tev->c_in[j].type == HSD_TE_TEV) {
-                        CalcDistance(tevs, dist, &tev->c_in[j].exp->tev, num, d + 1);
-                    }
-                    if (tev->a_in[j].type == HSD_TE_TEV) {
-                        CalcDistance(tevs, dist, &tev->c_in[j].exp->tev, num, d + 1);
-                    }
                 }
             }
         }
