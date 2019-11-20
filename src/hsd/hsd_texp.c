@@ -2163,7 +2163,7 @@ static void make_full_dependency_mtx(s32 num, u32* dep, u32* full)
 //80386234
 void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes* resource)
 {
-#if 0
+#if 1
     u32 dep_mtx[32];
     u32 full_dep_mtx[32];
     s32 order[32];
