@@ -567,8 +567,8 @@ void HSD_LObjAddCurrent(HSD_LObj* lobj)
 {
     HSD_SList *list, **listp;
 
-    if (lobj) {
-        for (list = current_lights; list; list = list->next) {
+    if (lobj != NULL) {
+        for (list = current_lights; list != NULL; list = list->next) {
             if (list->data == lobj) {
                 HSD_LObjDeleteCurrent(lobj);
                 break;
@@ -577,7 +577,7 @@ void HSD_LObjAddCurrent(HSD_LObj* lobj)
 
         lobj->parent.ref_count += 1;
         assert(lobj->parent.ref_count != HSD_OBJ_NOREF);
-        for (listp = &current_lights; *listp; listp = &(*listp)->next) {
+        for (listp = &current_lights; *listp != NULL; listp = &(*listp)->next) {
             if (((HSD_LObj*)((*listp)->data))->priority > lobj->priority) {
                 break;
             }
@@ -589,22 +589,18 @@ void HSD_LObjAddCurrent(HSD_LObj* lobj)
 //803664D4
 void HSD_LObjDeleteCurrent(HSD_LObj* lobj)
 {
-    HSD_SList** p;
-    int i;
-
-    if (!lobj)
-        return;
-
-    for (p = &current_lights; *p; p = &(*p)->next) {
-        if ((*p)->data == lobj) {
-            for (i = 0; i < MAX_GXLIGHT; i++) {
-                if (lobj == active_lights[i]) {
-                    active_lights[i] = NULL;
+    if (lobj != NULL) {
+        for (HSD_SList** p = &current_lights; *p != NULL; p = &(*p)->next) {
+            if ((*p)->data == lobj) {
+                for (u32 i = 0; i < MAX_GXLIGHT; i++) {
+                    if (lobj == active_lights[i]) {
+                        active_lights[i] = NULL;
+                    }
                 }
+                (*p) = (HSD_SList*)HSD_SListRemove(*p);
+                LObjUnref(lobj);
+                return;
             }
-            (*p) = (HSD_SList*)HSD_SListRemove(*p);
-            LObjUnref(lobj);
-            return;
         }
     }
 }
@@ -612,13 +608,13 @@ void HSD_LObjDeleteCurrent(HSD_LObj* lobj)
 //80366654
 void HSD_LObjDeleteCurrentAll(HSD_LObj* lobj)
 {
-    if (lobj) {
-        for (; lobj; lobj = lobj->next) {
-            HSD_LObjDeleteCurrent(lobj);
+    if (lobj != NULL) {
+        for (HSD_LObj* i = lobj; i != NULL; i = i->next) {
+            HSD_LObjDeleteCurrent(i);
         }
     } else {
         HSD_LObjClearActive();
-        while (current_lights) {
+        while (current_lights != NULL) {
             LObjUnref((HSD_LObj*)(current_lights->data));
             current_lights = (HSD_SList*)HSD_SListRemove(current_lights);
         }

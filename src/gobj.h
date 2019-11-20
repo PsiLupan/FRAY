@@ -54,7 +54,7 @@ typedef struct _HSD_GObjProc {
     struct _HSD_GObjProc* next; //0x4
     struct _HSD_GObjProc* prev; //0x8
     u8 s_link; //0xC
-    u8 flags; //0xD
+    s8 flags; //0xD
     struct _HSD_GObj* gobj; //0x10
     void (*callback)(struct _HSD_GObj*); //0x14
 } HSD_GObjProc;
