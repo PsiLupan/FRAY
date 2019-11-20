@@ -138,14 +138,14 @@ typedef struct _HSD_TETev {
     HSD_TExpType type;
     union _HSD_TExp* next;
     u32 c_ref;
-    u8 c_dst;
+    s8 c_dst;
     u8 c_op;
     u8 c_clamp;
     u8 c_bias;
     u8 c_scale;
     u8 c_range;
     u32 a_ref;
-    u8 a_dst;
+    s8 a_dst;
     u8 a_op;
     u8 a_clamp;
     u8 a_bias;
