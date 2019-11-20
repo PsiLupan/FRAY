@@ -102,17 +102,8 @@ extern unk_8046B0F0 dword_8046B0F0;
 
 void Scene_CopyDataToCache();
 
-static void Scene_Minor_Class0_OnFrame();
-static void Scene_Minor_Class0_OnLoad();
-
-static void Scene_Minor_Class40_OnFrame();
-static void Scene_Minor_Class40_OnLoad();
-static void Scene_Minor_Class40_OnLeave();
-
 void Scene_801A36A0(u32, u32*, u32*);
 
-static void Scene_ReqAnimAll_Callback(HSD_GObj*);
-static void Scene_RunStartupInit();
 void Scene_CompareCacheOnChange(MinorScene*);
 
 u8* Scene_Get10(GameState*);
