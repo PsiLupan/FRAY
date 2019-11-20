@@ -390,7 +390,7 @@ void HSD_MtxSRTQuat(Mtx mtx, guVector* scale, guQuaternion* rot, guVector* pos, 
     c_guMtxQuat(pmtx, rot);
     guMtxConcat(pmtx, mtx, mtx);
     if (pvec != NULL) {
-        guMtxScale(pmtx, (f32)(1.0 / (f64)pvec->x), (f32)(1.0 / (f64)pvec->y), (f32)(1.0 / (f64)pvec->z));
+        guMtxScale(pmtx, (f32)(1.0 / pvec->x), (f32)(1.0 / pvec->y), (f32)(1.0 / pvec->z));
         guMtxConcat(pmtx, mtx, mtx);
     }
     guMtxTrans(pmtx, pos->x, pos->y, pos->z);
