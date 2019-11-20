@@ -1309,51 +1309,51 @@ void HSD_TExpSetReg(HSD_TExp* texp)
             }
             return;
         }
-        if (texp->type != 4) {
-            HSD_Halt("HSD_TExpSetReg: texp->type != HSD_TE_CNST");
-        }
+
+        HSD_CheckAssert("HSD_TExpSetReg: texp->type != HSD_TE_CNST", texp->type == HSD_TE_CNST);
+
         if (texp->cnst.reg < 8) {
             i = i | 1 << texp->cnst.reg;
-            switch (texp->cnst.ctype) {
-            case HSD_TE_U8:
-                te_res = *(u8*)texp->cnst.val;
-                break;
-            case HSD_TE_U16:
-                te_res = *(u16*)texp->cnst.val;
-                if (te_res > 255) {
-                    te_res = 255;
-                }
-                break;
+            if (texp->cnst.comp != 1) {
+                switch (texp->cnst.ctype) {
+                case HSD_TE_U8:
+                    te_res = *(u8*)texp->cnst.val;
+                    break;
+                case HSD_TE_U16:
+                    te_res = *(u16*)texp->cnst.val;
+                    if (te_res > 255) {
+                        te_res = 255;
+                    }
+                    break;
 
-            case HSD_TE_U32:
-                te_res = *(u32*)texp->cnst.val;
-                if (te_res > 255) {
-                    te_res = 255;
-                } else if (te_res < 0) {
-                    te_res = 0;
-                }
-                break;
+                case HSD_TE_U32:
+                    te_res = *(u32*)texp->cnst.val;
+                    if (te_res > 255) {
+                        te_res = 255;
+                    } else if (te_res < 0) {
+                        te_res = 0;
+                    }
+                    break;
 
-            case HSD_TE_F32:
-                te_res = (u32)(*(f32*)texp->cnst.val);
-                if (te_res > 255) {
-                    te_res = 255;
-                } else if (te_res < 0) {
-                    te_res = 0;
-                }
-                break;
+                case HSD_TE_F32:
+                    te_res = (u32)(*(f32*)texp->cnst.val);
+                    if (te_res > 255) {
+                        te_res = 255;
+                    } else if (te_res < 0) {
+                        te_res = 0;
+                    }
+                    break;
 
-            case HSD_TE_F64:
-                te_res = (u32)(*(f64*)texp->cnst.val);
-                if (te_res > 255) {
-                    te_res = 255;
-                } else if (te_res < 0) {
-                    te_res = 0;
+                case HSD_TE_F64:
+                    te_res = (u32)(*(f64*)texp->cnst.val);
+                    if (te_res > 255) {
+                        te_res = 255;
+                    } else if (te_res < 0) {
+                        te_res = 0;
+                    }
+                    break;
                 }
-                break;
-            }
 
-            if (texp->cnst.comp != HSD_TE_RGB) {
                 if (texp->cnst.reg < 4) {
                     switch (texp->cnst.idx) {
                     case 0:
@@ -1375,15 +1375,69 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                 } else {
                     if (texp->cnst.idx == 3) {
                         color[texp->cnst.reg].a = te_res;
+                    }else{
+                        color[texp->cnst.reg].r = te_res;
+                        color[texp->cnst.reg].g = te_res;
+                        color[texp->cnst.reg].b = te_res;
                     }
-                    color[texp->cnst.reg].r = te_res;
-                    color[texp->cnst.reg].g = te_res;
-                    color[texp->cnst.reg].b = te_res;
                 }
             } else {
-                color[texp->cnst.reg].r = te_res;
-                color[texp->cnst.reg].g = te_res;
-                color[texp->cnst.reg].b = te_res;
+                switch (texp->cnst.ctype) {
+                case HSD_TE_U8:
+                    te_res = *(u8*)texp->cnst.val;
+                    break;
+                case HSD_TE_U16:
+                    te_res = *(u16*)texp->cnst.val;
+                    if (te_res > 255) {
+                        te_res = 255;
+                    }
+                    break;
+
+                case HSD_TE_U32:
+                    te_res = *(u32*)texp->cnst.val;
+                    if (te_res > 255) {
+                        te_res = 255;
+                    } else if (te_res < 0) {
+                        te_res = 0;
+                    }
+                    break;
+
+                case HSD_TE_F32:
+                    te_res = (u32)(*(f32*)texp->cnst.val);
+                    if (te_res > 255) {
+                        te_res = 255;
+                    } else if (te_res < 0) {
+                        te_res = 0;
+                    }
+                    break;
+
+                case HSD_TE_F64:
+                    te_res = (u32)(*(f64*)texp->cnst.val);
+                    if (te_res > 255) {
+                        te_res = 255;
+                    } else if (te_res < 0) {
+                        te_res = 0;
+                    }
+                    break;
+                }
+
+                switch (texp->cnst.idx) {
+                case 0:
+                    color[texp->cnst.reg].r = te_res;
+                    break;
+
+                case 1:
+                    color[texp->cnst.reg].g = te_res;
+                    break;
+
+                case 2:
+                    color[texp->cnst.reg].b = te_res;
+                    break;
+
+                case 3:
+                    color[texp->cnst.reg].a = te_res;
+                    break;
+                }
             }
         }
         texp = texp->cnst.next;
