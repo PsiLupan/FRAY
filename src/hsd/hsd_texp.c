@@ -2596,7 +2596,7 @@ static u32 SimplifyThis(HSD_TExp* texp)
             case 1:
                 if (texp->tev.c_in[2].sel == 7) {
                     if (texp->tev.c_in[1].sel != 7) {
-                        HSD_TExpUnref(texp->tev.c_in[1].exp, sel);
+                        HSD_TExpUnref(texp->tev.c_in[1].exp, texp->tev.c_in[1].sel);
                         texp->tev.c_in[1].type = 0;
                         texp->tev.c_in[1].sel = 7;
                         texp->tev.c_in[1].arg = 0xFF;
@@ -2622,7 +2622,7 @@ static u32 SimplifyThis(HSD_TExp* texp)
                 }
                 if (texp->tev.c_in[2].sel == 8) {
                     if (texp->tev.c_in[0].sel != 7) {
-                        HSD_TExpUnref(texp->tev.c_in[0].exp, sel);
+                        HSD_TExpUnref(texp->tev.c_in[0].exp, texp->tev.c_in[0].sel);
                         texp->tev.c_in[0].type = 0;
                         texp->tev.c_in[0].sel = 7;
                         texp->tev.c_in[0].arg = 0xFF;
@@ -2791,66 +2791,62 @@ static u32 SimplifyThis(HSD_TExp* texp)
         } else {
             if (sel < 0xe) {
                 if (sel < 2) {
-                    if (true) {
-                        if (texp->tev.a_in[2].sel == 7) {
-                            sel = texp->tev.a_in[1].sel;
-                            if (sel != 7) {
-                                HSD_TExpUnref(texp->tev.a_in[1].exp, sel);
-                                texp->tev.a_in[1].type = 0;
-                                texp->tev.a_in[1].sel = 7;
-                                texp->tev.a_in[1].arg = 0xFF;
-                                texp->tev.a_in[1].exp = NULL;
+                    if (texp->tev.a_in[2].sel == 7) {
+                        if (texp->tev.a_in[1].sel != 7) {
+                            HSD_TExpUnref(texp->tev.a_in[1].exp, texp->tev.a_in[1].sel);
+                            texp->tev.a_in[1].type = 0;
+                            texp->tev.a_in[1].sel = 7;
+                            texp->tev.a_in[1].arg = 0xFF;
+                            texp->tev.a_in[1].exp = NULL;
 
-                                bVar1 = TRUE;
-                            }
-                            if (texp->tev.a_op == 0 && texp->tev.a_in[3].sel == 7) {
-                                texp->tev.a_in[3].type = texp->tev.a_in[0].type;
-                                texp->tev.a_in[3].sel = texp->tev.a_in[0].sel;
-                                texp->tev.a_in[3].arg = texp->tev.a_in[0].arg;
-                                texp->tev.a_in[3].exp = texp->tev.a_in[0].exp;
-
-                                texp->tev.a_in[0].type = 0;
-                                texp->tev.a_in[0].sel = 7;
-                                texp->tev.a_in[0].arg = 0xFF;
-                                texp->tev.a_in[0].exp = NULL;
-
-                                bVar1 = TRUE;
-                            }
-                        }
-                        if (texp->tev.a_in[2].sel == 8) {
-                            sel = texp->tev.a_in[0].sel;
-                            if (sel != 7) {
-                                HSD_TExpUnref(texp->tev.a_in[0].exp, sel);
-                                texp->tev.a_in[0].type = 0;
-                                texp->tev.a_in[0].sel = 7;
-                                texp->tev.a_in[0].arg = 0xFF;
-                                texp->tev.a_in[0].exp = NULL;
-
-                                bVar1 = TRUE;
-                            }
-                            if (texp->tev.a_op == 0 && texp->tev.a_in[3].sel == 7) {
-                                texp->tev.a_in[3].type = texp->tev.a_in[1].type;
-                                texp->tev.a_in[3].sel = texp->tev.a_in[1].sel;
-                                texp->tev.a_in[3].arg = texp->tev.a_in[1].arg;
-                                texp->tev.a_in[3].exp = texp->tev.a_in[1].exp;
-
-                                texp->tev.a_in[1].type = 0;
-                                texp->tev.a_in[1].sel = 7;
-                                texp->tev.a_in[1].arg = 0xFF;
-                                texp->tev.a_in[1].exp = NULL;
-
-                                texp->tev.a_in[2].type = 0;
-                                texp->tev.a_in[2].sel = 7;
-                                texp->tev.a_in[2].arg = 0xFF;
-                                texp->tev.a_in[2].exp = NULL;
-
-                                bVar1 = TRUE;
-                            }
-                        }
-                        if (((texp->tev.a_in[0].sel == 7) && (texp->tev.a_in[1].sel == 7)) && texp->tev.a_in[3].sel == 7) {
-                            texp->tev.a_op = 0xFF;
                             bVar1 = TRUE;
                         }
+                        if (texp->tev.a_op == 0 && texp->tev.a_in[3].sel == 7) {
+                            texp->tev.a_in[3].type = texp->tev.a_in[0].type;
+                            texp->tev.a_in[3].sel = texp->tev.a_in[0].sel;
+                            texp->tev.a_in[3].arg = texp->tev.a_in[0].arg;
+                            texp->tev.a_in[3].exp = texp->tev.a_in[0].exp;
+
+                            texp->tev.a_in[0].type = 0;
+                            texp->tev.a_in[0].sel = 7;
+                            texp->tev.a_in[0].arg = 0xFF;
+                            texp->tev.a_in[0].exp = NULL;
+
+                            bVar1 = TRUE;
+                        }
+                    }
+                    if (texp->tev.a_in[2].sel == 8) {
+                        if (texp->tev.a_in[0].sel != 7) {
+                            HSD_TExpUnref(texp->tev.a_in[0].exp, texp->tev.a_in[0].sel);
+                            texp->tev.a_in[0].type = 0;
+                            texp->tev.a_in[0].sel = 7;
+                            texp->tev.a_in[0].arg = 0xFF;
+                            texp->tev.a_in[0].exp = NULL;
+
+                            bVar1 = TRUE;
+                        }
+                        if (texp->tev.a_op == 0 && texp->tev.a_in[3].sel == 7) {
+                            texp->tev.a_in[3].type = texp->tev.a_in[1].type;
+                            texp->tev.a_in[3].sel = texp->tev.a_in[1].sel;
+                            texp->tev.a_in[3].arg = texp->tev.a_in[1].arg;
+                            texp->tev.a_in[3].exp = texp->tev.a_in[1].exp;
+
+                            texp->tev.a_in[1].type = 0;
+                            texp->tev.a_in[1].sel = 7;
+                            texp->tev.a_in[1].arg = 0xFF;
+                            texp->tev.a_in[1].exp = NULL;
+
+                            texp->tev.a_in[2].type = 0;
+                            texp->tev.a_in[2].sel = 7;
+                            texp->tev.a_in[2].arg = 0xFF;
+                            texp->tev.a_in[2].exp = NULL;
+
+                            bVar1 = TRUE;
+                        }
+                    }
+                    if (((texp->tev.a_in[0].sel == 7) && (texp->tev.a_in[1].sel == 7)) && texp->tev.a_in[3].sel == 7) {
+                        texp->tev.a_op = 0xFF;
+                        bVar1 = TRUE;
                     }
                 } else {
                     if ((7 < sel) && (texp->tev.a_in[2].sel == 7)) {
