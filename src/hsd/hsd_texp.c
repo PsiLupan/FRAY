@@ -3131,7 +3131,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                             } else {
                                 bVar2 = true;
                             }
-                            
+
                             if (!bVar2) {
                                 bVar3 = true;
                                 for (u32 i = 0; i < 4; ++i) {
@@ -3178,8 +3178,6 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
 u32 HSD_TExpSimplify2(HSD_TExp* texp)
 {
     HSD_TExp* t;
-
-    HSD_CheckAssert("HSD_TExpSimplify2: texp == NULL", texp != NULL);
 
     for (u32 i = 0; i < 4; i++) {
         t = texp->tev.c_in[i].exp;
