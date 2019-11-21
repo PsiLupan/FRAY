@@ -2142,22 +2142,26 @@ static void make_dependency_mtx(s32 num, HSD_TExpDag* list, u32* dep_mtx)
 //80386100
 static void make_full_dependency_mtx(s32 num, u32* dep, u32* full)
 {
-    BOOL bVar2;
-    u32 uVar7;
+    BOOL changed;
+    u32 old;
 
     for (u32 i = 0; i < num; ++i) {
         full[i] = dep[i];
     }
     do {
-        bVar2 = FALSE;
+        changed = FALSE;
         for (u32 i = 0; i < num; ++i) {
             for (u32 j = 0; j < num; ++j) {
-                if (((1 << i & full[j]) != 0) && (uVar7 = full[j], full[j] = uVar7 | full[i], uVar7 != full[j])) {
-                    bVar2 = TRUE;
+                if ((1 << i & full[j]) != 0) {
+                    old = full[j];
+                    full[j] = old | full[i];
+                    if(old != full[j]) {
+                        changed = TRUE;
+                    }
                 }
             }
         }
-    } while (bVar2);
+    } while (changed);
 }
 
 //80386234
