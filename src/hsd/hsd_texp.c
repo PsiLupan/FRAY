@@ -1484,7 +1484,7 @@ s32 HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_l
         HSD_CheckAssert("val < 0", val >= 0);
     }
 
-    while (num = num - 1, -1 < num) {
+    for (num = num - 1; num > -1; num = num - 1) {
         HSD_TExpSimplify2(order[num]);
     }
 
@@ -1496,7 +1496,7 @@ s32 HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_l
         u32 stage = HSD_Index2TevStage(i);
         tdesc->desc.stage = stage;
         TExp2TevDesc(order[(num - i) - 1], tdesc, &init_cprev, &init_aprev);
-        tdesc->desc.next = (HSD_TevDesc*)(*tevdesc);
+        tdesc->desc.next = &(*tevdesc)->desc;
         *tevdesc = tdesc;
     }
 
