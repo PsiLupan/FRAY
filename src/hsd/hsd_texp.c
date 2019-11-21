@@ -2155,7 +2155,7 @@ static void make_full_dependency_mtx(s32 num, u32* dep, u32* full)
                 if ((1 << i & full[j]) != 0) {
                     old = full[j];
                     full[j] = old | full[i];
-                    if(old != full[j]) {
+                    if (old != full[j]) {
                         changed = TRUE;
                     }
                 }
@@ -2893,6 +2893,60 @@ static u32 SimplifyThis(HSD_TExp* texp)
     return simplified;
 }
 
+static u32 CalcBias(u8 op, u8 b0, u8 b1, u8* res)
+{
+    s32 bias = 0;
+    if (b1 == 2) {
+        bias = -1;
+    } else if ((b1 < 2) && (b1 != 0)) {
+        bias = 1;
+    } else {
+        bias = 0;
+    }
+
+    if (op == 1) {
+        bias = -bias;
+    }
+
+    if (b0 == 2) {
+        bias -= 1;
+    } else if ((b0 < 2) && (0 < b0)) {
+        bias += 1;
+    }
+
+    if (bias == 0) {
+        *res = 0;
+        return TRUE;
+    } else {
+        if (bias < 0) {
+            if (-2 < bias) {
+                *res = 2;
+                return TRUE;
+            }
+        } else if (bias < 2) {
+            *res = 1;
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+static void MergeResources(HSD_TETev* dst, HSD_TETev* src)
+{
+    if (dst->tex == NULL) {
+        dst->tex = src->tex;
+    }
+    if (dst->chan == HSD_TE_UNDEF) {
+        dst->chan = src->chan;
+    }
+    if (dst->tex_swap == HSD_TE_UNDEF) {
+        dst->tex_swap = src->tex_swap;
+    }
+    if (dst->ras_swap == HSD_TE_UNDEF) {
+        dst->ras_swap = src->ras_swap;
+    }
+}
+
 //803870E4
 static u32 SimplifyByMerge(HSD_TExp* texp)
 {
@@ -2912,12 +2966,12 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
         if (sel == 0xFF || ((u8)(sel - 0xe) < 2) || sel < 2) {
             if ((texp->tev.c_op == 0 || texp->tev.c_op == 1)
                 && texp->tev.c_in[1].sel == 7 && texp->tev.c_in[2].sel == 7
-                && (type = HSD_TExpGetType(texp->tev.c_in[0].exp), type != HSD_TE_CNST)
-                && (type = HSD_TExpGetType(texp->tev.c_in[3].exp), type != HSD_TE_CNST)) {
+                && (HSD_TExpGetType(texp->tev.c_in[0].exp) != HSD_TE_CNST)
+                && (HSD_TExpGetType(texp->tev.c_in[3].exp) != HSD_TE_CNST)) {
 
                 if (texp->tev.c_op == 0 && texp->tev.c_in[3].type == HSD_TE_TEV
-                    && (((sel = texp->tev.c_in[3].sel, sel == 1) && texp->tev.c_in[3].exp->tev.c_clamp != 0) || (sel == 5 && texp->tev.c_in[3].exp->tev.a_clamp != 0))
-                    && (sel = texp->tev.c_in[0].type, sel < 4 && sel > 1)) {
+                    && ((texp->tev.c_in[3].sel == 1 && texp->tev.c_in[3].exp->tev.c_clamp != 0) || (texp->tev.c_in[3].sel == 5 && texp->tev.c_in[3].exp->tev.a_clamp != 0))
+                    && (texp->tev.c_in[0].type < 4 && texp->tev.c_in[0].type > 1)) {
                     u8 type = texp->tev.c_in[0].type;
                     u8 select = texp->tev.c_in[0].sel;
                     u8 arg = texp->tev.c_in[0].arg;
@@ -2949,47 +3003,9 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                             } else {
                                 bVar2 = true;
                             }
+
                             if (!bVar2) {
-                                sel = curr->tev.c_bias;
-                                if (sel == 2) {
-                                    iVar8 = -1;
-                                } else {
-                                    if ((sel < 2) && (sel != 0)) {
-                                        iVar8 = 1;
-                                    } else {
-                                        iVar8 = 0;
-                                    }
-                                }
-                                if (curr->tev.c_op == 1) {
-                                    iVar8 = -iVar8;
-                                }
-                                sel = texp->tev.c_bias;
-                                if (sel == 2) {
-                                    iVar8 = iVar8 + -1;
-                                } else {
-                                    if ((sel < 2) && (sel != 0)) {
-                                        iVar8 = iVar8 + 1;
-                                    }
-                                }
-                                if (iVar8 == 0) {
-                                    texp->tev.c_bias = 0;
-                                    bVar3 = true;
-                                } else {
-                                    if (iVar8 < 0) {
-                                        if (iVar8 < -1) {
-                                        LAB_8038737c:
-                                            bVar3 = false;
-                                        } else {
-                                            texp->tev.c_bias = 2;
-                                            bVar3 = true;
-                                        }
-                                    } else {
-                                        if (1 < iVar8)
-                                            goto LAB_8038737c;
-                                        texp->tev.c_bias = 1;
-                                        bVar3 = true;
-                                    }
-                                }
+                                bVar3 = CalcBias(curr->tev.c_op, texp->tev.c_bias, curr->tev.c_bias, &texp->tev.c_bias);
                                 if (bVar3) {
                                     if (curr->tev.c_op == 1) {
                                         texp->tev.c_op = texp->tev.c_op == 0;
@@ -3001,19 +3017,8 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                                         texp->tev.c_in[i].exp = curr->tev.c_in[i].exp;
                                         HSD_TExpRef(texp->tev.c_in[i].exp, texp->tev.c_in[i].sel);
                                     }
-                                    if (texp->tev.tex == NULL) {
-                                        texp->tev.tex = curr->tev.tex;
-                                    }
-                                    if (texp->tev.chan == 0xff) {
-                                        texp->tev.chan = curr->tev.chan;
-                                    }
-                                    if (texp->tev.tex_swap == HSD_TE_UNDEF) {
-                                        texp->tev.tex_swap = curr->tev.tex_swap;
-                                    }
-                                    if (texp->tev.ras_swap == HSD_TE_UNDEF) {
-                                        texp->tev.ras_swap = curr->tev.ras_swap;
-                                    }
                                     HSD_TExpUnref(curr, 1);
+                                    MergeResources(&texp->tev, &curr->tev);
                                 }
                             }
                         }
@@ -3032,6 +3037,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                         } else {
                             bVar2 = true;
                         }
+
                         if (!bVar2) {
                             bVar3 = true;
                             for (u32 i = 0; i < 4; ++i) {
@@ -3042,68 +3048,25 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                                 HSD_TExpRef(texp->tev.c_in[i].exp, texp->tev.c_in[i].sel);
                             }
                             texp->tev.c_op = curr->tev.c_op;
-                            sel = curr->tev.c_bias;
-                            if (sel == 2) {
-                                iVar8 = -1;
-                            } else {
-                                if ((sel < 2) && (sel != 0)) {
-                                    iVar8 = 1;
-                                } else {
-                                    iVar8 = 0;
-                                }
-                            }
-                            if (curr->tev.c_op == 1) {
-                                iVar8 = -iVar8;
-                            }
-                            sel = texp->tev.c_bias;
-                            if (sel == 2) {
-                                iVar8 = iVar8 + -1;
-                            } else {
-                                if ((sel < 2) && (sel != 0)) {
-                                    iVar8 = iVar8 + 1;
-                                }
-                            }
-                            if (iVar8 == 0) {
-                            LAB_803875d0:
-                                texp->tev.c_bias = 0;
-                            } else {
-                                if (iVar8 < 0) {
-                                    if (iVar8 < -1)
-                                        goto LAB_803875d0;
-                                    texp->tev.c_bias = 2;
-                                } else {
-                                    if (1 < iVar8)
-                                        goto LAB_803875d0;
-                                    texp->tev.c_bias = 1;
-                                }
-                            }
-                            if ((texp->tev.c_clamp == 0xFF) || (texp->tev.c_clamp == 0)) {
+                            CalcBias(curr->tev.c_op, texp->tev.c_bias, curr->tev.c_bias, &texp->tev.c_bias);
+
+                            if (texp->tev.c_clamp == 0xFF || texp->tev.c_clamp == 0) {
                                 texp->tev.c_clamp = curr->tev.c_clamp;
                             }
-                            if (texp->tev.tex == NULL) {
-                                texp->tev.tex = curr->tev.tex;
-                            }
-                            if (texp->tev.chan == 0xFF) {
-                                texp->tev.chan = curr->tev.chan;
-                            }
-                            if (texp->tev.tex_swap == HSD_TE_UNDEF) {
-                                texp->tev.tex_swap = curr->tev.tex_swap;
-                            }
-                            if (texp->tev.ras_swap == HSD_TE_UNDEF) {
-                                texp->tev.ras_swap = curr->tev.ras_swap;
-                            }
+                            MergeResources(&texp->tev, &curr->tev);
                             HSD_TExpUnref(curr, 1);
                         }
                     }
                 }
             }
+
             if ((texp->tev.a_op == 0 || texp->tev.a_op == 1)
                 && texp->tev.a_in[1].sel == 7 && texp->tev.a_in[2].sel == 7
-                && (type = HSD_TExpGetType(texp->tev.a_in[0].exp), type != HSD_TE_CNST)
-                && (type = HSD_TExpGetType(texp->tev.a_in[3].exp), type != HSD_TE_CNST)) {
+                && (HSD_TExpGetType(texp->tev.a_in[0].exp) != HSD_TE_CNST)
+                && (HSD_TExpGetType(texp->tev.a_in[3].exp) != HSD_TE_CNST)) {
 
                 if (texp->tev.a_op == 0 && texp->tev.a_in[3].type == HSD_TE_TEV && texp->tev.a_in[3].exp->tev.a_clamp != 0
-                    && (sel = texp->tev.a_in[0].type, sel < 4 && sel > 1)) {
+                    && (texp->tev.a_in[0].type < 4 && texp->tev.a_in[0].type > 1)) {
                     u8 type = texp->tev.a_in[0].type;
                     u8 select = texp->tev.a_in[0].sel;
                     u8 arg = texp->tev.a_in[0].arg;
@@ -3134,47 +3097,9 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                         } else {
                             bVar2 = true;
                         }
+
                         if (!bVar2) {
-                            bVar1 = curr->tev.a_bias;
-                            if (bVar1 == 2) {
-                                iVar8 = -1;
-                            } else {
-                                if ((bVar1 < 2) && (bVar1 != 0)) {
-                                    iVar8 = 1;
-                                } else {
-                                    iVar8 = 0;
-                                }
-                            }
-                            if (curr->tev.a_op == 1) {
-                                iVar8 = -iVar8;
-                            }
-                            bVar1 = texp->tev.a_bias;
-                            if (bVar1 == 2) {
-                                iVar8 = iVar8 + -1;
-                            } else {
-                                if ((bVar1 < 2) && (bVar1 != 0)) {
-                                    iVar8 = iVar8 + 1;
-                                }
-                            }
-                            if (iVar8 == 0) {
-                                texp->tev.a_bias = 0;
-                                bVar3 = true;
-                            } else {
-                                if (iVar8 < 0) {
-                                    if (iVar8 < -1) {
-                                    LAB_80387874:
-                                        bVar3 = false;
-                                    } else {
-                                        texp->tev.a_bias = 2;
-                                        bVar3 = true;
-                                    }
-                                } else {
-                                    if (1 < iVar8)
-                                        goto LAB_80387874;
-                                    texp->tev.a_bias = 1;
-                                    bVar3 = true;
-                                }
-                            }
+                            bVar3 = CalcBias(curr->tev.a_op, texp->tev.a_bias, curr->tev.a_bias, &texp->tev.a_bias);
                             if (bVar3) {
                                 if (curr->tev.a_op == 1) {
                                     texp->tev.a_op = texp->tev.a_op == 0;
@@ -3186,12 +3111,8 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                                     texp->tev.a_in[i].exp = curr->tev.a_in[i].exp;
                                     HSD_TExpRef(texp->tev.a_in[i].exp, texp->tev.a_in[i].sel);
                                 }
-                                if (texp->tev.tex == NULL) {
-                                    texp->tev.tex = curr->tev.tex;
-                                }
-                                if (texp->tev.chan == 0xff) {
-                                    texp->tev.chan = curr->tev.chan;
-                                }
+
+                                MergeResources(&texp->tev, &curr->tev);
                                 HSD_TExpUnref(curr, sel);
                             }
                         }
@@ -3210,6 +3131,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                             } else {
                                 bVar2 = true;
                             }
+
                             if (!bVar2) {
                                 bVar3 = true;
                                 for (u32 i = 0; i < 4; ++i) {
@@ -3220,50 +3142,12 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                                     HSD_TExpRef(texp->tev.a_in[i].exp, texp->tev.a_in[i].sel);
                                 }
                                 texp->tev.a_op = curr->tev.a_op;
-                                bVar1 = curr->tev.a_bias;
-                                if (bVar1 == 2) {
-                                    iVar8 = -1;
-                                } else {
-                                    if ((bVar1 < 2) && (bVar1 != 0)) {
-                                        iVar8 = 1;
-                                    } else {
-                                        iVar8 = 0;
-                                    }
-                                }
-                                if (curr->tev.a_op == 1) {
-                                    iVar8 = -iVar8;
-                                }
-                                bVar1 = texp->tev.a_bias;
-                                if (bVar1 == 2) {
-                                    iVar8 = iVar8 + -1;
-                                } else {
-                                    if ((bVar1 < 2) && (bVar1 != 0)) {
-                                        iVar8 = iVar8 + 1;
-                                    }
-                                }
-                                if (iVar8 == 0) {
-                                LAB_80387a98:
-                                    texp->tev.a_bias = 0;
-                                } else {
-                                    if (iVar8 < 0) {
-                                        if (iVar8 < -1)
-                                            goto LAB_80387a98;
-                                        texp->tev.a_bias = 2;
-                                    } else {
-                                        if (1 < iVar8)
-                                            goto LAB_80387a98;
-                                        texp->tev.a_bias = 1;
-                                    }
-                                }
+                                CalcBias(curr->tev.a_op, texp->tev.a_bias, curr->tev.a_bias, &texp->tev.a_bias);
+
                                 if (texp->tev.a_clamp == 0xFF || texp->tev.a_clamp == 0) {
                                     texp->tev.a_clamp = curr->tev.a_clamp;
                                 }
-                                if (texp->tev.tex == NULL) {
-                                    texp->tev.tex = curr->tev.tex;
-                                }
-                                if (texp->tev.chan == 0xFF) {
-                                    texp->tev.chan = curr->tev.chan;
-                                }
+                                MergeResources(&texp->tev, &curr->tev);
                                 HSD_TExpUnref(curr, sel);
                             }
                         }
@@ -3294,8 +3178,6 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
 u32 HSD_TExpSimplify2(HSD_TExp* texp)
 {
     HSD_TExp* t;
-
-    HSD_CheckAssert("HSD_TExpSimplify2: texp == NULL", texp != NULL);
 
     for (u32 i = 0; i < 4; i++) {
         t = texp->tev.c_in[i].exp;
