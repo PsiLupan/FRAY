@@ -151,26 +151,26 @@ HSD_MemoryEntry* GetMemoryEntry(u32 idx)
             while (idx >= j) {
                 j = j << 1;
             }
-            HSD_MemoryEntry** entry = (HSD_MemoryEntry**)HSD_MemAlloc(4 * j);
+            HSD_MemoryEntry** entry = (HSD_MemoryEntry**)HSD_MemAlloc(j * 4);
             memory_list = entry;
             if (memory_list == NULL) {
                 return NULL;
             }
-            memset(memory_list, 0, j << 2);
+            memset(memory_list, 0, j * 4);
             nb_memory_list = j;
         } else { //Resizes the array
-            u32 i;
+            u32 i = 0;
             u32 nb = nb_memory_list;
             do {
                 i = nb;
-                nb *= 2;
+                nb = i * 2;
             } while (nb <= idx);
-            HSD_MemoryEntry* entry = (HSD_MemoryEntry*)HSD_MemAlloc(8 * i);
+            HSD_MemoryEntry* entry = (HSD_MemoryEntry*)HSD_MemAlloc(nb * 8);
             if (entry == NULL) {
                 return NULL;
             }
-            memcpy(entry, memory_list, 4 * nb_memory_list);
-            memset(&entry[nb_memory_list * 4], 0, 4 * (nb - nb_memory_list)); //You start *after* existing ptrs and make sure memory is zero'd
+            memcpy(entry, memory_list, nb_memory_list * 4);
+            memset(&entry[nb_memory_list], 0, 4 * (nb - nb_memory_list)); //You start *after* existing ptrs and make sure memory is zero'd
 
             HSD_MemoryEntry** mem_list = memory_list;
             u32 tmp = nb_memory_list;
@@ -183,47 +183,37 @@ HSD_MemoryEntry* GetMemoryEntry(u32 idx)
         }
     }
 
-    s32 midx = idx * 4;
-    if (memory_list[idx * 4] == NULL) {
+    if (memory_list[idx] == NULL) {
         HSD_MemoryEntry* t_entry = (HSD_MemoryEntry*)HSD_MemAlloc(sizeof(HSD_MemoryEntry));
         if (t_entry == NULL) {
             return NULL;
         }
         memset(t_entry, 0, sizeof(HSD_MemoryEntry));
-        t_entry->total_bits = (midx + 1) * 0x20;
-        memory_list[idx * 4] = t_entry;
+        t_entry->total_bits = (idx + 1) * 0x20;
+        memory_list[idx] = t_entry;
 
-        s32 i = midx - 1;
-        u32* entry = (u32*)memory_list[i];
-        u32 t_idx = midx;
-        if (i >= 0) {
-            do {
-                if (*entry != 0) {
-                    t_entry->next = memory_list[i]->next;
-                    memory_list[i]->next = t_entry->next;
-                    return memory_list[midx * 4];
-                }
-                entry = entry - 4;
-                --i;
-                --t_idx;
-            } while (t_idx > 0);
+        s32 i = idx - 1;
+        for(; memory_list[i] == NULL; --i){
+            if(i < 0){
+                break;
+            }
         }
-        idx += 1;
-        t_idx = nb_memory_list - idx;
-        u32* f_entry = (u32*)memory_list[idx];
-        if (idx < nb_memory_list) {
-            do {
-                if (*f_entry == 0) {
-                    t_entry->next = memory_list[idx];
-                    break;
-                }
-                f_entry = f_entry + 4;
-                ++idx;
-                --t_idx;
-            } while (t_idx > 0);
+        BOOL recheck = FALSE;
+        if(memory_list[i] != NULL){
+            t_entry->next = memory_list[i]->next;
+            memory_list[i]->next = t_entry->next;
+            recheck = TRUE;
         }
+        
+        s32 j = idx + 1;
+        for(; memory_list[j] == NULL; ++j){
+            if(nb_memory_list <= j){
+                return memory_list[idx];
+            }
+        }
+        t_entry->next = memory_list[j];
     }
-    return memory_list[midx * 4];
+    return memory_list[idx];
 }
 
 //80381FA8
