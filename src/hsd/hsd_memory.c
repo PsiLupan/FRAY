@@ -223,7 +223,7 @@ void* hsdAllocMemPiece(u32 size)
 	HSD_MemoryEntry* entry_2 = NULL;
 	HSD_FreeList* piece = NULL;
 
-	u32 adj_size = ALIGN(size);
+	u32 adj_size = size + 0x1F;
 	u32 entry_sz = ((adj_size >> 5) + (u32)(adj_size < 0 && (adj_size & 0x1F) != 0) - 1);
 	entry = GetMemoryEntry(entry_sz);
 	if(entry == NULL){
@@ -236,7 +236,7 @@ void* hsdAllocMemPiece(u32 size)
 	}else{
 		for(HSD_MemoryEntry* i = entry->next; i != NULL; i = i->next){
 			if(i->data != NULL){
-				adj_size = ALIGN(i->total_bits - entry->total_bits);
+				adj_size = (i->total_bits - entry->total_bits) + 0x1F;
 				entry_2 = GetMemoryEntry(adj_size >> 5) + (u32)(adj_size < 0 && (adj_size & 0x1F) != 0) - 1;
 				if(entry_2 == NULL){
 					return NULL;
@@ -257,7 +257,7 @@ void* hsdAllocMemPiece(u32 size)
 		}
 		u32 tmp_size = (nb_memory_list - entry_sz) - 2;
 		if(tmp_size < 0 || (entry_2 = GetMemoryEntry(tmp_size)) != NULL){
-			piece = (HSD_FreeList*)HSD_MemAlloc(nb_memory_list * 32);
+			piece = (HSD_FreeList*)HSD_MemAlloc(nb_memory_list << 5);
 			if(piece != NULL){
 				if(tmp_size >= 0){
 					HSD_FreeList* np = (HSD_FreeList*)((u32)&piece->next + entry->total_bits);
@@ -284,7 +284,8 @@ void hsdFreeMemPiece(void* mem, u32 size)
 	HSD_FreeList* piece = (HSD_FreeList*)mem;
 
 	if ( mem != NULL ){
-		entry = GetMemoryEntry(GET_BUCKET(size));
+        u32 isize = size + 0x1F;
+		entry = GetMemoryEntry((isize >> 5) + (isize < 0 && (isize & 0x1F) != 0) - 1);
 		piece->next = entry->data;
 		entry->data = piece;
 		entry->nb_free += 1;

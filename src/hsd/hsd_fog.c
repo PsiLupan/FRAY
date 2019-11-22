@@ -4,9 +4,7 @@ static void FogInfoInit(void);
 static void FogAdjInfoInit(void);
 
 HSD_FogInfo hsdFog = { FogInfoInit }; //80407078
-HSD_ObjAllocData fog_init_alloc; //8040708C
 
-HSD_ObjAllocData fogadj_init_alloc; //804070A8
 HSD_FogAdjInfo hsdFogAdj = { FogAdjInfoInit }; //804070B4
 
 //8037D970
@@ -53,7 +51,7 @@ void HSD_FogSet(HSD_Fog* fog)
 HSD_Fog* HSD_FogLoadDesc(HSD_FogDesc* fogdesc)
 {
     HSD_Fog* fog = (HSD_Fog*)hsdNew((HSD_ClassInfo*)&hsdFog);
-    assert(fog != NULL);
+    HSD_CheckAssert("HSD_FogLoadDesc: Could not alloc fog", fog != NULL);
     HSD_FogInit(fog, fogdesc);
     if (fogdesc->fogadjdesc != 0) {
         fog->fog_adj = HSD_FogAdjLoadDesc(fogdesc->fogadjdesc);
@@ -88,7 +86,7 @@ void HSD_FogInit(HSD_Fog* fog, HSD_FogDesc* desc)
 HSD_FogAdj* HSD_FogAdjLoadDesc(HSD_FogAdjDesc* fogadjdesc)
 {
     HSD_FogAdj* fog_adj = (HSD_FogAdj*)hsdNew((HSD_ClassInfo*)&hsdFogAdj);
-    assert(fog_adj != NULL);
+    HSD_CheckAssert("HSD_FogAdjLoadDesc: Could not alloc fog_adj", fog_adj != NULL);
     HSD_FogAdjInit(fog_adj, fogadjdesc);
     return fog_adj;
 }

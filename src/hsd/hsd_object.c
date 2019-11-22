@@ -242,15 +242,9 @@ static void _hsdClassRelease(HSD_Class* info)
 //80382228
 static void _hsdClassDestroy(HSD_Class* class)
 {
-    HSD_ClassInfo* info = (class->class_info ? class->class_info : NULL);
-	if(info != NULL){
-		info->head.nb_exist -= 1;
-		u32 size = info->head.obj_size + 0x1F;
-		HSD_MemoryEntry* entry = GetMemoryEntry((size >> 5) + (u32)((s32)size < 0 && (size & 0x1F) != 0) + -1);
-		((HSD_FreeList*)info)->next = entry->data;
-		entry->data = (HSD_FreeList*)info;
-		entry->nb_free += 1;
-	}
+    HSD_ClassInfo* info = class->class_info;
+	info->head.nb_exist -= 1;
+    hsdFreeMemPiece(class, info->head.obj_size);
 }
 
 //80382294
