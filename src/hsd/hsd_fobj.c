@@ -443,7 +443,7 @@ HSD_FObj* HSD_FObjLoadDesc(HSD_FObjDesc* desc)
 //8036B848
 HSD_FObj* HSD_FObjAlloc(void)
 {
-    HSD_FObj* fobj = (HSD_FObj*)HSD_MemAlloc(sizeof(HSD_FObj)); //HSD_ObjAlloc(&fobj_alloc_data);
+    HSD_FObj* fobj = (HSD_FObj*)HSD_ObjAlloc(&fobj_alloc_data);
     HSD_CheckAssert("FObjAlloc could not alloc", fobj != NULL);
     memset(fobj, 0, sizeof(HSD_FObj));
     return fobj;

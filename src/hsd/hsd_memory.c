@@ -42,7 +42,7 @@ void HSD_IDInsertToTable(HSD_IDTable* id_table, u32 id, void* data)
         entry = entry->next;
     }
     if (entry == NULL) {
-        entry = HSD_MemAlloc(sizeof(IDEntry));//HSD_ObjAlloc(&hsd_iddata);
+        entry = HSD_ObjAlloc(&hsd_iddata);
         assert(entry != NULL);
         entry->id = id;
         entry->data = data;
@@ -121,8 +121,7 @@ void HSD_Free(void* ptr)
         #ifdef DEBUG_MEM
         printf("[0x%08x] - 0x%08x\n", __builtin_return_address(0), (int)ptr);
         #endif
-        free(ptr);
-        //HSD_ObjFree(&free_alloc, (HSD_ObjAllocLink*)ptr);
+        HSD_ObjFree(&free_alloc, (HSD_ObjAllocLink*)ptr);
     }
 }
 
@@ -230,8 +229,7 @@ HSD_MemoryEntry* GetMemoryEntry(u32 idx)
 //80381FA8
 void* hsdAllocMemPiece(u32 size)
 {
-    return HSD_MemAlloc(size);
-    /*HSD_MemoryEntry* entry = NULL;
+    HSD_MemoryEntry* entry = NULL;
 	HSD_MemoryEntry* entry_2 = NULL;
 	HSD_FreeList* piece = NULL;
 
@@ -286,14 +284,13 @@ void* hsdAllocMemPiece(u32 size)
 			return NULL;
 		}
 	}
-	return (void*)piece;*/
+	return (void*)piece;
 }
 
 //8038216C
 void hsdFreeMemPiece(void* mem, u32 size)
 {
-    HSD_Free(mem);
-    /*HSD_MemoryEntry* entry;
+    HSD_MemoryEntry* entry;
 	HSD_FreeList* piece = (HSD_FreeList*)mem;
 
 	if ( mem != NULL ){
@@ -301,5 +298,5 @@ void hsdFreeMemPiece(void* mem, u32 size)
 		piece->next = entry->data;
 		entry->data = piece;
 		entry->nb_free += 1;
-	}*/
+	}
 }

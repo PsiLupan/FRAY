@@ -10,7 +10,7 @@
 #define BUCKET_BITS 5
 #define ALIGN_SZ 32
 
-#define ALIGN(size) ((size + (align - 1)) & -align)
+#define ALIGN(size) ((size + (ALIGN_SZ - 1)) & -ALIGN_SZ)
 #define BUCKET(size) (size >> BUCKET_BITS)
 #define ALIGNED_BUCKET(size) (ALIGN(size) >> BUCKET_BITS)
 #define GET_BUCKET(size) (ALIGNED_BUCKET(size) - 1)

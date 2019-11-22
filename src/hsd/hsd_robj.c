@@ -300,7 +300,7 @@ void HSD_RObjRemoveAll(HSD_RObj* robj)
 //8037C444
 HSD_RObj* HSD_RObjAlloc(void)
 {
-    HSD_RObj* robj = (HSD_RObj*)HSD_MemAlloc(sizeof(HSD_RObj)); //HSD_ObjAlloc(&robj_alloc_data);
+    HSD_RObj* robj = (HSD_RObj*)HSD_ObjAlloc(&robj_alloc_data);
     HSD_CheckAssert("Not enough memory for RObjAlloc", robj != NULL);
     memset(robj, 0, sizeof(HSD_RObj));
     return robj;

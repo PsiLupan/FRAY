@@ -435,7 +435,7 @@ void _HSD_ZListClear(void)
         if (list->vmtx) {
             HSD_Free(list->vmtx);
         }
-        HSD_Free(list);
+        HSD_ObjFree(&zlist_alloc_data, (HSD_ObjAllocLink*)list);
         list = next;
     }
     zlist_top = NULL;

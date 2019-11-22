@@ -208,7 +208,7 @@ void HSD_AObjRemove(HSD_AObj* aobj)
 //8036453C
 HSD_AObj* HSD_AObjAlloc(void)
 {
-    HSD_AObj* aobj = (HSD_AObj*)HSD_MemAlloc(sizeof(HSD_AObj)); //(HSD_ObjAlloc(&aobj_alloc_data));
+    HSD_AObj* aobj = (HSD_AObj*)HSD_ObjAlloc(&aobj_alloc_data);
     HSD_CheckAssert("AObjAlloc could not alloc", aobj != NULL);
     memset(aobj, 0, sizeof(HSD_AObj));
     aobj->flags = AOBJ_NO_ANIM;
