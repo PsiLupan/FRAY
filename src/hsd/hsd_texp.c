@@ -2951,11 +2951,8 @@ static void MergeResources(HSD_TETev* dst, HSD_TETev* src)
 static u32 SimplifyByMerge(HSD_TExp* texp)
 {
     u8 sel;
-    u8 bVar1;
     BOOL bVar2;
     BOOL bVar3;
-    u32 type;
-    s32 iVar8;
     u32 uVar11;
 
     HSD_TExp* curr;
