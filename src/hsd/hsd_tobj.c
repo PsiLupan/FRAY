@@ -946,7 +946,7 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
 {
     HSD_TExp *e0, *e1;
     HSD_TExp *c_src, *a_src;
-    s32 c_sel, a_sel;
+    HSD_TEInput c_sel, a_sel;
     s32 repeat = (lightmap_done & tobj_lightmap(tobj)) != 0;
 
     c_src = HSD_TEXP_TEX;
