@@ -118,12 +118,12 @@ void HSD_TExpRef(HSD_TExp* texp, u8 sel)
 void HSD_TExpUnref(HSD_TExp* texp, u8 sel)
 {
     u32 type = HSD_TExpGetType(texp);
-    if (type == 4) {
+    if (type == HSD_TE_CNST) {
         if (texp->cnst.ref != 0) {
             texp->cnst.ref -= 1;
             return;
         }
-    } else if (type == 1) {
+    } else if (type == HSD_TE_TEV) {
         if (sel == GX_ENABLE) {
             if (texp->tev.c_ref != 0) {
                 texp->tev.c_ref -= 1;
