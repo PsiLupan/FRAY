@@ -196,27 +196,27 @@ void HSD_VICopyEFB2XFBPtr(HSD_VIStatus* vi, void* buffer, HSD_RenderPass rpass)
     case HSD_RP_SCREEN:
         GX_SetCopyClamp((GX_CLAMP_TOP | GX_CLAMP_BOTTOM));
         GX_SetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight);
-        n_xfb_lines = GX_SetDispCopyYScale((f32)(rmode->xfbHeight)
-            / (f32)(rmode->efbHeight));
+        n_xfb_lines = GX_SetDispCopyYScale((f32)(rmode->xfbHeight) / (f32)(rmode->efbHeight));
         GX_SetDispCopyDst(rmode->fbWidth, n_xfb_lines);
         GX_CopyDisp(buffer, GX_TRUE);
         break;
 
     case HSD_RP_TOPHALF:
-        GX_SetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
+        lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
+        GX_SetDispCopySrc(0, 0, rmode->fbWidth, lines);
         n_xfb_lines = GX_SetDispCopyYScale(1.0f);
         GX_SetDispCopyDst(rmode->fbWidth, n_xfb_lines);
         GX_SetCopyClamp(GX_CLAMP_TOP);
-        lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
         GX_SetDispCopySrc(0, 0, rmode->fbWidth, lines);
         GX_CopyDisp(buffer, GX_TRUE);
-        return;
+        break;
 
     case HSD_RP_BOTTOMHALF:
-        GX_SetDispCopySrc(0, 0, rmode->fbWidth, rmode->efbHeight - HSD_ANTIALIAS_OVERLAP);
-        GX_SetDispCopyDst(rmode->fbWidth, GX_SetDispCopyYScale(1.0f));
-        GX_SetCopyClamp(GX_CLAMP_BOTTOM);
         lines = rmode->efbHeight - HSD_ANTIALIAS_OVERLAP;
+        GX_SetDispCopySrc(0, 0, rmode->fbWidth, lines);
+        n_xfb_lines = GX_SetDispCopyYScale(1.0f);
+        GX_SetDispCopyDst(rmode->fbWidth, n_xfb_lines);
+        GX_SetCopyClamp(GX_CLAMP_BOTTOM);
         GX_SetDispCopySrc(0, HSD_ANTIALIAS_OVERLAP, rmode->fbWidth, lines);
         offset = (VIDEO_PadFramebufferWidth(rmode->fbWidth) * lines * (u32)VI_DISPLAY_PIX_SZ);
         GX_CopyDisp((void*)((u32)buffer + offset), GX_TRUE);
@@ -237,7 +237,7 @@ s32 HSD_VIWaitXFBDrawEnable(void)
     s32 idx = -1;
     if (HSD_VIGetNbXFB() < 2)
         return idx;
-    while((idx = HSD_VIGetXFBDrawEnable()) == -1)
+    while ((idx = HSD_VIGetXFBDrawEnable()) == -1)
         VIDEO_WaitVSync();
     return idx;
 }
@@ -421,13 +421,15 @@ void HSD_VIInit(HSD_VIStatus* vi, void* xfb0, void* xfb1, void* xfb2)
 extern void __exception_sethandler(u32 nExcept, void (*pHndl)(frame_context*));
 
 //80394848
-static void PrintStackTrace(frame_context* pCtx){
+static void PrintStackTrace(frame_context* pCtx)
+{
     printf("- STACK -------------------------------------\n");
     printf(" Address:  Back Chain  LR Save\n");
 }
 
 //80394B18
-static void PrintExceptionDetails(frame_context* pCtx){
+static void PrintExceptionDetails(frame_context* pCtx)
+{
     printf("- UNHANDLED EXCEPTION -----------------------\n");
     printf("DAR=%08X\n", pCtx->DAR);
     printf("ERROR %d: ", pCtx->EXCPT_Number);
