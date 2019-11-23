@@ -530,10 +530,14 @@ static HSD_TExp* MObjMakeTExp(HSD_MObj* mobj, HSD_TObj* tobj_top, HSD_TExp** lis
         } else {
             HSD_TExpOrder(exp, NULL, GX_COLOR0A0);
             HSD_TExpColorOp(exp, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
-            HSD_TExpColorIn(exp, HSD_TE_0, HSD_TEXP_ZERO,
+            /*HSD_TExpColorIn(exp, HSD_TE_0, HSD_TEXP_ZERO,
                 HSD_TE_RGB, diff,
                 HSD_TE_RGB, HSD_TEXP_RAS,
-                HSD_TE_0, HSD_TEXP_ZERO);
+                HSD_TE_0, HSD_TEXP_ZERO);*/
+            HSD_TExpColorIn(exp, HSD_TE_0, HSD_TEXP_ZERO,
+                HSD_TE_0, HSD_TEXP_ZERO,
+                HSD_TE_0, HSD_TEXP_ZERO,
+                HSD_TE_RGB, diff);
         }
         diff = exp;
 
