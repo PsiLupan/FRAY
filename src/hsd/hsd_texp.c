@@ -216,7 +216,7 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list)
     HSD_TExp* texp = (HSD_TExp*)hsdAllocMemPiece(sizeof(HSD_TETev));
     HSD_CheckAssert("HSD_TExpTev: No free memory", texp != NULL);
 
-    memset(texp, 0xFF, sizeof(HSD_TExp));
+    memset(texp, 0xFF, sizeof(HSD_TETev));
     texp->type = HSD_TE_TEV;
     texp->tev.next = *list;
     *list = texp;
@@ -257,7 +257,7 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** 
             }
             return result;
         }
-        if (texp->type == 4 && texp->cnst.val == val && texp->cnst.comp == comp) {
+        if (texp->type == HSD_TE_CNST && texp->cnst.val == val && texp->cnst.comp == comp) {
             HSD_CheckAssert("HSD_TExpCnst: ctype != type", texp->cnst.ctype == type);
             break;
         }
