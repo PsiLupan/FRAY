@@ -1252,7 +1252,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
 
         if (texp->cnst.reg < 8) {
             i = i | 1 << texp->cnst.reg;
-            if (texp->cnst.comp != 1) {
+            if (texp->cnst.comp != HSD_TE_RGB) {
                 switch (texp->cnst.ctype) {
                 case HSD_TE_U8:
                     te_res = *(u8*)texp->cnst.val;
@@ -1313,11 +1313,10 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                 } else {
                     if (texp->cnst.idx == 3) {
                         color[texp->cnst.reg].a = te_res;
-                    } else {
-                        color[texp->cnst.reg].r = te_res;
-                        color[texp->cnst.reg].g = te_res;
-                        color[texp->cnst.reg].b = te_res;
                     }
+                    color[texp->cnst.reg].r = te_res;
+                    color[texp->cnst.reg].g = te_res;
+                    color[texp->cnst.reg].b = te_res;
                 }
             } else {
                 switch (texp->cnst.ctype) {
@@ -1377,8 +1376,8 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     break;
                 }
             }
+            texp = texp->cnst.next;
         }
-        texp = texp->cnst.next;
     }
 }
 
@@ -1882,7 +1881,7 @@ code_r0x803860bc:
             } while (iVar2 != 0);
         }
     }
-    CalcDistance((HSD_TETev**)tevs, dist, (HSD_TETev*)&tevs[0]->tev, i, 0);
+    CalcDistance((HSD_TETev**)tevs, dist, (HSD_TETev*)tevs[0], i, 0);
     iVar6 = 0;
     while (iVar6 < i) {
         offset = iVar6 + 1;
@@ -3113,7 +3112,6 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
 }
 
 //80387BA4
-#ifdef NO_ASM
 u32 HSD_TExpSimplify2(HSD_TExp* texp)
 {
     HSD_TExp* t;
@@ -3166,4 +3164,3 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
 
     return 0;
 }
-#endif
