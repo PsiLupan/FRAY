@@ -652,12 +652,74 @@ void HSD_StateInvalidate(HSD_StateMask state)
 //803620A4
 void HSD_SetupChannel(HSD_Chan* chan)
 {
-    if (chan != NULL && chan->chan != 0xFF) {
-        u32 c_chan = chan->chan & 1;
+    u32 chan_i = chan->chan;
+    if (chan != NULL && chan_i != 0xFF) {
+        u32 c_chan = chan_i & 1;
         if (chan->enable != GX_DISABLE && chan->amb_src == GX_SRC_REG) {
+            *unk = [c_chan];
+            if (== 0) {
+                if (chan_i - 4 < 2) {
+                    if (chan->amb_color != prev_ch.amb_color) {
+                        prev_ch.amb_color = chan->amb_color;
+                    }
+
+                } else {
+                    if (chan_i < 2) {
+
+                    } else {
+                        if (chan->amb_color.a != prev_ch.amb_color.a) {
+                            prev_ch.amb_color.a = chan->amb_color.a;
+                        }
+                    }
+                }
+                prev_ch.amb_color.a = chan->amb_color.a;
+                GX_SetChanAmbColor(chan_i, chan->amb_color);
+            } else {
+                GX_SetChanAmbColor(c_chan + 4, chan->amb_color);
+                prev_ch.amb_color = chan->amb_color;
+            }
         }
 
         if (chan->mat_src == GX_SRC_REG) {
+            *unk = [c_chan];
+            if (== 0) {
+                if (chan_i - 4 < 2) {
+                    if (chan->mat_color != prev_ch.mat_color) {
+                        prev_ch.mat_color = chan->mat_color;
+                    }
+
+                } else {
+                    if (chan_i < 2) {
+
+                    } else {
+                        if (chan->mat_color.a != prev_ch.mat_color.a) {
+                            prev_ch.mat_color.a = chan->mat_color.a;
+                        }
+                    }
+                }
+                GX_SetChanMatColor(chan_i, chan->mat_color);
+            } else {
+                GX_SetChanMatColor(c_chan + 4, chan->mat_color);
+                prev_ch.mat_color = chan->mat_color;
+            }
+        }
+
+        if ((chan->enable != prev_ch.enable) || (chan->amb_src != prev_ch.amb_src) || (chan->mat_src != prev_ch.mat_src) || (chan->light_mask != prev_ch.light_mask) || (chan->diff_fn != prev_ch.diff_fn) || (chan->attn_fn != prev_ch.attn_fn)) {
+            GX_SetChanCtrl(chan_i, chan->enable, chan->amb_src, chan->mat_src, chan->light_mask, chan->diff_fn, chan->attn_fn);
+            prev_ch.enable = chan->enable;
+            prev_ch.amb_src = chan->amb_src;
+            prev_ch.mat_src = chan->mat_src;
+            prev_ch.light_mask = chan->light_mask;
+            prev_ch.diff_fn = chan->diff_fn;
+            prev_ch.attn_fn = chan->attn_fn;
+            if (chan_i - 4 < 2) {
+                /*prev_ch.enable = chan->enable;
+                prev_ch.amb_src = chan->amb_src;
+                prev_ch.mat_src = chan->mat_src;
+                prev_ch.light_mask = chan->light_mask;
+                prev_ch.diff_fn = chan->diff_fn;
+                prev_ch.attn_fn = chan->attn_fn;*/
+            }
         }
     }
 }
