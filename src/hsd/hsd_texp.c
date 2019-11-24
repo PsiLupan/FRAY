@@ -1376,8 +1376,8 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     break;
                 }
             }
-            texp = texp->cnst.next;
         }
+        texp = texp->cnst.next;
     }
 }
 
@@ -3111,6 +3111,7 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
     return res;
 }
 
+#ifdef NO_ASM
 //80387BA4
 u32 HSD_TExpSimplify2(HSD_TExp* texp)
 {
@@ -3164,3 +3165,4 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
 
     return 0;
 }
+#endif
