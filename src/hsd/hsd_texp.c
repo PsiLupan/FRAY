@@ -6,8 +6,6 @@
 static u32 num_texgens = 0; //r13_40A4
 
 HSD_TevReg TevReg[4];
-static u8 a_reg[4] = { 0, 0, 0, 0 }; //r2_11F4
-static u8 c_reg[4] = { 0, 0, 0, 0 }; //r2_11F8
 
 //80362478
 void HSD_StateRegisterTexGen(u32 coord)
@@ -216,7 +214,7 @@ HSD_TExp* HSD_TExpTev(HSD_TExp** list)
     HSD_TExp* texp = (HSD_TExp*)hsdAllocMemPiece(sizeof(HSD_TETev));
     HSD_CheckAssert("HSD_TExpTev: No free memory", texp != NULL);
 
-    memset(texp, 0xFF, sizeof(HSD_TExp));
+    memset(texp, 0xFF, sizeof(HSD_TETev));
     texp->type = HSD_TE_TEV;
     texp->tev.next = *list;
     *list = texp;
@@ -257,7 +255,7 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** 
             }
             return result;
         }
-        if (texp->type == 4 && texp->cnst.val == val && texp->cnst.comp == comp) {
+        if (texp->type == HSD_TE_CNST && texp->cnst.val == val && texp->cnst.comp == comp) {
             HSD_CheckAssert("HSD_TExpCnst: ctype != type", texp->cnst.ctype == type);
             break;
         }
@@ -1462,6 +1460,9 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
     u8 dst;
     s32 c_use = 4;
     s32 a_use = 4;
+
+    u8 a_reg[4] = { 0, 0, 0, 0 }; //r2_11F4
+    u8 c_reg[4] = { 0, 0, 0, 0 }; //r2_11F8
 
     for (num = num - 1; num > -1; --num) {
         HSD_TETev* tev = list[order[num]].tev;
