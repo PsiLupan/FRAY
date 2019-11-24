@@ -6,8 +6,6 @@
 static u32 num_texgens = 0; //r13_40A4
 
 HSD_TevReg TevReg[4];
-static u8 a_reg[4] = { 0, 0, 0, 0 }; //r2_11F4
-static u8 c_reg[4] = { 0, 0, 0, 0 }; //r2_11F8
 
 //80362478
 void HSD_StateRegisterTexGen(u32 coord)
@@ -1462,6 +1460,9 @@ static s32 assign_reg(s32 num, u32* unused, HSD_TExpDag* list, s32* order)
     u8 dst;
     s32 c_use = 4;
     s32 a_use = 4;
+
+    u8 a_reg[4] = { 0, 0, 0, 0 }; //r2_11F4
+    u8 c_reg[4] = { 0, 0, 0, 0 }; //r2_11F8
 
     for (num = num - 1; num > -1; --num) {
         HSD_TETev* tev = list[order[num]].tev;
