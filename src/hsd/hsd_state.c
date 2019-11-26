@@ -2,7 +2,7 @@
 
 #include "hsd_lobj.h"
 
-static u8 state_num_chans = -1; //This variable is set but unused?
+static u8 state_num_chans = -1; //r13_40A0
 static u8 state_num_tevstages; //r13_40A8
 
 /* HSD_STATE_PRIMITIVE Group */
@@ -41,8 +41,9 @@ static struct {
     f32 shininess;
 } matstate;
 
-static HSD_Chan prev_ch;
+static HSD_Chan prev_ch[4];
 static HSD_Chan invalid_prev_ch;
+static u8 chan_disabled[4] = {1, 1, 1, 1}; //r13_409C - r13_4090
 
 static void HSD_DisableChannelLighting(u32 channel)
 {
@@ -650,14 +651,85 @@ void HSD_StateInvalidate(HSD_StateMask state)
 }
 
 //803620A4
-void HSD_SetupChannel(HSD_Chan* chan)
+void HSD_SetupChannel(HSD_Chan* ch)
 {
-    if (chan != NULL && chan->chan != 0xFF) {
-        u32 c_chan = chan->chan & 1;
-        if (chan->enable != GX_DISABLE && chan->amb_src == GX_SRC_REG) {
+    if (ch != NULL && ch->chan != 0xFF) {
+        u32 idx = ch->chan & 3;
+        u32 chan = ch->chan & 1;
+        if (ch->enable != GX_DISABLE && ch->amb_src == GX_SRC_REG) {
+            if (chan_disabled[chan] == 0) {
+                if (ch->chan == 4 || ch->chan == 5) {
+                    if (ch->amb_color.r != prev_ch[chan].amb_color.r || ch->amb_color.g != prev_ch[chan].amb_color.g || ch->amb_color.b != prev_ch[chan].amb_color.b || ch->amb_color.a != prev_ch[chan].amb_color.a) {
+                        prev_ch[chan].amb_color = ch->amb_color;
+                    }
+                } else {
+                    if (ch->chan == 0 || ch->chan == 1) {
+                        if ((ch->amb_color.r ^ prev_ch[chan].amb_color.r) != 0 || (ch->amb_color.g ^ prev_ch[chan].amb_color.g) != 0 || (ch->amb_color.b ^ prev_ch[chan].amb_color.b) != 0) { 
+                            //(chan->amb_color ^ prev_ch.amb_color) & 0xffffff00 != 0 - Alpha is being masked off
+                            prev_ch[chan].amb_color.r = ch->amb_color.r;
+                            prev_ch[chan].amb_color.g = ch->amb_color.g;
+                            prev_ch[chan].amb_color.b = ch->amb_color.b;
+                        }
+                    } else {
+                        if (ch->amb_color.a != prev_ch[chan].amb_color.a) {
+                            prev_ch[chan].amb_color.a = ch->amb_color.a;
+                        }
+                    }
+                }
+                prev_ch[chan].amb_color.a = ch->amb_color.a;
+                GX_SetChanAmbColor(ch->chan, ch->amb_color);
+            } else {
+                chan_disabled[chan] = 0;
+                GX_SetChanAmbColor(chan + 4, ch->amb_color);
+                prev_ch[chan].amb_color = ch->amb_color;
+            }
         }
 
-        if (chan->mat_src == GX_SRC_REG) {
+        if (ch->mat_src == GX_SRC_REG) {
+            u8* offset = &chan_disabled[2];
+            if (offset[chan] == 0) {
+                if (ch->chan == 4 || ch->chan == 5) {
+                    if (ch->mat_color.r != prev_ch[chan].mat_color.r || ch->mat_color.g != prev_ch[chan].mat_color.g || ch->mat_color.b != prev_ch[chan].mat_color.b || ch->mat_color.a != prev_ch[chan].mat_color.a) {
+                        prev_ch[chan].mat_color = ch->mat_color;
+                    }
+                } else {
+                    if (ch->chan == 0 || ch->chan == 1) {
+                        if ((ch->mat_color.r ^ prev_ch[chan].mat_color.r) != 0 || (ch->mat_color.g ^ prev_ch[chan].mat_color.g) != 0 || (ch->mat_color.b ^ prev_ch[chan].mat_color.b) != 0) {
+                            //(chan->mat_color ^ prev_ch.mat_color) & 0xffffff00 != 0 - Alpha is being masked off
+                            prev_ch[chan].mat_color.r = ch->mat_color.r;
+                            prev_ch[chan].mat_color.g = ch->mat_color.g;
+                            prev_ch[chan].mat_color.b = ch->mat_color.b;
+                        }
+                    } else {
+                        if (ch->mat_color.a != prev_ch[chan].mat_color.a) {
+                            prev_ch[chan].mat_color.a = ch->mat_color.a;
+                        }
+                    }
+                }
+                GX_SetChanMatColor(ch->chan, ch->mat_color);
+            } else {
+                chan_disabled[chan] = 0;
+                GX_SetChanMatColor(chan + 4, ch->mat_color);
+                prev_ch[chan].mat_color = ch->mat_color;
+            }
+        }
+
+        if ((ch->enable != prev_ch[idx].enable) || (ch->amb_src != prev_ch[idx].amb_src) || (ch->mat_src != prev_ch[idx].mat_src) || (ch->light_mask != prev_ch[idx].light_mask) || (ch->diff_fn != prev_ch[idx].diff_fn) || (ch->attn_fn != prev_ch[idx].attn_fn)) {
+            GX_SetChanCtrl(ch->chan, ch->enable, ch->amb_src, ch->mat_src, ch->light_mask, ch->diff_fn, ch->attn_fn);
+            prev_ch[idx].enable = ch->enable;
+            prev_ch[idx].amb_src = ch->amb_src;
+            prev_ch[idx].mat_src = ch->mat_src;
+            prev_ch[idx].light_mask = ch->light_mask;
+            prev_ch[idx].diff_fn = ch->diff_fn;
+            prev_ch[idx].attn_fn = ch->attn_fn;
+            if (ch->chan == 4 || ch->chan == 5) {
+                prev_ch[idx + 2].enable = ch->enable;
+                prev_ch[idx + 2].amb_src = ch->amb_src;
+                prev_ch[idx + 2].mat_src = ch->mat_src;
+                prev_ch[idx + 2].light_mask = ch->light_mask;
+                prev_ch[idx + 2].diff_fn = ch->diff_fn;
+                prev_ch[idx + 2].attn_fn = ch->attn_fn;
+            }
         }
     }
 }
@@ -805,6 +877,10 @@ u8 HSD_TevStage2Index(u8 idx)
 void _HSD_StateInvalidateColorChannel(void)
 {
     memcpy(&prev_ch, &invalid_prev_ch, sizeof(HSD_Chan));
+    for(u32 i = 0; i < 4; i++){
+        chan_disabled[i] = 1;
+    }
+    state_num_chans = -1;
 }
 
 //80362CF8

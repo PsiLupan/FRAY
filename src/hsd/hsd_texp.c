@@ -1252,7 +1252,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
 
         if (texp->cnst.reg < 8) {
             i = i | 1 << texp->cnst.reg;
-            if (texp->cnst.comp != 1) {
+            if (texp->cnst.comp != HSD_TE_RGB) {
                 switch (texp->cnst.ctype) {
                 case HSD_TE_U8:
                     te_res = *(u8*)texp->cnst.val;
@@ -1313,11 +1313,10 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                 } else {
                     if (texp->cnst.idx == 3) {
                         color[texp->cnst.reg].a = te_res;
-                    } else {
-                        color[texp->cnst.reg].r = te_res;
-                        color[texp->cnst.reg].g = te_res;
-                        color[texp->cnst.reg].b = te_res;
                     }
+                    color[texp->cnst.reg].r = te_res;
+                    color[texp->cnst.reg].g = te_res;
+                    color[texp->cnst.reg].b = te_res;
                 }
             } else {
                 switch (texp->cnst.ctype) {
