@@ -659,13 +659,17 @@ void HSD_SetupChannel(HSD_Chan* chan)
             *unk = [c_chan];
             if (== 0) {
                 if (chan_i - 4 < 2) {
-                    if (chan->amb_color != prev_ch.amb_color) {
+                    if (chan->amb_color.r != prev_ch.amb_color.r || chan->amb_color.g != prev_ch.amb_color.g || chan->amb_color.b != prev_ch.amb_color.b || chan->amb_color.a != prev_ch.amb_color.a) {
                         prev_ch.amb_color = chan->amb_color;
                     }
-
                 } else {
                     if (chan_i < 2) {
-
+                        if ((chan->amb_color.r ^ prev_ch.amb_color.r) != 0 || (chan->amb_color.g ^ prev_ch.amb_color.g) != 0 || (chan->amb_color.b ^ prev_ch.amb_color.b) != 0) { 
+                            //(chan->amb_color ^ prev_ch.amb_color) & 0xffffff00 != 0 - Alpha is being masked off
+                            prev_ch.amb_color.r = chan->amb_color.r;
+                            prev_ch.amb_color.g = chan->amb_color.g;
+                            prev_ch.amb_color.b = chan->amb_color.b;
+                        }
                     } else {
                         if (chan->amb_color.a != prev_ch.amb_color.a) {
                             prev_ch.amb_color.a = chan->amb_color.a;
@@ -684,13 +688,17 @@ void HSD_SetupChannel(HSD_Chan* chan)
             *unk = [c_chan];
             if (== 0) {
                 if (chan_i - 4 < 2) {
-                    if (chan->mat_color != prev_ch.mat_color) {
+                    if (chan->mat_color.r != prev_ch.mat_color.r || chan->mat_color.g != prev_ch.mat_color.g || chan->mat_color.b != prev_ch.mat_color.b || chan->mat_color.a != prev_ch.mat_color.a) {
                         prev_ch.mat_color = chan->mat_color;
                     }
-
                 } else {
                     if (chan_i < 2) {
-
+                        if ((chan->mat_color.r ^ prev_ch.mat_color.r) != 0 || (chan->mat_color.g ^ prev_ch.mat_color.g) != 0 || (chan->mat_color.b ^ prev_ch.mat_color.b) != 0) {
+                            //(chan->mat_color ^ prev_ch.mat_color) & 0xffffff00 != 0 - Alpha is being masked off
+                            prev_ch.mat_color.r = chan->mat_color.r;
+                            prev_ch.mat_color.g = chan->mat_color.g;
+                            prev_ch.mat_color.b = chan->mat_color.b;
+                        }
                     } else {
                         if (chan->mat_color.a != prev_ch.mat_color.a) {
                             prev_ch.mat_color.a = chan->mat_color.a;
