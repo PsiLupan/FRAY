@@ -118,7 +118,7 @@ void HSD_JObjAddAnimAll(HSD_JObj*, HSD_AnimJoint*, HSD_MatAnimJoint*, HSD_ShapeA
 void JObjUpdateFunc(void*, u32, update*);
 void HSD_JObjAnim(HSD_JObj*);
 void HSD_JObjAnimAll(HSD_JObj*);
-void JObj_SetupInstanceMtx(HSD_JObj*, MtxP, u32, u32);
+void HSD_JObjDispAll(HSD_JObj*, MtxP, u32, u32);
 void HSD_JObjSetDefaultClass(HSD_JObjInfo*);
 HSD_JObj* HSD_JObjLoadJoint(HSD_JObjDesc*);
 void HSD_JObjResolveRefs(HSD_JObj*, HSD_JObjDesc*);
