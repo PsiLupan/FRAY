@@ -1274,7 +1274,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     break;
 
                 case HSD_TE_F32:
-                    te_res = (u32)(*(f32*)texp->cnst.val);
+                    te_res = (u32)(255.0f * *(f32*)texp->cnst.val);
                     if (te_res > 255) {
                         te_res = 255;
                     } else if (te_res < 0) {
@@ -1283,7 +1283,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     break;
 
                 case HSD_TE_F64:
-                    te_res = (u32)(*(f64*)texp->cnst.val);
+                    te_res = (u32)(255.0 * *(f64*)texp->cnst.val);
                     if (te_res > 255) {
                         te_res = 255;
                     } else if (te_res < 0) {
@@ -1319,61 +1319,84 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     color[texp->cnst.reg].b = te_res;
                 }
             } else {
-                switch (texp->cnst.ctype) {
-                case HSD_TE_U8:
-                    te_res = *(u8*)texp->cnst.val;
-                    break;
-                case HSD_TE_U16:
-                    te_res = *(u16*)texp->cnst.val;
-                    if (te_res > 255) {
-                        te_res = 255;
+                HSD_TEType j = texp->cnst.ctype;
+                u32 values[3];
+                f64* pdVar4;
+                if (j == 1) {
+                LAB_80385060:
+                    if (j == 2) {
+                    LAB_803850dc:
+                        pdVar4 = (f64*)(texp->cnst.val);
+                        values[0] = (u32)(255.0 * pdVar4[0]);
+                        values[1] = (u32)(255.0 * pdVar4[1]);
+                        values[2] = (u32)(255.0 * pdVar4[2]);
+                    } else {
+                        if (j < 2) {
+                            if (j < 1)
+                                goto LAB_803850dc;
+                            u16* puVar9 = (u16*)(texp->cnst.val);
+                            values[0] = puVar9[0];
+                            values[1] = puVar9[1];
+                            values[2] = puVar9[2];
+                        } else {
+                            if (3 < j)
+                                goto LAB_803850dc;
+                            f32* pfVar3 = (f32*)(texp->cnst.val);
+                            values[0] = (u32)(255.0f * pfVar3[0]);
+                            values[1] = (u32)(255.0f * pfVar3[1]);
+                            values[2] = (u32)(255.0f * pfVar3[2]);
+                        }
                     }
-                    break;
-
-                case HSD_TE_U32:
-                    te_res = *(u32*)texp->cnst.val;
+                    te_res = values[0];
                     if (te_res > 255) {
                         te_res = 255;
                     } else if (te_res < 0) {
                         te_res = 0;
                     }
-                    break;
-
-                case HSD_TE_F32:
-                    te_res = (u32)(*(f32*)texp->cnst.val);
-                    if (te_res > 255) {
-                        te_res = 255;
-                    } else if (te_res < 0) {
-                        te_res = 0;
-                    }
-                    break;
-
-                case HSD_TE_F64:
-                    te_res = (u32)(*(f64*)texp->cnst.val);
-                    if (te_res > 255) {
-                        te_res = 255;
-                    } else if (te_res < 0) {
-                        te_res = 0;
-                    }
-                    break;
-                }
-
-                switch (texp->cnst.idx) {
-                case 0:
                     color[texp->cnst.reg].r = te_res;
-                    break;
 
-                case 1:
+                    te_res = values[1];
+                    if (te_res > 255) {
+                        te_res = 255;
+                    } else if (te_res < 0) {
+                        te_res = 0;
+                    }
                     color[texp->cnst.reg].g = te_res;
-                    break;
 
-                case 2:
+                    te_res = values[2];
+                    if (te_res > 255) {
+                        te_res = 255;
+                    } else if (te_res < 0) {
+                        te_res = 0;
+                    }
                     color[texp->cnst.reg].b = te_res;
-                    break;
-
-                case 3:
-                    color[texp->cnst.reg].a = te_res;
-                    break;
+                } else {
+                    if (j < 1) {
+                        if (j < 0)
+                            goto LAB_80385060;
+                        color[texp->cnst.reg].r = ((GXColor*)(texp->cnst.val))->r;
+                        color[texp->cnst.reg].g = ((GXColor*)(texp->cnst.val))->g;
+                        color[texp->cnst.reg].b = ((GXColor*)(texp->cnst.val))->b;
+                    } else {
+                        if (2 < j)
+                            goto LAB_80385060;
+                        u32* puVar5 = (u32*)(texp->cnst.val);
+                        te_res = puVar5[0];
+                        if (255 < puVar5[0]) {
+                            te_res = 255;
+                        }
+                        color[texp->cnst.reg].r = te_res;
+                        te_res = puVar5[1];
+                        if (255 < puVar5[1]) {
+                            te_res = 255;
+                        }
+                        color[texp->cnst.reg].g = te_res;
+                        te_res = puVar5[2];
+                        if (255 < puVar5[2]) {
+                            te_res = 255;
+                        }
+                        color[texp->cnst.reg].b = te_res;
+                    }
                 }
             }
         }
