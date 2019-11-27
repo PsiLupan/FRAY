@@ -29,10 +29,11 @@ INCLUDES	:=
 #---------------------------------------------------------------------------------
 
 #NODEBUG = -DNDEBUG
-CFLAGS	= -O1 -std=gnu18 -fstack-protector-all -Wall -Wno-implicit-function-declaration -Wno-missing-braces -Wno-switch $(MACHDEP) $(INCLUDE) $(NODEBUG)
-CXXFLAGS	= $(CFLAGS)
+CFLAGS	:= -O1 -std=gnu18 -fstack-protector-all -Wall -Wno-implicit-function-declaration -Wno-missing-braces -Wno-switch $(MACHDEP) $(INCLUDE) $(NODEBUG)
+CXXFLAGS	:= $(CFLAGS)
 
-LDFLAGS	= -g $(MACHDEP) -Wl,--unresolved-symbols=ignore-in-object-files,-Map,$(notdir $@).map -T$(PWD)/ogc.ld
+LDFLAGS	:= -g $(MACHDEP) -Wl,--unresolved-symbols=ignore-in-object-files,-Map,$(notdir $@).map -T$(PWD)/ogc.ld
+ASFLAGS :=	$(MACHDEP) -D_LANGUAGE_ASSEMBLY $(INCLUDE)
 
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
