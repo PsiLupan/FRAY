@@ -593,7 +593,7 @@ void HSD_TExpOrder(HSD_TExp* texp, void* tex, u8 chan)
 //80384114
 static s32 AssignColorReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 {
-    static u32 args[] = { 3, 5, 7, 1, 2, 4, 6, 0 };
+    static u32 args[] = { GX_CC_A0, GX_CC_A1, GX_CC_A2, GX_CC_APREV, GX_CC_C0, GX_CC_C1, GX_CC_C2, GX_CC_CPREV };
 
     HSD_TECnst* cnst = &tev->c_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
@@ -639,7 +639,7 @@ static s32 AssignColorReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 //80384274
 static s32 AssignAlphaReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 {
-    static u32 args[] = {2, 4, 6, 0, 1, 2, 3, 0};
+    static u32 args[] = { GX_CA_A0, GX_CA_A1, GX_CA_A2, GX_CA_APREV };
 
     HSD_TECnst* cnst = &tev->a_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
@@ -650,7 +650,7 @@ static s32 AssignAlphaReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                 cnst->reg = j;
                 cnst->idx = 3;
                 tev->a_in[idx].type = HSD_TE_IMM;
-                tev->a_in[idx].arg = args[j];
+                tev->a_in[idx].arg = args[j - 4];
                 return 0;
             }
         }
@@ -658,7 +658,7 @@ static s32 AssignAlphaReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
     }
     if (cnst->reg > 3) {
         tev->a_in[idx].type = HSD_TE_IMM;
-        tev->a_in[idx].arg = args[cnst->reg];
+        tev->a_in[idx].arg = args[cnst->reg - 4];
     }
     return -1;
 }
@@ -685,7 +685,7 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                     cnst->idx = 3;
                     tev->kcsel = regs[cnst->reg][cnst->idx];
                     tev->c_in[idx].type = HSD_TE_KONST;
-                    tev->c_in[idx].arg = 0xE;
+                    tev->c_in[idx].arg = GX_CC_KONST;
                     return 0;
                 }
             }
@@ -697,7 +697,7 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                     res->reg[i].color += 1;
                     tev->kcsel = regs[cnst->reg][cnst->idx];
                     tev->c_in[idx].type = HSD_TE_KONST;
-                    tev->c_in[idx].arg = 0xE;
+                    tev->c_in[idx].arg = GX_CC_KONST;
                     return 0;
                 }
             }
@@ -709,7 +709,7 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                     cnst->idx = 0;
                     tev->kcsel = rgb_regs[cnst->reg];
                     tev->c_in[idx].type = HSD_TE_KONST;
-                    tev->c_in[idx].arg = 0xE;
+                    tev->c_in[idx].arg = GX_CC_KONST;
                     return 0;
                 }
             }
@@ -720,11 +720,11 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
         if (cnst->comp == HSD_TE_X) {
             tev->kcsel = regs[cnst->reg][cnst->idx];
             tev->c_in[idx].type = HSD_TE_KONST;
-            tev->c_in[idx].arg = 0xE;
+            tev->c_in[idx].arg = GX_CC_KONST;
         } else {
             tev->kcsel = rgb_regs[cnst->reg];
             tev->c_in[idx].type = HSD_TE_KONST;
-            tev->c_in[idx].arg = 0xE;
+            tev->c_in[idx].arg = GX_CC_KONST;
         }
         return 0;
     }
@@ -750,7 +750,7 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                 cnst->idx = 3;
                 tev->kasel = regs[cnst->reg][cnst->idx];
                 tev->a_in[idx].type = HSD_TE_KONST;
-                tev->a_in[idx].arg = 0x6;
+                tev->a_in[idx].arg = GX_CA_KONST;
                 return 0;
             }
         }
@@ -761,7 +761,7 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
                 res->reg[i].color += 1;
                 tev->kasel = regs[cnst->reg][cnst->idx];
                 tev->a_in[idx].type = HSD_TE_KONST;
-                tev->a_in[idx].arg = 0x6;
+                tev->a_in[idx].arg = GX_CA_KONST;
                 return 0;
             }
         }
@@ -770,7 +770,7 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
     if (cnst->reg < 4) {
         tev->kasel = regs[cnst->reg][cnst->idx];
         tev->a_in[idx].type = HSD_TE_KONST;
-        tev->a_in[idx].arg = 6;
+        tev->a_in[idx].arg = GX_CA_KONST;
         return 0;
     }
     return -1;
