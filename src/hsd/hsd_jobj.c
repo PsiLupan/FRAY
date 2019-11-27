@@ -770,7 +770,8 @@ static void setupInstanceMtx(HSD_JObj* jobj, MtxP vmtx, Mtx mtx)
     if (vmtx == NULL) {
         HSD_CObj* cobj = HSD_CObjGetCurrent();
         assert(cobj != NULL);
-        guMtxConcat(cobj->view_mtx, mtx, mtx);
+        vmtx = cobj->view_mtx;
+        guMtxConcat(vmtx, mtx, mtx);
     } else {
         guMtxConcat(vmtx, mtx, mtx);
     }
