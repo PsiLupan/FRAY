@@ -83,12 +83,10 @@ s32 HSD_LObjGetNbActive(void)
     return nb_active_lights;
 }
 
-//8036540C - Modified due to Libogc
-HSD_LObj* HSD_LObjGetActiveByID(u32 idx)
+//8036540C
+HSD_LObj* HSD_LObjGetActiveByID(u32 id)
 {
-    if (idx == GX_MAXLIGHT) {
-        idx = MAX_GXLIGHT - 1;
-    }
+    u32 idx = HSD_LightID2Index(id);
     if (0 <= idx && idx < MAX_GXLIGHT) {
         return active_lights[idx];
     } else {
@@ -97,7 +95,7 @@ HSD_LObj* HSD_LObjGetActiveByID(u32 idx)
 }
 
 //80365458
-HSD_LObj* HSD_LObjGetActiveByIndex(u8 idx)
+HSD_LObj* HSD_LObjGetActiveByIndex(u32 idx)
 {
     if (0 <= idx && idx < MAX_GXLIGHT - 1) {
         return active_lights[idx];
@@ -654,8 +652,8 @@ HSD_LObj* HSD_LObjGetCurrentByType(u32 type)
     return NULL;
 }
 
-//80366A78 - Unused due to Libogc in our version
-/*u32 HSD_LightID2Index(u8 id){
+//80366A78
+u32 HSD_LightID2Index(u32 id){
 	u32 index;
 	switch (id) {
 		case GX_LIGHT0: index = 0; break;
@@ -670,7 +668,7 @@ HSD_LObj* HSD_LObjGetCurrentByType(u32 type)
 		default: assert(0);
 	}
 	return index;
-}*/
+}
 
 //80366B64
 u32 HSD_Index2LightID(u32 index)
