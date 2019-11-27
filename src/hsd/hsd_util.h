@@ -22,8 +22,8 @@ typedef struct _HSD_SList {
 } HSD_SList;
 
 typedef struct _HSD_Spline {
-    u16 type; //0x00
-    u16 numcv; //0x02
+    u8 type; //0x00
+    s16 numcv; //0x02
     f32 tension; //0x04
     guVector* cv; //0x08
     f32 totalLength; //0x0C
