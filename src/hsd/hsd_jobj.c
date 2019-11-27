@@ -1506,29 +1506,41 @@ static void resolveIKEffector(HSD_JObj* jobj)
     if (prev != NULL) {
         HSD_RObj* robj = prev->robj;
         if (robj != NULL) {
-            if(HSD_RObjGetByType(prev->robj, 0x40000000, 0) != 0){
-            guVector w_vec = { guMtxRowCol(prev->mtx, 0, 3), guMtxRowCol(prev->mtx, 1, 3), guMtxRowCol(prev->mtx, 2, 3) };
-            guVector x_vec = { guMtxRowCol(prev->mtx, 0, 0), guMtxRowCol(prev->mtx, 1, 0), guMtxRowCol(prev->mtx, 2, 0) };
-            f32 dot = guVecDotProduct(&x_vec, &x_vec);
-            dot = 1.f / (1e-10f + dot);
-            if (0.f < dot) {
-                f64 sval = 1.0 / sqrt(dot);
-                sval = 0.5 * sval * -(dot * sval * sval - 3.0);
-                sval = 0.5 * sval * -(dot * sval * sval - 3.0);
-                dot = (f32)(dot * 0.5 * sval * -(dot * sval * sval - 3.0));
+            if (HSD_RObjGetByType(prev->robj, 0x40000000, 0) != 0) {
+                guVector w_vec = { guMtxRowCol(prev->mtx, 0, 3), guMtxRowCol(prev->mtx, 1, 3), guMtxRowCol(prev->mtx, 2, 3) };
+                guVector x_vec = { guMtxRowCol(prev->mtx, 0, 0), guMtxRowCol(prev->mtx, 1, 0), guMtxRowCol(prev->mtx, 2, 0) };
+                f32 dot = guVecDotProduct(&x_vec, &x_vec);
+                dot = 1.f / (1e-10f + dot);
+                if (0.f < dot) {
+                    f64 sval = 1.0 / sqrt(dot);
+                    sval = 0.5 * sval * -(dot * sval * sval - 3.0);
+                    sval = 0.5 * sval * -(dot * sval * sval - 3.0);
+                    dot = (f32)(dot * 0.5 * sval * -(dot * sval * sval - 3.0));
+                }
+                guVecScale(&x_vec, &x_vec, dot);
+                f32 val = 1.f;
+                if (prev->pvec != NULL) {
+                    val = prev->pvec->x;
+                }
+                guVecScale(&x_vec, &x_vec, robj->u.limit * val);
+                guVector res;
+                guVecAdd(&w_vec, &x_vec, &res);
+                guMtxRowCol(jobj->mtx, 0, 3) = res.x;
+                guMtxRowCol(jobj->mtx, 1, 3) = res.y;
+                guMtxRowCol(jobj->mtx, 2, 3) = res.z;
             }
-            guVecScale(&x_vec, &x_vec, dot);
-            f32 val = 1.f;
-            if (prev->pvec != NULL) {
-                val = prev->pvec->x;
-            }
-            guVecScale(&x_vec, &x_vec, robj->u.limit * val);
-            guVector res;
-            guVecAdd(&w_vec, &x_vec, &res);
-            guMtxRowCol(jobj->mtx, 0, 3) = res.x;
-            guMtxRowCol(jobj->mtx, 1, 3) = res.y;
-            guMtxRowCol(jobj->mtx, 2, 3) = res.z;
-            }
+        }
+    }
+}
+
+static void HSD_JObjUpdateRObj(HSD_JObj* jobj)
+{
+    HSD_RObj* robj = jobj->robj;
+    if (robj != NULL) {
+        HSD_RObjUpdateAll(robj, jobj, JObjUpdateFunc);
+        if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
+            HSD_JOBJ_METHOD(jobj)->make_mtx(jobj);
+            jobj->flags &= 0xFFFFFFBF;
         }
     }
 }
@@ -1544,9 +1556,6 @@ void HSD_JObjSetupMatrix(HSD_JObj* jobj)
 // 80373078
 void HSD_JObjSetupMatrixSub(HSD_JObj* jobj)
 {
-    HSD_JObj* prev = NULL;
-    HSD_RObj* robj = NULL;
-
     if (jobj != NULL) {
         HSD_JOBJ_METHOD(jobj)->make_mtx(jobj);
         jobj->flags &= 0xFFFFFFBF;
@@ -1567,14 +1576,7 @@ void HSD_JObjSetupMatrixSub(HSD_JObj* jobj)
             resolveIKEffector(jobj);
             break;
         default:
-            robj = jobj->robj;
-            if (robj != NULL) {
-                HSD_RObjUpdateAll(robj, jobj, JObjUpdateFunc);
-                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    HSD_JOBJ_METHOD(jobj)->make_mtx(jobj);
-                    jobj->flags &= 0xFFFFFFBF;
-                }
-            }
+            HSD_JObjUpdateRObj(jobj);
         }
         jobj->flags &= 0xFFFFFFBF;
         return;
