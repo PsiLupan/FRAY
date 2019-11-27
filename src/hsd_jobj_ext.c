@@ -116,5 +116,5 @@ void JObj_SetupInstanceMtx_Callback(HSD_GObj* gobj, s32 offset)
 {
     HSD_JObj* jobj = GOBJ_HSD_JOBJ(gobj);
     u32 flags = GObj_GetFlagFromArray(offset);
-    HSD_JObjDispAll(jobj, 0, flags, 0);
+    HSD_JObjDispAll(jobj, NULL, flags, 0);
 }
