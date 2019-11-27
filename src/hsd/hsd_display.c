@@ -281,11 +281,7 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
         if ((jobj->flags & JOBJ_HIDDEN) == 0) {
             u32 m_flags = jobj->flags & (trsp_mask << JOBJ_TRSP_SHIFT);
             if (m_flags != 0) {
-                BOOL need_matrix = FALSE;
                 if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    need_matrix = TRUE;
-                }
-                if (need_matrix == TRUE) {
                     HSD_JObjSetupMatrixSub(jobj);
                 }
 
