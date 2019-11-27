@@ -21,7 +21,7 @@ MACHDEP =  -DGEKKO -mcpu=750 \
 #---------------------------------------------------------------------------------
 TARGET		:= main
 BUILD		:= build
-SOURCES		:= asm src/ogcext/ src/hsd/ src
+SOURCES		:= src/asm src/ogcext/ src/hsd/ src
 INCLUDES	:= 
 
 #---------------------------------------------------------------------------------
