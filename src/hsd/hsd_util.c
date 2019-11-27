@@ -80,23 +80,23 @@ HSD_SList* HSD_SListRemove(HSD_SList* list)
 }
 
 //80378A34
-f32 splGetHermite(f32 a, f32 b, f32 c, f32 d, f32 f, f32 e)
+f32 splGetHermite(f32 fterm, f32 time, f32 p0, f32 p1, f32 d0, f32 d1)
 {
-    f32 fVar1 = b * b;
-    f32 fVar2 = a * a * fVar1 * b;
-    f32 fVar5 = 3.0f * fVar1 * a * a;
-    f32 fVar3 = fVar2 - fVar1 * a;
-    f32 fVar4 = 2.0f * fVar2 * a;
-    return f * fVar3 + e * (b + (fVar3 - fVar1 * a)) + c * (1.0f + (fVar4 - fVar5)) + d * (-fVar4 + fVar5);
+    f32 fVar1 = time * time;
+    f32 fVar2 = fterm * fterm * fVar1 * time;
+    f32 fVar5 = 3.0f * fVar1 * fterm * fterm;
+    f32 fVar3 = fVar2 - fVar1 * fterm;
+    f32 fVar4 = 2.0f * fVar2 * fterm;
+    return d1 * fVar3 + d0 * (time + (fVar3 - fVar1 * fterm)) + p0 * (1.0f + (fVar4 - fVar5)) + p1 * (-fVar4 + fVar5);
 }
 
 //80378F38
-static void splArcLengthGetParameter(HSD_Spline* spline, f32 unkf, guVector* res)
+static void splArcLengthGetParameter(HSD_Spline* spline, f32 s, f32 uL)
 {
 }
 
 //803792C8
-void splArcLengthPoint(HSD_Spline* spline, f32 unkf, guVector* res)
+void splArcLengthPoint(HSD_Spline* spline, f32 s, guVector* pos)
 {
 }
 
