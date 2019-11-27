@@ -1042,7 +1042,6 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 //80384B20
 static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev, u32* init_aprev)
 {
-    static u32 args[] = { 1, 2, 3, 0 };
     u32 swap;
     u8 arg;
 
@@ -1092,14 +1091,14 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
     u8 val = texp->tev.a_op;
     if (texp->tev.c_op == GX_COLORNULL || (texp->tev.c_ref == 0 && val != 8 && val != 9 && val != 10 && val != 11 && val != 12 && val != 13)) {
         desc->desc.u.tevconf.clr_op = 0;
-        desc->desc.u.tevconf.clr_a = 0xF;
-        desc->desc.u.tevconf.clr_b = 0xF;
-        desc->desc.u.tevconf.clr_c = 0xF;
+        desc->desc.u.tevconf.clr_a = GX_CC_ZERO;
+        desc->desc.u.tevconf.clr_b = GX_CC_ZERO;
+        desc->desc.u.tevconf.clr_c = GX_CC_ZERO;
         if (*init_cprev == 0) {
-            desc->desc.u.tevconf.clr_d = 0;
+            desc->desc.u.tevconf.clr_d = GX_CC_CPREV;
         } else {
             *init_cprev = 0;
-            desc->desc.u.tevconf.clr_d = 0xF;
+            desc->desc.u.tevconf.clr_d = GX_CC_ZERO;
         }
         desc->desc.u.tevconf.clr_scale = 0;
         desc->desc.u.tevconf.clr_bias = 0;
@@ -1111,28 +1110,28 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
         arg = texp->tev.c_in[0].arg;
         swap = arg;
         if (arg == 0xFF) {
-            swap = 0xF;
+            swap = GX_CC_ZERO;
         }
         desc->desc.u.tevconf.clr_a = swap;
 
         arg = texp->tev.c_in[1].arg;
         swap = arg;
         if (arg == 0xFF) {
-            swap = 0xF;
+            swap = GX_CC_ZERO;
         }
         desc->desc.u.tevconf.clr_b = swap;
 
         arg = texp->tev.c_in[2].arg;
         swap = arg;
         if (arg == 0xFF) {
-            swap = 0xF;
+            swap = GX_CC_ZERO;
         }
         desc->desc.u.tevconf.clr_c = swap;
 
         arg = texp->tev.c_in[3].arg;
         swap = arg;
         if (arg == 0xFF) {
-            swap = 0xF;
+            swap = GX_CC_ZERO;
         }
         desc->desc.u.tevconf.clr_d = swap;
 
@@ -1154,7 +1153,7 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
 
         HSD_CheckAssert("TExp2TevDesc: c_dst is undefined", texp->tev.c_dst != 0xFF);
 
-        desc->desc.u.tevconf.clr_out_reg = args[texp->tev.c_dst];
+        desc->desc.u.tevconf.clr_out_reg = HSD_Index2TevRegID(texp->tev.c_dst);
         if (desc->desc.u.tevconf.clr_out_reg == 0) {
             *init_cprev = 0;
         }
@@ -1162,14 +1161,14 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
 
     if (texp->tev.a_op == 0xff || texp->tev.a_ref == 0) {
         desc->desc.u.tevconf.alpha_op = 0;
-        desc->desc.u.tevconf.alpha_a = 7;
-        desc->desc.u.tevconf.alpha_b = 7;
-        desc->desc.u.tevconf.alpha_c = 7;
+        desc->desc.u.tevconf.alpha_a = GX_CA_ZERO;
+        desc->desc.u.tevconf.alpha_b = GX_CA_ZERO;
+        desc->desc.u.tevconf.alpha_c = GX_CA_ZERO;
         if (*init_aprev == 0) {
-            desc->desc.u.tevconf.alpha_d = 0;
+            desc->desc.u.tevconf.alpha_d = GX_CA_APREV;
         } else {
             *init_aprev = 0;
-            desc->desc.u.tevconf.alpha_d = 7;
+            desc->desc.u.tevconf.alpha_d = GX_CA_ZERO;
         }
         desc->desc.u.tevconf.alpha_scale = 0;
         desc->desc.u.tevconf.alpha_bias = 0;
@@ -1181,28 +1180,28 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
         arg = texp->tev.a_in[0].arg;
         swap = arg;
         if (arg == 0xFF) {
-            swap = 7;
+            swap = GX_CA_ZERO;
         }
         desc->desc.u.tevconf.alpha_a = swap;
 
         arg = texp->tev.a_in[1].arg;
         swap = arg;
         if (arg == 0xFF) {
-            swap = 7;
+            swap = GX_CA_ZERO;
         }
         desc->desc.u.tevconf.alpha_b = swap;
 
         arg = texp->tev.a_in[2].arg;
         swap = arg;
         if (arg == 0xFF) {
-            swap = 7;
+            swap = GX_CA_ZERO;
         }
         desc->desc.u.tevconf.alpha_c = swap;
 
         arg = texp->tev.a_in[3].arg;
         swap = arg;
         if (arg == 0xFF) {
-            swap = 7;
+            swap = GX_CA_ZERO;
         }
         desc->desc.u.tevconf.alpha_d = swap;
 
@@ -1224,7 +1223,7 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
 
         HSD_CheckAssert("TExp2TevDesc: a_dst is undefined", texp->tev.a_dst != 0xFF);
 
-        desc->desc.u.tevconf.alpha_out_reg = args[texp->tev.a_dst];
+        desc->desc.u.tevconf.alpha_out_reg = HSD_Index2TevRegID(texp->tev.a_dst);
         if (desc->desc.u.tevconf.alpha_out_reg == 0) {
             *init_aprev = 0;
         }
