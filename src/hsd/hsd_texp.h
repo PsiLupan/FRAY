@@ -213,6 +213,6 @@ void HSD_TExpFreeTevDesc(HSD_TExpTevDesc*);
 s32 HSD_TExpMakeDag(HSD_TExp*, HSD_TExpDag*);
 void HSD_TExpSchedule(u32, HSD_TExpDag*, HSD_TExp**, HSD_TExpRes*);
 u32 HSD_TExpSimplify(HSD_TExp*);
-u32 HSD_TExpSimplify2(HSD_TExp*);
+extern u32 HSD_TExpSimplify2(HSD_TExp*);
 
 #endif
