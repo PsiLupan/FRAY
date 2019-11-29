@@ -660,6 +660,7 @@ static s32 AssignAlphaReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
     if (cnst->reg > 3) {
         tev->a_in[idx].type = HSD_TE_IMM;
         tev->a_in[idx].arg = args[cnst->reg - 4];
+        return 0;
     }
     return -1;
 }
