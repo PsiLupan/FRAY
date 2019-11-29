@@ -719,14 +719,12 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
         return -1;
     }
     if (cnst->reg < 4) {
+        tev->c_in[idx].type = HSD_TE_KONST;
+        tev->c_in[idx].arg = GX_CC_KONST;
         if (cnst->comp == HSD_TE_X) {
             tev->kcsel = xsel[cnst->reg][cnst->idx];
-            tev->c_in[idx].type = HSD_TE_KONST;
-            tev->c_in[idx].arg = GX_CC_KONST;
         } else {
             tev->kcsel = csel[cnst->reg];
-            tev->c_in[idx].type = HSD_TE_KONST;
-            tev->c_in[idx].arg = GX_CC_KONST;
         }
         return 0;
     }
@@ -919,7 +917,7 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                 } while (idx < 4);
                 puVar7 = &texp->type + idx * 2;
                 while (idx < 4) {
-                    if (*(char*)(puVar7 + 9) == '\x04') {
+                    if (*(s8*)(puVar7 + 9) == '\x04') {
                         iVar5 = AssignColorReg(&texp->tev, idx, res);
                         if (iVar5 < 0) {
                             if (iVar5 >= 0) {
@@ -998,7 +996,7 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                 
                 puVar7 = &texp->type + idx * 2;
                 while (idx < 4) {
-                    if (*(char*)(puVar7 + 0x11) == '\x04') {
+                    if (*(s8*)(puVar7 + 0x11) == '\x04') {
                         iVar5 = AssignAlphaReg(&texp->tev, idx, res);
                         if (iVar5 < 0) {
                             if (iVar5 >= 0) {
