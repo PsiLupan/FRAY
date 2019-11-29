@@ -2752,10 +2752,10 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
     u8 sel;
     BOOL bVar2;
     BOOL bVar3;
-    u32 uVar11;
+    u32 result;
 
     HSD_TExp* curr;
-    uVar11 = 0;
+    result = FALSE;
     do {
         sel = texp->tev.a_op;
         bVar3 = false;
@@ -2952,9 +2952,9 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
             }
         }
         if (!bVar3) {
-            return uVar11;
+            return result;
         }
-        uVar11 = 1;
+        result = TRUE;
     } while (true);
 }
 
