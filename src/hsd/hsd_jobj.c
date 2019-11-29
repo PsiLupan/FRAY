@@ -10,12 +10,14 @@ static void JObjInfoInit(void);
 
 HSD_JObjInfo hsdJObj = { JObjInfoInit };
 
-static HSD_SList* ufc_callbacks = NULL; // r13_400C
+static HSD_JObj* current_jobj = NULL; // r13_400C
+
 static void (*ptcltgt_callback)(HSD_JObj*, s32) = NULL;
 static void (*jsound_callback)(s32) = NULL; // r13_4014
 static void (*dptcl_callback)(s32, s32, s32, HSD_JObj*) = NULL; // r13_4018
+static HSD_SList* ufc_callbacks = NULL; // r13_401C
+typedef void ufc_callback(HSD_JObj*, u32, f32);
 
-static HSD_JObj* current_jobj = NULL; // r13_401C
 static HSD_JObjInfo* default_class = NULL; // r13_4020
 
 // 8036EC10
@@ -482,6 +484,8 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
     HSD_JObj* jobj = (HSD_JObj*)obj;
     if (jobj != NULL) {
         Mtx mtx;
+        HSD_SList* callbacks = ufc_callbacks;
+
         switch (type) {
         case 1:
             if ((jobj->flags & JOINT1) != 0) {
@@ -626,13 +630,13 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
         case 27:
         case 28:
         case 29:
-            /*HSD_JObj* jo = r13_401C;
-                            f32 val = 176.f;
-                            while(jo != NULL){
-                                    u32 uval = (u32)*fval;
-                                    (*jo->0x4)(jobj, type, uval);
-                                    jo = jo->next; //0x00
-                            }*/
+            /*
+            f32 val = 176.f;
+            while(callbacks != NULL){
+                u32 uval = (u32)*fval;
+                (*callbacks->data)(jobj, type, uval);
+                callbacks = callbacks->next; //0x00
+            }*/
             break;
         case 30:
         case 31:
@@ -644,16 +648,15 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
         case 37:
         case 38:
         case 39:
-            /*HSD_JObj* jo = r13_401C;
-                            while(jo != NULL){
-                                    (*jo->0x4)(jobj, type, *fval);
-                                    jo = jo->next;
-                            }*/
+            while(callbacks != NULL){
+                ufc_callback* callback = callbacks->data;
+                (callback)(jobj, type, val->fv);
+                callbacks = callbacks->next;
+            }
             break;
         case 40:
             if (dptcl_callback != NULL) {
-                (*dptcl_callback)(0, val->iv & 0x3f, val->iv >> 6 & 0xffffff,
-                    jobj); // 8005DB70 during gameplay
+                (*dptcl_callback)(0, val->iv & 0x3f, val->iv >> 6 & 0xffffff, jobj); // 8005DB70 during gameplay
             }
             break;
         case 41:
