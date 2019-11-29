@@ -122,7 +122,7 @@ void HSD_TExpUnref(HSD_TExp* texp, u8 sel)
             return;
         }
     } else if (type == HSD_TE_TEV) {
-        if (sel == GX_ENABLE) {
+        if (sel == TRUE) {
             if (texp->tev.c_ref != 0) {
                 texp->tev.c_ref -= 1;
             }
@@ -779,16 +779,15 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 //803846C0
 static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 {
-#if 0
     s32 val = 0;
     u32 i;
 
     if (texp->tev.c_ref > 0) {
         if (texp->tev.kcsel == HSD_TE_UNDEF) {
             if (texp->tev.c_op == 0 && texp->tev.c_in[0].sel == 7 && texp->tev.c_in[1].sel == 7
-                && texp->tev.c_bias == 0 && texp->tev.c_scale == 0 && texp->tev.c_in[3].type == HSD_TE_CNST) {
-                if (AssignColorKonst(&texp->tev, 3, res) == -1) {
-                    val = AssignColorReg(&texp->tev, 3, res);
+                && texp->tev.c_bias == 0 && texp->tev.c_scale == 0 && texp->tev.c_in[3].type == HSD_TE_CNST) {     
+                if (AssignColorReg(&texp->tev, 3, res) == -1) {
+                    val = AssignColorKonst(&texp->tev, 3, res);
                     HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
                     return val;
                 }
@@ -861,174 +860,6 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
         }
     }
     return val;
-#else
-    bool bVar1;
-    bool bVar2;
-    bool bVar3;
-    bool bVar4;
-    s32 iVar5;
-    s32 idx;
-    u32* puVar7;
-
-    if (0 < texp->tev.c_ref) {
-        if (texp->tev.kcsel == 0xff) {
-            bVar4 = false;
-            bVar3 = false;
-            bVar2 = false;
-            bVar1 = false;
-            if ((texp->tev.c_op == 0) && (texp->tev.c_in[0].sel == 7)) {
-                bVar1 = true;
-            }
-            if ((bVar1) && (texp->tev.c_in[1].sel == 7)) {
-                bVar2 = true;
-            }
-            if ((bVar2) && (texp->tev.c_bias == 0)) {
-                bVar3 = true;
-            }
-            if ((bVar3) && (texp->tev.c_scale == 0)) {
-                bVar4 = true;
-            }
-            if ((bVar4) && (texp->tev.c_in[3].type == 4)) {
-                idx = AssignColorKonst(&texp->tev, 3, res);
-                if (idx < 0) {
-                    idx = AssignColorReg(&texp->tev, 3, res);
-                    if (idx < 0) {
-                        if (idx >= 0) {
-                            return idx;
-                        }
-                        HSD_Halt("val >= 0");
-                        return idx;
-                    }
-                }
-            } else {
-                idx = 0;
-                do {
-                    if ((texp->tev.c_in[idx].type == 4) && (iVar5 = AssignColorKonst(&texp->tev, idx, res), iVar5 < 0)) {
-                        iVar5 = AssignColorReg(&texp->tev, idx, res);
-                        if (iVar5 < 0) {
-                            if (iVar5 >= 0) {
-                                return iVar5;
-                            }
-                            HSD_Halt("val >= 0");
-                            return iVar5;
-                        }
-                    }
-                    idx = idx + 1;
-                } while (idx < 4);
-                puVar7 = &texp->type + idx * 2;
-                while (idx < 4) {
-                    if (*(s8*)(puVar7 + 9) == '\x04') {
-                        iVar5 = AssignColorReg(&texp->tev, idx, res);
-                        if (iVar5 < 0) {
-                            if (iVar5 >= 0) {
-                                return iVar5;
-                            }
-                            HSD_Halt("val >= 0");
-                            return iVar5;
-                        }
-                    }
-                    puVar7 = puVar7 + 2;
-                    idx = idx + 1;
-                }
-            }
-        } else {
-            idx = 0;
-            do {
-                if (texp->tev.c_in[idx].type == 4) {
-                    iVar5 = AssignColorReg(&texp->tev, idx, res);
-                    if (iVar5 < 0) {
-                        if (iVar5 >= 0) {
-                            return iVar5;
-                        }
-                        HSD_Halt("val >= 0");
-                        return iVar5;
-                    }
-                }
-                idx = idx + 1;
-            } while (idx < 4);
-        }
-    }
-    if (0 < texp->tev.a_ref) {
-        if (texp->tev.kasel == 0xff) {
-            bVar4 = false;
-            bVar3 = false;
-            bVar2 = false;
-            bVar1 = false;
-            if ((texp->tev.a_op == 0) && (texp->tev.a_in[0].sel == 7)) {
-                bVar1 = true;
-            }
-            if ((bVar1) && (texp->tev.a_in[1].sel == 7)) {
-                bVar2 = true;
-            }
-            if ((bVar2) && (texp->tev.a_bias == 0)) {
-                bVar3 = true;
-            }
-            if ((bVar3) && (texp->tev.a_scale == 0)) {
-                bVar4 = true;
-            }
-            if ((bVar4) && (texp->tev.a_in[3].type == 4)) {
-                idx = AssignAlphaReg(&texp->tev, 3, res);
-                if (idx < 0) {
-                    idx = AssignAlphaKonst(&texp->tev, 3, res);
-                    if (idx < 0) {
-                        if (idx >= 0) {
-                            return idx;
-                        }
-                        HSD_Halt("val >= 0");
-                        return idx;
-                    }
-                }
-            } else {
-                idx = 0;
-                do {
-                    if ((texp->tev.a_in[idx].type == 4) && (iVar5 = AssignAlphaKonst(&texp->tev, idx, res), iVar5 < 0)) {
-                        iVar5 = AssignAlphaReg(&texp->tev, idx, res);
-                        if (iVar5 < 0) {
-                            if (iVar5 >= 0) {
-                                return iVar5;
-                            }
-                            HSD_Halt("val >= 0");
-                            return iVar5;
-                        }
-                    }
-                    idx = idx + 1;
-                } while (idx < 4);
-                
-                puVar7 = &texp->type + idx * 2;
-                while (idx < 4) {
-                    if (*(s8*)(puVar7 + 0x11) == '\x04') {
-                        iVar5 = AssignAlphaReg(&texp->tev, idx, res);
-                        if (iVar5 < 0) {
-                            if (iVar5 >= 0) {
-                                return iVar5;
-                            }
-                            HSD_Halt("val >= 0");
-                            return iVar5;
-                        }
-                    }
-                    puVar7 = puVar7 + 2;
-                    idx = idx + 1;
-                }
-            }
-        } else {
-            idx = 0;
-            do {
-                if (texp->tev.a_in[idx].type == 4) {
-                    iVar5 = AssignAlphaReg(&texp->tev, idx, res);
-                    if (iVar5 < 0) {
-                        if (iVar5 >= 0) {
-                            return iVar5;
-                        }
-                        HSD_Halt("val >= 0");
-                        return iVar5;
-                    }
-                }
-                idx = idx + 1;
-            } while (idx < 4);
-        }
-    }
-    return 0;
-#endif
 }
 
 //80384B20
@@ -1151,7 +982,7 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
         }
     }
 
-    if (texp->tev.a_op == 0xff || texp->tev.a_ref == 0) {
+    if (texp->tev.a_op == GX_COLORNULL || texp->tev.a_ref == 0) {
         desc->desc.u.tevconf.alpha_op = 0;
         desc->desc.u.tevconf.alpha_a = GX_CA_ZERO;
         desc->desc.u.tevconf.alpha_b = GX_CA_ZERO;
