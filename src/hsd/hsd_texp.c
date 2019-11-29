@@ -2964,8 +2964,8 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
     u32 res = 0;
     if (HSD_TExpGetType(texp) == HSD_TE_TEV) {
         res = SimplifySrc(texp) != 0 ? 1 : 0;
-        res = SimplifyThis(texp) != 0 ? 1 : 0;
-        res = SimplifyByMerge(texp) != 0 ? 1 : 0;
+        res = SimplifyThis(texp) != 0 ? 1 : res;
+        res = SimplifyByMerge(texp) != 0 ? 1 : res;
     }
     return res;
 }
