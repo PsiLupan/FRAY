@@ -2172,7 +2172,7 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
                             break;
                         }
                     } else {
-                        switch (result[i]->tev.c_in[j].exp->tev.c_dst) {
+                        switch (result[i]->tev.c_in[j].exp->tev.a_dst) {
                         case 0:
                             result[i]->tev.c_in[j].arg = 3;
                             break;
