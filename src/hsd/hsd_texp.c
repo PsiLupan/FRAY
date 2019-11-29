@@ -2028,16 +2028,16 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
                     if (result[i]->tev.a_in[j].sel == 1) {
                         switch (result[i]->tev.a_in[j].exp->tev.a_dst) {
                         case 0:
-                            result[i]->tev.c_in[j].arg = 1;
+                            result[i]->tev.a_in[j].arg = 1;
                             break;
                         case 1:
-                            result[i]->tev.c_in[j].arg = 2;
+                            result[i]->tev.a_in[j].arg = 2;
                             break;
                         case 2:
-                            result[i]->tev.c_in[j].arg = 3;
+                            result[i]->tev.a_in[j].arg = 3;
                             break;
                         default:
-                            result[i]->tev.c_in[j].arg = 0;
+                            result[i]->tev.a_in[j].arg = 0;
                             break;
                         }
                     }
