@@ -1149,10 +1149,11 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                 } else {
                     if (texp->cnst.idx == 3) {
                         color[texp->cnst.reg].a = te_res;
+                    }else{
+                        color[texp->cnst.reg].r = te_res;
+                        color[texp->cnst.reg].g = te_res;
+                        color[texp->cnst.reg].b = te_res;
                     }
-                    color[texp->cnst.reg].r = te_res;
-                    color[texp->cnst.reg].g = te_res;
-                    color[texp->cnst.reg].b = te_res;
                 }
             } else {
                 HSD_TEType j = texp->cnst.ctype;
