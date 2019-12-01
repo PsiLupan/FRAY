@@ -109,7 +109,13 @@ void Player_UpdateHorzVelocity(Player* player)
 //8007D28C
 void Player_CalculateHorzMobility(Player* player, f32 hVel)
 {
-    f32 mobility_1 = (player->x620_joystick_x * player->attribs.airMobilityA) + player->attribs.airMobilityB;
+    f32 mobilityB = 0.f;
+    if(0 <= player->x620_joystick_x){
+        mobilityB = -player->attribs.airMobilityB;
+    }else{
+        mobilityB = player->attribs.airMobilityB;
+    }
+    f32 mobility_1 = (player->x620_joystick_x * player->attribs.airMobilityA) + mobilityB;
     f32 mobility_2 = (player->x620_joystick_x * player->attribs.airMaxHorzSpeed);
     Player_CalculateAirMobility(player, hVel, mobility_1, mobility_2, player->attribs.airFriction);
 }
