@@ -278,6 +278,8 @@ u32 Player_BoneID2Index(Player*, u32);
 
 void Player_CalculateHorzMobility(Player*, f32);
 
+void Player_SetGrabbableFlags(Player*, u16);
+
 u32 Player_GetSpawnCount(HSD_GObj*);
 
 u32* Player_FetchAnimHeader(Player*, u32);
