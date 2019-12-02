@@ -473,7 +473,7 @@ void HSD_LObjSetupInit(HSD_CObj* cobj)
     lightmask_specular = GX_LIGHTNULL;
     lightmask_attnfunc = GX_LIGHTNULL;
     lightmask_alpha = GX_LIGHTNULL;
-    vmtx = (MtxP)HSD_CObjGetViewingMtxPtrDirect(cobj);
+    vmtx = HSD_CObjGetViewingMtxPtrDirect(cobj);
 
     idx = 0;
 
