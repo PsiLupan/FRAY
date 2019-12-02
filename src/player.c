@@ -1,17 +1,19 @@
 #include "player.h"
 
+#include "actionstate.h"
+
 static f32* r13_514C;
 
 //8004CBE8
 void Player_MoveGroundTypeOffset(Player* player)
 {
-    player->x72C_floor_id_actionstate = player->x83C_floor_id;
+    player->x6F0_physics.x3C_floor_id_actionstate = player->x6F0_physics.x14C_floor_id;
 }
 
 //8004CBF4
 void Player_SetInvalidGround(Player* player)
 {
-    player->x72C_floor_id_actionstate = -1;
+    player->x6F0_physics.x3C_floor_id_actionstate = -1;
 }
 
 //800693AC
@@ -51,33 +53,82 @@ u32 Player_BoneID2Index(Player* player, u32 bone_id)
 }
 
 //8007D174
-void sub_8007D174(Player* player, f32 vel, f32 mobility_1, f32 mobility_2, f32 friction)
+void Player_CalculateAirMobility(Player* player, f32 vel, f32 mobility_1, f32 mobility_2, f32 friction)
 {
+    if (mobility_2 != 0.f) {
+        if ((vel * mobility_1) > 0.f) {
+            if (mobility_1 <= 0.f) {
+                if ((vel + mobility_1) < mobility_2) {
+                    mobility_1 = friction;
+                    if (mobility_2 < (vel + friction)) {
+                        mobility_1 = mobility_2 - vel;
+                    }
+                    if ((vel + mobility_1) < -player->attribs.horizontalAirMobility) {
+                        mobility_1 = -player->attribs.horizontalAirMobility - vel;
+                    }
+                }
+            } else if (mobility_2 < (vel + mobility_1)) {
+                mobility_1 = -friction;
+                if ((vel + mobility_1) < mobility_2) {
+                    mobility_1 = mobility_2 - vel;
+                }
+                if (player->attribs.horizontalAirMobility < (vel + mobility_1)) {
+                    mobility_1 = player->attribs.horizontalAirMobility - vel;
+                }
+            }
+        }
+        player->x74_mobility = mobility_1;
+    } else {
+        f32 x_vel = player->x80_x88_self_vel.x;
+        if (x_vel < 0) {
+            x_vel = -x_vel;
+        }
+
+        f32 frict = friction;
+        if (frict < 0) {
+            frict = -frict;
+        }
+
+        if (frict < x_vel) {
+            if (player->x80_x88_self_vel.x > 0) {
+                friction = -friction;
+            }
+        } else {
+            friction = -player->x80_x88_self_vel.x;
+        }
+        player->x74_mobility = friction;
+    }
 }
 
 //8007D268
 void Player_UpdateHorzVelocity(Player* player)
 {
-    Player_CalculateHorzMobility(player, player->x80_self_vel_x);
+    Player_CalculateHorzMobility(player, player->x80_x88_self_vel.x);
 }
 
 //8007D28C
 void Player_CalculateHorzMobility(Player* player, f32 hVel)
 {
-    f32 mobility_1 = (player->x620_joystick_x * player->attribs.airMobilityA) + player->attribs.airMobilityB;
+    f32 mobilityB = 0.f;
+    if(0.f <= player->x620_joystick_x){
+        mobilityB = -player->attribs.airMobilityB;
+    }else{
+        mobilityB = player->attribs.airMobilityB;
+    }
+    f32 mobility_1 = (player->x620_joystick_x * player->attribs.airMobilityA) + mobilityB;
     f32 mobility_2 = (player->x620_joystick_x * player->attribs.airMaxHorzSpeed);
-    sub_8007D174(player, hVel, mobility_1, mobility_2, player->attribs.airFriction);
+    Player_CalculateAirMobility(player, hVel, mobility_1, mobility_2, player->attribs.airFriction);
 }
 
 //8007D440
 void Player_ClampHorzVelocity(Player* player, f32 vel)
 {
-    f32 hVel = player->x80_self_vel_x;
+    f32 hVel = player->x80_x88_self_vel.x;
     if (hVel < -vel) {
-        player->x80_self_vel_x = -vel;
+        player->x80_x88_self_vel.x = -vel;
     } else {
         if (hVel > vel) {
-            player->x80_self_vel_x = vel;
+            player->x80_x88_self_vel.x = vel;
         }
     }
 }
@@ -91,37 +142,37 @@ void Player_ClampMaxHorzVelocity(Player* player)
 //8007D494
 void Player_UpdateFallingVelocity(Player* player, f32 gravity, f32 term_vel)
 {
-    f32 vVel = player->x84_self_vel_y;
+    f32 vVel = player->x80_x88_self_vel.y;
     term_vel = -term_vel;
     vVel = vVel - gravity;
-    player->x84_self_vel_y = vVel;
-    if (player->x84_self_vel_y < term_vel) {
-        player->x84_self_vel_y = term_vel;
+    player->x80_x88_self_vel.y = vVel;
+    if (player->x80_x88_self_vel.y < term_vel) {
+        player->x80_x88_self_vel.y = term_vel;
     }
 }
 
 //8007D4E4
 void Player_UpdateVelocityFromFastFall(Player* player)
 {
-    player->x84_self_vel_y = -player->attribs.fallTermVel;
+    player->x80_x88_self_vel.y = -player->attribs.fallTermVel;
 }
 
 //8007D4F4
 void Player_ClampVertVelocity(Player* player, f32 vel)
 {
-    if (player->x84_self_vel_y > vel) {
-        player->x84_self_vel_y = vel;
+    if (player->x80_x88_self_vel.y > vel) {
+        player->x80_x88_self_vel.y = vel;
     }
 }
 
 //8007D508
 void Player_UpdateAscendingVelocity(Player* player, f32 vel, f32 term_vel)
 {
-    f32 vVel = player->x84_self_vel_y;
+    f32 vVel = player->x80_x88_self_vel.y;
     vVel = vVel + vel;
-    player->x84_self_vel_y = vVel;
-    if (player->x84_self_vel_y > term_vel) {
-        player->x84_self_vel_y = term_vel;
+    player->x80_x88_self_vel.y = vVel;
+    if (player->x80_x88_self_vel.y > term_vel) {
+        player->x80_x88_self_vel.y = term_vel;
     }
 }
 
@@ -131,7 +182,7 @@ BOOL Player_Interrupt_Fastfall(Player* player)
     if ((player->x221A_flags >> 3) & 1) {
         return FALSE;
     }
-    if (player->x84_self_vel_y >= 0.0f) {
+    if (player->x80_x88_self_vel.y >= 0.0f) {
         return FALSE;
     }
     //f32* unk = r13_514C + 0x88;
@@ -148,7 +199,7 @@ BOOL Player_Interrupt_Fastfall(Player* player)
 void Player_ECBBottom_EnableUpdate(Player* player)
 {
     player->x88C_ecb_inactive_frames = 0;
-    player->x820_unk &= 0xFFFFFFEF;
+    player->x6F0_physics.x130_unk &= 0xFFFFFFEF;
 }
 
 //8007D5D4
@@ -157,10 +208,10 @@ void Player_LoseGroundJump_ECBDisable(Player* player)
     player->xE0_in_air = TRUE;
     player->xEC_vel_ground_self_x = 0;
     player->xA0_unk = 0;
-    player->xB8_pos_z = 0;
+    player->xB0_xB8_pos.z = 0;
     player->x1968_jumps_used = 1;
     player->x88C_ecb_inactive_frames = 10;
-    player->x820_unk |= 0x10;
+    player->x6F0_physics.x130_unk |= 0x10;
 }
 
 //8007D60C
@@ -174,7 +225,7 @@ void Player_LoseAllJumps_ECBDisable(Player* player)
     player->x78_unk = 0.f;
     player->x1968_jumps_used = player->attribs.maxJumps;
     player->x88C_ecb_inactive_frames = 5;
-    player->x820_unk |= 0x10;
+    player->x6F0_physics.x130_unk |= 0x10;
 }
 
 //8007D698
@@ -184,7 +235,7 @@ void Player_UseAllJumps(Player* player)
 }
 
 //8007D7FC
-void Player_8007D7FC(Player* player)
+void Player_SetGroundedState(Player* player)
 {
 }
 
@@ -231,22 +282,33 @@ void Player_SetIndicatorDisplay(Player* player, u16 flags)
 //80081D0C
 BOOL Player_CollisonCheck_Ground(HSD_GObj* gobj)
 {
-    Player* ply = GOBJ_PLAYER(gobj);
-    ply->x6F0_physics.x70C_topn_x_prev = ply->x6F0_physics.x6F4_topn_x;
-    ply->x6F0_physics.x710_topn_y_prev = ply->x6F0_physics.x6F8_topn_y;
-    ply->x6F0_physics.x714_topn_z_prev = ply->x6F0_physics.x6FC_topn_z;
-    ply->x6F0_physics.x6F4_topn_x = ply->xB0_pos_x;
-    ply->x6F0_physics.x6F8_topn_y = ply->xB4_pos_y;
-    ply->x6F0_physics.x6FC_topn_z = ply->xB8_pos_z;
-    BOOL collided = sub_800471F8(&ply->x6F0_physics); //Physics_CollisionCheck_Ground(Physics* physics);
+    BOOL collided = FALSE;
 
-    ply->xB0_pos_x = ply->x6F0_physics.x6F4_topn_x;
-    ply->xB4_pos_y = ply->x6F0_physics.x6F8_topn_y;
-    ply->xB8_pos_z = ply->x6F0_physics.x6FC_topn_z;
+    Player* ply = GOBJ_PLAYER(gobj);
+    ply->x6F0_physics.x1C_x24_TopN_prev = ply->x6F0_physics.x4_xC_TopN;
+    ply->x6F0_physics.x4_xC_TopN = ply->xB0_xB8_pos;
+    collided = Physics_CollisionCheck_Ground(&ply->x6F0_physics);
+
+    ply->xB0_xB8_pos = ply->x6F0_physics.x4_xC_TopN;
     if (sub_80081A00(gobj) == TRUE) {
-        return FALSE;
+        return collided;
     }
-    return collided;
+    return FALSE;
+}
+
+//80083F88
+void Player_Collision_KneeBend(HSD_GObj* gobj)
+{
+    u32 res = 0;
+
+    Player* ply = GOBJ_PLAYER(gobj);
+    ply->x6F0_physics.x1C_x24_TopN_prev = ply->x6F0_physics.x4_xC_TopN;
+    ply->x6F0_physics.x4_xC_TopN = ply->xB0_xB8_pos;
+    res = Physics_FallOffLedge(&ply->x6F0_physics);
+    ply->xB0_xB8_pos = ply->x6F0_physics.x4_xC_TopN;
+    if (res == 0) {
+        ActionState_Fall(gobj);
+    }
 }
 
 //80084DB0
@@ -263,18 +325,18 @@ void Player_CheckFastFallAndUpdate(HSD_GObj* gobj)
 }
 
 //80085FD4
-u32* Player_80085FD4(Player* player, u32 index)
+u32* Player_FetchAnimHeader(Player* player, u32 anim_id)
 {
     return NULL;
     /*if(player->x4_internal_id == INTERNAL_NANA){
 		u32 type = StaticPlayer_GetSlotType(player->xC_slot);
 		if(type != 2){
-			if(*(u32*)(player->x24_state_ptr + index * 0x18 + 0x14) == 0){
-				return *((u32*)((*(u32**)(0x804598B8 + 0x2C)) + 0xC) + index * 0x18);
+			if(player->x24_state_ptr[anim_id]->x14_unk == 0){
+				return *((u32*)((*(u32**)(0x804598B8 + 0x2C)) + 0xC)[anim_id]);
 			}
 		}
 	}
-	return *(u32*)(player->x24_state_ptr + index * 0x18);*/
+	return *(u32*)(player->x24_state_ptr[anim_id]);*/
 }
 
 //800865C0
@@ -354,7 +416,7 @@ void Player_80094818(HSD_GObj* gobj)
             }
             sub_8003E17C(player->slot, (player->field_0x221f >> 3) & 1, player->x1974_held_item);
             */
-        }else{
+        } else {
             //sub_8003E17C(player->slot, (player->field_0x221f >> 3) & 1, NULL);
         }
     }
@@ -367,6 +429,21 @@ BOOL Player_IsCPU(Player* player)
         return player->x1A94_cpu_flags != 5;
     }
     return FALSE;
+}
+
+//800D65B8
+void Player_Collision_SquatWait(HSD_GObj* gobj)
+{
+    u32 res = 0;
+
+    Player* ply = GOBJ_PLAYER(gobj);
+    ply->x6F0_physics.x1C_x24_TopN_prev = ply->x6F0_physics.x4_xC_TopN;
+    ply->x6F0_physics.x4_xC_TopN = ply->xB0_xB8_pos;
+    res = Physics_FallOffLedge(&ply->x6F0_physics);
+    ply->xB0_xB8_pos = ply->x6F0_physics.x4_xC_TopN;
+    if (res == 0) {
+        ActionState_Fall(gobj);
+    }
 }
 
 //800DE9B8
