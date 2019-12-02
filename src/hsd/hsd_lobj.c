@@ -393,9 +393,9 @@ static void setup_point_lightobj(HSD_LObj* l, MtxP vmtx)
     l->hw_color = l->color;
     HSD_LObjGetPosition(l, &lpos);
     guVecMultiply(vmtx, &lpos, &lpos);
-    GX_InitLightPos(&l->lightobj, lpos.x, lpos.y, lpos.z);
-    GX_InitLightPos(&l->spec_lightobj, lpos.x, lpos.y, lpos.z);
-    GX_InitLightDir(&l->lightobj, lpos.x, lpos.y, lpos.z);
+    GX_InitLightPosv(&l->lightobj, &lpos);
+    GX_InitLightPosv(&l->spec_lightobj, &lpos);
+    GX_InitLightDirv(&l->lightobj, &lpos);
 
     if (l->flags & LOBJ_RAW_PARAM) {
         GX_InitLightAttn(&l->lightobj,
@@ -431,9 +431,9 @@ static void setup_spot_lightobj(HSD_LObj* l, MtxP vmtx)
     HSD_LObjGetLightVector(l, &ldir);
     guVecMultiplySR(vmtx, &ldir, &ldir);
     guVecNormalize(&ldir);
-    GX_InitLightPos(&l->lightobj, lpos.x, lpos.y, lpos.z);
-    GX_InitLightPos(&l->spec_lightobj, lpos.x, lpos.y, lpos.z);
-    GX_InitLightDir(&l->lightobj, lpos.x, lpos.y, lpos.z);
+    GX_InitLightPosv(&l->lightobj, &lpos);
+    GX_InitLightPosv(&l->spec_lightobj, &lpos);
+    GX_InitLightDirv(&l->lightobj, &lpos);
     if (l->flags & LOBJ_RAW_PARAM) {
         GX_InitLightAttn(&l->lightobj,
             l->u.attn.a0,
@@ -473,13 +473,13 @@ void HSD_LObjSetupInit(HSD_CObj* cobj)
     lightmask_specular = GX_LIGHTNULL;
     lightmask_attnfunc = GX_LIGHTNULL;
     lightmask_alpha = GX_LIGHTNULL;
-    vmtx = (MtxP)HSD_CObjGetViewingMtxPtrDirect(cobj);
+    vmtx = HSD_CObjGetViewingMtxPtrDirect(cobj);
 
     idx = 0;
 
     HSD_LObjClearActive();
 
-    for (list = current_lights; idx < MAX_GXLIGHT - 1 && list; list = list->next) {
+    for (list = current_lights; idx < MAX_GXLIGHT - 1 && list != NULL; list = list->next) {
         HSD_LObj* lobj = list->data;
         u32 type;
         u32 ref_type;
@@ -523,7 +523,7 @@ void HSD_LObjSetupInit(HSD_CObj* cobj)
     }
 
     if (!HSD_LObjGetActiveByID(GX_MAXLIGHT)) {
-        for (; list; list = list->next) {
+        for (; list != NULL; list = list->next) {
             HSD_LObj* lobj = list->data;
             if (!lobj || lobj->flags & LOBJ_HIDDEN) {
                 continue;

@@ -36,7 +36,7 @@ s32 HSD_ArchiveParse(HSD_Archive* archive, u8* src, u32 file_size)
             archive->top_ptr = (void*)src;
             for (u32 i = 0; i < archive->header.nb_reloc; i++) {
                 u8* data = archive->data;
-                u32 offset = archive->reloc_info[i].offset;
+                offset = archive->reloc_info[i].offset;
                 *(u8**)(data + offset) = data + *((u32*)(data + offset));
             }
         } else {

@@ -432,7 +432,7 @@ static void PrintExceptionDetails(frame_context* pCtx)
 {
     printf("- UNHANDLED EXCEPTION -----------------------\n");
     printf("DAR=%08X\n", pCtx->DAR);
-    printf("ERROR %d: ", pCtx->EXCPT_Number);
+    printf("ERROR %u: ", pCtx->EXCPT_Number);
 }
 
 //80228B28

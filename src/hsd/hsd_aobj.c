@@ -165,11 +165,11 @@ HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc)
             aobj->fobj = fobj;
 
             u32 id = aobjdesc->obj_id;
-            if (id) {
+            if (id != 0) {
                 HSD_Obj* hsdObj = (HSD_Obj*)HSD_IDGetDataFromTable(0, id, 0);
                 void* obj = (void*)hsdObj;
 
-                if (hsdObj) {
+                if (hsdObj != NULL) {
                     hsdObj->ref_count = hsdObj->ref_count + 1;
                     assert(hsdObj->ref_count != HSD_OBJ_NOREF);
                 } else {
@@ -192,12 +192,12 @@ void HSD_AObjRemove(HSD_AObj* aobj)
 {
     if (aobj != NULL) {
         HSD_FObj* fobj = aobj->fobj;
-        if (fobj)
+        if (fobj != NULL)
             HSD_FObjRemoveAll(fobj);
         aobj->fobj = NULL;
 
         HSD_JObj* jobj = HSD_JOBJ(aobj->hsd_obj);
-        if (jobj)
+        if (jobj != NULL)
             HSD_JObjUnref(jobj);
         aobj->hsd_obj = NULL;
 

@@ -233,13 +233,12 @@ HSD_TExp* HSD_TExpCnst(void* val, HSD_TEInput comp, HSD_TEType type, HSD_TExp** 
 {
     HSD_CheckAssert("HSD_TExpCnst: texp_list == NULL", texp_list != NULL);
     HSD_TExp* texp = *texp_list;
-    HSD_TExp* result = NULL;
 
     while (true) {
         if (texp == NULL) {
-            if (comp == HSD_TE_0) {
-                result = NULL;
-            } else {
+            HSD_TExp* result = NULL;
+
+            if (comp != HSD_TE_0) {
                 result = (HSD_TExp*)hsdAllocMemPiece(sizeof(HSD_TECnst));
                 HSD_CheckAssert("HSD_TExpCnst: Could not alloc cnst", result != NULL);
                 result->cnst.type = HSD_TE_CNST;
@@ -1156,27 +1155,27 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     }
                 }
             } else {
-                HSD_TEType j = texp->cnst.ctype;
+                HSD_TEType ctype = texp->cnst.ctype;
                 u32 values[3];
                 f64* pdVar4;
-                if (j == 1) {
+                if (ctype == 1) {
                 LAB_80385060:
-                    if (j == 2) {
+                    if (ctype == 2) {
                     LAB_803850dc:
                         pdVar4 = (f64*)(texp->cnst.val);
                         values[0] = (u32)(255.0 * pdVar4[0]);
                         values[1] = (u32)(255.0 * pdVar4[1]);
                         values[2] = (u32)(255.0 * pdVar4[2]);
                     } else {
-                        if (j < 2) {
-                            if (j < 1)
+                        if (ctype < 2) {
+                            if (ctype < 1)
                                 goto LAB_803850dc;
                             u16* puVar9 = (u16*)(texp->cnst.val);
                             values[0] = puVar9[0];
                             values[1] = puVar9[1];
                             values[2] = puVar9[2];
                         } else {
-                            if (3 < j)
+                            if (3 < ctype)
                                 goto LAB_803850dc;
                             f32* pfVar3 = (f32*)(texp->cnst.val);
                             values[0] = (u32)(255.0f * pfVar3[0]);
@@ -1208,14 +1207,14 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     }
                     color[texp->cnst.reg].b = te_res;
                 } else {
-                    if (j < 1) {
-                        if (j < 0)
+                    if (ctype < 1) {
+                        if (ctype < 0)
                             goto LAB_80385060;
                         color[texp->cnst.reg].r = ((GXColor*)(texp->cnst.val))->r;
                         color[texp->cnst.reg].g = ((GXColor*)(texp->cnst.val))->g;
                         color[texp->cnst.reg].b = ((GXColor*)(texp->cnst.val))->b;
                     } else {
-                        if (2 < j)
+                        if (2 < ctype)
                             goto LAB_80385060;
                         u32* puVar5 = (u32*)(texp->cnst.val);
                         te_res = puVar5[0];
@@ -1267,7 +1266,7 @@ s32 HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_l
     HSD_TExpDag list[32];
 
     assert(tevdesc != NULL);
-    assert(list != NULL);
+    assert(texp_list != NULL);
 
     HSD_TExpRef(texp, 1);
     HSD_TExpRef(texp, 5);
