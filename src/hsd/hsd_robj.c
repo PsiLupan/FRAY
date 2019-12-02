@@ -189,7 +189,7 @@ void HSD_RObjUpdateAll(HSD_RObj* robj, void* jobj, void (*obj_update)(void*, u32
             (*obj_update)(jobj, 0x35, &up);
             (*obj_update)(jobj, 0x38, NULL);
         }
-        /* sub_8037b648(robj, obj, obj_update);
+        /* resolveCnsPos(robj, obj, obj_update);
         resolveCnsDirUp(robj, obj, obj_update);
         resolveLimits(robj, obj, obj_update);
          */
