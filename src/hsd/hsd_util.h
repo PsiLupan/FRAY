@@ -41,6 +41,7 @@ void GX_SetViewport_Wrapper(f32, f32, f32, f32, f32, f32);
 void GX_GetViewport(f32*, f32*, f32*, f32*, f32*, f32*);
 void GX_GetViewportv(f32*);
 f32 HSD_ClampFloat(f32, f32, f32);
+void HSD_ListInitAllocData();
 HSD_SList* HSD_SListPrepend(HSD_SList*, void*);
 HSD_SList* HSD_SListPrependList(HSD_SList*, HSD_SList*);
 HSD_SList* HSD_SListRemove(HSD_SList*);

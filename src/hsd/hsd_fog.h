@@ -27,7 +27,6 @@ typedef struct _HSD_Fog {
     f32 end; //0x14
     GXColor color; //0x18
     struct _HSD_AObj* aobj; //0x1C
-    u32 unk;
 } HSD_Fog;
 
 typedef struct _HSD_FogAdjDesc {

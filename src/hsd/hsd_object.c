@@ -5,8 +5,6 @@
 static void ObjInfoInit(void);
 static void _hsdInfoInit(void);
 
-HSD_ObjAllocData* alloc_datas;
-
 HSD_ObjInfo hsdObj = {
     ObjInfoInit
 };
@@ -31,7 +29,7 @@ void HSD_ObjSetHeap(u32 size, void* start)
     objheap.bytes_remaining = size;
 }
 
-static HSD_ObjAllocData* current_obj = NULL; //r13_3FC0
+static HSD_ObjAllocData* alloc_datas = NULL; //r13_3FC0
 
 //8037A968
 s32 HSD_ObjAllocAddFree(HSD_ObjAllocData* obj_def, u32 num)
@@ -147,33 +145,33 @@ void* HSD_ObjAlloc(HSD_ObjAllocData* obj_def)
 //8037AD20
 void HSD_ObjFree(HSD_ObjAllocData* init_obj, HSD_ObjAllocLink* obj)
 {
-    free(obj);
-    /*obj->next = init_obj->freehead->next;
+    obj->next = init_obj->freehead->next;
 	init_obj->freehead = obj;
 	init_obj->free += 1;
-	init_obj->used -= 1;*/
+	init_obj->used -= 1;
 }
 
 //8037AD48
 void HSD_ObjAllocInit(HSD_ObjAllocData* init_obj, u32 size, u32 align)
 {
     assert(init_obj != NULL);
-    HSD_ObjAllocData* obj = current_obj;
-    while (obj != NULL) {
+    HSD_ObjAllocData** list = &alloc_datas;
+    HSD_ObjAllocData* obj;
+    while (obj = *list, obj != NULL) {
         if (obj == init_obj) {
-            current_obj = obj->next;
+            *list = obj->next;
         } else {
-            obj = obj->next;
+            list = &obj->next;
         }
     }
-    memset(init_obj, 0, 0x2Cu);
+    memset(init_obj, 0, sizeof(HSD_ObjAllocData));// 0x2Cu);
     init_obj->num_limit = -1;
     init_obj->heap_limit_size = 0;
     init_obj->heap_limit_num = -1;
     init_obj->align = align - 1;
     init_obj->size = (size + init_obj->align) & ~init_obj->align;
-    init_obj->next = current_obj;
-    current_obj = init_obj;
+    init_obj->next = alloc_datas;
+    alloc_datas = init_obj;
 }
 
 //8037E6C4
@@ -191,11 +189,12 @@ static void hsdObjInfoInit(HSD_ClassInfo* info)
 }
 
 //80381C18
-void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, char* base_class_library, char* type, s32 info_size, s32 class_size)
+void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, char* library_name, char* class_name, s32 info_size, s32 obj_size)
 {
     class_info->head.flags = 1;
-    class_info->head.library_name = base_class_library;
-    class_info->head.obj_size = (s16)class_size;
+    class_info->head.library_name = library_name;
+    class_info->head.class_name = class_name;
+    class_info->head.obj_size = (s16)obj_size;
     class_info->head.info_size = (s16)info_size;
     class_info->head.parent = parent_info;
     class_info->head.next = NULL;
@@ -218,7 +217,7 @@ void hsdInitClassInfo(HSD_ClassInfo* class_info, HSD_ClassInfo* parent_info, cha
 //803821C4
 static HSD_Class* _hsdClassAlloc(HSD_ClassInfo* info)
 {
-    HSD_FreeList* mem_piece = hsdAllocMemPiece(info->head.obj_size);
+    HSD_Class* mem_piece = (HSD_Class*)hsdAllocMemPiece(info->head.obj_size);
     if (mem_piece != NULL) {
         info->head.nb_exist += 1;
         if (info->head.nb_peak < info->head.nb_exist) {

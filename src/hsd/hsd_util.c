@@ -3,6 +3,9 @@
 #include <math.h>
 
 #include "hsd_memory.h"
+#include "hsd_object.h"
+
+HSD_ObjAllocData slist_alloc_data;
 
 static struct _GXViewport {
    f32 x0,y0,x1,y1,n,f;
@@ -48,10 +51,15 @@ f32 HSD_ClampFloat(f32 val, f32 min, f32 max)
     return val;
 }
 
+//8037E3FC
+void HSD_ListInitAllocData(){
+    HSD_ObjAllocInit(&slist_alloc_data, sizeof(HSD_SList), 4);
+}
+
 //8037E538
 HSD_SList* HSD_SListPrepend(HSD_SList* list, void* data)
 {
-    HSD_SList* list_p = (HSD_SList*)HSD_MemAlloc(sizeof(HSD_SList)); //Normally ObjAlloc
+    HSD_SList* list_p = HSD_ObjAlloc(&slist_alloc_data);
     assert(list_p != NULL);
     memset(list_p, 0, sizeof(HSD_SList));
     list_p->data = data;
@@ -74,7 +82,7 @@ HSD_SList* HSD_SListRemove(HSD_SList* list)
         res = NULL;
     } else {
         res = list->next;
-        HSD_Free(list); //normally ObjFree
+        HSD_ObjFree(&slist_alloc_data, (HSD_ObjAllocLink*)list);
     }
     return res;
 }

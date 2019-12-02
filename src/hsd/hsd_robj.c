@@ -14,7 +14,7 @@ HSD_ObjAllocData rvalue_alloc_data;
 void HSD_RObjInitAllocData(void)
 {
     HSD_ObjAllocInit(&robj_alloc_data, sizeof(HSD_RObj), 4); //size 0x1C
-    HSD_ObjAllocInit(&rvalue_alloc_data, 0xc, 4); //size 0xC
+    HSD_ObjAllocInit(&rvalue_alloc_data, sizeof(HSD_Rvalue), 4); //size 0xC
 }
 
 //8037AE78

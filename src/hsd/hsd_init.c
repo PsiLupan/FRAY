@@ -4,6 +4,7 @@
 
 #include "hsd_lobj.h"
 #include "hsd_state.h"
+#include "hsd_util.h"
 
 //static OSHeapHandle hsd_heap = -1; //r13 - 0x58A0
 static void* hsd_heap_arena_lo = NULL;
@@ -192,7 +193,7 @@ void HSD_IsScreenRenderPass(void)
 //803755B4
 void HSD_ObjInit(void)
 {
-    //HSD_ListInitAllocData();
+    HSD_ListInitAllocData();
     HSD_AObjInitAllocData();
     HSD_FObjInitAllocData();
     HSD_IDInitAllocData();
