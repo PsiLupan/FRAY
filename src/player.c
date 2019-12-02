@@ -110,7 +110,7 @@ void Player_UpdateHorzVelocity(Player* player)
 void Player_CalculateHorzMobility(Player* player, f32 hVel)
 {
     f32 mobilityB = 0.f;
-    if(0 <= player->x620_joystick_x){
+    if(0.f <= player->x620_joystick_x){
         mobilityB = -player->attribs.airMobilityB;
     }else{
         mobilityB = player->attribs.airMobilityB;
