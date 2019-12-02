@@ -2991,6 +2991,8 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
                     continue;
                 }
                 texp->tev.c_in[i].type = t->tev.c_in[3].type;
+                texp->tev.c_in[i].sel = t->tev.c_in[3].sel;
+                texp->tev.c_in[i].arg = t->tev.c_in[3].arg;
                 texp->tev.c_in[i].exp = t->tev.c_in[3].exp;
                 HSD_TExpRef(texp->tev.c_in[i].exp, texp->tev.c_in[i].sel);
                 HSD_TExpUnref(t, texp->tev.c_in[i].sel);
@@ -3014,6 +3016,8 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
                     continue;
                 }
                 texp->tev.a_in[i].type = t->tev.a_in[3].type;
+                texp->tev.a_in[i].sel = t->tev.a_in[3].sel;
+                texp->tev.a_in[i].arg = t->tev.a_in[3].arg;
                 texp->tev.a_in[i].exp = t->tev.a_in[3].exp;
                 HSD_TExpRef(texp->tev.a_in[i].exp, texp->tev.a_in[i].sel);
                 HSD_TExpUnref(t, texp->tev.a_in[i].sel);
