@@ -147,10 +147,11 @@ void* HSD_ObjAlloc(HSD_ObjAllocData* obj_def)
 //8037AD20
 void HSD_ObjFree(HSD_ObjAllocData* init_obj, HSD_ObjAllocLink* obj)
 {
-    obj->next = init_obj->freehead->next;
+    free(obj);
+    /*obj->next = init_obj->freehead->next;
 	init_obj->freehead = obj;
 	init_obj->free += 1;
-	init_obj->used -= 1;
+	init_obj->used -= 1;*/
 }
 
 //8037AD48
@@ -242,9 +243,11 @@ static void _hsdClassRelease(HSD_Class* info)
 //80382228
 static void _hsdClassDestroy(HSD_Class* class)
 {
-    HSD_ClassInfo* info = class->class_info;
-	info->head.nb_exist -= 1;
-    hsdFreeMemPiece(class, info->head.obj_size);
+    HSD_ClassInfo* info = (class->class_info ? class->class_info : NULL);
+	if(info != NULL){
+		info->head.nb_exist -= 1;
+        hsdFreeMemPiece(class, info->head.obj_size);
+	}
 }
 
 //80382294

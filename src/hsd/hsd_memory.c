@@ -134,6 +134,7 @@ void* HSD_MemAlloc(u32 size)
         //result = OSAllocFromHeap(HSD_GetHeap(), size);
         result = memalign(32, size);
         assert(result != NULL);
+        HSD_CheckAssert("HSD_MemAlloc: No free memory", result != NULL);
         #ifdef DEBUG_MEM
         printf("[0x%08x] + 0x%08x 0x%x\n", __builtin_return_address(0), (int)result, size);
         #endif

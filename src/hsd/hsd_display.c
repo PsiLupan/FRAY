@@ -277,58 +277,52 @@ void HSD_JObjDispSub(HSD_JObj* jobj, MtxP vmtx, MtxP pmtx, HSD_TrspMask trsp_mas
 //80374480
 void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 rendermode)
 {
-    if (jobj != NULL) {
-        if ((jobj->flags & JOBJ_HIDDEN) == 0) {
-            u32 m_flags = jobj->flags & (trsp_mask << JOBJ_TRSP_SHIFT);
-            if (m_flags != 0) {
-                BOOL need_matrix = FALSE;
-                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    need_matrix = TRUE;
-                }
-                if (need_matrix == TRUE) {
-                    HSD_JObjSetupMatrixSub(jobj);
-                }
+    if ((jobj->flags & JOBJ_HIDDEN) == 0) {
+        u32 xlu_bits = jobj->flags & (trsp_mask << JOBJ_TRSP_SHIFT);
+        if (xlu_bits != 0) {
+            if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
+                HSD_JObjSetupMatrixSub(jobj);
+            }
 
-                if (vmtx == NULL) {
-                    HSD_CObj* cobj = HSD_CObjGetCurrent();
-                    vmtx = cobj->view_mtx;
-                }
+            if (vmtx == NULL) {
+                HSD_CObj* cobj = HSD_CObjGetCurrent();
+                vmtx = HSD_CObjGetViewingMtxPtrDirect(cobj);
+            }
 
-                Mtx mtx;
-                HSD_JOBJ_METHOD(jobj)->make_pmtx(jobj, vmtx, mtx);
-                if ((m_flags & JOBJ_OPA) != 0) {
-                    HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, mtx, HSD_TRSP_OPA, rendermode);
+            Mtx mtx;
+            HSD_JOBJ_METHOD(jobj)->make_pmtx(jobj, vmtx, mtx);
+            if ((xlu_bits & JOBJ_OPA) != 0) {
+                HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, mtx, HSD_TRSP_OPA, rendermode);
+            }
+            if (zsort_listing == 0) {
+                if ((xlu_bits & JOBJ_TEXEDGE) != 0) {
+                    HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, mtx, HSD_TRSP_TEXEDGE, rendermode);
                 }
-                if (zsort_listing == 0) {
-                    if ((m_flags & JOBJ_TEXEDGE) != 0) {
-                        HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, mtx, HSD_TRSP_TEXEDGE, rendermode);
+                if ((xlu_bits & JOBJ_XLU) != 0) {
+                    HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, mtx, HSD_TRSP_XLU, rendermode);
+                }
+            } else {
+                if ((xlu_bits & (JOBJ_TEXEDGE | JOBJ_XLU)) != 0) {
+                    HSD_ZList* zlist = (HSD_ZList*)HSD_MemAlloc(sizeof(HSD_ZList)); //(HSD_ZList*)HSD_ObjAlloc(&zlist_alloc_data);
+                    memset(zlist, 0, sizeof(HSD_ZList));
+                    guMtxCopy(mtx, zlist->pmtx);
+                    if (vmtx != NULL) {
+                        zlist->vmtx = (MtxP)HSD_MemAlloc(sizeof(Mtx));
+                        guMtxCopy(vmtx, zlist->vmtx);
                     }
-                    if ((m_flags & JOBJ_XLU) != 0) {
-                        HSD_JOBJ_METHOD(jobj)->disp(jobj, vmtx, mtx, HSD_TRSP_XLU, rendermode);
+                    zlist->jobj = jobj;
+                    zlist->rendermode = rendermode;
+                    *zlist_bottom = zlist;
+                    zlist_bottom = &zlist->next;
+                    if ((xlu_bits & JOBJ_TEXEDGE) != 0) {
+                        *zlist_texedge_bottom = zlist;
+                        zlist_texedge_bottom = &zlist->sort.texedge;
+                        zlist_texedge_nb += 1;
                     }
-                } else {
-                    if ((m_flags & (JOBJ_TEXEDGE | JOBJ_XLU)) != 0) {
-                        HSD_ZList* zlist = (HSD_ZList*)HSD_MemAlloc(sizeof(HSD_ZList)); //(HSD_ZList*)HSD_ObjAlloc(&zlist_alloc_data);
-                        memset(&zlist->vmtx, 0, (sizeof(HSD_ZList) - sizeof(Mtx)));
-                        guMtxCopy(mtx, zlist->pmtx);
-                        if (vmtx != NULL) {
-                            zlist->vmtx = (MtxP)HSD_MemAlloc(sizeof(Mtx));
-                            guMtxCopy(vmtx, zlist->vmtx);
-                        }
-                        zlist->jobj = jobj;
-                        zlist->rendermode = rendermode;
-                        *zlist_bottom = zlist;
-                        zlist_bottom = &zlist->next;
-                        if ((m_flags & JOBJ_TEXEDGE) != 0) {
-                            *zlist_texedge_bottom = zlist;
-                            zlist_texedge_bottom = &zlist->sort.texedge;
-                            zlist_texedge_nb += 1;
-                        }
-                        if ((m_flags & JOBJ_XLU) != 0) {
-                            *zlist_xlu_bottom = zlist;
-                            zlist_xlu_bottom = &zlist->sort.xlu;
-                            zlist_xlu_nb += 1;
-                        }
+                    if ((xlu_bits & JOBJ_XLU) != 0) {
+                        *zlist_xlu_bottom = zlist;
+                        zlist_xlu_bottom = &zlist->sort.xlu;
+                        zlist_xlu_nb += 1;
                     }
                 }
             }
@@ -408,7 +402,7 @@ void _HSD_ZListDisp(void)
     HSD_CObj* cobj;
 
     cobj = HSD_CObjGetCurrent();
-    vmtx = cobj->view_mtx;
+    vmtx = HSD_CObjGetViewingMtxPtrDirect(cobj);
 
     list = zlist_texedge_top;
     while (list != NULL) {
@@ -430,7 +424,7 @@ void _HSD_ZListClear(void)
 {
     HSD_ZList* list = zlist_top;
 
-    while(list != NULL) {
+    while (list != NULL) {
         HSD_ZList* next = list->next;
         if (list->vmtx) {
             HSD_Free(list->vmtx);

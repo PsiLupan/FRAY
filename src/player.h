@@ -71,7 +71,7 @@ typedef struct _Attributes {
     f32 airMaxHorzSpeed; //0x6C
     f32 airFriction; //0x70
     f32 fallTermVel; //0x74
-    u32 tiltTurnDuration; //0x78
+    f32 horizontalAirMobility; //0x78
     f32 jab2InputWindow; //0x7C
     f32 jab3InputWindow; //0x80
     u32 turnFrames;
@@ -141,13 +141,17 @@ typedef struct _Attributes {
 } Attributes;
 
 typedef struct _Physics {
-    f32 x6F4_topn_x;
-    f32 x6F8_topn_y;
-    f32 x6FC_topn_z;
-
-    f32 x70C_topn_x_prev;
-    f32 x710_topn_y_prev;
-    f32 x714_topn_z_prev;
+    void *unk;
+    guVector x4_xC_TopN;
+    guVector x10_x18_TopN_copy; //Assumed
+    guVector x1C_x24_TopN_prev;
+    guVector x28_x30_TopN_prev_copy; //Assumed
+    
+    s32 x3C_floor_id_actionstate;
+    
+    u32 x130_unk;
+    s32 x14C_floor_id;
+    u32 x150_ground_type;
 } Physics;
 
 typedef struct _Player {
@@ -173,23 +177,14 @@ typedef struct _Player {
     void* unkptr40;
     void* unkptr44;
     u32 linklist_len;
+    f32 x74_mobility;
     f32 x78_unk;
-    f32 x80_self_vel_x;
-    f32 x84_self_vel_y;
-    f32 x88_self_vel_z;
-    f32 x8C_attk_vel_x;
-    f32 x90_attk_vel_y;
-    f32 x94_attk_vel_z;
+    guVector x80_x88_self_vel;
+    guVector x8C_x94_attk_vel;
     f32 xA0_unk;
-    f32 xB0_pos_x;
-    f32 xB4_pos_y;
-    f32 xB8_pos_z;
-    f32 xBC_pos_prev_x;
-    f32 xC0_pos_prev_y;
-    f32 xC4_pos_prev_z;
-    f32 xC8_pos_delta_x;
-    f32 xCC_pos_delta_y;
-    f32 xD0_pos_delta_z;
+    guVector xB0_xB8_pos;
+    guVector xBC_xC4_pos_prev;
+    guVector xC8_xD0_pos_delta;
     BOOL xE0_in_air;
     f32 xE4_vel_queue_x;
     f32 xE8_unk;
@@ -225,12 +220,6 @@ typedef struct _Player {
     s8 x671_frames_tilt_y;
 
     Physics x6F0_physics;
-
-    s32 x72C_floor_id_actionstate;
-
-    u32 x820_unk;
-    s32 x83C_floor_id;
-    u32 x840_ground_type;
 
     u32 x88C_ecb_inactive_frames;
 
@@ -289,7 +278,11 @@ u32 Player_BoneID2Index(Player*, u32);
 
 void Player_CalculateHorzMobility(Player*, f32);
 
+void Player_SetGrabbableFlags(Player*, u16);
+
 u32 Player_GetSpawnCount(HSD_GObj*);
+
+u32* Player_FetchAnimHeader(Player*, u32);
 
 void Player_PlaySFX(Player*, u32, u32, u32);
 

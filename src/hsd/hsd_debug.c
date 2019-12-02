@@ -3,15 +3,14 @@
 void HSD_Halt(char error[])
 {
     printf("HALT: %s\n", error);
-    assert(TRUE);
-    while(true){}
+    assert(FALSE);
 }
 
 void HSD_CheckAssert(char error[], bool condition)
 {
     if (!condition) {
-        printf("HALT: %s\n", error);
-        assert(TRUE);
+        printf("ASSERT: %s\n", error);
+        assert(FALSE);
     }
 }
 
