@@ -2970,7 +2970,6 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
     return res;
 }
 
-#ifdef NO_ASM
 //80387BA4
 u32 HSD_TExpSimplify2(HSD_TExp* texp)
 {
@@ -2981,14 +2980,14 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
         if (texp->tev.c_in[i].type == HSD_TE_TEV && texp->tev.c_in[i].sel == 1) {
             if (t->tev.c_op == 0 && t->tev.c_in[0].sel == 7 && t->tev.c_in[1].sel == 7 && t->tev.c_bias == 0 && t->tev.c_scale == 0) {
                 if (t->tev.c_in[3].type == HSD_TE_KONST) {
-                    if (texp->tev.tex_swap == 0xFF) {
-                        texp->tev.tex_swap = t->tev.tex_swap;
+                    if (texp->tev.kcsel == 0xFF) {
+                        texp->tev.kcsel = t->tev.kcsel;
                     } else {
-                        if (texp->tev.tex_swap != t->tev.tex_swap) {
+                        if (texp->tev.kcsel != t->tev.kcsel) {
                             continue;
                         }
                     }
-                } else {
+                } else if(t->tev.c_in[3].type != HSD_TE_IMM) {
                     continue;
                 }
                 texp->tev.c_in[i].type = t->tev.c_in[3].type;
@@ -3004,14 +3003,14 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
         if (texp->tev.a_in[i].type == HSD_TE_TEV) {
             if (t->tev.a_op == 0 && t->tev.a_in[0].sel == 7 && t->tev.a_in[1].sel == 7 && t->tev.a_bias == 0 && t->tev.a_scale == 0) {
                 if (t->tev.a_in[3].type == HSD_TE_KONST) {
-                    if (texp->tev.kcsel == 0xFF) {
-                        texp->tev.kcsel = t->tev.kcsel;
+                    if (texp->tev.kasel == 0xFF) {
+                        texp->tev.kasel = t->tev.kasel;
                     } else {
-                        if (texp->tev.kcsel != t->tev.kcsel) {
+                        if (texp->tev.kasel != t->tev.kasel) {
                             continue;
                         }
                     }
-                } else {
+                } else if(t->tev.a_in[3].type != HSD_TE_IMM) {
                     continue;
                 }
                 texp->tev.a_in[i].type = t->tev.a_in[3].type;
@@ -3024,4 +3023,3 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
 
     return 0;
 }
-#endif
