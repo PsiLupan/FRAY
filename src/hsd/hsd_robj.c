@@ -127,7 +127,7 @@ void HSD_RObjReqAnimAll(HSD_RObj* robj, f32 frame)
 
 //8037B1A0
 void HSD_RObjAddAnimAll(HSD_RObj* robj, HSD_RObjAnimJoint* anim)
-{ //The second parameter is assumed based on layout - It literally is never NULL in my experience
+{
     if (robj != NULL && anim != NULL) {
         HSD_RObj* i;
         HSD_RObjAnimJoint* j;
