@@ -9,6 +9,7 @@
 
 HSD_ObjAllocData robj_alloc_data;
 HSD_ObjAllocData rvalue_alloc_data;
+guVector global_position = {0, 0, 0};
 
 //8037AE34
 void HSD_RObjInitAllocData(void)
@@ -143,7 +144,6 @@ void HSD_RObjAddAnimAll(HSD_RObj* robj, HSD_RObjAnimJoint* anim)
 u32 HSD_RObjGetGlobalPosition(HSD_RObj* robj, u32 flag, guVector* pos)
 {
     u32 pos_count = 0;
-    guVector gpos;
     if (robj == NULL) {
         return 0;
     } else {
@@ -162,16 +162,16 @@ u32 HSD_RObjGetGlobalPosition(HSD_RObj* robj, u32 flag, guVector* pos)
                         HSD_JObjSetupMatrixSub(jobj);
                     }
                     pos_count += 1;
-                    gpos.x = gpos.x + jobj->mtx[0][3];
-                    gpos.y = gpos.y + jobj->mtx[1][3];
-                    gpos.z = gpos.z + jobj->mtx[2][3];
+                    global_position.x += jobj->mtx[0][3];
+                    global_position.y += jobj->mtx[1][3];
+                    global_position.z += jobj->mtx[2][3];
                 }
             }
         }
         if (pos_count > 0) {
-            pos->x = gpos.x;
-            pos->y = gpos.y;
-            pos->z = gpos.z;
+            pos->x = global_position.x;
+            pos->y = global_position.y;
+            pos->z = global_position.z;
         }
     }
     return pos_count;

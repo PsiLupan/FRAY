@@ -653,13 +653,13 @@ BOOL Scene_IsSinglePlayer(u8 scene)
 //801A43A0
 u8* Scene_ProcessMajor(u8 scene)
 {
-    MajorScene* major_scenes = Scene_GetMajorScenes();
+    MajorScene* major_scene_list = Scene_GetMajorScenes();
     MajorScene* scene_ptr = NULL;
     u8* result;
 
-    for (u32 i = 0; major_scenes[i].idx != 45; i += 1) {
-        if (major_scenes[i].idx == scene) {
-            scene_ptr = &major_scenes[i];
+    for (u32 i = 0; major_scene_list[i].idx != 45; i += 1) {
+        if (major_scene_list[i].idx == scene) {
+            scene_ptr = &major_scene_list[i];
             break;
         }
     }
@@ -696,9 +696,9 @@ u8* Scene_ProcessMajor(u8 scene)
         gamestate.pending = FALSE;
         gamestate.curr_major = 0;
         scene_ptr = NULL;
-        for (u32 i = 0; major_scenes[i].idx != 45; i++) {
-            if (major_scenes[i].idx == major) {
-                scene_ptr = &major_scenes[i];
+        for (u32 i = 0; major_scene_list[i].idx != 45; i++) {
+            if (major_scene_list[i].idx == major) {
+                scene_ptr = &major_scene_list[i];
             }
         }
         Scene_ProcessMinor(scene_ptr);

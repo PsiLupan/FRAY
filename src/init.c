@@ -91,7 +91,7 @@ int main(void)
     //InitializeStaticMemRegions();
     printf("# -------------------------------------------\n");
     printf("#\tSuper Smash Bros. Melee\n");
-    printf("# Arena Size %d MB\n", arena_size >> 0x14);
+    printf("# Arena Size %u MB\n", arena_size >> 0x14);
     printf("# DATE %s TIME %s\n", __DATE__, __TIME__);
 
     Init_Game();
@@ -101,14 +101,15 @@ int main(void)
 //801A4510
 void Init_Game()
 {
-    u8 curr_major;
     memset(&gamestate, 0, 20);
+
     MajorScene* major_scenes = Scene_GetMajorScenes();
     for (u32 i = 0; major_scenes[i].idx != 45; i += 1) {
         if (major_scenes[i].Init) { //For things such as VS, this points to a function that allocates the memory for StartMelee, etc..
             major_scenes[i].Init();
         }
     }
+
     if ((VIDEO_HaveComponentCable() /* && (rmode->viTVMode & 0x02)*/) /*|| OS_GetProgressiveMode() == 1)*/) {
         gamestate.curr_major = 39;
     } else {
@@ -116,8 +117,9 @@ void Init_Game()
     }
     gamestate.curr_major = 0; //DEBUG
     gamestate.prev_major = 45;
+
     while (1) {
-        curr_major = *Scene_ProcessMajor(gamestate.curr_major);
+        u8 curr_major = *Scene_ProcessMajor(gamestate.curr_major);
         if (dword_8046B0F0.unk04)
             dword_8046B0F0.unk04 = 0;
         gamestate.prev_major = gamestate.curr_major;

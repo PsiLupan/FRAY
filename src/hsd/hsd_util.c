@@ -19,16 +19,6 @@ void GX_SetViewport_Wrapper(f32 xOrig, f32 yOrig, f32 wd,f32 ht, f32 nearZ ,f32 
     GX_SetViewport(xOrig, yOrig, wd, ht, nearZ, farZ);
 }
 
-void GX_GetViewport(f32* xOrig,f32* yOrig,f32* wd,f32* ht,f32* nearZ,f32* farZ)
-{
-    *xOrig = GXViewport.x0;
-    *yOrig = GXViewport.y0;
-    *wd = GXViewport.x1;
-    *ht = GXViewport.y1;
-    *nearZ = GXViewport.n;
-    *farZ = GXViewport.f;
-}
-
 void GX_GetViewportv(f32* vp){
     vp[0] = GXViewport.x0;
     vp[1] = GXViewport.y0;
