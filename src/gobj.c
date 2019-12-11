@@ -33,7 +33,7 @@ HSD_ObjAllocData gobj_def; //804CE38C
 HSD_ObjAllocData gobj_proc_def; //804CE3B8
 
 struct _unk_gobj_struct {
-    u8 flags; //804CE3E4
+    u8 flags[4]; //804CE3E4
     u32 x4_unk; //804CE3E8
     u8 x8_unk; //804CE3EC
     u8 xC_unk; //804CE3ED
@@ -143,7 +143,7 @@ JMPLABEL_2:
     }
     proc->child = gobj->proc;
     gobj->proc = proc;
-    if (unk_gobj_struct.flags >> 7 == 0) {
+    if (unk_gobj_struct.flags[0] >> 7 == 0) {
         return;
     }
     if (proc->prev != curr_gobjproc) {
@@ -166,7 +166,7 @@ void GObj_ProcRemove(HSD_GObjProc* proc)
 
     s_link = proc->s_link;
     p_link = proc->gobj->p_link;
-    if (unk_gobj_struct.flags < 0 && proc == next_gobjproc) {
+    if (unk_gobj_struct.flags[0] < 0 && proc == next_gobjproc) {
         next_gobjproc = proc->next;
     }
     ppHVar3 = &slinklow_procs[p_link + s_link * (S_LINK_MAX + 1)];
@@ -231,11 +231,10 @@ HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj* gobj, void (*cb)(), u8 s_pri
 //8038FE24
 void GObj_FreeProc(HSD_GObjProc* proc)
 {
-    if (unk_gobj_struct.flags < 0 || proc != curr_gobjproc) {
-        GObj_ProcReparent(proc);
+    if (unk_gobj_struct.flags[0] < 0 || proc != curr_gobjproc) {
         HSD_ObjFree(&gobj_proc_def, (HSD_ObjAllocLink*)proc);
     } else {
-        unk_gobj_struct.flags = (unk_gobj_struct.flags & 0xDF) | 0x20;
+        unk_gobj_struct.flags[0] = (unk_gobj_struct.flags[0] & 0xDF) | 0x20;
     }
     return;
 }
@@ -249,12 +248,12 @@ void GObj_ProcRemoveAll(HSD_GObj* gobj)
     proc = gobj->proc;
     while (proc != NULL) {
         child = proc->child;
-        if (unk_gobj_struct.flags < 0 || proc != curr_gobjproc) {
+        if (unk_gobj_struct.flags[0] < 0 || proc != curr_gobjproc) {
             GObj_ProcReparent(proc);
             HSD_ObjFree(&gobj_proc_def, (HSD_ObjAllocLink*)proc);
             proc = child;
         } else {
-            unk_gobj_struct.flags = (unk_gobj_struct.flags & 0xDF) | 0x20;
+            unk_gobj_struct.flags[0] = (unk_gobj_struct.flags[0] & 0xDF) | 0x20;
             proc = child;
         }
     }
@@ -371,7 +370,7 @@ HSD_GObj* GObj_Create(u32 class, u32 p_link, u32 p_prio)
 void GObj_Free(HSD_GObj* gobj)
 {
     HSD_CheckAssert("GObj_Free: gobj == NULL", gobj != NULL);
-    if (((unk_gobj_struct.flags >> 7) & 1) != 0 || gobj != current_gobj) {
+    if (((unk_gobj_struct.flags[0] >> 7) & 1) != 0 || gobj != current_gobj) {
         GObj_CallDestructor(gobj);
         GObj_CallHSDDestructor(gobj);
         GObj_ProcRemoveAll(gobj);
@@ -392,7 +391,7 @@ void GObj_Free(HSD_GObj* gobj)
         }
         HSD_ObjFree(&gobj_def, (HSD_ObjAllocLink*)gobj);
     } else {
-        unk_gobj_struct.flags = (unk_gobj_struct.flags & 0xBF) | 0x40;
+        unk_gobj_struct.flags[0] = (unk_gobj_struct.flags[0] & 0xBF) | 0x40;
     }
 }
 
@@ -550,19 +549,19 @@ void GObj_RunProcs(void)
                         (*proc->callback)(proc->gobj);
                         next_gobjproc = proc->next;
                         
-                        if (unk_gobj_struct.flags != 0) {
-                            unk_gobj_struct.flags = (unk_gobj_struct.flags & 0x7FFFFFFF) | 0x80000000;
-                            if ((unk_gobj_struct.flags >> 6 & 1) == 0) {
-                                if ((unk_gobj_struct.flags >> 4 & 1) != 0) {
+                        if (*((u32*)(&unk_gobj_struct.flags[0])) != 0) {
+                            *((u32*)(&unk_gobj_struct.flags[0])) = (*((u32*)(&unk_gobj_struct.flags[0])) & 0x7FFFFFFF) | 0x80000000;
+                            if ((unk_gobj_struct.flags[0] >> 6 & 1) == 0) {
+                                if ((unk_gobj_struct.flags[0] >> 4 & 1) != 0) {
                                     //FUN_8039032c(unk_gobj_struct.x4_unk, proc->gobj, unk_gobj_struct.x8_unk, unk_gobj_struct.xC_unk, unk_gobj_struct.gobj);
                                 }
-                                if ((unk_gobj_struct.flags >> 5 & 1) != 0) {
+                                if ((unk_gobj_struct.flags[0] >> 5 & 1) != 0) {
                                     GObj_FreeProc(proc);
                                 }
                             } else {
                                 GObj_Free(proc->gobj);
                             }
-                            unk_gobj_struct.flags = 0;
+                            *((u32*)(&unk_gobj_struct.flags[0])) = 0;
                         }
                         
                         current_gobj = NULL;
