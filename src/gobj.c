@@ -189,6 +189,27 @@ void GObj_ProcRemove(HSD_GObjProc* proc)
     proc->next->prev = proc->prev;
 }
 
+//8038FCE4
+void GObj_ProcReparent(HSD_GObjProc* proc)
+{
+    HSD_GObjProc* gobj_proc;
+    HSD_GObjProc* temp;
+    HSD_GObj* gobj;
+
+    gobj = proc->gobj;
+    GObj_ProcRemove(proc);
+    gobj_proc = gobj->proc;
+    if (gobj_proc == proc) {
+        gobj->proc = proc->child;
+    } else {
+        do {
+            temp = gobj_proc;
+            gobj_proc = temp->child;
+        } while (gobj_proc != proc);
+        temp->child = proc->child;
+    }
+}
+
 //8038FD54
 HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj* gobj, void (*cb)(), u8 s_prio)
 {
@@ -217,27 +238,6 @@ void GObj_FreeProc(HSD_GObjProc* proc)
         unk_gobj_struct.flags = (unk_gobj_struct.flags & 0xDF) | 0x20;
     }
     return;
-}
-
-//8038FCE4
-void GObj_ProcReparent(HSD_GObjProc* proc)
-{
-    HSD_GObjProc* gobj_proc;
-    HSD_GObjProc* temp;
-    HSD_GObj* gobj;
-
-    gobj = proc->gobj;
-    GObj_ProcRemove(proc);
-    gobj_proc = gobj->proc;
-    if (gobj_proc == proc) {
-        gobj->proc = proc->child;
-    } else {
-        do {
-            temp = gobj_proc;
-            gobj_proc = temp->child;
-        } while (gobj_proc != proc);
-        temp->child = proc->child;
-    }
 }
 
 //8038FED4
