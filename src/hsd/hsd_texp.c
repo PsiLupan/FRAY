@@ -779,7 +779,7 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 }
 
 //803846C0
-static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
+static s32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 {
     s32 val = 0;
     u32 i;
@@ -790,7 +790,6 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                 && texp->tev.c_bias == 0 && texp->tev.c_scale == 0 && texp->tev.c_in[3].type == HSD_TE_CNST) {     
                 if (AssignColorReg(&texp->tev, 3, res) == -1) {
                     val = AssignColorKonst(&texp->tev, 3, res);
-                    HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
                     return val;
                 }
             } else {
@@ -798,7 +797,6 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                     if (texp->tev.c_in[i].type == HSD_TE_CNST) {
                         if (AssignColorKonst(&texp->tev, i, res) == -1) {
                             val = AssignColorReg(&texp->tev, i, res);
-                            HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
                             return val;
                         }
                     }
@@ -807,7 +805,6 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                 for (i = 0; i < 4; ++i) {
                     if (texp->tev.c_in[i].type == HSD_TE_CNST) {
                         val = AssignColorReg(&texp->tev, i, res);
-                        HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
                         return val;
                     }
                 }
@@ -816,7 +813,6 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
             for (i = 0; i < 4; ++i) {
                 if (texp->tev.c_in[i].type == HSD_TE_CNST) {
                     val = AssignColorReg(&texp->tev, i, res);
-                    HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
                     return val;
                 }
             }
@@ -829,7 +825,6 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                 && texp->tev.a_bias == 0 && texp->tev.a_scale == 0 && texp->tev.a_in[3].type == HSD_TE_CNST) {
                 if (AssignAlphaReg(&texp->tev, 3, res) == -1) {
                     val = AssignAlphaKonst(&texp->tev, 3, res);
-                    HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
                     return val;
                 }
             } else {
@@ -837,7 +832,6 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                     if (texp->tev.a_in[i].type == HSD_TE_CNST) {
                         if (AssignAlphaKonst(&texp->tev, i, res) == -1) {
                             val = AssignAlphaReg(&texp->tev, i, res);
-                            HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
                             return val;
                         }
                     }
@@ -846,7 +840,6 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                 for (; i < 4; ++i) {
                     if (texp->tev.a_in[i].type == HSD_TE_CNST) {
                         val = AssignAlphaReg(&texp->tev, i, res);
-                        HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
                         return val;
                     }
                 }
@@ -855,7 +848,6 @@ static u32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
             for (i = 0; i < 4; ++i) {
                 if (texp->tev.a_in[i].type == HSD_TE_CNST) {
                     val = AssignAlphaReg(&texp->tev, i, res);
-                    HSD_CheckAssert("TExpAssignReg: val == -1", val >= 0);
                     return val;
                 }
             }
@@ -1106,8 +1098,6 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     te_res = *(u32*)texp->cnst.val;
                     if (te_res > 255) {
                         te_res = 255;
-                    } else if (te_res < 0) {
-                        te_res = 0;
                     }
                     break;
 
@@ -1115,8 +1105,6 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     te_res = (u32)(255.0f * *(f32*)texp->cnst.val);
                     if (te_res > 255) {
                         te_res = 255;
-                    } else if (te_res < 0) {
-                        te_res = 0;
                     }
                     break;
 
@@ -1124,8 +1112,6 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     te_res = (u32)(255.0 * *(f64*)texp->cnst.val);
                     if (te_res > 255) {
                         te_res = 255;
-                    } else if (te_res < 0) {
-                        te_res = 0;
                     }
                     break;
                 }
@@ -1279,8 +1265,8 @@ s32 HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_l
     num = HSD_TExpMakeDag(texp, list);
     HSD_TExpSchedule(num, list, order, &res);
     for (u32 i = 0; i < num; ++i) {
-        u32 val = TExpAssignReg(order[i], &res);
-        HSD_CheckAssert("val < 0", val >= 0);
+        s32 val = TExpAssignReg(order[i], &res);
+        HSD_CheckAssert("HSD_TExpCompile: val < 0", val >= 0);
     }
 
     for (num = num - 1; num > -1; num = num - 1) {
