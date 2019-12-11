@@ -35,7 +35,7 @@ HSD_ObjAllocData gobj_def; //804CE38C
 HSD_ObjAllocData gobj_proc_def; //804CE3B8
 
 struct _unk_gobj_struct {
-    u8 flags[4]; //804CE3E4
+    s8 flags[4]; //804CE3E4
     u32 x4_unk; //804CE3E8
     u8 x8_unk; //804CE3EC
     u8 xC_unk; //804CE3ED
