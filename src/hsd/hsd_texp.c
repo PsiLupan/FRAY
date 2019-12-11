@@ -1969,7 +1969,7 @@ static void make_full_dependency_mtx(s32 num, u32* dep, u32* full)
 //80386234
 void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes* resource)
 {
-#if 1
+#if 0
     u32 dep_mtx[32];
     u32 full_dep_mtx[32];
     s32 order[32];
@@ -2426,7 +2426,7 @@ static u32 SimplifyThis(HSD_TExp* texp)
 
                         match = TRUE;
                     }
-                    if ((texp->tev.c_op == 0) && (texp->tev.c_in[3].sel == 7)) {
+                    if (texp->tev.c_op == 0 && texp->tev.c_in[3].sel == 7) {
                         texp->tev.c_in[3].type = texp->tev.c_in[1].type;
                         texp->tev.c_in[3].sel = texp->tev.c_in[1].sel;
                         texp->tev.c_in[3].arg = texp->tev.c_in[1].arg;
@@ -2518,6 +2518,7 @@ static u32 SimplifyThis(HSD_TExp* texp)
                     match = TRUE;
                 } else if ((texp->tev.c_in[0].sel == 7) && (texp->tev.c_in[1].sel == 7)) {
                     texp->tev.c_op = 0;
+
                     texp->tev.c_in[0].type = texp->tev.c_in[2].type;
                     texp->tev.c_in[0].sel = texp->tev.c_in[2].sel;
                     texp->tev.c_in[0].arg = texp->tev.c_in[2].arg;
@@ -2911,7 +2912,12 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                                     HSD_TExpRef(texp->tev.a_in[i].exp, texp->tev.a_in[i].sel);
                                 }
 
-                                MergeResources(&texp->tev, &curr->tev);
+                                if (texp->tev.tex == NULL){
+                                    texp->tev.tex = curr->tev.tex;
+                                }
+                                if (texp->tev.chan == 0xFF){
+                                    texp->tev.chan = curr->tev.chan;
+                                }
                                 HSD_TExpUnref(curr, sel);
                             }
                         }
@@ -2946,7 +2952,12 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                                 if (texp->tev.a_clamp == 0xFF || texp->tev.a_clamp == 0) {
                                     texp->tev.a_clamp = curr->tev.a_clamp;
                                 }
-                                MergeResources(&texp->tev, &curr->tev);
+                                if (texp->tev.tex == NULL){
+                                    texp->tev.tex = curr->tev.tex;
+                                }
+                                if (texp->tev.chan == 0xFF){
+                                    texp->tev.chan = curr->tev.chan;
+                                }
                                 HSD_TExpUnref(curr, sel);
                             }
                         }
