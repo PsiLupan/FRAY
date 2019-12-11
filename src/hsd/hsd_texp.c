@@ -77,7 +77,7 @@ u32 HSD_TexCoordID2Num(u32 coord)
     case GX_TEXCOORDNULL:
         return 0;
     default:
-        assert(0);
+        HSD_Halt("Unexpected texcoord id");
     }
     return 0;
 }
