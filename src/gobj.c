@@ -28,6 +28,8 @@ s32 flag_array[4] = { 1, 4, 2, 0 }; //804085F0
 
 u32 gobj_prep[3] = { 0x3F3F0200, 0, 0 }; //DAT_80408620
 
+//u8 s_link_max = S_LINK_MAX; //804CE380
+//u8 p_link_max = P_LINK_MAX; //804CE381
 u8 curr_slink = 24; //804CE382
 HSD_ObjAllocData gobj_def; //804CE38C
 HSD_ObjAllocData gobj_proc_def; //804CE3B8
@@ -125,7 +127,7 @@ void GObj_LinkProc(HSD_GObjProc* proc)
         offset -= 1;
         p_link -= 1;
         if (isZero) {
-            proc->next = slinkhigh_procs[offset];
+            proc->next = slinkhigh_procs[s_link];
             slinkhigh_procs[s_link] = proc;
             proc->prev = NULL;
             goto JMPLABEL_2;
