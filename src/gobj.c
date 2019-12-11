@@ -549,16 +549,22 @@ void GObj_RunProcs(void)
                         curr_gobjproc = proc;
                         (*proc->callback)(proc->gobj);
                         next_gobjproc = proc->next;
-                        if ((unk_gobj_struct.flags >> 6 & 1) == 0) {
-                            if ((unk_gobj_struct.flags >> 4 & 1) != 0) {
-                                //FUN_8039032c(unk_gobj_struct.x4_unk, proc->gobj, unk_gobj_struct.x8_unk, unk_gobj_struct.xC_unk, unk_gobj_struct.gobj);
+                        
+                        if (unk_gobj_struct.flags != 0) {
+                            unk_gobj_struct.flags = (unk_gobj_struct.flags & 0x7FFFFFFF) | 0x80000000;
+                            if ((unk_gobj_struct.flags >> 6 & 1) == 0) {
+                                if ((unk_gobj_struct.flags >> 4 & 1) != 0) {
+                                    //FUN_8039032c(unk_gobj_struct.x4_unk, proc->gobj, unk_gobj_struct.x8_unk, unk_gobj_struct.xC_unk, unk_gobj_struct.gobj);
+                                }
+                                if ((unk_gobj_struct.flags >> 5 & 1) != 0) {
+                                    GObj_FreeProc(proc);
+                                }
+                            } else {
+                                GObj_Free(proc->gobj);
                             }
-                            if ((unk_gobj_struct.flags >> 5 & 1) != 0) {
-                                GObj_FreeProc(proc);
-                            }
-                        } else {
-                            GObj_Free(proc->gobj);
+                            unk_gobj_struct.flags = 0;
                         }
+                        
                         current_gobj = NULL;
                         curr_gobjproc = NULL;
                     }
