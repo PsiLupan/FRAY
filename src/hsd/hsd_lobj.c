@@ -563,10 +563,10 @@ void HSD_LObjSetupInit(HSD_CObj* cobj)
 //803663B4
 void HSD_LObjAddCurrent(HSD_LObj* lobj)
 {
-    HSD_SList *list, **listp;
+    HSD_SList **listp;
 
     if (lobj != NULL) {
-        for (list = current_lights; list != NULL; list = list->next) {
+        for (HSD_SList* list = current_lights; list != NULL; list = list->next) {
             if (list->data == lobj) {
                 HSD_LObjDeleteCurrent(lobj);
                 break;
@@ -631,8 +631,7 @@ void HSD_LObjSetCurrentAll(HSD_LObj* lobj)
 {
     HSD_LObjDeleteCurrentAll(NULL);
 
-    HSD_LObj* l;
-    for (l = lobj; l; l = l->next) {
+    for (HSD_LObj* l = lobj; l != NULL; l = l->next) {
         HSD_LObjAddCurrent(l);
     }
 }
