@@ -31,7 +31,14 @@ u32 gobj_prep[3] = { 0x3F3F0200, 0, 0 }; //DAT_80408620
 u8 curr_slink = 24; //804CE382
 HSD_ObjAllocData gobj_def; //804CE38C
 HSD_ObjAllocData gobj_proc_def; //804CE3B8
-HSD_ObjAllocData gobj_def_3; //804CE3E4
+
+struct _unk_gobj_struct {
+    u8 flags; //804CE3E4
+    u32 x4_unk; //804CE3E8
+    u8 x8_unk; //804CE3EC
+    u8 xC_unk; //804CE3ED
+    HSD_GObj* gobj; //804CE3F0
+} unk_gobj_struct;
 
 //80086960
 BOOL GObj_IsPlayer(HSD_GObj* gobj)
@@ -75,12 +82,14 @@ BOOL GObj_IsItem(HSD_GObj* gobj)
 //8031F9B4
 //803204C0
 //803204E4
-void GObj_AnimateJObj(HSD_GObj* gobj){
+void GObj_AnimateJObj(HSD_GObj* gobj)
+{
     HSD_JObjAnimAll(gobj->hsd_obj);
 }
 
 //80322D30
-u64 GObj_GetProcFlags(u32 i, u32 j, u32 p){
+u64 GObj_GetProcFlags(u32 i, u32 j, u32 p)
+{
     u64 n = i << p | j >> (0x20 - p) | j << (p + -0x20);
     return n << p;
 }
@@ -134,7 +143,7 @@ JMPLABEL_2:
     }
     proc->child = gobj->proc;
     gobj->proc = proc;
-    if (gobj_def_3.flags >> 7 == 0) {
+    if (unk_gobj_struct.flags >> 7 == 0) {
         return;
     }
     if (proc->prev != curr_gobjproc) {
@@ -145,6 +154,39 @@ JMPLABEL_2:
             next_gobjproc = proc;
         }
     }
+}
+
+//8038FC18
+void GObj_ProcRemove(HSD_GObjProc* proc)
+{
+    u8 s_link;
+    HSD_GObjProc* pHVar2;
+    HSD_GObjProc** ppHVar3;
+    u32 p_link;
+
+    s_link = proc->s_link;
+    p_link = proc->gobj->p_link;
+    if (unk_gobj_struct.flags < 0 && proc == next_gobjproc) {
+        next_gobjproc = proc->next;
+    }
+    ppHVar3 = &slinklow_procs[p_link + s_link * (S_LINK_MAX + 1)];
+    if (proc == *ppHVar3) {
+        pHVar2 = proc->prev;
+        if (pHVar2 == NULL || pHVar2->gobj->p_link != p_link) {
+            *ppHVar3 = NULL;
+        } else {
+            *ppHVar3 = pHVar2;
+        }
+    }
+    if (proc->prev == NULL) {
+        slinkhigh_procs[s_link] = proc->next;
+    } else {
+        proc->prev->next = proc->next;
+    }
+    if (proc->next == NULL) {
+        return;
+    }
+    proc->next->prev = proc->prev;
 }
 
 //8038FD54
@@ -163,6 +205,60 @@ HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj* gobj, void (*cb)(), u8 s_pri
     proc->callback = cb;
     GObj_LinkProc(proc);
     return proc;
+}
+
+//8038FE24
+void GObj_FreeProc(HSD_GObjProc* proc)
+{
+    if (unk_gobj_struct.flags < 0 || proc != curr_gobjproc) {
+        GObj_ProcReparent(proc);
+        HSD_ObjFree(&gobj_proc_def, (HSD_ObjAllocLink*)proc);
+    } else {
+        unk_gobj_struct.flags = (unk_gobj_struct.flags & 0xDF) | 0x20;
+    }
+    return;
+}
+
+//8038FCE4
+void GObj_ProcReparent(HSD_GObjProc* proc)
+{
+    HSD_GObjProc* gobj_proc;
+    HSD_GObjProc* temp;
+    HSD_GObj* gobj;
+
+    gobj = proc->gobj;
+    GObj_ProcRemove(proc);
+    gobj_proc = gobj->proc;
+    if (gobj_proc == proc) {
+        gobj->proc = proc->child;
+    } else {
+        do {
+            temp = gobj_proc;
+            gobj_proc = temp->child;
+        } while (gobj_proc != proc);
+        temp->child = proc->child;
+    }
+}
+
+//8038FED4
+void GObj_ProcRemoveAll(HSD_GObj* gobj)
+{
+    HSD_GObjProc* child;
+    HSD_GObjProc* proc;
+
+    proc = gobj->proc;
+    while (proc != NULL) {
+        child = proc->child;
+        if (unk_gobj_struct.flags < 0 || proc != curr_gobjproc) {
+            GObj_ProcReparent(proc);
+            HSD_ObjFree(&gobj_proc_def, (HSD_ObjAllocLink*)proc);
+            proc = child;
+        } else {
+            unk_gobj_struct.flags = (unk_gobj_struct.flags & 0xDF) | 0x20;
+            proc = child;
+        }
+    }
+    return;
 }
 
 //8038FF5C
@@ -274,11 +370,11 @@ HSD_GObj* GObj_Create(u32 class, u32 p_link, u32 p_prio)
 //80390228
 void GObj_Free(HSD_GObj* gobj)
 {
-    assert(gobj != NULL);
-    if (((gobj_def_3.flags >> 7) & 1) != 0 || gobj != current_gobj) {
+    HSD_CheckAssert("GObj_Free: gobj == NULL", gobj != NULL);
+    if (((unk_gobj_struct.flags >> 7) & 1) != 0 || gobj != current_gobj) {
         GObj_CallDestructor(gobj);
         GObj_CallHSDDestructor(gobj);
-        sub_8038FED4(gobj); //TODO
+        GObj_ProcRemoveAll(gobj);
 
         if (gobj->gx_link != GOBJ_NOREF) {
             GObj_GXLinkDestructor(gobj);
@@ -296,7 +392,7 @@ void GObj_Free(HSD_GObj* gobj)
         }
         HSD_ObjFree(&gobj_def, (HSD_ObjAllocLink*)gobj);
     } else {
-        gobj_def_3.flags = (gobj_def_3.flags & 0xBF) | 0x40;
+        unk_gobj_struct.flags = (unk_gobj_struct.flags & 0xBF) | 0x40;
     }
 }
 
@@ -453,16 +549,16 @@ void GObj_RunProcs(void)
                         curr_gobjproc = proc;
                         (*proc->callback)(proc->gobj);
                         next_gobjproc = proc->next;
-                        /*if ((DAT_804ce3e4 >> 6 & 1) == 0) {
-                            if ((DAT_804ce3e4 >> 4 & 1) != 0) {
-                                //FUN_8039032c(DAT_804ce3e8, proc->gobj, DAT_804ce3ec, DAT_804ce3ed, DAT_804ce3f0);
+                        if ((unk_gobj_struct.flags >> 6 & 1) == 0) {
+                            if ((unk_gobj_struct.flags >> 4 & 1) != 0) {
+                                //FUN_8039032c(unk_gobj_struct.x4_unk, proc->gobj, unk_gobj_struct.x8_unk, unk_gobj_struct.xC_unk, unk_gobj_struct.gobj);
                             }
-                            if ((DAT_804ce3e4 >> 5 & 1) != 0) {
-                                FUN_8038fe24(proc);
+                            if ((unk_gobj_struct.flags >> 5 & 1) != 0) {
+                                GObj_FreeProc(proc);
                             }
                         } else {
                             GObj_Free(proc->gobj);
-                        }*/
+                        }
                         current_gobj = NULL;
                         curr_gobjproc = NULL;
                     }
