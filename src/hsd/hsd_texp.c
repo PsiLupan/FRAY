@@ -1175,24 +1175,18 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     te_res = values[0];
                     if (te_res > 255) {
                         te_res = 255;
-                    } else if (te_res < 0) {
-                        te_res = 0;
                     }
                     color[texp->cnst.reg].r = te_res;
 
                     te_res = values[1];
                     if (te_res > 255) {
                         te_res = 255;
-                    } else if (te_res < 0) {
-                        te_res = 0;
                     }
                     color[texp->cnst.reg].g = te_res;
 
                     te_res = values[2];
                     if (te_res > 255) {
                         te_res = 255;
-                    } else if (te_res < 0) {
-                        te_res = 0;
                     }
                     color[texp->cnst.reg].b = te_res;
                 } else {
