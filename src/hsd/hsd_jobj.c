@@ -1389,7 +1389,7 @@ static void resolveIKJoint1(HSD_JObj* jobj)
         }
     }
     guVector* pvec = jobj->pvec;
-    guVector vec;
+    guVector vec = {0.f, 0.f, 0.f};
     if (pvec != NULL) {
         vec.x = pvec->x;
         vec.y = pvec->y;

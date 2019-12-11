@@ -146,7 +146,6 @@ void* HSD_MemAlloc(u32 size)
 //80381D58
 HSD_MemoryEntry* GetMemoryEntry(u32 idx)
 {
-    assert(idx >= 0);
     if (nb_memory_list <= idx) {
         if (nb_memory_list == 0) { //In this case, it's uninitialized and allocs the array
             u32 j = 32;
