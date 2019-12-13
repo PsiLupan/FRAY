@@ -66,7 +66,7 @@ int main(void)
 
     HSD_InitComponent();
 
-    GX_SetMisc(1, 8);
+    GX_SetMisc(GX_MT_XF_FLUSH, GX_XF_FLUSH_SAFE); //Normally GX_SetMisc(1, 8), which isn't valid
 
     sys_time = SYS_Time();
 
