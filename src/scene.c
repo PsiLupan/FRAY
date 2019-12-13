@@ -824,7 +824,10 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
         }
         //For clarity sake, this the game does the following with the PAD Alarm.
         //Doing it here is technically the fix for poll drift.
+        u32 intr = IRQ_Disable();
         HSD_PadRenewRawStatus();
+        IRQ_Restore(intr);
+        
         //sub_80392E80(); Something memory card related
         u8 pad_queue_count;
         while (true) {
