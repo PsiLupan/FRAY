@@ -23,9 +23,9 @@ void HSD_CObjEraseScreen(HSD_CObj* cobj, s32 enable_color, s32 enable_alpha, s32
         f64 z_val = (constant * (near + far));
 
         f32 right_res = 0.0f; //f29
-        f32 left_res  = 0.0f; //f30
-        f32 top_res  = 0.0f; //f28
-        f32 bottom_res  = 0.0f; //f27
+        f32 left_res = 0.0f; //f30
+        f32 top_res = 0.0f; //f28
+        f32 bottom_res = 0.0f; //f27
 
         u8 proj_type = HSD_CObjGetProjectionType(cobj);
         if (proj_type == PROJ_FRUSTRUM) {
@@ -254,7 +254,7 @@ BOOL HSD_CObjSetCurrent(HSD_CObj* cobj)
         GX_SetScissor(cobj->scissor_left, cobj->scissor_top,
             cobj->scissor_right - cobj->scissor_left,
             cobj->scissor_bottom - cobj->scissor_top);
-        Mtx44 mtx = {0};
+        Mtx44 mtx = { 0 };
         u8 type = makeProjectionMtx(cobj, mtx);
         GX_LoadProjectionMtx(mtx, type);
         res = TRUE;
@@ -388,26 +388,42 @@ f32 HSD_CObjGetEyeDistance(HSD_CObj* cobj)
 //80378E70
 s32 HSD_CObjGetUpVector(HSD_CObj* cobj, guVector* vec)
 {
-    /*if (cobj != NULL && vec != NULL) {
-        if ((cobj->flags & 1) != 0) {
+    if (cobj != NULL && vec != NULL) {
+        if ((cobj->flags & 1) == 0) {
+            guVector eye;
+            guVector v;
+
+            s32 eye_res = HSD_CObjGetEyeVector(cobj, &eye);
+            if (eye_res == 0){
+                return 0;
+            }else {
+                f32 y_abs = fabsf(eye.y);
+                if (0.0001 <= 1.0 - y_abs) {
+                    f32 y = sqrtf(eye.x * eye.x + eye.z * eye.z);
+                    v.y = y;
+                    v.x = eye.x - (eye.y / v.y);
+                    v.z = eye.z * (-eye.y / v.y);
+                } else {
+                    f32 y = sqrtf(eye.y * eye.y + eye.z * eye.z);
+                    v.x = y;
+                    v.y = eye.y * (-eye.x / v.x);
+                    v.z = eye.z * (-eye.x / v.x);
+                }
+
+                Mtx mtx;
+                guMtxRotAxisRad(mtx, &eye, -cobj->u.roll);
+                c_guVecMultiplySR(mtx, &v, vec);
+                guVecNormalize(vec);
+                return 1;
+            }
+        } else {
             vec->x = cobj->u.up.x;
             vec->y = cobj->u.up.y;
             vec->z = cobj->u.up.z;
-            return 0;
+            return 1;
         }
-        guVector eye;
-        s32 eye_res = HSD_CObjGetEyeVector(cobj, &eye);
-        if (eye_res == 0) {
-            //TODO
-        }
-        return 0;
-    }*/
-    if (vec != NULL) {
-        vec->x = 0.f;
-        vec->y = 1.f;
-        vec->z = 0.f;
     }
-    return -1;
+    return 0;
 }
 
 //803690B4
@@ -527,7 +543,7 @@ void HSD_CObjSetRoll(HSD_CObj* cobj, f32 roll)
                     up.y = xz;
                     up.x = eye.x * (-eye.y / up.y);
                     up.z = -eye.y / up.y;
-                }else{
+                } else {
                     f64 yz = (eye.y * eye.y) + (eye.z * eye.z);
                     if (yz > 0) {
                         f64 rec = 1.0 / sqrt(yz);
@@ -889,7 +905,7 @@ void HSD_CObjGetOrtho(HSD_CObj* cobj, f32* top, f32* bottom, f32* left, f32* rig
 //8036A250
 u32 HSD_CObjGetFlags(HSD_CObj* cobj)
 {
-    if (cobj != NULL){
+    if (cobj != NULL) {
         return cobj->flags;
     }
     return 0;
@@ -898,7 +914,7 @@ u32 HSD_CObjGetFlags(HSD_CObj* cobj)
 //8036A258
 void HSD_CObjSetFlags(HSD_CObj* cobj, u32 flags)
 {
-    if (cobj != NULL){
+    if (cobj != NULL) {
         cobj->flags |= flags;
     }
 }
@@ -906,7 +922,7 @@ void HSD_CObjSetFlags(HSD_CObj* cobj, u32 flags)
 //8036A270
 void HSD_CObjClearFlags(HSD_CObj* cobj, u32 flags)
 {
-    if (cobj != NULL){
+    if (cobj != NULL) {
         cobj->flags &= ~flags;
     }
 }
