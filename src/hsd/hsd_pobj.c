@@ -39,8 +39,8 @@ void HSD_PObjRemoveAnimAllByFlags(HSD_PObj* pobj, u32 flags)
     if (pobj != NULL) {
         for (HSD_PObj* pp = pobj; pp != NULL; pp = pp->next) {
             if (pobj_type(pobj) == POBJ_SHAPEANIM && (pp->flags & POBJ_ANIM)) {
-                HSD_AObjRemove(pobj->u.shape_set->aobj);
-                pobj->u.shape_set->aobj = NULL;
+                HSD_AObjRemove(pobj->aobj);
+                pobj->aobj = NULL;
             }
         }
     }
@@ -54,10 +54,10 @@ void HSD_PObjRemoveAnimAll(HSD_PObj* pobj, HSD_SList* list)
         for (HSD_PObj* pp = pobj; pp != NULL; pp = pp->next) {
             assert(pobj_type(pobj) == POBJ_SHAPEANIM && pobj->u.shape_set != NULL);
             if (j != NULL) {
-                if (pp->u.shape_set->aobj != NULL) {
-                    HSD_AObjRemove(pobj->u.shape_set->aobj);
+                if (pp->aobj != NULL) {
+                    HSD_AObjRemove(pobj->aobj);
                 }
-                pobj->u.shape_set->aobj = HSD_AObjLoadDesc((HSD_AObjDesc*)j->data);
+                pobj->aobj = HSD_AObjLoadDesc((HSD_AObjDesc*)j->data);
                 j = j->next;
             }
         }
@@ -70,7 +70,7 @@ void HSD_PObjReqAnimAllByFlags(HSD_PObj* pobj, f32 startframe, u32 flags)
     if (pobj != NULL) {
         for (HSD_PObj* p = pobj; p != NULL && flags != 0; p = p->next) {
             if (flags & POBJ_ANIM) {
-                HSD_AObjReqAnim(pobj->u.shape_set->aobj, startframe);
+                HSD_AObjReqAnim(pobj->aobj, startframe);
             }
         }
     }
@@ -99,7 +99,7 @@ void HSD_PObjAnimAll(HSD_PObj* pobj)
     if (pobj != NULL) {
         for (HSD_PObj* pp = pobj; pp != NULL; pp = pp->next) {
             if (pobj_type(pobj) == POBJ_SHAPEANIM) {
-                HSD_AObjInterpretAnim(pp->u.shape_set->aobj, pp, PObjUpdateFunc);
+                HSD_AObjInterpretAnim(pp->aobj, pp, PObjUpdateFunc);
             }
         }
     }
