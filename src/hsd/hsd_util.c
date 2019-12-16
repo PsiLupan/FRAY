@@ -38,6 +38,16 @@ f32 HSD_ClampFloat(f32 val, f32 min, f32 max)
     return val;
 }
 
+f64 HSD_ClampDouble(f64 val, f64 min, f64 max)
+{
+    if (val > max) {
+        return max;
+    } else if (val < min) {
+        return min;
+    }
+    return val;
+}
+
 //8037E538
 HSD_SList* HSD_SListPrepend(HSD_SList* list, void* data)
 {
