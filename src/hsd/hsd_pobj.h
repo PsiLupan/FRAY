@@ -51,6 +51,7 @@ typedef struct _HSD_PObj {
         struct _HSD_ShapeSet* shape_set;
         HSD_SList* envelope_list;
     } u;
+    struct _HSD_AObj* aobj;
 } HSD_PObj;
 
 typedef struct _HSD_PObjDesc {
@@ -73,7 +74,6 @@ typedef struct _HSD_VtxDescList {
     u32 comp_cnt;
     u32 comp_type;
     u8 frac;
-    u8 unk;
     u16 stride;
     f32* vertex;
 } HSD_VtxDescList;
@@ -102,8 +102,6 @@ typedef struct _HSD_ShapeSet {
         f32* bp;
         f32 bl;
     } blend;
-    struct _HSD_AObj* aobj;
-    u32 x24_unk;
 } HSD_ShapeSet;
 
 typedef struct _HSD_ShapeSetDesc {
