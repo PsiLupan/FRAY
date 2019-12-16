@@ -6,6 +6,8 @@
 #include "hsd_jobj.h"
 #include "hsd_state.h"
 
+#include <math.h>
+
 static void PObjInfoInit(void);
 
 HSD_PObjInfo hsdPObj = { PObjInfoInit };
@@ -689,8 +691,8 @@ static void drawShapeAnim(HSD_PObj* pobj)
 
     if (shape_set->flags & SHAPESET_AVERAGE) {
         blend = shape_set->blend.bl;
-        shape_id = min(max(0, (s32)blend), shape_set->nb_shape - 1);
-        blend = min(max(0.0, blend - (f32)shape_id), 1.0);
+        shape_id = fminf(fmaxf(0, (s32)blend), shape_set->nb_shape - 1);
+        blend = fminf(fmaxf(0.0, blend - (f32)shape_id), 1.0);
         for (u32 i = 0; i < shape_set->nb_vertex_index; i++) {
             f32 s0[3], s1[3];
             get_shape_vertex_xyz(shape_set, shape_id, i, s0);
@@ -727,7 +729,7 @@ static void drawShapeAnim(HSD_PObj* pobj)
         for (u32 i = 0; i < shape_set->nb_vertex_index; i++) {
             get_shape_vertex_xyz(shape_set, 0, i, vertex_buffer[i]);
             for (u32 j = 0; j < shape_set->nb_shape; j++) {
-                f32 b = max(0.0, blend_bp[j]);
+                f32 b = fmaxf(0.0, blend_bp[j]);
                 f32 s[3];
                 get_shape_vertex_xyz(shape_set, j + 1, i, s);
                 vertex_buffer[i][0] += s[0] * b;
@@ -741,7 +743,7 @@ static void drawShapeAnim(HSD_PObj* pobj)
                     s32 idx = i * 3;
                     get_shape_nbt_xyz(shape_set, 0, i, normal_buffer[idx]);
                     for (u32 j = 0; j < shape_set->nb_shape; j++) {
-                        f32 b = max(0.0, blend_bp[j]);
+                        f32 b = fmaxf(0.0, blend_bp[j]);
                         f32 s[9];
                         get_shape_nbt_xyz(shape_set, j + 1, i, s);
                         for (u32 k = 0; k < 9; k++) {
@@ -753,7 +755,7 @@ static void drawShapeAnim(HSD_PObj* pobj)
                 for (u32 i = 0; i < shape_set->nb_normal_index; i++) {
                     get_shape_normal_xyz(shape_set, 0, i, normal_buffer[i]);
                     for (u32 j = 0; j < shape_set->nb_shape; j++) {
-                        f32 b = max(0.0, blend_bp[j]);
+                        f32 b = fmaxf(0.0, blend_bp[j]);
                         f32 s[3];
                         get_shape_normal_xyz(shape_set, j + 1, i, s);
                         normal_buffer[i][0] += s[0] * b;
