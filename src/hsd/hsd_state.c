@@ -388,7 +388,7 @@ void HSD_SetupChannelMode(u32 rendermode)
 //80361778
 void HSD_SetupPEMode(u32 rendermode, HSD_PEDesc* pe)
 {
-    if (pe) {
+    if (pe != NULL) {
         HSD_StateSetColorUpdate(pe->flags & ENABLE_COLOR_UPDATE);
         HSD_StateSetAlphaUpdate(pe->flags & ENABLE_ALPHA_UPDATE);
         HSD_StateSetDstAlpha(pe->flags & ENABLE_DST_ALPHA, pe->dst_alpha);
