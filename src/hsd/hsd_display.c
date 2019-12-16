@@ -136,7 +136,7 @@ PASS:
 }
 
 //80373E44
-void mkBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx)
+static void mkBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx)
 {
     f32 sx = sqrtf(mtx[2][0] * mtx[2][0] + mtx[1][0] * mtx[1][0] + mtx[0][0] * mtx[0][0]);
     f32 sz = sqrtf(mtx[2][2] * mtx[2][2] + mtx[1][2] * mtx[1][2] + mtx[0][2] * mtx[0][2]);
@@ -186,6 +186,21 @@ void mkBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx)
     guMtxRowCol(pmtx, 2, 3) = pos.z;
 }
 
+static void mkRBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx)
+{
+    Mtx rot, scl;
+    f32 x, y, z;
+    x = sqrtf(guMtxRowCol(mtx, 0, 0) *guMtxRowCol(mtx, 0, 0) + guMtxRowCol(mtx, 1, 0) * guMtxRowCol(mtx, 1, 0) + guMtxRowCol(mtx, 2, 0) * guMtxRowCol(mtx, 2, 0));
+    y = sqrtf(guMtxRowCol(mtx, 0, 1) *guMtxRowCol(mtx, 0, 1) + guMtxRowCol(mtx, 1, 1) * guMtxRowCol(mtx, 1, 1) + guMtxRowCol(mtx, 2, 1) * guMtxRowCol(mtx, 2, 1));
+    z = sqrtf(guMtxRowCol(mtx, 0, 2) *guMtxRowCol(mtx, 0, 2) + guMtxRowCol(mtx, 1, 2) * guMtxRowCol(mtx, 1, 2) + guMtxRowCol(mtx, 2, 2) * guMtxRowCol(mtx, 2, 2));
+    guMtxScale(scl, x, y, z);
+    guMtxRotRad(rot, 'z', jobj->rotation.z);
+    guMtxRowCol(rot, 0, 3) = guMtxRowCol(mtx, 0, 3);
+    guMtxRowCol(rot, 1, 3) = guMtxRowCol(mtx, 1, 3);
+    guMtxRowCol(rot, 2, 3) = guMtxRowCol(mtx, 2, 3);
+    guMtxConcat(rot, scl, pmtx);
+}
+
 //803740E8
 void HSD_JObjMakePositionMtx(HSD_JObj* jobj, Mtx vmtx, Mtx pmtx)
 {
@@ -194,8 +209,6 @@ void HSD_JObjMakePositionMtx(HSD_JObj* jobj, Mtx vmtx, Mtx pmtx)
         guMtxConcat(vmtx, jobj->mtx, pmtx);
     } else {
         guMtxConcat(vmtx, jobj->mtx, mtx);
-        Mtx rot, scl;
-        f32 x, y, z;
         switch (jobj->flags & JOBJ_BILLBOARD_FIELD) {
         case JOBJ_BILLBOARD:
             mkBillBoardMtx(jobj, mtx, pmtx);
@@ -207,15 +220,7 @@ void HSD_JObjMakePositionMtx(HSD_JObj* jobj, Mtx vmtx, Mtx pmtx)
             mkHBillBoardMtx(jobj, mtx, pmtx);
             break;
         case JOBJ_RBILLBOARD:
-            x = sqrtf(guMtxRowCol(mtx, 0, 0) *guMtxRowCol(mtx, 0, 0) + guMtxRowCol(mtx, 1, 0) * guMtxRowCol(mtx, 1, 0) + guMtxRowCol(mtx, 2, 0) * guMtxRowCol(mtx, 2, 0));
-            y = sqrtf(guMtxRowCol(mtx, 0, 1) *guMtxRowCol(mtx, 0, 1) + guMtxRowCol(mtx, 1, 1) * guMtxRowCol(mtx, 1, 1) + guMtxRowCol(mtx, 2, 1) * guMtxRowCol(mtx, 2, 1));
-            z = sqrtf(guMtxRowCol(mtx, 0, 2) *guMtxRowCol(mtx, 0, 2) + guMtxRowCol(mtx, 1, 2) * guMtxRowCol(mtx, 1, 2) + guMtxRowCol(mtx, 2, 2) * guMtxRowCol(mtx, 2, 2));
-            guMtxScale(scl, x, y, z);
-            guMtxRotRad(rot, 'z', jobj->rotation.z);
-            guMtxRowCol(rot, 0, 3) = guMtxRowCol(mtx, 0, 3);
-            guMtxRowCol(rot, 1, 3) = guMtxRowCol(mtx, 1, 3);
-            guMtxRowCol(rot, 2, 3) = guMtxRowCol(mtx, 2, 3);
-            guMtxConcat(rot, scl, pmtx);
+            mkRBillBoardMtx(jobj, mtx, pmtx);
             break;
         default:
             HSD_Panic("Unknown type of billboard");
