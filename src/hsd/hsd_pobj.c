@@ -138,7 +138,6 @@ static HSD_SList* loadEnvelopeDesc(HSD_EnvelopeDesc** edesc_p)
 static HSD_ShapeSet* loadShapeSetDesc(HSD_ShapeSetDesc* sdesc)
 {
     HSD_ShapeSet* shape_set = hsdAllocMemPiece(sizeof(HSD_ShapeSet));
-    HSD_CheckAssert("loadShapeSetDesc unexpected null", shape_set != NULL);
     memset(shape_set, 0, sizeof(HSD_ShapeSet));
     shape_set->flags = sdesc->flags;
     shape_set->nb_shape = sdesc->nb_shape;
@@ -1029,6 +1028,12 @@ static void PObjRelease(HSD_Class* o)
     HSD_PObj* pobj = HSD_POBJ(o);
     HSD_ShapeSet* shape_set = NULL;
     HSD_SList* list = NULL;
+
+    if (pobj->aobj) {
+        HSD_AObjRemove(pobj->aobj);
+    }
+
+
     switch (pobj_type(pobj)) {
     case POBJ_SHAPEANIM:
         shape_set = pobj->u.shape_set;
@@ -1036,7 +1041,6 @@ static void PObjRelease(HSD_Class* o)
             if (shape_set->flags & SHAPESET_ADDITIVE) {
                 HSD_Free(shape_set->blend.bp);
             }
-            HSD_AObjRemove(shape_set->aobj);
             hsdFreeMemPiece(shape_set, sizeof(HSD_ShapeSet));
         }
         break;
