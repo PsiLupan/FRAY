@@ -1102,14 +1102,14 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     break;
 
                 case HSD_TE_F32:
-                    te_res = (u32)(255.0f * *(f32*)texp->cnst.val);
+                    te_res = (u32)(255.0f * HSD_ClampFloat(*(f32*)texp->cnst.val, 0.f, 1.f));
                     if (te_res > 255) {
                         te_res = 255;
                     }
                     break;
 
                 case HSD_TE_F64:
-                    te_res = (u32)(255.0 * *(f64*)texp->cnst.val);
+                    te_res = (u32)(255.0 * HSD_ClampDouble(*(f64*)texp->cnst.val, 0.0, 1.0));
                     if (te_res > 255) {
                         te_res = 255;
                     }
@@ -1167,9 +1167,9 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                             if (3 < ctype)
                                 goto LAB_803850dc;
                             f32* pfVar3 = (f32*)(texp->cnst.val);
-                            values[0] = (u32)(255.0f * pfVar3[0]);
-                            values[1] = (u32)(255.0f * pfVar3[1]);
-                            values[2] = (u32)(255.0f * pfVar3[2]);
+                            values[0] = (u32)(255.0f * HSD_ClampFloat(pfVar3[0], 0.f, 1.f));
+                            values[1] = (u32)(255.0f * HSD_ClampFloat(pfVar3[1], 0.f, 1.f));
+                            values[2] = (u32)(255.0f * HSD_ClampFloat(pfVar3[2], 0.f, 1.f));
                         }
                     }
                     te_res = values[0];
