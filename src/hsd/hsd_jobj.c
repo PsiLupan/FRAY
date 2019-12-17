@@ -46,51 +46,20 @@ void HSD_JObjCheckDepend(HSD_JObj* jobj)
 }
 
 // 8036ED3C
-void HSD_JObjMtxIsDirty(HSD_JObj* jobj, HSD_JObjDesc* desc)
-{ // This function doesn't have a desc ptr in later versions
-    if (jobj != NULL && desc != NULL) {
-        jobj->rotation.x = desc->rotation.x;
-        jobj->rotation.y = desc->rotation.y;
-        jobj->rotation.z = desc->rotation.z;
-
-        jobj->scale.x = desc->scale.x;
-        jobj->scale.y = desc->scale.y;
-        jobj->scale.z = desc->scale.z;
-
-        jobj->position.x = desc->position.x;
-        jobj->position.y = desc->position.y;
-        jobj->position.z = desc->position.z;
-
-        if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-            if ((jobj->flags & USER_DEF_MTX) != 0 && (jobj->flags & MTX_DIRTY) == 0) {
-                HSD_JObjSetMtxDirtySub(jobj);
-            }
-        }
+BOOL HSD_JObjMtxIsDirty(HSD_JObj* jobj)
+{
+    HSD_CheckAssert("HSD_JObjMtxIsDirty: jobj == NULL", jobj != NULL);
+    if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
+        return TRUE;
     }
+    return FALSE;
 }
 
 // 8036EE10
-void HSD_JObjSetMtxDirty(HSD_JObj* jobj,
-    HSD_JObjDesc* desc)
-{ // This function doesn't have a
-    // desc ptr in later versions
-    HSD_JObjMtxIsDirty(jobj, desc); // This is normally inlined
-    if (JOBJ_INSTANCE(jobj)) {
-        HSD_JObj* child = jobj->child;
-        HSD_JObjDesc* dchild = desc->child;
-        while (child != NULL) {
-            if (dchild != NULL && (HSD_JObjMtxIsDirty(child, dchild), JOBJ_INSTANCE(child))) {
-                HSD_JObj* child_c = child->child;
-                HSD_JObjDesc* dchild_c = dchild->child;
-                while (child_c != NULL) {
-                    HSD_JObjMtxIsDirty(child_c, dchild_c);
-                    child_c = child_c->next;
-                    dchild_c = (dchild_c ? dchild_c->next : NULL);
-                }
-            }
-            child = child->next;
-            dchild = (dchild ? dchild->next : NULL);
-        }
+void HSD_JObjSetMtxDirty(HSD_JObj* jobj)
+{
+    if (jobj != NULL && HSD_JObjMtxIsDirty(jobj) == 0) {
+        HSD_JObjSetMtxDirtySub(jobj);
     }
 }
 
@@ -167,26 +136,19 @@ void HSD_JObjWalkTree(HSD_JObj* jobj,
 void HSD_JObjMakeMatrix(HSD_JObj* jobj)
 {
     HSD_JObj* parent = jobj->prev;
-    if (parent != NULL) {
-        if ((parent->flags & USER_DEF_MTX) == 0 && (parent->flags & MTX_DIRTY) != 0) {
-            HSD_JObjSetupMatrixSub(parent);
-        }
-    }
+    HSD_JObjSetupMatrix(parent);
     if ((jobj->flags & CLASSICAL_SCALE) == 0) {
         if (jobj->pvec == NULL) {
             jobj->pvec = (guVector*)HSD_MemAlloc(sizeof(guVector));
         }
-        if (parent != NULL) {
-            guVector* pvec = parent->pvec;
-            if (pvec != NULL) {
-                jobj->pvec->x = jobj->scale.x * parent->pvec->x;
-                jobj->pvec->y = jobj->scale.y * parent->pvec->y;
-                jobj->pvec->z = jobj->scale.z * parent->pvec->z;
-            }
-        } else {
+        if (parent == NULL || parent->pvec == NULL) {
             jobj->pvec->x = jobj->scale.x;
             jobj->pvec->y = jobj->scale.y;
             jobj->pvec->z = jobj->scale.z;
+        } else {
+            jobj->pvec->x = jobj->scale.x * parent->pvec->x;
+            jobj->pvec->y = jobj->scale.y * parent->pvec->y;
+            jobj->pvec->z = jobj->scale.z * parent->pvec->z;
         }
     } else {
         if (parent == NULL || parent->pvec == NULL) {
@@ -207,11 +169,13 @@ void HSD_JObjMakeMatrix(HSD_JObj* jobj)
     if (parent != NULL && parent->pvec != NULL) {
         vec = parent->pvec;
     }
+
     if (JOBJ_USE_QUATERNION(jobj) != 0) {
         HSD_MtxSRTQuat(jobj->mtx, &jobj->scale, &jobj->rotation, &jobj->position, vec);
     } else {
         HSD_MtxSRT(jobj->mtx, &jobj->scale, (guVector*)&jobj->rotation, &jobj->position, vec);
     }
+
     if (parent != NULL) {
         guMtxConcat(parent->mtx, jobj->mtx, jobj->mtx);
     }
@@ -219,9 +183,7 @@ void HSD_JObjMakeMatrix(HSD_JObj* jobj)
     if (jobj->aobj != NULL) {
         HSD_JObj* aj = (HSD_JObj*)jobj->aobj->hsd_obj;
         if (aj != NULL) {
-            if ((aj->flags & USER_DEF_MTX) == 0 && (aj->flags & MTX_DIRTY) != 0) {
-                HSD_JObjSetupMatrixSub(parent);
-            }
+            HSD_JObjSetupMatrix(parent);
             guVector rvec;
             guVecMultiply(aj->mtx, &jobj->position, &rvec);
             guMtxRowCol(jobj->mtx, 0, 3) = rvec.x;
@@ -497,30 +459,21 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             assert(JOBJ_USE_QUATERNION(jobj) == 0);
             jobj->rotation.x = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    break;
-                }
-                HSD_JObjSetMtxDirtySub(jobj);
+                HSD_JObjSetMtxDirty(jobj);
             }
             break;
         case 2:
             assert(JOBJ_USE_QUATERNION(jobj) == 0);
             jobj->rotation.y = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    break;
-                }
-                HSD_JObjSetMtxDirtySub(jobj);
+                HSD_JObjSetMtxDirty(jobj);
             }
             break;
         case 3:
             assert(JOBJ_USE_QUATERNION(jobj) == 0);
             jobj->rotation.z = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    break;
-                }
-                HSD_JObjSetMtxDirtySub(jobj);
+                HSD_JObjSetMtxDirty(jobj);
             }
             break;
         case 4:
@@ -537,37 +490,25 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             splArcLengthPoint(jp->u.spline, val->fv, &result);
             jobj->position = result;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    break;
-                }
-                HSD_JObjSetMtxDirtySub(jobj);
+                HSD_JObjSetMtxDirty(jobj);
             }
             break;
         case 5:
             jobj->position.x = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    break;
-                }
-                HSD_JObjSetMtxDirtySub(jobj);
+                HSD_JObjSetMtxDirty(jobj);
             }
             break;
         case 6:
             jobj->position.y = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    break;
-                }
-                HSD_JObjSetMtxDirtySub(jobj);
+                HSD_JObjSetMtxDirty(jobj);
             }
             break;
         case 7:
             jobj->position.z = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    break;
-                }
-                HSD_JObjSetMtxDirtySub(jobj);
+                HSD_JObjSetMtxDirty(jobj);
             }
             break;
         case 8:
@@ -576,10 +517,7 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             }
             jobj->scale.x = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    break;
-                }
-                HSD_JObjSetMtxDirtySub(jobj);
+                HSD_JObjSetMtxDirty(jobj);
             }
             break;
         case 9:
@@ -588,10 +526,7 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             }
             jobj->scale.y = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    break;
-                }
-                HSD_JObjSetMtxDirtySub(jobj);
+                HSD_JObjSetMtxDirty(jobj);
             }
             break;
         case 10:
@@ -600,10 +535,7 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
             }
             jobj->scale.z = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
-                if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                    break;
-                }
-                HSD_JObjSetMtxDirtySub(jobj);
+                HSD_JObjSetMtxDirty(jobj);
             }
             break;
         case 11:
@@ -648,7 +580,7 @@ void JObjUpdateFunc(void* obj, u32 type, update* val)
         case 37:
         case 38:
         case 39:
-            while(callbacks != NULL){
+            while (callbacks != NULL) {
                 ufc_callback* callback = callbacks->data;
                 (callback)(jobj, type, val->fv);
                 callbacks = callbacks->next;
@@ -759,14 +691,10 @@ void HSD_JObjAnimAll(HSD_JObj* jobj)
 
 static void setupInstanceMtx(HSD_JObj* jobj, MtxP vmtx, Mtx mtx)
 {
-    if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-        HSD_JObjSetupMatrixSub(jobj);
-    }
+    HSD_JObjSetupMatrix(jobj);
 
     HSD_JObj* child = jobj->child;
-    if (child != NULL && (child->flags & USER_DEF_MTX) == 0 && (child->flags & MTX_DIRTY) != 0) {
-        HSD_JObjSetupMatrixSub(child);
-    }
+    HSD_JObjSetupMatrix(child);
 
     guMtxInverse(child->mtx, mtx);
     guMtxConcat(jobj->mtx, mtx, mtx);
@@ -831,7 +759,7 @@ static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
 
     jobj->next = JObjLoadJointSub(desc->next, prev);
     jobj->prev = prev;
-    jobj->flags = desc->flags;
+    jobj->flags |= desc->flags;
     if ((jobj->flags & SPLINE) == 0) {
         if ((jobj->flags & PTCL) == 0) {
             jobj->u.dobj = HSD_DObjLoadDesc(desc->u.dobjdesc);
@@ -1243,13 +1171,7 @@ void HSD_JObjSetFlags(HSD_JObj* jobj, u32 flags)
 {
     if (jobj != NULL) {
         if ((jobj->flags ^ flags) & CLASSICAL_SCALE) {
-            bool alreadyDirty = false;
-            if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                alreadyDirty = true;
-            }
-            if (alreadyDirty == false) {
-                HSD_JObjSetMtxDirtySub(jobj);
-            }
+            HSD_JObjSetMtxDirty(jobj);
         }
         jobj->flags |= flags;
     }
@@ -1260,26 +1182,14 @@ void HSD_JObjSetFlagsAll(HSD_JObj* jobj, u32 flags)
 {
     if (jobj != NULL) {
         if ((jobj->flags ^ flags) & CLASSICAL_SCALE) {
-            bool alreadyDirty = false;
-            if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                alreadyDirty = true;
-            }
-            if (alreadyDirty == false) {
-                HSD_JObjSetMtxDirtySub(jobj);
-            }
+            HSD_JObjSetMtxDirty(jobj);
         }
         jobj->flags |= flags;
 
         if (JOBJ_INSTANCE(jobj)) {
             for (HSD_JObj* i = jobj->child; i != NULL; i = i->child) {
                 if ((i->flags ^ flags) & CLASSICAL_SCALE) {
-                    bool alreadyDirty = false;
-                    if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                        alreadyDirty = true;
-                    }
-                    if (alreadyDirty == false) {
-                        HSD_JObjSetMtxDirtySub(i);
-                    }
+                    HSD_JObjSetMtxDirty(i);
                 }
                 i->flags |= flags;
 
@@ -1298,13 +1208,7 @@ void HSD_JObjClearFlags(HSD_JObj* jobj, u32 flags)
 {
     if (jobj != NULL) {
         if ((jobj->flags ^ flags) & CLASSICAL_SCALE) {
-            bool alreadyDirty = false;
-            if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                alreadyDirty = true;
-            }
-            if (alreadyDirty == false) {
-                HSD_JObjSetMtxDirtySub(jobj);
-            }
+            HSD_JObjSetMtxDirty(jobj);
         }
         jobj->flags &= ~flags;
     }
@@ -1315,26 +1219,14 @@ void HSD_JObjClearFlagsAll(HSD_JObj* jobj, u32 flags)
 {
     if (jobj != NULL) {
         if ((jobj->flags ^ flags) & CLASSICAL_SCALE) {
-            bool alreadyDirty = false;
-            if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                alreadyDirty = true;
-            }
-            if (alreadyDirty == false) {
-                HSD_JObjSetMtxDirtySub(jobj);
-            }
+            HSD_JObjSetMtxDirty(jobj);
         }
         jobj->flags &= ~flags;
 
         if (JOBJ_INSTANCE(jobj)) {
             for (HSD_JObj* i = jobj->child; i != NULL; i = i->child) {
                 if ((i->flags ^ flags) & CLASSICAL_SCALE) {
-                    bool alreadyDirty = false;
-                    if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                        alreadyDirty = true;
-                    }
-                    if (alreadyDirty == false) {
-                        HSD_JObjSetMtxDirtySub(i);
-                    }
+                    HSD_JObjSetMtxDirty(i);
                 }
                 i->flags &= ~flags;
 
@@ -1389,7 +1281,7 @@ static void resolveIKJoint1(HSD_JObj* jobj)
         }
     }
     guVector* pvec = jobj->pvec;
-    guVector vec = {0.f, 0.f, 0.f};
+    guVector vec = { 0.f, 0.f, 0.f };
     if (pvec != NULL) {
         vec.x = pvec->x;
         vec.y = pvec->y;
@@ -1559,8 +1451,7 @@ static void HSD_JObjUpdateRObj(HSD_JObj* jobj)
 
 void HSD_JObjSetupMatrix(HSD_JObj* jobj)
 {
-    HSD_CheckAssert("HSD_JObjSetupMatrix: jobj == NULL", jobj != NULL);
-    if (((jobj->flags & USER_DEF_MTX) == 0) && ((jobj->flags & MTX_DIRTY) != 0)) {
+    if (jobj != NULL && ((jobj->flags & USER_DEF_MTX) == 0) && ((jobj->flags & MTX_DIRTY) != 0)) {
         HSD_JObjSetupMatrixSub(jobj);
     }
 }
@@ -1568,60 +1459,39 @@ void HSD_JObjSetupMatrix(HSD_JObj* jobj)
 // 80373078
 void HSD_JObjSetupMatrixSub(HSD_JObj* jobj)
 {
-    if (jobj != NULL) {
-        HSD_JOBJ_METHOD(jobj)->make_mtx(jobj);
-        jobj->flags &= 0xFFFFFFBF;
-        if ((jobj->flags & USER_DEF_MTX) != 0) {
-            return;
-        }
-        u32 flags = jobj->flags & EFFECTOR;
-        switch (flags) {
-        case JOINT1:
-            resolveIKJoint1(jobj);
-            break;
-
-        case JOINT2:
-            resolveIKJoint2(jobj);
-            break;
-
-        case EFFECTOR:
-            resolveIKEffector(jobj);
-            break;
-        default:
-            HSD_JObjUpdateRObj(jobj);
-        }
-        jobj->flags &= 0xFFFFFFBF;
+    HSD_JOBJ_METHOD(jobj)->make_mtx(jobj);
+    jobj->flags &= 0xFFFFFFBF;
+    if ((jobj->flags & USER_DEF_MTX) != 0) {
         return;
     }
+    u32 flags = jobj->flags & EFFECTOR;
+    switch (flags) {
+    case JOINT1:
+        resolveIKJoint1(jobj);
+        break;
+
+    case JOINT2:
+        resolveIKJoint2(jobj);
+        break;
+
+    case EFFECTOR:
+        resolveIKEffector(jobj);
+        break;
+    default:
+        HSD_JObjUpdateRObj(jobj);
+    }
+    jobj->flags &= 0xFFFFFFBF;
+    return;
 }
 
 // 803732E8
 void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj)
 {
-    BOOL isDirty = FALSE;
-    jobj->flags |= MTX_DIRTY;
+    jobj->flags |= 0x40;
     if (JOBJ_INSTANCE(jobj)) {
-        for (HSD_JObj* child = jobj->child; child != NULL; child = child->next) {
-            if ((child->flags & MTX_INDEP_PARENT) == 0) {
-                isDirty = FALSE;
-                if ((child->flags & USER_DEF_MTX) == 0 && (child->flags & MTX_DIRTY) != 0) {
-                    isDirty = TRUE;
-                }
-                if (isDirty == FALSE && JOBJ_INSTANCE(child)) {
-                    child->flags |= MTX_DIRTY;
-
-                    for (HSD_JObj* child_child = child->child; child_child != NULL; child_child = child_child->next) {
-                        if ((child_child->flags & MTX_INDEP_PARENT) == 0) {
-                            isDirty = FALSE;
-                            if ((child_child->flags & USER_DEF_MTX) == 0 && (child_child->flags & MTX_DIRTY) != 0) {
-                                isDirty = TRUE;
-                            }
-                            if (isDirty == FALSE) {
-                                HSD_JObjSetMtxDirtySub(child_child);
-                            }
-                        }
-                    }
-                }
+        for (HSD_JObj* j = jobj->child; j != NULL; j = j->next) {
+            if ((j->flags & MTX_INDEP_PARENT) == 0 && HSD_JObjMtxIsDirty(j) == 0) {
+                HSD_JObjSetMtxDirtySub(jobj);
             }
         }
     }

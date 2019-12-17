@@ -205,9 +205,7 @@ static void mkRBillBoardMtx(HSD_JObj* jobj, MtxP mtx, MtxP pmtx)
 void HSD_JObjMakePositionMtx(HSD_JObj* jobj, Mtx vmtx, Mtx pmtx)
 {
     Mtx mtx;
-    if ((jobj->flags & JOBJ_BILLBOARD_FIELD) == 0) {
-        guMtxConcat(vmtx, jobj->mtx, pmtx);
-    } else {
+    if ((jobj->flags & JOBJ_BILLBOARD_FIELD)) {
         guMtxConcat(vmtx, jobj->mtx, mtx);
         switch (jobj->flags & JOBJ_BILLBOARD_FIELD) {
         case JOBJ_BILLBOARD:
@@ -226,6 +224,8 @@ void HSD_JObjMakePositionMtx(HSD_JObj* jobj, Mtx vmtx, Mtx pmtx)
             HSD_Panic("Unknown type of billboard");
             break;
         }
+    } else {
+        guMtxConcat(vmtx, jobj->mtx, pmtx);
     }
 }
 
@@ -288,9 +288,7 @@ void HSD_JObjDispDObj(HSD_JObj* jobj, MtxP vmtx, HSD_TrspMask trsp_mask, u32 ren
     if ((jobj->flags & JOBJ_HIDDEN) == 0) {
         u32 xlu_bits = jobj->flags & (trsp_mask << JOBJ_TRSP_SHIFT);
         if (xlu_bits != 0) {
-            if ((jobj->flags & USER_DEF_MTX) == 0 && (jobj->flags & MTX_DIRTY) != 0) {
-                HSD_JObjSetupMatrixSub(jobj);
-            }
+            HSD_JObjSetupMatrix(jobj);
 
             if (vmtx == NULL) {
                 HSD_CObj* cobj = HSD_CObjGetCurrent();

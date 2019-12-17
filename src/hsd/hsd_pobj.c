@@ -818,6 +818,13 @@ static u32 GetSetupFlags(HSD_JObj* jobj)
     return flags;
 }
 
+static void mkNormalMtx(MtxP pmtx, MtxP nmtx)
+{
+    if (!guMtxInvXpose(pmtx, nmtx)) {
+        guMtxCopy(pmtx, nmtx);
+    }
+}
+
 //8036E12C
 static void SetupRigidModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermode)
 {
@@ -840,7 +847,7 @@ static void SetupRigidModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermod
     flags = GetSetupFlags(jobj);
 
     if (flags & SETUP_NORMAL) {
-        guMtxInvXpose(pmtx, n);
+        mkNormalMtx(pmtx, n);
         if (jobj->flags & LIGHTING) {
             GX_LoadNrmMtxImm(n, GX_PNMTX0);
         }
@@ -882,7 +889,7 @@ static void SetupSharedVtxModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rende
         GX_LoadPosMtxImm(pmtx, GX_PNMTX0);
 
         if (flags & SETUP_NORMAL) {
-            guMtxInvXpose(pmtx, n0);
+            mkNormalMtx(pmtx, n0);
             if (jobj->flags & LIGHTING) {
                 GX_LoadNrmMtxImm(n0, GX_PNMTX0);
             }
@@ -898,7 +905,7 @@ static void SetupSharedVtxModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rende
         GX_LoadPosMtxImm(m, GX_PNMTX1);
 
         if (flags & SETUP_NORMAL) {
-            guMtxInvXpose(m, n1);
+            mkNormalMtx(m, n1);
             if (jobj->flags & LIGHTING) {
                 GX_LoadNrmMtxImm(n1, GX_PNMTX1);
             }
@@ -962,7 +969,7 @@ static void SetupEnvelopeModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 render
         GX_LoadPosMtxImm(tmp, mtx_no);
 
         if (flags & SETUP_NORMAL) {
-            guMtxInvXpose(tmp, mtx);
+            mkNormalMtx(tmp, mtx);
             if (jobj->flags & LIGHTING) {
                 GX_LoadNrmMtxImm(mtx, mtx_no);
             }
