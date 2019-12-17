@@ -43,14 +43,14 @@ static u32 HSD_Index2TevRegID(u32 idx)
 void HSD_SetTevRegAll(void)
 {
     for (u32 i = 0; i < 4; i++) {
-        if (TevReg[i].color.r != 0 || TevReg[i].color.g != 0 || TevReg[i].color.b != 0 || TevReg[i].color.a != 0) {
+        //if (TevReg[i].color.r != 0 || TevReg[i].color.g != 0 || TevReg[i].color.b != 0 || TevReg[i].color.a != 0) {
             u32 reg = HSD_Index2TevRegID(i);
             GX_SetTevKColorS10(reg, TevReg[i].color);
             TevReg[i].color.r = 0;
             TevReg[i].color.g = 0;
             TevReg[i].color.b = 0;
             TevReg[i].color.a = 0;
-        }
+        //}
     }
 }
 
@@ -413,6 +413,7 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
             if (tev->ras_swap == HSD_TE_UNDEF) {
                 tev->ras_swap = swap;
             }
+            goto END;
             break;
 
         case HSD_TE_CNST:
@@ -778,6 +779,24 @@ static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
     return -1;
 }
 
+static BOOL IsThroughColor(HSD_TExp* texp)
+{
+    if (texp->tev.c_op == 0 && texp->tev.c_in[0].sel == 7 && texp->tev.c_in[1].sel == 7
+        && texp->tev.c_bias == 0 && texp->tev.c_scale == 0) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+static BOOL IsThroughAlpha(HSD_TExp* texp)
+{
+    if (texp->tev.a_op == 0 && texp->tev.a_in[0].sel == 7 && texp->tev.a_in[1].sel == 7
+        && texp->tev.a_bias == 0 && texp->tev.a_scale == 0) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
 //803846C0
 static s32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 {
@@ -786,13 +805,7 @@ static s32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 
     if (texp->tev.c_ref > 0) {
         if (texp->tev.kcsel == HSD_TE_UNDEF) {
-            if (texp->tev.c_op == 0 && texp->tev.c_in[0].sel == 7 && texp->tev.c_in[1].sel == 7
-                && texp->tev.c_bias == 0 && texp->tev.c_scale == 0 && texp->tev.c_in[3].type == HSD_TE_CNST) {     
-                if (AssignColorReg(&texp->tev, 3, res) == -1) {
-                    val = AssignColorKonst(&texp->tev, 3, res);
-                    return val;
-                }
-            } else {
+            if (IsThroughColor(texp) == 0 || texp->tev.c_in[3].type != HSD_TE_CNST) {
                 for (i = 0; i < 4; ++i) {
                     if (texp->tev.c_in[i].type == HSD_TE_CNST) {
                         if (AssignColorKonst(&texp->tev, i, res) == -1) {
@@ -808,6 +821,11 @@ static s32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                         return val;
                     }
                 }
+            } else {
+                if (AssignColorReg(&texp->tev, 3, res) == -1) {
+                    val = AssignColorKonst(&texp->tev, 3, res);
+                    return val;
+                }
             }
         } else {
             for (i = 0; i < 4; ++i) {
@@ -821,13 +839,7 @@ static s32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 
     if (texp->tev.a_ref > 0) {
         if (texp->tev.kasel == HSD_TE_UNDEF) {
-            if (texp->tev.a_op == 0 && texp->tev.a_in[0].sel == 7 && texp->tev.a_in[1].sel == 7
-                && texp->tev.a_bias == 0 && texp->tev.a_scale == 0 && texp->tev.a_in[3].type == HSD_TE_CNST) {
-                if (AssignAlphaReg(&texp->tev, 3, res) == -1) {
-                    val = AssignAlphaKonst(&texp->tev, 3, res);
-                    return val;
-                }
-            } else {
+            if (IsThroughAlpha(texp) == 0 || texp->tev.a_in[3].type != HSD_TE_CNST) {
                 for (i = 0; i < 4; ++i) {
                     if (texp->tev.a_in[i].type == HSD_TE_CNST) {
                         if (AssignAlphaKonst(&texp->tev, i, res) == -1) {
@@ -842,6 +854,11 @@ static s32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                         val = AssignAlphaReg(&texp->tev, i, res);
                         return val;
                     }
+                }
+            } else {
+                if (AssignAlphaReg(&texp->tev, 3, res) == -1) {
+                    val = AssignAlphaKonst(&texp->tev, 3, res);
+                    return val;
                 }
             }
         } else {
@@ -1137,7 +1154,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                 } else {
                     if (texp->cnst.idx == 3) {
                         color[texp->cnst.reg].a = te_res;
-                    }else{
+                    } else {
                         color[texp->cnst.reg].r = te_res;
                         color[texp->cnst.reg].g = te_res;
                         color[texp->cnst.reg].b = te_res;
@@ -2892,10 +2909,10 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                                     HSD_TExpRef(texp->tev.a_in[i].exp, texp->tev.a_in[i].sel);
                                 }
 
-                                if (texp->tev.tex == NULL){
+                                if (texp->tev.tex == NULL) {
                                     texp->tev.tex = curr->tev.tex;
                                 }
-                                if (texp->tev.chan == 0xFF){
+                                if (texp->tev.chan == 0xFF) {
                                     texp->tev.chan = curr->tev.chan;
                                 }
                                 HSD_TExpUnref(curr, sel);
@@ -2932,10 +2949,10 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                                 if (texp->tev.a_clamp == 0xFF || texp->tev.a_clamp == 0) {
                                     texp->tev.a_clamp = curr->tev.a_clamp;
                                 }
-                                if (texp->tev.tex == NULL){
+                                if (texp->tev.tex == NULL) {
                                     texp->tev.tex = curr->tev.tex;
                                 }
-                                if (texp->tev.chan == 0xFF){
+                                if (texp->tev.chan == 0xFF) {
                                     texp->tev.chan = curr->tev.chan;
                                 }
                                 HSD_TExpUnref(curr, sel);
@@ -2981,7 +2998,7 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
                             continue;
                         }
                     }
-                } else if(t->tev.c_in[3].type != HSD_TE_IMM) {
+                } else if (t->tev.c_in[3].type != HSD_TE_IMM) {
                     continue;
                 }
                 texp->tev.c_in[i].type = t->tev.c_in[3].type;
@@ -3006,7 +3023,7 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
                             continue;
                         }
                     }
-                } else if(t->tev.a_in[3].type != HSD_TE_IMM) {
+                } else if (t->tev.a_in[3].type != HSD_TE_IMM) {
                     continue;
                 }
                 texp->tev.a_in[i].type = t->tev.a_in[3].type;
