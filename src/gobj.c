@@ -7,10 +7,9 @@
 
 #define P_LINK_MAX 63
 #define GX_LINK_MAX 63
-#define S_LINK_MAX 63
 
-static HSD_GObjProc* slinklow_procs[S_LINK_MAX + 2]; //r13_3E5C
-static HSD_GObjProc* slinkhigh_procs[S_LINK_MAX + 2]; //r13_3E60
+static HSD_GObjProc* slinklow_procs[P_LINK_MAX + 2]; //r13_3E5C
+static HSD_GObjProc* slinkhigh_procs[P_LINK_MAX + 2]; //r13_3E60
 static u32 curr_proc_prio = 0; //r13_3E64
 static HSD_GObjProc* curr_gobjproc; //r13_3E68
 static u32 last_s_link = 0; //r13_3E6C
@@ -28,11 +27,13 @@ s32 flag_array[4] = { 1, 4, 2, 0 }; //804085F0
 
 u32 gobj_prep[3] = { 0x3F3F0200, 0, 0 }; //DAT_80408620
 
-//u8 s_link_max = S_LINK_MAX; //804CE380
-//u8 p_link_max = P_LINK_MAX; //804CE381
-u8 curr_slink = 24; //804CE382
-HSD_ObjAllocData gobj_def; //804CE38C
-HSD_ObjAllocData gobj_proc_def; //804CE3B8
+struct _HSD_GObjLibInitData {
+    u8 p_link_max; //804CE380
+    u8 gx_link_max; //804CE381
+    u8 curr_slink; //804CE382
+    HSD_ObjAllocData gobj_def; //804CE38C
+    HSD_ObjAllocData gobj_proc_def; //804CE3B8
+} HSD_GObjLibInitData;
 
 struct _unk_gobj_struct {
     s8 flags[4]; //804CE3E4
@@ -102,7 +103,7 @@ void GObj_LinkProc(HSD_GObjProc* proc)
     HSD_GObj* gobj = proc->gobj;
     u32 s_link = proc->s_link;
     u32 p_link = gobj->p_link;
-    u32 offset = (p_link + s_link * (S_LINK_MAX + 1));
+    u32 offset = (p_link + s_link * (HSD_GObjLibInitData.p_link_max + 1));
     HSD_GObjProc* prev = NULL;
 
     if (slinklow_procs[offset] == NULL) {
@@ -121,7 +122,7 @@ void GObj_LinkProc(HSD_GObjProc* proc)
         }
     }
 
-    offset = (p_link + s_link * (S_LINK_MAX + 1));
+    offset = (p_link + s_link * (HSD_GObjLibInitData.p_link_max + 1));
     do {
         BOOL isZero = p_link == 0;
         offset -= 1;
@@ -171,7 +172,7 @@ void GObj_ProcRemove(HSD_GObjProc* proc)
     if (unk_gobj_struct.flags[0] < 0 && proc == next_gobjproc) {
         next_gobjproc = proc->next;
     }
-    ppHVar3 = &slinklow_procs[p_link + s_link * (S_LINK_MAX + 1)];
+    ppHVar3 = &slinklow_procs[p_link + s_link * (HSD_GObjLibInitData.p_link_max + 1)];
     if (proc == *ppHVar3) {
         pHVar2 = proc->prev;
         if (pHVar2 == NULL || pHVar2->gobj->p_link != p_link) {
@@ -219,7 +220,7 @@ HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj* gobj, void (*cb)(), u8 s_pri
 
     proc = (HSD_GObjProc*)HSD_MemAlloc(sizeof(HSD_GObjProc)); //HSD_ObjAlloc(&gobj_proc_def);
     HSD_CheckAssert("Proc == NULL", proc != NULL);
-    HSD_CheckAssert("SPrio > curr_slink ", s_prio <= curr_slink);
+    HSD_CheckAssert("SPrio > curr_slink ", s_prio <= HSD_GObjLibInitData.curr_slink);
     proc->s_link = s_prio;
     proc->flags = proc->flags & 0xBF;
     proc->flags = proc->flags & 0x7F;
@@ -234,7 +235,7 @@ HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj* gobj, void (*cb)(), u8 s_pri
 void GObj_FreeProc(HSD_GObjProc* proc)
 {
     if (unk_gobj_struct.flags[0] < 0 || proc != curr_gobjproc) {
-        HSD_ObjFree(&gobj_proc_def, (HSD_ObjAllocLink*)proc);
+        HSD_ObjFree(&HSD_GObjLibInitData.gobj_proc_def, (HSD_ObjAllocLink*)proc);
     } else {
         unk_gobj_struct.flags[0] = (unk_gobj_struct.flags[0] & 0xDF) | 0x20;
     }
@@ -252,7 +253,7 @@ void GObj_ProcRemoveAll(HSD_GObj* gobj)
         child = proc->child;
         if (unk_gobj_struct.flags[0] < 0 || proc != curr_gobjproc) {
             GObj_ProcReparent(proc);
-            HSD_ObjFree(&gobj_proc_def, (HSD_ObjAllocLink*)proc);
+            HSD_ObjFree(&HSD_GObjLibInitData.gobj_proc_def, (HSD_ObjAllocLink*)proc);
             proc = child;
         } else {
             unk_gobj_struct.flags[0] = (unk_gobj_struct.flags[0] & 0xDF) | 0x20;
@@ -283,7 +284,7 @@ void GObj_PReorder(HSD_GObj* gobj, HSD_GObj* hiprio_gobj)
 //8038FFB8
 static HSD_GObj* CreateGObj(u32 order, u32 class, u32 p_link, u32 p_prio, HSD_GObj* p_gobj)
 {
-    assert(p_link < P_LINK_MAX);
+    HSD_CheckAssert("CreateGObj: p_link >= p_link_max", p_link < HSD_GObjLibInitData.p_link_max);
     HSD_GObj* gobj = (HSD_GObj*)HSD_MemAlloc(sizeof(HSD_GObj)); //HSD_ObjAlloc(&gobj_def);
     if (gobj != NULL) {
         gobj->classifier = class;
@@ -391,9 +392,42 @@ void GObj_Free(HSD_GObj* gobj)
         } else {
             plinklow_gobjs[gobj->p_link] = gobj->prev;
         }
-        HSD_ObjFree(&gobj_def, (HSD_ObjAllocLink*)gobj);
+        HSD_ObjFree(&HSD_GObjLibInitData.gobj_def, (HSD_ObjAllocLink*)gobj);
     } else {
         unk_gobj_struct.flags[0] = (unk_gobj_struct.flags[0] & 0xBF) | 0x40;
+    }
+}
+
+//8039032C
+void GObj_ProcUnk(s32 option, HSD_GObj* gobj, u8 p_link, u8 p_prio, HSD_GObj* gobj_2)
+{
+    HSD_CheckAssert("p_link > HSD_GObjLibInitData.p_link_max", p_link <= HSD_GObjLibInitData.p_link_max);
+    if(unk_gobj_struct.flags[0] < 0 || gobj != current_gobj){
+        HSD_GObjProc* proc = gobj->proc;
+        HSD_GObjProc* child = NULL;
+        for(HSD_GObjProc* curr = proc; curr != NULL; curr = proc){
+            GObj_ProcRemove(curr);
+            proc = curr->child;
+            curr->child = child;
+            child = curr;
+        }
+        gobj->proc = NULL;
+        if (gobj->prev == NULL) {
+            plinkhigh_gobjs[gobj->p_link] = gobj->next;
+        }else{
+            gobj->prev->next = gobj->next;
+        }
+
+        if(gobj->next == NULL){
+            plinklow_gobjs[gobj->p_link] = gobj->prev;
+        } else {
+            gobj->next->prev = gobj->prev;
+        }
+
+        gobj->p_link = p_link;
+        gobj->p_priority = p_prio;
+
+        //TODO
     }
 }
 
@@ -418,13 +452,13 @@ void GObj_GXReorder(HSD_GObj* gobj, HSD_GObj* hiprio_gobj)
 //8039069C
 void GObj_SetupGXLink(HSD_GObj* gobj, void (*render_cb)(HSD_GObj*, s32), u32 gx_link, u32 priority)
 {
-    assert(gx_link <= GX_LINK_MAX);
+    HSD_CheckAssert("GObj_SetupGXLink: gx_link > gx_link_max", gx_link <= HSD_GObjLibInitData.gx_link_max);
     gobj->render_cb = render_cb;
     gobj->gx_link = gx_link;
     gobj->render_priority = priority;
 
     HSD_GObj* i = NULL;
-    for (i = lowestprio_gobjs[gx_link]; i != NULL && (i->render_priority > gobj->render_priority); i = i->prev_gx) {
+    for (i = lowestprio_gobjs[gx_link]; i != NULL && (gobj->render_priority < i->render_priority); i = i->prev_gx) {
         //Works backwards from lowest to highest priority till it finds the highest priority to be it's parent obj
         //Returns null if nothing is a higher priority than the current object or if there is none of that type
     }
@@ -435,12 +469,31 @@ void GObj_SetupGXLink(HSD_GObj* gobj, void (*render_cb)(HSD_GObj*, s32), u32 gx_
 void GObj_SetupGXLink_Max(HSD_GObj* gobj, void (*render_cb)(HSD_GObj*, s32), u32 priority)
 {
     gobj->render_cb = render_cb;
-    gobj->gx_link = GX_LINK_MAX + 1;
+    gobj->gx_link = HSD_GObjLibInitData.gx_link_max + 1;
     gobj->render_priority = priority;
     HSD_GObj* i = NULL;
-    for (i = lowestprio_gobjs[gobj->gx_link]; i != NULL && (i->render_priority > gobj->render_priority); i = i->prev_gx) {
+    for (i = lowestprio_gobjs[gobj->gx_link]; i != NULL && (gobj->render_priority < i->render_priority); i = i->prev_gx) {
         //Works backwards from lowest to highest priority till it finds the highest priority to be it's parent obj
         //Returns null if nothing is a higher priority than the current object or if there is none of that type
+    }
+    GObj_GXReorder(gobj, i);
+}
+
+//8039075C
+void GObj_SetupGXLink_HighestPrio_Max(HSD_GObj* gobj, void (*render_cb)(HSD_GObj*, s32), u32 priority)
+{
+    gobj->render_cb = render_cb;
+    gobj->gx_link = HSD_GObjLibInitData.gx_link_max + 1;
+    gobj->render_priority = priority;
+    HSD_GObj* i = NULL;
+    for (i = highestprio_gobjs[gobj->gx_link]; i != NULL && (i->render_priority < gobj->render_priority); i = i->next_gx) {
+        //Works backwards from highest to lowest priority till it finds the lowest priority to be it's parent obj
+        //Returns null if nothing is a lower priority than the current object or if there is none of that type
+    }
+    if (i == NULL) {
+        i = lowestprio_gobjs[gobj->gx_link];
+    } else {
+        i = i->prev_gx;
     }
     GObj_GXReorder(gobj, i);
 }
@@ -535,7 +588,7 @@ void GObj_RunProcs(void)
     if (curr_proc_prio > 2) {
         curr_proc_prio = 0;
     }
-    for (u32 i = 0; i <= curr_slink; ++i) {
+    for (u32 i = 0; i <= HSD_GObjLibInitData.curr_slink; ++i) {
         last_s_link = i;
         HSD_GObjProc* proc = slinkhigh_procs[i];
         while (proc != NULL) {
@@ -550,7 +603,7 @@ void GObj_RunProcs(void)
                         curr_gobjproc = proc;
                         (*proc->callback)(proc->gobj);
                         next_gobjproc = proc->next;
-                        
+
                         if (*((u32*)(&unk_gobj_struct.flags[0])) != 0) {
                             *((u32*)(&unk_gobj_struct.flags[0])) = (*((u32*)(&unk_gobj_struct.flags[0])) & 0x7FFFFFFF) | 0x80000000;
                             if ((unk_gobj_struct.flags[0] >> 6 & 1) == 0) {
@@ -565,7 +618,7 @@ void GObj_RunProcs(void)
                             }
                             *((u32*)(&unk_gobj_struct.flags[0])) = 0;
                         }
-                        
+
                         current_gobj = NULL;
                         curr_gobjproc = NULL;
                     }
@@ -668,6 +721,11 @@ u32 GObj_803912A8(u32 array[], u32* unk)
 //803912E0
 void GObj_CallbackPrep(void** cb)
 {
+    HSD_GObjLibInitData.p_link_max = P_LINK_MAX;
+    HSD_GObjLibInitData.gx_link_max = GX_LINK_MAX;
+    HSD_GObjLibInitData.curr_slink = 24;
+    //FIXME: THE ABOVE DOESN'T BELONG HERE
+
     cb[0] = (void*)gobj_prep[0];
     cb[1] = (void*)gobj_prep[1];
     cb[2] = (void*)gobj_prep[2];
