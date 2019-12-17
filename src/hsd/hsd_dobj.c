@@ -73,7 +73,7 @@ void HSD_DObjAddAnimAll(HSD_DObj* dobj, HSD_MatAnim* mat_anim, HSD_ShapeAnim* sh
             if (sh != NULL) {
                 slist = sh->aobjdescs_list;
             }
-            HSD_PObjRemoveAnimAll(i->pobj, slist);
+            HSD_PObjAddAnimAll(i->pobj, slist);
             HSD_MObjAddAnim(i->mobj, m);
         }
     }

@@ -47,7 +47,7 @@ void HSD_PObjRemoveAnimAllByFlags(HSD_PObj* pobj, u32 flags)
 }
 
 //8036B978
-void HSD_PObjRemoveAnimAll(HSD_PObj* pobj, HSD_SList* list)
+void HSD_PObjAddAnimAll(HSD_PObj* pobj, HSD_SList* list)
 {
     if (pobj != NULL && list != NULL) {
         HSD_SList* j = list;
