@@ -32,16 +32,16 @@ struct _HSD_GObjLibInitData {
     u8 gx_link_max; //804CE381
     u8 gproc_pri_max; //804CE382
     u32 unk_1; //804CE384
-    void* unk_2[2]; //804CE388
+    u32 unk_2[2]; //804CE388
     HSD_ObjAllocData gobj_def; //804CE38C
     HSD_ObjAllocData gobj_proc_def; //804CE3B8
 } HSD_GObjLibInitData;
 
 struct _unk_gobj_struct {
     s8 flags[4]; //804CE3E4
-    u32 x4_unk; //804CE3E8
-    u8 x8_unk; //804CE3EC
-    u8 xC_unk; //804CE3ED
+    u32 type; //804CE3E8
+    u8 p_link; //804CE3EC
+    u8 p_prio; //804CE3ED
     HSD_GObj* gobj; //804CE3F0
 } unk_gobj_struct;
 
@@ -401,7 +401,7 @@ void GObj_Free(HSD_GObj* gobj)
 }
 
 //8039032C
-void GObj_ProcUnk(s32 option, HSD_GObj* gobj, u8 p_link, u8 p_prio, HSD_GObj* gobj_2)
+void GObj_ProcUnk(s32 type, HSD_GObj* gobj, u8 p_link, u8 p_prio, HSD_GObj* gobj_2)
 {
     HSD_CheckAssert("p_link > HSD_GObjLibInitData.p_link_max", p_link <= HSD_GObjLibInitData.p_link_max);
     if(unk_gobj_struct.flags[0] < 0 || gobj != current_gobj){
@@ -577,15 +577,17 @@ void GObj_CallDestructor(HSD_GObj* gobj)
 //80390CFC
 void GObj_RunProcs(void)
 {
-    u32 unk1 = 0;
-    u32 unk2 = 0;
-    /*if(unk_804CE388 == 0){
-		unk1 = NULL;
+    u32 unk1;
+    u32 unk2;
+
+    if(HSD_GObjLibInitData.unk_2 == 0){
+		unk1 = 0;
 		unk2 = 0;
 	}else{
-		unk1 = unk_804CE388[0];
-		unk2 = unk_804CE388[1];
-	}*/
+		unk1 = HSD_GObjLibInitData.unk_2[0];
+		unk2 = HSD_GObjLibInitData.unk_2[1];
+	}
+
     curr_proc_prio += 1;
     if (curr_proc_prio > 2) {
         curr_proc_prio = 0;
@@ -610,7 +612,7 @@ void GObj_RunProcs(void)
                             *((u32*)(&unk_gobj_struct.flags[0])) = (*((u32*)(&unk_gobj_struct.flags[0])) & 0x7FFFFFFF) | 0x80000000;
                             if ((unk_gobj_struct.flags[0] >> 6 & 1) == 0) {
                                 if ((unk_gobj_struct.flags[0] >> 4 & 1) != 0) {
-                                    //FUN_8039032c(unk_gobj_struct.x4_unk, proc->gobj, unk_gobj_struct.x8_unk, unk_gobj_struct.xC_unk, unk_gobj_struct.gobj);
+                                    //FUN_8039032c(unk_gobj_struct.type, proc->gobj, unk_gobj_struct.p_link, unk_gobj_struct.p_prio, unk_gobj_struct.gobj);
                                 }
                                 if ((unk_gobj_struct.flags[0] >> 5 & 1) != 0) {
                                     GObj_FreeProc(proc);
