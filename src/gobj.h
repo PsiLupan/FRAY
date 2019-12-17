@@ -43,10 +43,6 @@ typedef struct _HSD_GObj {
     void* data;
     void (*user_data_remove_func)(void* data);
     void* x34_unk;
-    u32 x38_unk;
-    u32 flags;
-    void* x40_unk;
-    void* x44_unk;
 } HSD_GObj;
 
 typedef struct _HSD_GObjProc {
@@ -86,6 +82,6 @@ s32 GObj_GetFlagFromArray(s32);
 void GObj_SetTextureCamera(HSD_GObj*, u32);
 void GObj_RunGXLinkMaxCallbacks(void);
 void GObj_SetCamera(HSD_GObj*);
-void GObj_CallbackPrep(void**);
+void GObj_InitializeLibInitData(u32*);
 
 #endif
