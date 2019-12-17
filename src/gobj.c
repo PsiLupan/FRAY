@@ -580,7 +580,7 @@ void GObj_RunProcs(void)
     u32 unk1;
     u32 unk2;
 
-    if(HSD_GObjLibInitData.unk_2 == 0){
+    if(HSD_GObjLibInitData.unk_2 == NULL){
 		unk1 = 0;
 		unk2 = 0;
 	}else{
