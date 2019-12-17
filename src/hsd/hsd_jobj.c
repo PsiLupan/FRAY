@@ -695,7 +695,7 @@ static void setupInstanceMtx(HSD_JObj* jobj, MtxP vmtx, Mtx mtx)
 
     HSD_JObj* child = jobj->child;
     HSD_JObjSetupMatrix(child);
-    
+
     guMtxInverse(child->mtx, mtx);
     guMtxConcat(jobj->mtx, mtx, mtx);
     if (vmtx == NULL) {
@@ -759,7 +759,7 @@ static s32 JObjLoad(HSD_JObj* jobj, HSD_JObjDesc* desc, HSD_JObj* prev)
 
     jobj->next = JObjLoadJointSub(desc->next, prev);
     jobj->prev = prev;
-    jobj->flags = desc->flags;
+    jobj->flags |= desc->flags;
     if ((jobj->flags & SPLINE) == 0) {
         if ((jobj->flags & PTCL) == 0) {
             jobj->u.dobj = HSD_DObjLoadDesc(desc->u.dobjdesc);
