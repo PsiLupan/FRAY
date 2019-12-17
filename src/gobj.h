@@ -31,12 +31,12 @@ typedef struct _HSD_GObj {
     u8 render_priority;
     s8 obj_kind;
     s8 data_kind;
-    struct _HSD_GObj* next;
-    struct _HSD_GObj* prev;
-    struct _HSD_GObj* next_gx;
-    struct _HSD_GObj* prev_gx;
-    struct _HSD_GObjProc* proc;
-    void (*render_cb)(struct _HSD_GObj* gobj, int code);
+    struct _HSD_GObj* next; //0x08
+    struct _HSD_GObj* prev; //0x0C
+    struct _HSD_GObj* next_gx; //0x10
+    struct _HSD_GObj* prev_gx; //0x14
+    struct _HSD_GObjProc* proc; //0x18
+    void (*render_cb)(struct _HSD_GObj* gobj, int code); //0x1C
     u32 x20_unk;
     u32 x24_unk;
     void* hsd_obj;
@@ -74,6 +74,7 @@ void GObj_Free(HSD_GObj*);
 void GObj_GXReorder(HSD_GObj*, HSD_GObj*);
 void GObj_SetupGXLink(HSD_GObj*, void(*)(HSD_GObj*, s32), u32, u32);
 void GObj_SetupGXLink_Max(HSD_GObj*, void(*)(HSD_GObj*, s32), u32);
+void GObj_SetupGXLink_HighestPrio_Max(HSD_GObj*, void (*)(HSD_GObj*, s32), u32);
 void GObj_GXLinkDestructor(HSD_GObj*);
 void GObj_InitKindObj(HSD_GObj*, s8, void*);
 void* GObj_NullObj_ReturnPtr(HSD_GObj*);
