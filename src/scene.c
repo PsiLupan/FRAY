@@ -787,12 +787,13 @@ void Scene_PrepCommon()
     unk_cb[18] = NULL;
     //sub_80322E54(0.0166667 * - 4.5036e15)
     //sub_80019880();
-    GObj_CallbackPrep(unk_cb);
+    GObj_InitializeLibInitData((u32*)unk_cb);
     //DAT_80479d4a = 0x18;
     //u32 res = GObj_803912A8(&unk_cb, &DAT_8040C3A4);
     //r13_3D40 = res;
     //sub_803A44A4();
-    //unk_cb[14] = &unk_cb[3];
+    unk_cb[3] = &unk_cb[14];
+    GObj_Setup((u32*)unk_cb);
 }
 
 //801A4CE0

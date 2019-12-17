@@ -8,29 +8,31 @@
 #define P_LINK_MAX 63
 #define GX_LINK_MAX 63
 
-static HSD_GObjProc* slinklow_procs[P_LINK_MAX + 2]; //r13_3E5C
-static HSD_GObjProc* slinkhigh_procs[P_LINK_MAX + 2]; //r13_3E60
+static HSD_GObjProc** slinklow_procs; //r13_3E5C
+static HSD_GObjProc** slinkhigh_procs; //r13_3E60
 static u32 curr_proc_prio = 0; //r13_3E64
 static HSD_GObjProc* curr_gobjproc; //r13_3E68
 static u32 last_s_link = 0; //r13_3E6C
 static HSD_GObjProc* next_gobjproc; //r13_3E70
-static HSD_GObj* plinkhigh_gobjs[P_LINK_MAX + 2]; //r13_3E74
-static HSD_GObj* plinklow_gobjs[P_LINK_MAX + 2]; //r13_3E78
-static HSD_GObj* highestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E7C
-static HSD_GObj* lowestprio_gobjs[GX_LINK_MAX + 2]; //r13_3E80
+static HSD_GObj** plinkhigh_gobjs; //r13_3E74
+static HSD_GObj** plinklow_gobjs; //r13_3E78
+static HSD_GObj** highestprio_gobjs; //r13_3E7C
+static HSD_GObj** lowestprio_gobjs; //r13_3E80
 static HSD_GObj* current_gobj = NULL; //r13_3E84 - Really just a guess
 static HSD_GObj* active_gx_gobj = NULL; //r13_3E88
-static HSD_GObj* prev_gobj = NULL;
-static void (*hsd_destructors[14])(void*); //r13_3E90 - Length is currently made up, TODO: need to explictly assign the functions to this at some point
+static HSD_GObj* prev_gobj = NULL; //r13_3E8C
+static void (**destructors)(void*); //r13_3E90 - Length is currently made up, TODO: need to explictly assign the functions to this at some point
 
 s32 flag_array[4] = { 1, 4, 2, 0 }; //804085F0
 
-u32 gobj_prep[3] = { 0x3F3F0200, 0, 0 }; //DAT_80408620
+u32 gobj_prep[3] = { 0x3F3F0200, 0, 0 }; //80408620
 
 struct _HSD_GObjLibInitData {
     u8 p_link_max; //804CE380
     u8 gx_link_max; //804CE381
-    u8 curr_slink; //804CE382
+    u8 gproc_pri_max; //804CE382
+    u32 unk_1; //804CE384
+    void* unk_2[2]; //804CE388
     HSD_ObjAllocData gobj_def; //804CE38C
     HSD_ObjAllocData gobj_proc_def; //804CE3B8
 } HSD_GObjLibInitData;
@@ -219,8 +221,8 @@ HSD_GObjProc* GObj_CreateProcWithCallback(HSD_GObj* gobj, void (*cb)(), u8 s_pri
     HSD_GObjProc* proc;
 
     proc = (HSD_GObjProc*)HSD_MemAlloc(sizeof(HSD_GObjProc)); //HSD_ObjAlloc(&gobj_proc_def);
-    HSD_CheckAssert("Proc == NULL", proc != NULL);
-    HSD_CheckAssert("SPrio > curr_slink ", s_prio <= HSD_GObjLibInitData.curr_slink);
+    HSD_CheckAssert("GObj_CreateProcWithCallback: proc == NULL", proc != NULL);
+    HSD_CheckAssert("GObj_CreateProcWithCallback: s_prio > gproc_pri_max ", s_prio <= HSD_GObjLibInitData.gproc_pri_max);
     proc->s_link = s_prio;
     proc->flags = proc->flags & 0xBF;
     proc->flags = proc->flags & 0x7F;
@@ -543,7 +545,7 @@ void* GObj_NullObj_ReturnPtr(HSD_GObj* gobj)
 void GObj_CallHSDDestructor(HSD_GObj* gobj)
 {
     if (gobj->obj_kind != GOBJ_NOREF) {
-        void (*destructor)(void*) = hsd_destructors[gobj->obj_kind];
+        void (*destructor)(void*) = destructors[gobj->obj_kind];
         (*destructor)(gobj->hsd_obj);
 
         gobj->obj_kind = GOBJ_NOREF;
@@ -588,7 +590,7 @@ void GObj_RunProcs(void)
     if (curr_proc_prio > 2) {
         curr_proc_prio = 0;
     }
-    for (u32 i = 0; i <= HSD_GObjLibInitData.curr_slink; ++i) {
+    for (u32 i = 0; i <= HSD_GObjLibInitData.gproc_pri_max; ++i) {
         last_s_link = i;
         HSD_GObjProc* proc = slinkhigh_procs[i];
         while (proc != NULL) {
@@ -719,19 +721,69 @@ u32 GObj_803912A8(u32 array[], u32* unk)
 }
 
 //803912E0
-void GObj_CallbackPrep(void** cb)
+void GObj_InitializeLibInitData(u32* cb)
 {
-    HSD_GObjLibInitData.p_link_max = P_LINK_MAX;
-    HSD_GObjLibInitData.gx_link_max = GX_LINK_MAX;
-    HSD_GObjLibInitData.curr_slink = 24;
-    //FIXME: THE ABOVE DOESN'T BELONG HERE
-
-    cb[0] = (void*)gobj_prep[0];
-    cb[1] = (void*)gobj_prep[1];
-    cb[2] = (void*)gobj_prep[2];
+    cb[0] = gobj_prep[0];
+    cb[1] = gobj_prep[1];
+    cb[2] = gobj_prep[2];
 }
 
+typedef struct _List {
+    struct _List* next;
+    u8 data;
+} List;
+
 //80391304
-void GObj_Setup()
+void GObj_Setup(u32* param_1)
 {
+    *(&HSD_GObjLibInitData.p_link_max) = param_1[0];
+
+    plinkhigh_gobjs = HSD_MemAlloc(HSD_GObjLibInitData.gx_link_max * 4);
+    plinklow_gobjs = HSD_MemAlloc(HSD_GObjLibInitData.gx_link_max * 4);
+    for(u32 i = 0; i < HSD_GObjLibInitData.gx_link_max; i++){
+        plinklow_gobjs[i] = NULL;
+        plinkhigh_gobjs[i] = NULL;
+    }
+
+    highestprio_gobjs = HSD_MemAlloc((HSD_GObjLibInitData.gx_link_max + 2) * 4);
+    lowestprio_gobjs = HSD_MemAlloc((HSD_GObjLibInitData.gx_link_max + 2) * 4);
+    for(u32 i = 0; i < HSD_GObjLibInitData.gx_link_max + 2; i++){
+        lowestprio_gobjs[i] = NULL;
+        highestprio_gobjs[i] = NULL;
+    }
+
+    u32 n = HSD_GObjLibInitData.gproc_pri_max + 1;
+    slinkhigh_procs = HSD_MemAlloc((n) * 4);
+    for(u32 i = 0; i < n; i++){
+        slinkhigh_procs[i] = NULL;
+    }
+
+    slinklow_procs = HSD_MemAlloc((HSD_GObjLibInitData.gx_link_max) * n * 4);
+    for(u32 i = 0; i < (HSD_GObjLibInitData.gx_link_max * n); i++){
+        slinklow_procs[i] = NULL;
+    }
+
+    HSD_ObjAllocInit((HSD_ObjAllocData *)&HSD_GObjLibInitData.gobj_def, sizeof(HSD_GObj), 4);
+    HSD_ObjAllocInit((HSD_ObjAllocData *)&HSD_GObjLibInitData.gobj_proc_def, sizeof(HSD_GObjProc), 4);
+
+    List* list = (List*)param_1[1];
+    u32 j = 0;
+    while (list != NULL){
+        u8 data = list->data;
+        list = list->next;
+        j += data;
+    }
+
+    if(j == 0){
+        destructors = NULL;
+    }else{
+        //TODO
+    }
+
+    curr_proc_prio = 0;
+    current_gobj = NULL;
+    curr_gobjproc = NULL;
+    *((u32*)&unk_gobj_struct.flags[0]) = 0;
+    active_gx_gobj = NULL;
+    prev_gobj = NULL;
 }
