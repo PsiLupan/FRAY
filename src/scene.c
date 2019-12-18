@@ -360,15 +360,14 @@ static void Scene_Minor_Class0_OnLoad(void* unk_struct)
     HSD_GObj* menu_gobj = GObj_Create(GOBJ_CLASS_HSD_COBJ_TITLE, 0x14, 0);
     HSD_CObj* menu_cobj = CObj_Create(scene_cobj_desc);
     GObj_InitKindObj(menu_gobj, GOBJ_KIND_MENU_COBJ, menu_cobj);
-    GObj_SetupGXLink_Max(menu_gobj, CObj_SetErase_Callback, 0);
+    GObj_SetupCameraGXLink(menu_gobj, CObj_SetErase_Callback, 0);
 
     HSD_GObj* menu_gobj_2 = GObj_Create(GOBJ_CLASS_HSD_COBJ_TITLE, 0x14, 0);
     HSD_CObj* menu_cobj_2 = CObj_Create(scene_cobj_desc);
     GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_MENU_COBJ, menu_cobj_2);
-    GObj_SetupGXLink_Max(menu_gobj_2, CObj_Texture_Callback, 0xC);
+    GObj_SetupCameraGXLink(menu_gobj_2, CObj_Texture_Callback, 0xC);
 
-    menu_gobj_2->x24_unk = 0x209;
-    menu_gobj_2->x20_unk = 0;
+    menu_gobj_2->gxlink_prios = 0x209; //Priority 0, 3, 9
 
     Menu_Title_SetupLogos();
     SFX_80027648();
@@ -377,7 +376,7 @@ static void Scene_Minor_Class0_OnLoad(void* unk_struct)
     HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
     HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.bg_top_joint);
     GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
-    GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 0 /*3*/, 0);
+    GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
     HSD_JObjAddAnimAll(jobj, (HSD_AnimJoint*)title_ptrs.bg_top_animjoint,
         (HSD_MatAnimJoint*)title_ptrs.bg_top_matanim_joint, (HSD_ShapeAnimJoint*)title_ptrs.bg_top_shapeanim_joint);
     GObj_CreateProcWithCallback(gobj_2, Scene_ReqAnimAll_Callback, 0);

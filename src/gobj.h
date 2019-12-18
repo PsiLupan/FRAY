@@ -37,8 +37,7 @@ typedef struct _HSD_GObj {
     struct _HSD_GObj* prev_gx; //0x14
     struct _HSD_GObjProc* proc; //0x18
     void (*render_cb)(struct _HSD_GObj* gobj, int code); //0x1C
-    u32 x20_unk;
-    u32 x24_unk;
+    u64 gxlink_prios;
     void* hsd_obj;
     void* data;
     void (*user_data_remove_func)(void* data);
@@ -69,7 +68,7 @@ HSD_GObj* GObj_Create(u32, u32, u32);
 void GObj_Free(HSD_GObj*);
 void GObj_GXReorder(HSD_GObj*, HSD_GObj*);
 void GObj_SetupGXLink(HSD_GObj*, void(*)(HSD_GObj*, s32), u32, u32);
-void GObj_SetupGXLink_Max(HSD_GObj*, void(*)(HSD_GObj*, s32), u32);
+void GObj_SetupCameraGXLink(HSD_GObj*, void(*)(HSD_GObj*, s32), u32);
 void GObj_SetupGXLink_HighestPrio_Max(HSD_GObj*, void (*)(HSD_GObj*, s32), u32);
 void GObj_GXLinkDestructor(HSD_GObj*);
 void GObj_InitKindObj(HSD_GObj*, s8, void*);
