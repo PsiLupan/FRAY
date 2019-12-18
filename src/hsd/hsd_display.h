@@ -53,9 +53,10 @@ void _HSD_ZListDisp(void);
 void _HSD_ZListClear(void);
 
 void HSD_JObjMakePositionMtx(HSD_JObj*, Mtx, Mtx);
-MtxP _HSD_mkEnvelopeModelNodeMtx(HSD_JObj* m, MtxP mtx);
+MtxP _HSD_mkEnvelopeModelNodeMtx(HSD_JObj*, MtxP);
 void HSD_JObjDispSub(HSD_JObj*, MtxP, MtxP, HSD_TrspMask, u32);
 void HSD_JObjDisp(HSD_JObj*, MtxP, HSD_TrspMask, u32);
+void HSD_SetEraseColor(u8, u8, u8, u8);
 void HSD_EraseRect(f32, f32, f32, f32, f32, s32, s32, s32);
 
 #endif
