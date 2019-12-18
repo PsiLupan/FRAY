@@ -37,7 +37,7 @@ typedef struct _HSD_GObj {
     struct _HSD_GObj* prev_gx; //0x14
     struct _HSD_GObjProc* proc; //0x18
     void (*render_cb)(struct _HSD_GObj* gobj, int code); //0x1C
-    u64 gx_max_proc;
+    u64 gxlink_prios;
     void* hsd_obj;
     void* data;
     void (*user_data_remove_func)(void* data);

@@ -300,7 +300,7 @@ static HSD_GObj* CreateGObj(u32 order, u32 class, u32 p_link, u32 p_prio, HSD_GO
         gobj->next_gx = NULL;
         gobj->proc = NULL;
         gobj->render_cb = NULL;
-        gobj->gx_max_proc = 0;
+        gobj->gxlink_prios = 0;
         gobj->hsd_obj = NULL;
         gobj->data = NULL;
         gobj->user_data_remove_func = NULL;
@@ -650,7 +650,7 @@ void GObj_SetTextureCamera(HSD_GObj* gobj, u32 iters)
             break;
         if ((iters & 1) != 0) {
             u32 j = 0;
-            max_proc = gobj->gx_max_proc;
+            max_proc = gobj->gxlink_prios;
             while (true) {
                 if (max_proc == 0)
                     break;
