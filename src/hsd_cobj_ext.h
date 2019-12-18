@@ -4,6 +4,7 @@
 #include <gctypes.h>
 
 #include "hsd/hsd_cobj.h"
+#include "hsd/hsd_display.h"
 
 #include "gobj.h"
 

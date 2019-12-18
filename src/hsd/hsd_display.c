@@ -4,8 +4,7 @@
 
 static void (*sptcl_callback)(s32, s32, s32, HSD_JObj*) = NULL; //r13_4008
 
-static GXColor hsd_background_color = { 0, 0, 0, 0 };
-static GXColor erase_color = { 0x26, 0x26, 0x26, 0xFF }; //-0x58C8(r13)
+static GXColor erase_color = { 0, 0, 0, 0 }; //-0x58C8(r13)
 
 static HSD_ObjAllocData zlist_alloc_data;
 
@@ -479,10 +478,10 @@ void HSD_JObjSetSPtclCallback(void (*func)(s32, s32, s32, HSD_JObj*))
 //80374A88
 void HSD_SetEraseColor(u8 r, u8 g, u8 b, u8 a)
 {
-    hsd_background_color.r = r;
-    hsd_background_color.g = g;
-    hsd_background_color.b = b;
-    hsd_background_color.a = a;
+    erase_color.r = r;
+    erase_color.g = g;
+    erase_color.b = b;
+    erase_color.a = a;
 }
 
 //80374AA0
