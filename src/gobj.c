@@ -32,7 +32,7 @@ struct _HSD_GObjLibInitData {
     u8 gx_link_max; //804CE381
     u8 gproc_pri_max; //804CE382
     u32 unk_1; //804CE384
-    u32 unk_2[2]; //804CE388
+    u32* unk_2; //804CE388
     HSD_ObjAllocData gobj_def; //804CE38C
     HSD_ObjAllocData gobj_proc_def; //804CE3B8
 } HSD_GObjLibInitData;
