@@ -16,8 +16,8 @@ static u32 last_s_link = 0; //r13_3E6C
 static HSD_GObjProc* next_gobjproc; //r13_3E70
 static HSD_GObj** plinkhigh_gobjs; //r13_3E74
 static HSD_GObj** plinklow_gobjs; //r13_3E78
-static HSD_GObj** highestprio_gobjs; //r13_3E7C
-static HSD_GObj** lowestprio_gobjs; //r13_3E80
+static HSD_GObj** highestprio_gxlink_procs; //r13_3E7C
+static HSD_GObj** gxlink_procs; //r13_3E80
 static HSD_GObj* current_gobj = NULL; //r13_3E84 - Really just a guess
 static HSD_GObj* active_gx_gobj = NULL; //r13_3E88
 static HSD_GObj* prev_gobj = NULL; //r13_3E8C
@@ -300,8 +300,7 @@ static HSD_GObj* CreateGObj(u32 order, u32 class, u32 p_link, u32 p_prio, HSD_GO
         gobj->next_gx = NULL;
         gobj->proc = NULL;
         gobj->render_cb = NULL;
-        gobj->x24_unk = 0;
-        gobj->x20_unk = 0;
+        gobj->gx_max_proc = 0;
         gobj->hsd_obj = NULL;
         gobj->data = NULL;
         gobj->user_data_remove_func = NULL;
@@ -441,13 +440,13 @@ void GObj_GXReorder(HSD_GObj* gobj, HSD_GObj* hiprio_gobj)
         gobj->next_gx = hiprio_gobj->next_gx;
         hiprio_gobj->next_gx = gobj;
     } else { //If there's not a higher priority GObj of this type, this gobj becomes the highest priority
-        gobj->next_gx = highestprio_gobjs[gobj->gx_link];
-        highestprio_gobjs[gobj->gx_link] = gobj;
+        gobj->next_gx = highestprio_gxlink_procs[gobj->gx_link];
+        highestprio_gxlink_procs[gobj->gx_link] = gobj;
     }
     if (gobj->next_gx != NULL) {
         gobj->next_gx->prev_gx = gobj;
     } else {
-        lowestprio_gobjs[gobj->gx_link] = gobj;
+        gxlink_procs[gobj->gx_link] = gobj;
     }
 }
 
@@ -460,7 +459,7 @@ void GObj_SetupGXLink(HSD_GObj* gobj, void (*render_cb)(HSD_GObj*, s32), u32 gx_
     gobj->render_priority = priority;
 
     HSD_GObj* i = NULL;
-    for (i = lowestprio_gobjs[gx_link]; i != NULL && (gobj->render_priority < i->render_priority); i = i->prev_gx) {
+    for (i = gxlink_procs[gx_link]; i != NULL && (gobj->render_priority < i->render_priority); i = i->prev_gx) {
         //Works backwards from lowest to highest priority till it finds the highest priority to be it's parent obj
         //Returns null if nothing is a higher priority than the current object or if there is none of that type
     }
@@ -468,13 +467,13 @@ void GObj_SetupGXLink(HSD_GObj* gobj, void (*render_cb)(HSD_GObj*, s32), u32 gx_
 }
 
 //8039075C
-void GObj_SetupGXLink_Max(HSD_GObj* gobj, void (*render_cb)(HSD_GObj*, s32), u32 priority)
+void GObj_SetupCameraGXLink(HSD_GObj* gobj, void (*render_cb)(HSD_GObj*, s32), u32 priority)
 {
     gobj->render_cb = render_cb;
     gobj->gx_link = HSD_GObjLibInitData.gx_link_max + 1;
     gobj->render_priority = priority;
     HSD_GObj* i = NULL;
-    for (i = lowestprio_gobjs[gobj->gx_link]; i != NULL && (gobj->render_priority < i->render_priority); i = i->prev_gx) {
+    for (i = gxlink_procs[gobj->gx_link]; i != NULL && (gobj->render_priority < i->render_priority); i = i->prev_gx) {
         //Works backwards from lowest to highest priority till it finds the highest priority to be it's parent obj
         //Returns null if nothing is a higher priority than the current object or if there is none of that type
     }
@@ -488,12 +487,12 @@ void GObj_SetupGXLink_HighestPrio_Max(HSD_GObj* gobj, void (*render_cb)(HSD_GObj
     gobj->gx_link = HSD_GObjLibInitData.gx_link_max + 1;
     gobj->render_priority = priority;
     HSD_GObj* i = NULL;
-    for (i = highestprio_gobjs[gobj->gx_link]; i != NULL && (i->render_priority < gobj->render_priority); i = i->next_gx) {
+    for (i = highestprio_gxlink_procs[gobj->gx_link]; i != NULL && (i->render_priority < gobj->render_priority); i = i->next_gx) {
         //Works backwards from highest to lowest priority till it finds the lowest priority to be it's parent obj
         //Returns null if nothing is a lower priority than the current object or if there is none of that type
     }
     if (i == NULL) {
-        i = lowestprio_gobjs[gobj->gx_link];
+        i = gxlink_procs[gobj->gx_link];
     } else {
         i = i->prev_gx;
     }
@@ -507,12 +506,12 @@ void GObj_GXLinkDestructor(HSD_GObj* gobj)
     if (gobj->prev_gx != NULL) {
         gobj->prev_gx->next_gx = gobj->next_gx;
     } else {
-        highestprio_gobjs[gobj->gx_link] = gobj->next_gx;
+        highestprio_gxlink_procs[gobj->gx_link] = gobj->next_gx;
     }
     if (gobj->next_gx != NULL) {
         gobj->next_gx->prev_gx = gobj->prev_gx;
     } else {
-        lowestprio_gobjs[gobj->gx_link] = gobj->prev_gx;
+        gxlink_procs[gobj->gx_link] = gobj->prev_gx;
     }
     gobj->gx_link = GOBJ_NOREF;
     gobj->render_priority = 0;
@@ -643,7 +642,7 @@ s32 GObj_GetFlagFromArray(s32 offset)
 void GObj_SetTextureCamera(HSD_GObj* gobj, u32 iters)
 {
     HSD_GObj* curr;
-    u64 uVar5;
+    u64 max_proc;
 
     u32 i = 0;
     while (true) {
@@ -651,12 +650,12 @@ void GObj_SetTextureCamera(HSD_GObj* gobj, u32 iters)
             break;
         if ((iters & 1) != 0) {
             u32 j = 0;
-            uVar5 = *(u64*)&gobj->x20_unk;
+            max_proc = gobj->gx_max_proc;
             while (true) {
-                if (uVar5 == 0)
+                if (max_proc == 0)
                     break;
-                if ((uVar5 & 1) != 0) {
-                    curr = highestprio_gobjs[j];
+                if ((max_proc & 1) != 0) {
+                    curr = highestprio_gxlink_procs[j];
                     while (curr != NULL) {
                         if (curr->render_cb != NULL) {
                             HSD_GObj* temp = prev_gobj;
@@ -668,7 +667,7 @@ void GObj_SetTextureCamera(HSD_GObj* gobj, u32 iters)
                     }
                 }
                 ++j;
-                uVar5 = __shr2u((s32)(uVar5 >> 0x20), (s32)uVar5, 1);
+                max_proc = max_proc >> 1;
             }
         }
         iters = iters >> 1;
@@ -679,7 +678,7 @@ void GObj_SetTextureCamera(HSD_GObj* gobj, u32 iters)
 //80390FC0
 void GObj_RunGXLinkMaxCallbacks(void)
 {
-    HSD_GObj* gobj = highestprio_gobjs[GX_LINK_MAX + 1];
+    HSD_GObj* gobj = highestprio_gxlink_procs[GX_LINK_MAX + 1];
     for (HSD_GObj* i = gobj; i != NULL; i = i->next_gx) {
         if (i->render_cb != NULL) {
             HSD_GObj* last_active = active_gx_gobj;
@@ -747,11 +746,11 @@ void GObj_Init(u32* param_1)
         plinkhigh_gobjs[i] = NULL;
     }
 
-    highestprio_gobjs = HSD_MemAlloc((HSD_GObjLibInitData.gx_link_max + 2) * 4);
-    lowestprio_gobjs = HSD_MemAlloc((HSD_GObjLibInitData.gx_link_max + 2) * 4);
+    highestprio_gxlink_procs = HSD_MemAlloc((HSD_GObjLibInitData.gx_link_max + 2) * 4);
+    gxlink_procs = HSD_MemAlloc((HSD_GObjLibInitData.gx_link_max + 2) * 4);
     for(u32 i = 0; i < HSD_GObjLibInitData.gx_link_max + 2; i++){
-        lowestprio_gobjs[i] = NULL;
-        highestprio_gobjs[i] = NULL;
+        gxlink_procs[i] = NULL;
+        highestprio_gxlink_procs[i] = NULL;
     }
 
     u32 n = HSD_GObjLibInitData.gproc_pri_max + 1;
