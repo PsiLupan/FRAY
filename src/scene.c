@@ -793,7 +793,7 @@ void Scene_PrepCommon()
     //r13_3D40 = res;
     //sub_803A44A4();
     unk_cb[3] = &unk_cb[14];
-    GObj_Setup((u32*)unk_cb);
+    GObj_Init((u32*)unk_cb);
 }
 
 //801A4CE0
