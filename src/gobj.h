@@ -83,5 +83,6 @@ void GObj_SetTextureCamera(HSD_GObj*, u32);
 void GObj_RunGXLinkMaxCallbacks(void);
 void GObj_SetCamera(HSD_GObj*);
 void GObj_InitializeLibInitData(u32*);
+void GObj_Init(u32*);
 
 #endif

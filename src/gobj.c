@@ -286,7 +286,7 @@ void GObj_PReorder(HSD_GObj* gobj, HSD_GObj* hiprio_gobj)
 //8038FFB8
 static HSD_GObj* CreateGObj(u32 order, u32 class, u32 p_link, u32 p_prio, HSD_GObj* p_gobj)
 {
-    HSD_CheckAssert("CreateGObj: p_link >= p_link_max", p_link < HSD_GObjLibInitData.p_link_max);
+    HSD_CheckAssert("CreateGObj: p_link > p_link_max", p_link <= HSD_GObjLibInitData.p_link_max);
     HSD_GObj* gobj = (HSD_GObj*)HSD_MemAlloc(sizeof(HSD_GObj)); //HSD_ObjAlloc(&gobj_def);
     if (gobj != NULL) {
         gobj->classifier = class;
@@ -736,9 +736,9 @@ typedef struct _List {
 } List;
 
 //80391304
-void GObj_Setup(u32* param_1)
+void GObj_Init(u32* param_1)
 {
-    *(&HSD_GObjLibInitData.p_link_max) = param_1[0];
+    *((u32*)&HSD_GObjLibInitData.p_link_max) = param_1[0];
 
     plinkhigh_gobjs = HSD_MemAlloc(HSD_GObjLibInitData.gx_link_max * 4);
     plinklow_gobjs = HSD_MemAlloc(HSD_GObjLibInitData.gx_link_max * 4);
