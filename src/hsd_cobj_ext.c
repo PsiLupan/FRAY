@@ -31,9 +31,11 @@ void CObj_Texture_Callback(HSD_GObj* gobj, s32 unused)
 //801A18D4
 void CObj_SetErase_Callback(HSD_GObj* gobj, s32 unused)
 {
+    GXColor erase = {0x26, 0x26, 0x26, 0xFF};
     HSD_CObj* cobj = GOBJ_HSD_COBJ(gobj);
+
     if (HSD_CObjSetCurrent(cobj)) {
-        HSD_SetEraseColor(0x26, 0x26, 0x26, 0xFF); //This actually uses some stack allocated values, but I'm hard coding for now
+        HSD_SetEraseColor(erase.r, erase.g, erase.b, erase.a);
         HSD_CObjEraseScreen(cobj, 1, 0, 1);
         HSD_CObjEndCurrent();
     }
