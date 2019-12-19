@@ -2972,6 +2972,143 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
     } while (true);
 }
 
+#ifdef NEW_LIB
+static void CalcTevRange(HSD_TExp* texp)
+{
+    u32 upper = 0;
+    if (texp->tev.c_in[3].sel == HSD_TE_0) {
+    COLOR_LOOP:
+        for (u32 i = 0; i < 3; i++) {
+            if (texp->tev.c_in[i].sel != HSD_TE_0) {
+                if (texp->tev.c_op == 1) {
+                    texp->tev.c_range = 1;
+                    goto ALPHA;
+                }
+                upper += 256;
+                break;
+            }
+        }
+
+        switch (texp->tev.c_bias) {
+        case 0:
+            switch (texp->tev.c_scale) {
+            case 1:
+                upper = upper << 1;
+                break;
+            case 2:
+                upper = upper << 2;
+                break;
+            case 3:
+                upper = upper >> 1;
+                break;
+            }
+            texp->tev.c_range = 256 < upper;
+            break;
+        case 1:
+            upper += 128;
+            switch (texp->tev.c_scale) {
+            case 1:
+                upper = upper << 1;
+                break;
+            case 2:
+                upper = upper << 2;
+                break;
+            case 3:
+                upper = upper >> 1;
+                break;
+            }
+            texp->tev.c_range = 256 < upper;
+            break;
+        case 2:
+            texp->tev.c_range = 1;
+            break;
+        }
+    } else {
+        if (HSD_TExpGetType(texp->tev.c_in[3].exp) != HSD_TE_TEV) {
+            upper = 256;
+            goto COLOR_LOOP;
+        }
+        if (texp->tev.c_in[3].sel == HSD_TE_RGB) {
+            if (texp->tev.c_in[3].exp->tev.c_clamp == 1) {
+                if (texp->tev.c_in[3].exp->tev.c_range != 1) {
+                    upper = 256;
+                    goto COLOR_LOOP;
+                }
+            }
+            texp->tev.c_range = 1;
+        } else {
+            if (texp->tev.c_in[3].exp->tev.a_clamp == 1) {
+                if (texp->tev.c_in[3].exp->tev.a_range != 1) {
+                    upper = 256;
+                    goto COLOR_LOOP;
+                }
+            }
+            texp->tev.c_range = 1;
+        }
+    }
+ALPHA:
+    upper = 0;
+    if (texp->tev.a_in[3].sel == HSD_TE_0) {
+        if (HSD_TExpGetType(texp->tev.c_in[3].exp) == HSD_TE_TEV) {
+            if (texp->tev.c_in[3].exp->tev.a_clamp != 1) {
+                if (texp->tev.c_in[3].exp->tev.a_range == 1) {
+                    return;
+                }
+            }
+            upper = 256;
+        } else {
+            upper = 256;
+        }
+
+        for (u32 i = 0; i < 3; i++) {
+            if (texp->tev.a_in[i].sel != HSD_TE_0) {
+                if (texp->tev.a_op == 1) {
+                    texp->tev.a_range = 1;
+                    return;
+                }
+                upper += 256;
+                break;
+            }
+        }
+
+        switch (texp->tev.a_bias) {
+        case 0:
+            switch (texp->tev.a_scale) {
+            case 1:
+                upper = upper << 1;
+                break;
+            case 2:
+                upper = upper << 2;
+                break;
+            case 3:
+                upper = upper >> 1;
+                break;
+            }
+            texp->tev.a_range = 256 < upper;
+            break;
+        case 1:
+            upper += 128;
+            switch (texp->tev.a_scale) {
+            case 1:
+                upper = upper << 1;
+                break;
+            case 2:
+                upper = upper << 2;
+                break;
+            case 3:
+                upper = upper >> 1;
+                break;
+            }
+            texp->tev.a_range = 256 < upper;
+            break;
+        case 2:
+            texp->tev.a_range = 1;
+            break;
+        }
+    }
+}
+#endif
+
 //80387B1C
 u32 HSD_TExpSimplify(HSD_TExp* texp)
 {
@@ -2980,6 +3117,9 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
         //res = SimplifySrc(texp) != 0 ? 1 : 0;
         res = SimplifyThis(texp) != 0 ? 1 : res;
         res = SimplifyByMerge(texp) != 0 ? 1 : res;
+#ifdef NEW_LIB
+        CalcTevRange(texp);
+#endif
     }
     return res;
 }
