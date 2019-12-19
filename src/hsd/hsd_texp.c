@@ -309,18 +309,21 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
     tev->c_in[idx].arg = 0xFF;
     switch (sel) {
     case HSD_TE_0:
+        tev->c_in[idx].type = HSD_TE_ZERO;
         tev->c_in[idx].arg = GX_CC_ZERO;
         tev->c_in[idx].exp = NULL;
         HSD_TExpUnref(texp, HSD_TE_ZERO);
         return;
 
     case HSD_TE_1:
+        tev->c_in[idx].type = HSD_TE_IMM;
         tev->c_in[idx].arg = GX_CC_ONE;
         tev->c_in[idx].exp = NULL;
         HSD_TExpUnref(texp, HSD_TE_IMM);
         return;
 
     case HSD_TE_4_8:
+        tev->c_in[idx].type = HSD_TE_IMM;
         tev->c_in[idx].arg = GX_CC_HALF;
         tev->c_in[idx].exp = NULL;
         HSD_TExpUnref(texp, HSD_TE_IMM);
@@ -596,8 +599,8 @@ void HSD_TExpOrder(HSD_TExp* texp, void* tex, u8 chan)
 //80384114
 static s32 AssignColorReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 {
-    static u32 a_in[] = { GX_CC_A0, GX_CC_A1, GX_CC_A2, GX_CC_APREV };
-    static u32 c_in[] = { GX_CC_C0, GX_CC_C1, GX_CC_C2, GX_CC_CPREV };
+    static u32 a_in[4] = { GX_CC_A0, GX_CC_A1, GX_CC_A2, GX_CC_APREV };
+    static u32 c_in[4] = { GX_CC_C0, GX_CC_C1, GX_CC_C2, GX_CC_CPREV };
 
     HSD_TECnst* cnst = &tev->c_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
@@ -643,7 +646,7 @@ static s32 AssignColorReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 //80384274
 static s32 AssignAlphaReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 {
-    static u32 args[] = { GX_CA_A0, GX_CA_A1, GX_CA_A2, GX_CA_APREV };
+    static u32 args[4] = { GX_CA_A0, GX_CA_A1, GX_CA_A2, GX_CA_APREV };
 
     HSD_TECnst* cnst = &tev->a_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
