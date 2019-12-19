@@ -599,8 +599,8 @@ void HSD_TExpOrder(HSD_TExp* texp, void* tex, u8 chan)
 //80384114
 static s32 AssignColorReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 {
-    static u32 a_in[4] = { GX_CC_A0, GX_CC_A1, GX_CC_A2, GX_CC_APREV };
-    static u32 c_in[4] = { GX_CC_C0, GX_CC_C1, GX_CC_C2, GX_CC_CPREV };
+    u32 a_in[4] = { GX_CC_A0, GX_CC_A1, GX_CC_A2, GX_CC_APREV };
+    u32 c_in[4] = { GX_CC_C0, GX_CC_C1, GX_CC_C2, GX_CC_CPREV };
 
     HSD_TECnst* cnst = &tev->c_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
@@ -646,7 +646,7 @@ static s32 AssignColorReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 //80384274
 static s32 AssignAlphaReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 {
-    static u32 args[4] = { GX_CA_A0, GX_CA_A1, GX_CA_A2, GX_CA_APREV };
+    u32 args[4] = { GX_CA_A0, GX_CA_A1, GX_CA_A2, GX_CA_APREV };
 
     HSD_TECnst* cnst = &tev->a_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
@@ -674,14 +674,14 @@ static s32 AssignAlphaReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 //80384340
 static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 {
-    static u32 xsel[4][4] = {
+    u32 xsel[4][4] = {
         { GX_TEV_KCSEL_K0_R, GX_TEV_KCSEL_K0_G, GX_TEV_KCSEL_K0_B, GX_TEV_KCSEL_K0_A },
         { GX_TEV_KCSEL_K1_R, GX_TEV_KCSEL_K1_G, GX_TEV_KCSEL_K1_B, GX_TEV_KCSEL_K1_A },
         { GX_TEV_KCSEL_K2_R, GX_TEV_KCSEL_K2_G, GX_TEV_KCSEL_K2_B, GX_TEV_KCSEL_K2_A },
         { GX_TEV_KCSEL_K3_R, GX_TEV_KCSEL_K3_G, GX_TEV_KCSEL_K3_B, GX_TEV_KCSEL_K3_A }
     };
 
-    static u32 csel[4] = { GX_TEV_KCSEL_K0, GX_TEV_KCSEL_K1, GX_TEV_KCSEL_K2, GX_TEV_KCSEL_K3 };
+    u32 csel[4] = { GX_TEV_KCSEL_K0, GX_TEV_KCSEL_K1, GX_TEV_KCSEL_K2, GX_TEV_KCSEL_K3 };
 
     HSD_TECnst* cnst = &tev->c_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
@@ -740,7 +740,7 @@ static s32 AssignColorKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 //80384560
 static s32 AssignAlphaKonst(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 {
-    static u32 regs[4][4] = {
+    u32 regs[4][4] = {
         { GX_TEV_KASEL_K0_R, GX_TEV_KASEL_K0_G, GX_TEV_KASEL_K0_B, GX_TEV_KASEL_K0_A },
         { GX_TEV_KASEL_K1_R, GX_TEV_KASEL_K1_G, GX_TEV_KASEL_K1_B, GX_TEV_KASEL_K1_A },
         { GX_TEV_KASEL_K2_R, GX_TEV_KASEL_K2_G, GX_TEV_KASEL_K2_B, GX_TEV_KASEL_K2_A },
@@ -1969,6 +1969,9 @@ static void make_full_dependency_mtx(s32 num, u32* dep, u32* full)
 //80386234
 void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes* resource)
 {
+    u32 args[4] = { GX_CA_A0, GX_CA_A1, GX_CA_A2, GX_CA_APREV };
+    u32 a_in[4] = { GX_CC_A0, GX_CC_A1, GX_CC_A2, GX_CC_APREV };
+    u32 c_in[4] = { GX_CC_C0, GX_CC_C1, GX_CC_C2, GX_CC_CPREV };
 #if 0
     u32 dep_mtx[32];
     u32 full_dep_mtx[32];
@@ -2101,35 +2104,9 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
                 if (uVar2 == 1) {
                     iVar3 = (s32) & ((HSD_TETev*)*result)->type + iVar8;
                     if (*(s8*)(iVar3 + 0x25) == 1) {
-                        switch ((*(s32*)(iVar3 + 0x28) + 0xc)) {
-                        case 0:
-                            *(u8*)(iVar3 + 0x26) = 2;
-                            break;
-                        case 1:
-                            *(u8*)(iVar3 + 0x26) = 4;
-                            break;
-                        case 2:
-                            *(u8*)(iVar3 + 0x26) = 6;
-                            break;
-                        default:
-                            *(u8*)(iVar3 + 0x26) = 0;
-                            break;
-                        }
+                        *(u8*)(iVar3 + 0x26) = c_in[(*(s32*)(iVar3 + 0x28) + 0xc)];
                     } else {
-                        switch ((*(s32*)(iVar3 + 0x28) + 0xc)) {
-                        case 0:
-                            *(u8*)(iVar3 + 0x26) = 3;
-                            break;
-                        case 1:
-                            *(u8*)(iVar3 + 0x26) = 5;
-                            break;
-                        case 2:
-                            *(u8*)(iVar3 + 0x26) = 7;
-                            break;
-                        default:
-                            *(u8*)(iVar3 + 0x26) = 1;
-                            break;
-                        }
+                        *(u8*)(iVar3 + 0x26) = a_in[(*(s32*)(iVar3 + 0x28) + 0xc)];
                     }
                 }
                 iVar7 = iVar7 + 1;
@@ -2144,20 +2121,7 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
                 uVar2 = HSD_TExpGetType(*(HSD_TExp**)((s32) & ((HSD_TETev*)*result)->type + iVar8 + 0x48));
                 if (uVar2 == 1) {
                     iVar3 = (s32) & ((HSD_TETev*)*result)->type + iVar8;
-                    switch ((*(s32*)(iVar3 + 0x28) + 0xc)) {
-                    case 0:
-                        *(u8*)(iVar3 + 0x46) = 1;
-                        break;
-                    case 1:
-                        *(u8*)(iVar3 + 0x46) = 2;
-                        break;
-                    case 2:
-                        *(u8*)(iVar3 + 0x46) = 3;
-                        break;
-                    default:
-                        *(u8*)(iVar3 + 0x46) = 0;
-                        break;
-                    }
+                    *(u8*)(iVar3 + 0x46) = args[(*(s32*)(iVar3 + 0x28) + 0xc)];
                 }
                 iVar7 = iVar7 + 1;
                 iVar8 = iVar8 + 8;
@@ -2186,7 +2150,7 @@ static u32 SimplifySrc(HSD_TExp* texp)
             if (sel == 1) {
                 sel = t->tev.c_op;
                 if (sel == GX_COLORNULL) {
-                    HSD_TExpUnref(t, 1);
+                    HSD_TExpUnref(t, tev->c_in[i].sel);
                     res = TRUE;
                     tev->c_in[i].type = 0;
                     tev->c_in[i].sel = 7;
@@ -2206,7 +2170,7 @@ static u32 SimplifySrc(HSD_TExp* texp)
                                 if (tev->tex_swap == HSD_TE_UNDEF) {
                                     tev->tex_swap = t->tev.tex_swap;
                                 }
-                                HSD_TExpUnref(t, 1);
+                                HSD_TExpUnref(t, t->tev.c_in[i].sel);
                                 res = TRUE;
                             }
                         } else if (type == HSD_TE_TEV && (t->tev.c_in[3].exp->tev.c_clamp != 0 || t->tev.c_clamp == 0)) {
@@ -2233,11 +2197,11 @@ static u32 SimplifySrc(HSD_TExp* texp)
                 }
             } else if (t->tev.a_op == 0xFF) {
                 HSD_TExpUnref(t, sel);
-                res = TRUE;
                 tev->c_in[i].type = 0;
                 tev->c_in[i].sel = 7;
                 tev->c_in[i].arg = 0xFF;
                 tev->c_in[i].exp = NULL;
+                res = TRUE;
             }
         }
     }
@@ -2309,67 +2273,27 @@ static u32 SimplifyThis(HSD_TExp* texp)
         ras_c = -1;
         ras_a = -1;
 
-        type = texp->tev.c_in[0].type;
-        if (type == HSD_TE_RAS) {
-            ras_c = 0;
-        } else if (type == HSD_TE_TEX) {
-            tex_c = 0;
+        for (u32 i = 0; i < 4; i++) {
+            type = texp->tev.c_in[i].type;
+            if (type == HSD_TE_RAS) {
+                ras_c = i;
+            } else if (type == HSD_TE_TEX) {
+                tex_c = i;
+            }
+
+            type = texp->tev.a_in[i].type;
+            if (type == HSD_TE_RAS) {
+                ras_a = i;
+            } else if (type == HSD_TE_TEX) {
+                tex_a = i;
+            }
         }
 
-        type = texp->tev.a_in[0].type;
-        if (type == HSD_TE_RAS) {
-            ras_a = 0;
-        } else if (type == HSD_TE_TEX) {
-            tex_a = 0;
-        }
-
-        type = texp->tev.c_in[1].type;
-        if (type == HSD_TE_RAS) {
-            ras_c = 1;
-        } else if (type == HSD_TE_TEX) {
-            tex_c = 1;
-        }
-
-        type = texp->tev.a_in[1].type;
-        if (type == HSD_TE_RAS) {
-            ras_a = 1;
-        } else if (type == HSD_TE_TEX) {
-            tex_a = 1;
-        }
-
-        type = texp->tev.c_in[2].type;
-        if (type == HSD_TE_RAS) {
-            ras_c = 2;
-        } else if (type == HSD_TE_TEX) {
-            tex_c = 2;
-        }
-
-        type = texp->tev.a_in[2].type;
-        if (type == HSD_TE_RAS) {
-            ras_a = 2;
-        } else if (type == HSD_TE_TEX) {
-            tex_a = 2;
-        }
-
-        type = texp->tev.c_in[3].type;
-        if (type == HSD_TE_RAS) {
-            ras_c = 3;
-        } else if (type == HSD_TE_TEX) {
-            tex_c = 3;
-        }
-
-        type = texp->tev.a_in[3].type;
-        if (type == HSD_TE_RAS) {
-            ras_a = 3;
-        } else if (type == HSD_TE_TEX) {
-            tex_a = 3;
-        }
-
-        if ((tex_c == -1) && (tex_a == -1)) {
+        if (tex_c == -1 && tex_a == -1) {
             texp->tev.tex = NULL;
             texp->tev.tex_swap = HSD_TE_UNDEF;
         }
-        if ((ras_c == -1) && (ras_a == -1)) {
+        if (ras_c == -1 && ras_a == -1) {
             texp->tev.chan = 0xFF;
             texp->tev.ras_swap = HSD_TE_UNDEF;
         }
@@ -3132,14 +3056,12 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
     for (u32 i = 0; i < 4; i++) {
         t = texp->tev.c_in[i].exp;
         if (texp->tev.c_in[i].type == HSD_TE_TEV && texp->tev.c_in[i].sel == 1) {
-            if (t->tev.c_op == 0 && t->tev.c_in[0].sel == 7 && t->tev.c_in[1].sel == 7 && t->tev.c_bias == 0 && t->tev.c_scale == 0) {
+            if (IsThroughColor(t)) {
                 if (t->tev.c_in[3].type == HSD_TE_KONST) {
                     if (texp->tev.kcsel == 0xFF) {
                         texp->tev.kcsel = t->tev.kcsel;
-                    } else {
-                        if (texp->tev.kcsel != t->tev.kcsel) {
-                            continue;
-                        }
+                    } else if (texp->tev.kcsel != t->tev.kcsel) {
+                        continue;
                     }
                 } else if (t->tev.c_in[3].type != HSD_TE_IMM) {
                     continue;
@@ -3157,14 +3079,12 @@ u32 HSD_TExpSimplify2(HSD_TExp* texp)
     for (u32 i = 0; i < 4; i++) {
         t = texp->tev.a_in[i].exp;
         if (texp->tev.a_in[i].type == HSD_TE_TEV) {
-            if (t->tev.a_op == 0 && t->tev.a_in[0].sel == 7 && t->tev.a_in[1].sel == 7 && t->tev.a_bias == 0 && t->tev.a_scale == 0) {
+            if (IsThroughAlpha(t)) {
                 if (t->tev.a_in[3].type == HSD_TE_KONST) {
                     if (texp->tev.kasel == 0xFF) {
                         texp->tev.kasel = t->tev.kasel;
-                    } else {
-                        if (texp->tev.kasel != t->tev.kasel) {
-                            continue;
-                        }
+                    } else if (texp->tev.kasel != t->tev.kasel) {
+                        continue;
                     }
                 } else if (t->tev.a_in[3].type != HSD_TE_IMM) {
                     continue;
