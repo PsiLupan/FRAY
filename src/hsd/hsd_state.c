@@ -43,13 +43,13 @@ static struct {
 
 static HSD_Chan prev_ch[4];
 static HSD_Chan invalid_prev_ch;
-static u8 chan_disabled[4] = {1, 1, 1, 1}; //r13_409C - r13_4090
+static u8 chan_disabled[4] = { 1, 1, 1, 1 }; //r13_409C - r13_4090
 
 static void HSD_DisableChannelLighting(u32 channel)
 {
     u32 chan = channel & 3;
     if (channel < GX_COLORZERO && channel > GX_ALPHA1) {
-        if(prev_ch[chan].enable != 0 || prev_ch[chan + 2].enable != 0){
+        if (prev_ch[chan].enable != 0 || prev_ch[chan + 2].enable != 0) {
             prev_ch[chan + 2].enable = 0;
             prev_ch[chan].enable = 0;
             prev_ch[chan + 2].light_mask = 0;
@@ -60,7 +60,7 @@ static void HSD_DisableChannelLighting(u32 channel)
             prev_ch[chan + 2].attn_fn = prev_ch[chan].attn_fn;
             GX_SetChanCtrl(channel, 0, prev_ch[chan].amb_src, prev_ch[chan].mat_src, 0, prev_ch[chan].diff_fn, prev_ch[chan].attn_fn);
         }
-    }else if(prev_ch[chan].enable != 0){
+    } else if (prev_ch[chan].enable != 0) {
         prev_ch[chan].enable = 0;
         prev_ch[chan].light_mask = 0;
         GX_SetChanCtrl(channel, 0, prev_ch[chan].amb_src, prev_ch[chan].mat_src, 0, prev_ch[chan].diff_fn, prev_ch[chan].attn_fn);
@@ -276,8 +276,7 @@ void HSD_SetupPEMode(u32 rendermode, HSD_PEDesc* pe)
     }
 }
 
-//8036190C
-void HSD_SetupRenderModeWithCustomPE(u32 rendermode, HSD_PEDesc* pe)
+static void setupTevMode_last()
 {
     if (!HSD_StateGetNumTevStages()) {
         HSD_TevDesc tevdesc;
@@ -289,6 +288,12 @@ void HSD_SetupRenderModeWithCustomPE(u32 rendermode, HSD_PEDesc* pe)
         tevdesc.u.tevop.tevmode = GX_PASSCLR;
         HSD_SetupTevStage(&tevdesc);
     }
+}
+
+//8036190C
+void HSD_SetupRenderModeWithCustomPE(u32 rendermode, HSD_PEDesc* pe)
+{
+    setupTevMode_last();
     HSD_SetupPEMode(rendermode, pe);
     HSD_SetTevRegAll();
     HSD_StateSetNumTevStages();
@@ -299,21 +304,7 @@ void HSD_SetupRenderModeWithCustomPE(u32 rendermode, HSD_PEDesc* pe)
 //8036199C
 void HSD_SetupRenderMode(u32 rendermode)
 {
-    if (!HSD_StateGetNumTevStages()) {
-        HSD_TevDesc tevdesc;
-        tevdesc.flags = TEVOP_MODE;
-        tevdesc.stage = HSD_StateAssignTev();
-        tevdesc.coord = GX_TEXCOORDNULL;
-        tevdesc.map = GX_TEXMAP_NULL;
-        tevdesc.color = GX_COLOR0A0;
-        tevdesc.u.tevop.tevmode = GX_PASSCLR;
-        HSD_SetupTevStage(&tevdesc);
-    }
-    HSD_SetupPEMode(rendermode, NULL);
-    HSD_SetTevRegAll();
-    HSD_StateSetNumTevStages();
-    HSD_StateSetNumTexGens();
-    HSD_SetupChannelMode(rendermode);
+    HSD_SetupRenderModeWithCustomPE(rendermode, NULL);
 }
 
 //80361A20
@@ -525,7 +516,7 @@ void HSD_SetupChannel(HSD_Chan* ch)
                     }
                 } else {
                     if (ch->chan == 0 || ch->chan == 1) {
-                        if ((ch->amb_color.r ^ prev_ch[chan].amb_color.r) != 0 || (ch->amb_color.g ^ prev_ch[chan].amb_color.g) != 0 || (ch->amb_color.b ^ prev_ch[chan].amb_color.b) != 0) { 
+                        if ((ch->amb_color.r ^ prev_ch[chan].amb_color.r) != 0 || (ch->amb_color.g ^ prev_ch[chan].amb_color.g) != 0 || (ch->amb_color.b ^ prev_ch[chan].amb_color.b) != 0) {
                             //(chan->amb_color ^ prev_ch.amb_color) & 0xffffff00 != 0 - Alpha is being masked off
                             prev_ch[chan].amb_color.r = ch->amb_color.r;
                             prev_ch[chan].amb_color.g = ch->amb_color.g;
@@ -738,7 +729,7 @@ u8 HSD_TevStage2Index(u8 idx)
 void _HSD_StateInvalidateColorChannel(void)
 {
     memcpy(&prev_ch, &invalid_prev_ch, sizeof(HSD_Chan));
-    for(u32 i = 0; i < 4; i++){
+    for (u32 i = 0; i < 4; i++) {
         chan_disabled[i] = 1;
     }
     state_num_chans = -1;
