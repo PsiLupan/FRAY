@@ -13,20 +13,20 @@
 
 #define MAX_GXLIGHT 9
 
-#define HSD_A_L_LITC_R 0
-#define HSD_A_L_LITC_G 1
-#define HSD_A_L_LITC_B 2
-#define HSD_A_L_VIS 3
-#define HSD_A_L_A0 4
-#define HSD_A_L_A1 5
-#define HSD_A_L_A2 6
-#define HSD_A_L_K0 7
-#define HSD_A_L_K1 8
-#define HSD_A_L_K2 9
-#define HSD_A_L_CUTOFF 10
-#define HSD_A_L_REFDIST 11
-#define HSD_A_L_REFBRIGHT 12
-#define HSD_A_L_LITC_A 13
+#define HSD_A_L_LITC_R 9
+#define HSD_A_L_LITC_G 10
+#define HSD_A_L_LITC_B 11
+#define HSD_A_L_VIS 12
+#define HSD_A_L_A0 13
+#define HSD_A_L_A1 14
+#define HSD_A_L_A2 15
+#define HSD_A_L_K0 16
+#define HSD_A_L_K1 17
+#define HSD_A_L_K2 18
+#define HSD_A_L_CUTOFF 19
+#define HSD_A_L_REFDIST 20
+#define HSD_A_L_REFBRIGHT 21
+#define HSD_A_L_LITC_A 22
 
 #define LOBJ_AMBIENT (0 << 0)
 #define LOBJ_INFINITE (1 << 0)
@@ -105,9 +105,9 @@ typedef struct _HSD_LObj {
     f32 shininess;
     guVector lvec;
     struct _HSD_AObj* aobj;
-    u8 id; //GXLightID
+    u32 id; //GXLightID
     GXLightObj lightobj; //0x50
-    u8 spec_id; //0x90 GXLightID
+    u32 spec_id; //0x90 GXLightID
     GXLightObj spec_lightobj; //0x94
 } HSD_LObj;
 
