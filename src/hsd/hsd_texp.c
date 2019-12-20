@@ -944,26 +944,26 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
     } else {
         desc->desc.u.tevconf.clr_op = texp->tev.c_op;
 
-        for (u32 i = 0; i < 4; i++){
+        for (u32 i = 0; i < 4; i++) {
             arg = texp->tev.c_in[i].arg;
             swap = arg;
             if (arg == 0xFF) {
                 swap = GX_CC_ZERO;
             }
             switch (i) {
-                case 0:
+            case 0:
                 desc->desc.u.tevconf.clr_a = swap;
                 break;
 
-                case 1:
+            case 1:
                 desc->desc.u.tevconf.clr_b = swap;
                 break;
 
-                case 2:
+            case 2:
                 desc->desc.u.tevconf.clr_c = swap;
                 break;
 
-                case 3:
+            case 3:
                 desc->desc.u.tevconf.clr_d = swap;
                 break;
             }
@@ -1011,26 +1011,26 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
     } else {
         desc->desc.u.tevconf.alpha_op = texp->tev.a_op;
 
-        for (u32 i = 0; i < 4; i++){
+        for (u32 i = 0; i < 4; i++) {
             arg = texp->tev.a_in[i].arg;
             swap = arg;
             if (arg == 0xFF) {
                 swap = GX_CC_ZERO;
             }
             switch (i) {
-                case 0:
+            case 0:
                 desc->desc.u.tevconf.alpha_a = swap;
                 break;
 
-                case 1:
+            case 1:
                 desc->desc.u.tevconf.alpha_b = swap;
                 break;
 
-                case 2:
+            case 2:
                 desc->desc.u.tevconf.alpha_c = swap;
                 break;
 
-                case 3:
+            case 3:
                 desc->desc.u.tevconf.alpha_d = swap;
                 break;
             }
@@ -3033,7 +3033,7 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
 {
     u32 res = 0;
     if (HSD_TExpGetType(texp) == HSD_TE_TEV) {
-        //res = SimplifySrc(texp) != 0 ? 1 : 0;
+        res = SimplifySrc(texp) != 0 ? 1 : 0;
         res = SimplifyThis(texp) != 0 ? 1 : res;
         res = SimplifyByMerge(texp) != 0 ? 1 : res;
 #ifdef NEW_LIB
