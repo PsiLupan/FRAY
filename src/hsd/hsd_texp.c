@@ -1265,11 +1265,12 @@ s32 HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_l
     assert(tevdesc != NULL);
     assert(texp_list != NULL);
 
+    memset(&res, 0, sizeof(HSD_TExpRes));
+
     HSD_TExpRef(texp, 1);
     HSD_TExpRef(texp, 5);
     HSD_TExpSimplify(texp);
 
-    memset(&res, 0, sizeof(HSD_TExpRes));
     num = HSD_TExpMakeDag(texp, list);
     HSD_TExpSchedule(num, list, order, &res);
     for (u32 i = 0; i < num; ++i) {
@@ -1292,7 +1293,7 @@ s32 HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_l
         tdesc->desc.next = &(*tevdesc)->desc;
         *tevdesc = tdesc;
     }
-
+    
     *texp_list = HSD_TExpFreeList(*texp_list, 1, 1);
     *texp_list = HSD_TExpFreeList(*texp_list, 4, 0);
     return num;
@@ -1384,7 +1385,7 @@ void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
                             CalcDistance(tevs, dist, &tev->c_in[i].exp->tev, num, d + 1);
                         }
                         if (tev->a_in[i].type == HSD_TE_TEV) {
-                            CalcDistance(tevs, dist, &tev->c_in[i].exp->tev, num, d + 1);
+                            CalcDistance(tevs, dist, &tev->a_in[i].exp->tev, num, d + 1);
                         }
                     }
                 } else {
