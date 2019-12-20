@@ -47,11 +47,12 @@ MajorScene major_scenes[46] = {
 
 static u8 r13_3D40; //0x3D40(r13)
 static void* scene_sobj_desc; //0x4EB0(r13)
+static HSD_GObj* stub_gobj; //0x4F74(r13)
 static u32 r13_4F80[3];
-static HSD_FogDesc* scene_fog_desc; // 0x4F90(r13)
-static HSD_Lights* scene_lights_desc; // -0x4F94(r13)
-static HSD_CObjDesc* scene_cobj_desc; //-0x4F98(r13)
-u32 debug_level = 0; //-0x6C98(r13)
+static HSD_FogDesc* scene_fog_desc; //0x4F90(r13)
+static HSD_Lights* scene_lights_desc; //0x4F94(r13)
+static HSD_CObjDesc* scene_cobj_desc; //0x4F98(r13)
+u32 debug_level = 0; //0x6C98(r13)
 
 s32 cache_base[24] = { //803BA638
     0x00000000, 0x00000000, 0x2d000000, 0x00000148,
@@ -793,6 +794,12 @@ void Scene_PrepCommon()
     //sub_803A44A4();
     unk_cb[3] = &unk_cb[14];
     GObj_Init((u32*)unk_cb);
+
+    HSD_GObj* gobj = GObj_Create(0xE, 0, 0);
+    stub_gobj = gobj;
+    if (stub_gobj != NULL){
+        GObj_CreateProcWithCallback(stub_gobj, stub, 0);
+    }
 }
 
 //801A4CE0
