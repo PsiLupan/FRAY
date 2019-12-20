@@ -46,3 +46,30 @@ f32 Item_GetDefaultDuration(HSD_GObj* gobj)
     Item* item = GOBJ_ITEM(gobj);
     return item->xC4_item_attribs[0][1];
 }
+
+//8026B73C
+void Item_8026B73C(HSD_GObj* gobj)
+{
+    Item* item = GOBJ_ITEM(gobj);
+    if ((item->xDC8_flags & 1) != 0) {
+        item->xDC8_flags = item->xDC8_flags & 0xFB | 4;
+    }
+    if ((item->xDC8_flags >> 4 & 1) == 0) {
+        return;
+    }
+    item->xDC8_flags = item->xDC8_flags & 0xEF;
+    return;
+}
+
+//8026B7E8
+u32 Item_8026B7E8(HSD_GObj *gobj)
+{
+    Item* item = GOBJ_ITEM(gobj);
+    return ((item->xDC8_flags) >> 6) & 1;
+}
+
+
+//8026BB20
+void Item_Unhide(HSD_GObj* gobj){
+    JObj_Unhide((HSD_JObj*)gobj->hsd_obj);
+}

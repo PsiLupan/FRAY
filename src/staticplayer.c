@@ -417,3 +417,11 @@ u32 StaticPlayer_GetUnkStat72(u32 slot)
 {
     return players[slot].x698_unk;
 }
+
+//8003FC44
+void StaticPlayer_UpdateFlags_xE8C(u32 slot, u32 flags){
+    u32* move_table = StaticPlayer_GetStaleMoveTable(slot);
+    if (flags == 0){
+        //TODO
+    }
+}

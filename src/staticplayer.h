@@ -132,4 +132,6 @@ u32* StaticPlayer_GetTotalAttacks(u32);
 
 u32* StaticPlayer_Get6A8(u32);
 
+void StaticPlayer_UpdateFlags_xE8C(u32, u32);
+
 #endif

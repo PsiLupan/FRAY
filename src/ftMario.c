@@ -112,7 +112,7 @@ void Mario_SpawnProjectile(HSD_GObj* gobj, guVector pos)
         player->x2210_flags &= 0x7F;
         u32 index = Player_BoneID2Index(player, 0x17);
         HSD_JObj* spawn_bone = (HSD_JObj*)(*(player->x5E8_bone_lookup_table) + (index * BONE_LOOKUP_STRUCT_SIZE));
-        JObj_Spawn(spawn_bone, NULL, pos);
+        JObj_Spawn(spawn_bone, NULL, &pos);
         if (player->x4_internal_id == INTERNAL_MARIO) {
             sub_8029B6F8(gobj, pos, ITEM_MARIO_FIREBALL, player->x2C_facedir);
             sub_8005FDDC(0x47A, gobj, spawn_bone, &player->x2C_facedir);
@@ -193,7 +193,7 @@ void Mario_Special_Neutral_SetActionState_x158(HSD_GObj* gobj)
 void Mario_Special_Neutral_Air_SetActionState_x157(HSD_GObj* gobj)
 {
     Player* player = GOBJ_PLAYER(gobj);
-    Player_8007D7FC(player);
+    Player_SetGroundedState(player);
     Player_ChangeActionState(gobj, MARIO_ACTIONSTATE_SPECIAL_NEUTRAL_157, 0x5000, NULL, player->x894_action_state_frames, 1.0f, 0.0f);
     player->x21BC_Projectile_Spawn = Mario_SpawnProjectile;
 }
