@@ -107,7 +107,7 @@ typedef struct _HSD_TevDesc {
 
 typedef struct _HSD_TExpTevDesc {
     struct _HSD_TevDesc desc;
-    void* tobj;
+    struct _HSD_TObj* tobj;
 } HSD_TExpTevDesc;
 
 typedef struct _HSD_TECommon {
@@ -159,7 +159,7 @@ typedef struct _HSD_TETev {
     u8 kasel;
     HSD_TEArg c_in[4];
     HSD_TEArg a_in[4];
-    void* tex; //HSD_TObj*
+    struct _HSD_TObj* tex;
     u8 chan;
 } HSD_TETev;
 
