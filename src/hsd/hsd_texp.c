@@ -879,6 +879,8 @@ static s32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 //80384B20
 static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev, u32* init_aprev)
 {
+    u32 args[4] = { GX_CA_A0, GX_CA_A1, GX_CA_A2, GX_CA_APREV };
+
     u32 swap;
     u8 arg;
 
@@ -987,7 +989,7 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
 
         HSD_CheckAssert("TExp2TevDesc: c_dst is undefined", texp->tev.c_dst != 0xFF);
 
-        desc->desc.u.tevconf.clr_out_reg = HSD_Index2TevRegID(texp->tev.c_dst);
+        desc->desc.u.tevconf.clr_out_reg = args[texp->tev.c_dst];
         if (desc->desc.u.tevconf.clr_out_reg == 0) {
             *init_cprev = 0;
         }
@@ -1054,7 +1056,7 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
 
         HSD_CheckAssert("TExp2TevDesc: a_dst is undefined", texp->tev.a_dst != 0xFF);
 
-        desc->desc.u.tevconf.alpha_out_reg = HSD_Index2TevRegID(texp->tev.a_dst);
+        desc->desc.u.tevconf.alpha_out_reg = args[texp->tev.a_dst];
         if (desc->desc.u.tevconf.alpha_out_reg == 0) {
             *init_aprev = 0;
         }
@@ -1931,7 +1933,7 @@ static void make_dependency_mtx(s32 num, HSD_TExpDag* list, u32* dep_mtx)
     for (u32 i = 0; i < num; ++i) {
         dep_mtx[i] = 0;
         for (u32 j = 0; j < list[i].nb_dep; ++j) {
-            dep_mtx[i] |= 1 << list[i].depend[j]->idx;
+            dep_mtx[i] = dep_mtx[i] | 1 << list[i].depend[j]->idx;
         }
     }
 }
@@ -1988,35 +1990,9 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
             for (j = 0; j < 4; j++) {
                 if (HSD_TExpGetType(result[i]->tev.c_in[j].exp) == HSD_TE_TEV) {
                     if (result[i]->tev.c_in[j].sel == 1) {
-                        switch (result[i]->tev.c_in[j].exp->tev.c_dst) {
-                        case 0:
-                            result[i]->tev.c_in[j].arg = 2;
-                            break;
-                        case 1:
-                            result[i]->tev.c_in[j].arg = 4;
-                            break;
-                        case 2:
-                            result[i]->tev.c_in[j].arg = 6;
-                            break;
-                        default:
-                            result[i]->tev.c_in[j].arg = 0;
-                            break;
-                        }
+                        result[i]->tev.c_in[j].arg = c_in[result[i]->tev.c_in[j].exp->tev.c_dst];
                     } else {
-                        switch (result[i]->tev.c_in[j].exp->tev.a_dst) {
-                        case 0:
-                            result[i]->tev.c_in[j].arg = 3;
-                            break;
-                        case 1:
-                            result[i]->tev.c_in[j].arg = 5;
-                            break;
-                        case 2:
-                            result[i]->tev.c_in[j].arg = 7;
-                            break;
-                        default:
-                            result[i]->tev.c_in[j].arg = 1;
-                            break;
-                        }
+                        result[i]->tev.c_in[j].arg = a_in[result[i]->tev.c_in[j].exp->tev.a_dst];
                     }
                 }
             }
@@ -2027,20 +2003,7 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
             for (j = 0; j < 4; j++) {
                 if (HSD_TExpGetType(result[i]->tev.a_in[j].exp) == HSD_TE_TEV) {
                     if (result[i]->tev.a_in[j].sel == 1) {
-                        switch (result[i]->tev.a_in[j].exp->tev.a_dst) {
-                        case 0:
-                            result[i]->tev.a_in[j].arg = 1;
-                            break;
-                        case 1:
-                            result[i]->tev.a_in[j].arg = 2;
-                            break;
-                        case 2:
-                            result[i]->tev.a_in[j].arg = 3;
-                            break;
-                        default:
-                            result[i]->tev.a_in[j].arg = 0;
-                            break;
-                        }
+                        result[i]->tev.a_in[j].arg = args[result[i]->tev.a_in[j].exp->tev.a_dst];
                     }
                 }
             }
