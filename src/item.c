@@ -52,7 +52,7 @@ void Item_8026B73C(HSD_GObj* gobj)
 {
     Item* item = GOBJ_ITEM(gobj);
     if ((item->xDC8_flags & 1) != 0) {
-        item->xDC8_flags = item->xDC8_flags & 0xFB | 4;
+        item->xDC8_flags = (item->xDC8_flags & 0xFB) | 4;
     }
     if ((item->xDC8_flags >> 4 & 1) == 0) {
         return;
