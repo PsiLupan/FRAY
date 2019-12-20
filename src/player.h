@@ -41,8 +41,8 @@ typedef struct _SubactionInfo {
 } SubactionInfo;
 
 typedef struct _Attributes {
-    f32 walkInitVel; //0x00
-    f32 walkAccel; //0x04
+    f32 x0_walkInitVel; //0x00
+    f32 x4_walkAccel; //0x04
     f32 walkMaxVel; //0x08
     f32 walkAnimScale; //0x0C
     f32 midWalkSpeed; //0x10
@@ -54,7 +54,7 @@ typedef struct _Attributes {
     f32 runInitVel; //0x28
     f32 runAnimScale; //0x2C
     u32 runAccel; //0x30
-    f32 grMaxHorzVel; //0x34
+    f32 x34_grMaxHorzVel; //0x34
     u32 jumpStartFrames; //0x38
     f32 jumpInitHorzVel; //0x3C
     f32 jumpInitVertVel; //0x40
@@ -204,6 +204,8 @@ typedef struct _Player {
 
     SubactionInfo x3E4_subaction_info;
 
+    s8 x594_flags;
+
     u32* x5E8_bone_lookup_table;
 
     f32 x620_joystick_x;
@@ -219,6 +221,8 @@ typedef struct _Player {
     s8 x670_frames_tilt_x;
     s8 x671_frames_tilt_y;
 
+    f32 x6AC_unk;
+
     Physics x6F0_physics;
 
     u32 x88C_ecb_inactive_frames;
@@ -227,9 +231,12 @@ typedef struct _Player {
 
     struct _Hitbox x914_hitbox[4];
 
+    f32 x18A4_unk;
+
     u32 x18C4_last_atkeridx;
 
     u8 x1968_jumps_used;
+    u8 x1969_walljumps_used;
 
     HSD_GObj* x1974_held_item;
     u32 x1978_unk;
@@ -258,7 +265,7 @@ typedef struct _Player {
     u8 x221F_flags;
 
     u8 x2224_flags;
-    u8 x2227_flags;
+    s8 x2227_flags;
     u32 x222C_flags;
     u32 x2230_flags;
     u32 x2234_flags;

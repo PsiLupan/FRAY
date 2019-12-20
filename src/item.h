@@ -4,6 +4,7 @@
 #include <gctypes.h>
 
 #include "gobj.h"
+#include "hsd_jobj_ext.h"
 #include "player.h"
 
 #define ITEM_HAMMER 0x1C
@@ -42,9 +43,16 @@ typedef struct _Item {
 
     HSD_GObj* x518_owner;
 
+    u8 xDC8_flags;
+
 } Item;
 
 BOOL Item_PlayerHasHammer(HSD_GObj*);
 u32 Item_GetItemType(HSD_GObj*);
+
+void Item_8026B73C(HSD_GObj*);
+u32 Item_8026B7E8(HSD_GObj*);
+
+void Item_Unhide(HSD_GObj* gobj);
 
 #endif

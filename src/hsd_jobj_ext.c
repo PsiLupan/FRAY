@@ -111,6 +111,13 @@ f32 JObj_GetFrame(HSD_JObj* jobj)
     return -1.f;
 }
 
+//80272A18 
+void JObj_Unhide(HSD_JObj *jobj)
+{
+    HSD_JObjClearFlagsAll(jobj, 0x10);
+}
+
+
 //80391070
 void JObj_SetupInstanceMtx_Callback(HSD_GObj* gobj, s32 offset)
 {

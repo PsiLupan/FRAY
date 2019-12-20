@@ -110,9 +110,9 @@ void Player_UpdateHorzVelocity(Player* player)
 void Player_CalculateHorzMobility(Player* player, f32 hVel)
 {
     f32 mobilityB = 0.f;
-    if(0.f <= player->x620_joystick_x){
+    if (0.f <= player->x620_joystick_x) {
         mobilityB = -player->attribs.airMobilityB;
-    }else{
+    } else {
         mobilityB = player->attribs.airMobilityB;
     }
     f32 mobility_1 = (player->x620_joystick_x * player->attribs.airMobilityA) + mobilityB;
@@ -237,6 +237,39 @@ void Player_UseAllJumps(Player* player)
 //8007D7FC
 void Player_SetGroundedState(Player* player)
 {
+    if (player->xE0_in_air == TRUE) {
+        u32 res = FUN_803224dc(player->xB0_xB8_pos.x, player->x18A4_unk, player->x8_spawn_ctr);
+        if (res != 0) {
+            player->x18A4_unk = 0.f;
+        }
+        if (player->x2227_flags < 0) {
+            if (player->x1968_jumps_used < 2) {
+                StaticPlayer_UpdateFlags_xE8C(player->xC_slot, (player->x221F_flags >> 3) & 1);
+            }
+        }
+    }
+
+    if (player->x594_flags < 0) {
+        player->x80_x88_self_vel.x = player->x6AC_unk * player->x2C_facedir;
+    }
+
+    f32 max_vel = player->attribs.x34_grMaxHorzVel;
+    if (-max_vel <= player->xEC_vel_ground_self_x) {
+        if (max_vel < player->xEC_vel_ground_self_x) {
+            player->xEC_vel_ground_self_x = max_vel;
+        }
+    } else {
+        player->xEC_vel_ground_self_x = -max_vel;
+    }
+
+    player->xE0_in_air = FALSE;
+    player->xEC_vel_ground_self_x = player->x80_x88_self_vel.x;
+    player->x1968_jumps_used = 0;
+    player->x1969_walljumps_used = 0;
+    player->x2227_flags = player->x2227_flags & 0x7F;
+    player->x88C_ecb_inactive_frames = 0;
+    player->x6F0_physics.x130_unk = player->x6F0_physics.x130_unk & 0xFFFFFFEF;
+    HSD_CheckAssert("No ground under fighter", sub_80084a18(player->parent));
 }
 
 //8007D964
@@ -464,8 +497,8 @@ BOOL Player_SwapItem(HSD_GObj* gobj)
     if (item != NULL) {
         player->x1974_held_item = item;
         player->x223C_pend_item = NULL;
-        sub_8026BB20(player->x1974_held_item);
-        sub_8026B73C(player->x1974_held_item);
+        Item_Unhide(player->x1974_held_item);
+        Item_8026B73C(player->x1974_held_item);
         sub_80094818(gobj, 1);
     }
     return item != NULL;
