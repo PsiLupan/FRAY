@@ -1382,12 +1382,12 @@ void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
             if (list[i] == tev) {
                 if (dist[i] < d) {
                     dist[i] = d;
-                    for (i = 0; i < 4; ++i) {
-                        if (tev->c_in[i].type == HSD_TE_TEV) {
-                            CalcDistance(tevs, dist, &tev->c_in[i].exp->tev, num, d + 1);
+                    for (u32 j = 0; j < 4; ++j) {
+                        if (tev->c_in[j].type == HSD_TE_TEV) {
+                            CalcDistance(tevs, dist, &tev->c_in[j].exp->tev, num, d + 1);
                         }
-                        if (tev->a_in[i].type == HSD_TE_TEV) {
-                            CalcDistance(tevs, dist, &tev->a_in[i].exp->tev, num, d + 1);
+                        if (tev->a_in[j].type == HSD_TE_TEV) {
+                            CalcDistance(tevs, dist, &tev->a_in[j].exp->tev, num, d + 1);
                         }
                     }
                 } else {
