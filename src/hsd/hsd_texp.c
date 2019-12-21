@@ -45,7 +45,7 @@ void HSD_SetTevRegAll(void)
     for (u32 i = 0; i < 4; i++) {
         //if (TevReg[i].color.r != 0 || TevReg[i].color.g != 0 || TevReg[i].color.b != 0 || TevReg[i].color.a != 0) {
             u32 reg = HSD_Index2TevRegID(i);
-            GX_SetTevKColorS10(reg, TevReg[i].color);
+            GX_SetTevColorS10(reg, TevReg[i].color);
             TevReg[i].color.r = 0;
             TevReg[i].color.g = 0;
             TevReg[i].color.b = 0;
@@ -1069,8 +1069,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
 {
     u32 i, j;
     i = 0;
-
-    u32 te_res;
+    
     GXColor color[8];
 
     while (true) {
@@ -1097,6 +1096,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
         HSD_CheckAssert("HSD_TExpSetReg: texp->type != HSD_TE_CNST", texp->type == HSD_TE_CNST);
 
         if (texp->cnst.reg < 8) {
+            u32 te_res;
             i = i | 1 << texp->cnst.reg;
             if (texp->cnst.comp != HSD_TE_RGB) {
                 switch (texp->cnst.ctype) {
@@ -1135,28 +1135,28 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                 if (texp->cnst.reg < 4) {
                     switch (texp->cnst.idx) {
                     case 0:
-                        color[texp->cnst.reg].r = te_res;
+                        color[texp->cnst.reg].r = (u8)te_res;
                         break;
 
                     case 1:
-                        color[texp->cnst.reg].g = te_res;
+                        color[texp->cnst.reg].g = (u8)te_res;
                         break;
 
                     case 2:
-                        color[texp->cnst.reg].b = te_res;
+                        color[texp->cnst.reg].b = (u8)te_res;
                         break;
 
                     case 3:
-                        color[texp->cnst.reg].a = te_res;
+                        color[texp->cnst.reg].a = (u8)te_res;
                         break;
                     }
                 } else {
                     if (texp->cnst.idx == 3) {
-                        color[texp->cnst.reg].a = te_res;
+                        color[texp->cnst.reg].a = (u8)te_res;
                     } else {
-                        color[texp->cnst.reg].r = te_res;
-                        color[texp->cnst.reg].g = te_res;
-                        color[texp->cnst.reg].b = te_res;
+                        color[texp->cnst.reg].r = (u8)te_res;
+                        color[texp->cnst.reg].g = (u8)te_res;
+                        color[texp->cnst.reg].b = (u8)te_res;
                     }
                 }
             } else {
@@ -1192,19 +1192,19 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     if (te_res > 255) {
                         te_res = 255;
                     }
-                    color[texp->cnst.reg].r = te_res;
+                    color[texp->cnst.reg].r = (u8)te_res;
 
                     te_res = values[1];
                     if (te_res > 255) {
                         te_res = 255;
                     }
-                    color[texp->cnst.reg].g = te_res;
+                    color[texp->cnst.reg].g = (u8)te_res;
 
                     te_res = values[2];
                     if (te_res > 255) {
                         te_res = 255;
                     }
-                    color[texp->cnst.reg].b = te_res;
+                    color[texp->cnst.reg].b = (u8)te_res;
                 } else {
                     if (ctype < 1) {
                         if (ctype < 0)
@@ -1220,17 +1220,17 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                         if (255 < puVar5[0]) {
                             te_res = 255;
                         }
-                        color[texp->cnst.reg].r = te_res;
+                        color[texp->cnst.reg].r = (u8)te_res;
                         te_res = puVar5[1];
                         if (255 < puVar5[1]) {
                             te_res = 255;
                         }
-                        color[texp->cnst.reg].g = te_res;
+                        color[texp->cnst.reg].g = (u8)te_res;
                         te_res = puVar5[2];
                         if (255 < puVar5[2]) {
                             te_res = 255;
                         }
-                        color[texp->cnst.reg].b = te_res;
+                        color[texp->cnst.reg].b = (u8)te_res;
                     }
                 }
             }
