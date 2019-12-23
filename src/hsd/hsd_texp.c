@@ -1067,24 +1067,26 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
 //80384F28
 void HSD_TExpSetReg(HSD_TExp* texp)
 {
-    u32 i, j;
-    i = 0;
+    u32 changed, i;
+    changed = 0;
     
-    GXColor color[8];
+    GXColor reg[8];
 
     while (true) {
         if (texp == NULL) {
-            if (i != 0) {
+            if (changed != 0) {
                 GX_PixModeSync();
-                for (j = 0; j < 4; ++j) {
-                    if ((i & 1 << j) != 0) {
-                        GX_SetTevKColor(j, color[j]);
+                for (i = 0; i < 4; ++i) {
+                    if ((changed & 1 << i) != 0) {
+                        GXColor col = reg[i];
+                        GX_SetTevKColor(i, col);
                     }
                 }
 
-                for (j = 4; j < 7; ++j) {
-                    if ((i & 1 << j) != 0) {
-                        GX_SetTevColor(j - 3, color[j]);
+                for (i = 4; i < 7; ++i) {
+                    if ((changed & 1 << i) != 0) {
+                        GXColor col = reg[i];
+                        GX_SetTevColor(i - 3, col);
                     }
                 }
                 HSD_StateInvalidate(HSD_STATE_TEV_REGISTER);
@@ -1096,141 +1098,135 @@ void HSD_TExpSetReg(HSD_TExp* texp)
         HSD_CheckAssert("HSD_TExpSetReg: texp->type != HSD_TE_CNST", texp->type == HSD_TE_CNST);
 
         if (texp->cnst.reg < 8) {
-            u32 te_res;
-            i = i | 1 << texp->cnst.reg;
+            s32 x;
+            changed = changed | 1 << texp->cnst.reg;
             if (texp->cnst.comp != HSD_TE_RGB) {
                 switch (texp->cnst.ctype) {
                 case HSD_TE_U8:
-                    te_res = *(u8*)texp->cnst.val;
+                    x = *(u8*)texp->cnst.val;
                     break;
                 case HSD_TE_U16:
-                    te_res = *(u16*)texp->cnst.val;
-                    if (te_res > 255) {
-                        te_res = 255;
-                    }
+                    x = *(u16*)texp->cnst.val;
                     break;
 
                 case HSD_TE_U32:
-                    te_res = *(u32*)texp->cnst.val;
-                    if (te_res > 255) {
-                        te_res = 255;
-                    }
+                    x = *(u32*)texp->cnst.val;
                     break;
 
                 case HSD_TE_F32:
-                    te_res = (u32)(255.0f * HSD_ClampFloat(*(f32*)texp->cnst.val, 0.f, 1.f));
-                    if (te_res > 255) {
-                        te_res = 255;
-                    }
+                    x = (s32)(255.0f * *(f32*)texp->cnst.val);
                     break;
 
                 case HSD_TE_F64:
-                    te_res = (u32)(255.0 * HSD_ClampDouble(*(f64*)texp->cnst.val, 0.0, 1.0));
-                    if (te_res > 255) {
-                        te_res = 255;
-                    }
+                    x = (s32)(255.0 * *(f64*)texp->cnst.val);
                     break;
+                }
+
+                if (x > 255) {
+                    x = 255;
+                }
+                if(x < 0){
+                    x = 0;
                 }
 
                 if (texp->cnst.reg < 4) {
                     switch (texp->cnst.idx) {
                     case 0:
-                        color[texp->cnst.reg].r = (u8)te_res;
+                        reg[texp->cnst.reg].r = (u8)x;
                         break;
 
                     case 1:
-                        color[texp->cnst.reg].g = (u8)te_res;
+                        reg[texp->cnst.reg].g = (u8)x;
                         break;
 
                     case 2:
-                        color[texp->cnst.reg].b = (u8)te_res;
+                        reg[texp->cnst.reg].b = (u8)x;
                         break;
 
                     case 3:
-                        color[texp->cnst.reg].a = (u8)te_res;
+                        reg[texp->cnst.reg].a = (u8)x;
                         break;
                     }
                 } else {
                     if (texp->cnst.idx == 3) {
-                        color[texp->cnst.reg].a = (u8)te_res;
+                        reg[texp->cnst.reg].a = (u8)x;
                     } else {
-                        color[texp->cnst.reg].r = (u8)te_res;
-                        color[texp->cnst.reg].g = (u8)te_res;
-                        color[texp->cnst.reg].b = (u8)te_res;
+                        reg[texp->cnst.reg].r = (u8)x;
+                        reg[texp->cnst.reg].g = (u8)x;
+                        reg[texp->cnst.reg].b = (u8)x;
                     }
                 }
             } else {
                 HSD_TEType ctype = texp->cnst.ctype;
-                u32 values[3];
-                f64* pdVar4;
+                s32 r;
+                s32 g;
+                s32 b;
+                f64* ptr_64;
                 if (ctype == 1) {
                 LAB_80385060:
                     if (ctype == 2) {
                     LAB_803850dc:
-                        pdVar4 = (f64*)(texp->cnst.val);
-                        values[0] = (u32)(255.0 * pdVar4[0]);
-                        values[1] = (u32)(255.0 * pdVar4[1]);
-                        values[2] = (u32)(255.0 * pdVar4[2]);
+                        ptr_64 = (f64*)(texp->cnst.val);
+                        r = (u32)(255.0 * ptr_64[0]);
+                        g = (u32)(255.0 * ptr_64[1]);
+                        b = (u32)(255.0 * ptr_64[2]);
                     } else {
                         if (ctype < 2) {
                             if (ctype < 1)
                                 goto LAB_803850dc;
-                            u16* puVar9 = (u16*)(texp->cnst.val);
-                            values[0] = puVar9[0];
-                            values[1] = puVar9[1];
-                            values[2] = puVar9[2];
+                            u16* ptr = (u16*)(texp->cnst.val);
+                            r = ptr[0];
+                            g = ptr[1];
+                            b = ptr[2];
                         } else {
                             if (3 < ctype)
                                 goto LAB_803850dc;
-                            f32* pfVar3 = (f32*)(texp->cnst.val);
-                            values[0] = (u32)(255.0f * HSD_ClampFloat(pfVar3[0], 0.f, 1.f));
-                            values[1] = (u32)(255.0f * HSD_ClampFloat(pfVar3[1], 0.f, 1.f));
-                            values[2] = (u32)(255.0f * HSD_ClampFloat(pfVar3[2], 0.f, 1.f));
+                            f32* ptr = (f32*)(texp->cnst.val);
+                            r = (u32)(255.0f * ptr[0]);
+                            g = (u32)(255.0f * ptr[1]);
+                            b = (u32)(255.0f * ptr[2]);
                         }
                     }
-                    te_res = values[0];
-                    if (te_res > 255) {
-                        te_res = 255;
-                    }
-                    color[texp->cnst.reg].r = (u8)te_res;
 
-                    te_res = values[1];
-                    if (te_res > 255) {
-                        te_res = 255;
+                    if (r > 255) {
+                        r = 255;
                     }
-                    color[texp->cnst.reg].g = (u8)te_res;
+                    reg[texp->cnst.reg].r = (u8)r;
 
-                    te_res = values[2];
-                    if (te_res > 255) {
-                        te_res = 255;
+                    if (g > 255) {
+                        g = 255;
                     }
-                    color[texp->cnst.reg].b = (u8)te_res;
+                    reg[texp->cnst.reg].g = (u8)g;
+
+                    if (b > 255) {
+                        b = 255;
+                    }
+                    reg[texp->cnst.reg].b = (u8)b;
                 } else {
-                    if (ctype < 1) {
-                        if (ctype < 0)
-                            goto LAB_80385060;
-                        color[texp->cnst.reg].r = ((GXColor*)(texp->cnst.val))->r;
-                        color[texp->cnst.reg].g = ((GXColor*)(texp->cnst.val))->g;
-                        color[texp->cnst.reg].b = ((GXColor*)(texp->cnst.val))->b;
+                    if (ctype == 0) {
+                        *(u32*)&reg[texp->cnst.reg] = (*(u32*)(texp->cnst.val) & 0xFFFFFF00) | (u32)reg[texp->cnst.reg].a;
                     } else {
                         if (2 < ctype)
                             goto LAB_80385060;
-                        u32* puVar5 = (u32*)(texp->cnst.val);
-                        te_res = puVar5[0];
-                        if (255 < puVar5[0]) {
-                            te_res = 255;
+                        u32* ptr = (u32*)(texp->cnst.val);
+                        r = ptr[0];
+                        g = ptr[1];
+                        b = ptr[2];
+                        
+                        if (r > 255) {
+                            r = 255;
                         }
-                        color[texp->cnst.reg].r = (u8)te_res;
-                        te_res = puVar5[1];
-                        if (255 < puVar5[1]) {
-                            te_res = 255;
+                        reg[texp->cnst.reg].r = (u8)r;
+
+                        if (g > 255) {
+                            g = 255;
                         }
-                        color[texp->cnst.reg].g = (u8)te_res;
-                        te_res = puVar5[2];
-                        if (255 < puVar5[2]) {
-                            te_res = 255;
+                        reg[texp->cnst.reg].g = (u8)g;
+
+                        if (b > 255) {
+                            b = 255;
                         }
-                        color[texp->cnst.reg].b = (u8)te_res;
+                        reg[texp->cnst.reg].b = (u8)b;
                     }
                 }
             }
