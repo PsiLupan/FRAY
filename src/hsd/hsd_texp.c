@@ -23,7 +23,7 @@ void HSD_StateSetNumTexGens(void)
     num_texgens = 0;
 }
 
-static u32 HSD_Index2TevRegID(u32 idx)
+static u8 HSD_Index2TevRegID(u32 idx)
 {
     switch (idx) {
     case 0:
@@ -365,6 +365,7 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
             HSD_CheckAssert("HSD_TExpColorInSub: tev cannot select multiple konst", tev->kcsel != swap);
         }
 
+        tev->c_in[idx].type = HSD_TE_KONST;
         goto END;
     }
 
