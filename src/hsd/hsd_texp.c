@@ -817,13 +817,6 @@ static s32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                         }
                     }
                 }
-
-                for (i = 0; i < 4; ++i) {
-                    if (texp->tev.c_in[i].type == HSD_TE_CNST) {
-                        val = AssignColorReg(&texp->tev, i, res);
-                        return val;
-                    }
-                }
             } else {
                 if (AssignColorReg(&texp->tev, 3, res) == -1) {
                     val = AssignColorKonst(&texp->tev, 3, res);
@@ -849,13 +842,6 @@ static s32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                             val = AssignAlphaReg(&texp->tev, i, res);
                             return val;
                         }
-                    }
-                }
-
-                for (; i < 4; ++i) {
-                    if (texp->tev.a_in[i].type == HSD_TE_CNST) {
-                        val = AssignAlphaReg(&texp->tev, i, res);
-                        return val;
                     }
                 }
             } else {
