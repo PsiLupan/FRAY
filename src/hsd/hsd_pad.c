@@ -557,9 +557,99 @@ void HSD_PadRumbleRemoveAll(void)
     }
 }
 
+static u32 HSD_PadRumbleInterpret1(HSD_PadRumbleListData* data, u8* status){
+    if (data->pause == 1){
+        return 0;
+    }
+    while (data->wait == 0){
+        u8 def = data->listp->def >> 5;
+
+        switch (def){
+            case 0:
+            if(data->frame == -2){
+                return 1;
+            }
+            data->listp = data->headp;
+            break;
+
+            case 1:
+            data->status = 2;
+            data->wait = data->listp->def & 0x1FFF;
+            data->listp = data->listp + 1;
+            break;
+
+            case 2:
+            data->status = 1;
+            data->wait = data->listp->def & 0x1FFF;
+            data->listp = data->listp + 1;
+            break;
+
+            case 3:
+            data->status = 0;
+            data->wait = data->listp->def & 0x1FFF;
+            data->listp = data->listp + 1;
+            break;
+
+            case 4:
+            data->loop_count = data->listp->def & 0x1FFF;
+            data->listp = data->listp + 1;
+            data->stack = data->listp;
+            break;
+
+            case 5:
+            data->loop_count -= 1;
+            if(data->loop_count == 0){
+                data->listp = data->listp + 1;
+            }else{
+                data->listp = data->stack;
+            }
+            break;
+
+        }
+    }
+    *status = data->status;
+    data->wait -= 1;
+    u32 frame = data->frame;
+    data->frame -= 1;
+    if(frame != -1 && frame != -2 && (frame - 1) == 0){
+        return 1;
+    }
+    return 0;
+}
+
 //803786F0
 void HSD_PadRumbleInterpret(void)
 {
+    for (u32 i = 0; i < 4; ++i){
+        HSD_PadRumbleData[i].status = HSD_PadRumbleData[i].direct_status;
+        for (HSD_PadRumbleListData* d = HSD_PadRumbleData[i].listdatap; d != NULL; d = d->next){
+            u32 res = HSD_PadRumbleInterpret1(d, &HSD_PadRumbleData[i].status);
+            if (res != 0){
+                HSD_PadRumbleListData* curr;
+                for (HSD_PadRumbleListData* dp = HSD_PadRumbleData[i].listdatap; dp != d; dp = curr->next){
+                    curr = dp;
+                }
+                curr->next = d->next;
+                HSD_PadRumbleData[i].nb_list -= 1;
+                d->next = HSD_PadLibData.rumble_info.listdatap;
+                HSD_PadLibData.rumble_info.listdatap = d;
+            }
+        }
+        if (HSD_PadRumbleData[i].status != HSD_PadRumbleData[i].last_status){
+            switch (HSD_PadRumbleData[i].status){
+                case 0:
+                    PAD_ControlMotor(i, PAD_MOTOR_STOP_HARD);
+                    break;
+                case 1:
+                    PAD_ControlMotor(i, PAD_MOTOR_STOP);
+                    break;
+                case 2:
+                    PAD_ControlMotor(i, PAD_MOTOR_RUMBLE);
+                    break;
+            }
+            HSD_PadRumbleData[i].last_status = HSD_PadRumbleData[i].status;
+        }
+    }
 }
 
 //80378828
