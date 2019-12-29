@@ -168,7 +168,7 @@ HSD_TExp* HSD_TExpFreeList(HSD_TExp* texp_list, HSD_TExpType type, s32 all)
 
     n = texp_list;
     handle = &n;
-    
+
     if (all == 0) {
         if (type == HSD_TE_ALL || type == HSD_TE_TEV) {
             for (; texp_list != NULL; texp_list = texp_list->tev.next) {
@@ -1069,8 +1069,8 @@ void HSD_TExpSetReg(HSD_TExp* texp)
 {
     u32 changed, i;
     changed = 0;
-    
-    u8 tev_regid[4] = {0, 1, 2, 3};
+
+    u8 tev_regid[4] = { 0, 1, 2, 3 };
 
     GXColor reg[8];
 
@@ -1127,7 +1127,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                 if (x > 255) {
                     x = 255;
                 }
-                if(x < 0){
+                if (x < 0) {
                     x = 0;
                 }
 
@@ -1193,7 +1193,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                         }
                     }
 
-                    if (r < 0){
+                    if (r < 0) {
                         r = 0;
                     }
                     if (r > 255) {
@@ -1201,7 +1201,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     }
                     reg[texp->cnst.reg].r = (u8)r;
 
-                    if (g < 0){
+                    if (g < 0) {
                         g = 0;
                     }
                     if (g > 255) {
@@ -1209,7 +1209,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     }
                     reg[texp->cnst.reg].g = (u8)g;
 
-                    if (b < 0){
+                    if (b < 0) {
                         b = 0;
                     }
                     if (b > 255) {
@@ -1229,7 +1229,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                         r = ptr[0];
                         g = ptr[1];
                         b = ptr[2];
-                        
+
                         if (r > 255) {
                             r = 255;
                         }
@@ -1308,7 +1308,7 @@ s32 HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_l
         tdesc->desc.next = &(*tevdesc)->desc;
         *tevdesc = tdesc;
     }
-    
+
     *texp_list = HSD_TExpFreeList(*texp_list, HSD_TE_TEV, 1);
     *texp_list = HSD_TExpFreeList(*texp_list, HSD_TE_CNST, 0);
     return num;
@@ -1414,21 +1414,37 @@ void CalcDistance(HSD_TETev** tevs, s32* dist, HSD_TETev* tev, s32 num, s32 d)
 //80385C60
 s32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
 {
-#if 0
+    s32 oidx;
+    s32 iVar3;
+    HSD_TExpDag* pHVar5;
+    HSD_TExp** clist;
+    HSD_TExp** ppabVar7;
+    s32 iVar8;
+    s32 k;
+    HSD_TExpDag* cdag;
+    HSD_TExpDag* pHVar9;
+    HSD_TExp* te;
+    s32 i;
+    s32 j;
+    s32 l;
+    s32 idx;
+    HSD_TExpDag* dag;
+    HSD_TETev* tevn;
+    u32 uVar10;
+    HSD_TExp** tev_start;
+    HSD_TExp* tevs[33];
+    s32 dist[32];
+
     HSD_CheckAssert("HSD_TExpMakeDag: type != 1", HSD_TExpGetType(root) == HSD_TE_TEV);
 
-    HSD_TExp* tevs[32];
     tevs[0] = root;
-    u32 i = 1;
-    u32 j;
-
+    i = 1;
+    tev_start = tevs;
     for (j = 0; j < i; ++j) {
-        HSD_CheckAssert("HSD_TExpMakeDag: j < HSD_TEXP_MAX_NUM", j <= HSD_TEXP_MAX_NUM);
-        HSD_TExp* c_tev = tevs[j];
-        HSD_CheckAssert("HSD_TExpMakeDag: c_tev == NULL", c_tev != NULL);
-        u32 l = 0;
-        HSD_TETev* tev = &c_tev->tev;
-        for (u32 k = 0; k < 4; ++k, i = l) {
+        HSD_CheckAssert("HSD_TExpMakeDag: j > HSD_TEXP_MAX_NUM", j <= HSD_TEXP_MAX_NUM);
+
+        HSD_TETev* tev = &tevs[j]->tev;
+        for (k = 0; k < 4; ++k, i = l) {
             l = i;
             if (tev->c_in[k].type == HSD_TE_TEV) {
                 u32 num = 0;
@@ -1443,7 +1459,8 @@ s32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
                 }
             }
         }
-        for (u32 k = 0; k < 4; ++k, i = l) {
+
+        for (k = 0; k < 4; ++k, i = l) {
             l = i;
             if (tev->a_in[k].type == HSD_TE_TEV) {
                 u32 num = 0;
@@ -1460,447 +1477,189 @@ s32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
         }
     }
 
-    s32 dist[32];
     for (j = 0; j < i; j++) {
         dist[j] = -1;
     }
-    CalcDistance((HSD_TETev**)tevs, dist, &tevs[0]->tev, i, 0);
-
-    for (j = 0; j < i; ++j) {
-        u32 offset = j + 1;
-        s32* v = &dist[offset];
-        HSD_TExp** tev_start = &tevs[offset];
-        HSD_CheckAssert("HSD_TExpMakeDag: tev_start == NULL", tev_start != NULL);
-        if (i > offset) {
-            for (u32 n = i - offset; n > 0; --n, ++v, ++tev_start) {
-                if (*v < v[-1]) {
-                    HSD_TExp* t = tev_start[-1];
-                    HSD_CheckAssert("HSD_TExpMakeDag: t == NULL", t != NULL);
-                    tev_start[-1] = *tev_start;
-                    *tev_start = t;
-                    s32 temp = v[-1];
-                    v[-1] = *v;
-                    *v = temp;
-                }
-            }
-        }
-    }
-
-    s32 idx;
-    s32 oidx;
-    HSD_TExpDag* cdag;
-    BOOL bVar1;
-    s32 iVar2;
-    s32 iVar3;
-    HSD_TExpDag* pHVar5;
-    s32 iVar6;
-    HSD_TExp** ppabVar7;
-    s32 iVar8;
-    HSD_TExpDag* pHVar9;
-    u32 uVar10;
-    HSD_TETev* tevn;
-
-    idx = i + -1;
-    iVar6 = idx * 4;
-    HSD_TExpDag* dag = list + idx;
-    HSD_TExp* tev_start = tevs[idx];
-LAB_803860cc:
-    if (idx < 0) {
-        return i;
-    }
-    HSD_TETev* te = (HSD_TETev*)tev_start;
-    iVar2 = 0;
-    dag->idx = (u8)idx;
-    dag->nb_ref = 0;
-    dag->nb_dep = 0;
-    dag->tev = te;
-    tevn = te;
-LAB_80385f0c:
-    if (tevn->c_in[0].type == 1) {
-        oidx = i - idx;
-        HSD_TExp** clist = (HSD_TExp**)((s32)tevs + iVar6);
-        iVar8 = idx;
-        if (idx < i) {
-            do {
-                if (tevn->c_in[0].exp == *clist) {
-                    bVar1 = dag->nb_dep;
-                    cdag = list + iVar8;
-                    iVar8 = 0;
-                    pHVar5 = dag;
-                    uVar10 = (u32)bVar1;
-                    if (bVar1 == 0)
-                        goto LAB_80385f7c;
-                    goto LAB_80385f64;
-                }
-                clist = clist + 1;
-                iVar8 = iVar8 + 1;
-                oidx = oidx + -1;
-            } while (oidx != 0);
-        }
-        goto LAB_80385fb8;
-    }
-    goto LAB_80385fd0;
-    while (true) {
-        pHVar5 = (HSD_TExpDag*)&pHVar5->idx;
-        iVar8 = iVar8 + 1;
-        uVar10 = uVar10 - 1;
-        if (uVar10 == 0)
-            break;
-    LAB_80385f64:
-        if (pHVar5->depend[0] == cdag)
-            break;
-    }
-LAB_80385f7c:
-    if ((s32)(u32)bVar1 <= iVar8) {
-        bVar1 = dag->nb_dep;
-        dag->nb_dep = bVar1 + 1;
-        dag->depend[bVar1] = cdag;
-        cdag->nb_ref = cdag->nb_ref + 1;
-    }
-LAB_80385fb8:
-    HSD_CheckAssert("HSD_TExpMakeDag: i <= 0", i > iVar8);
-LAB_80385fd0:
-    iVar2 = iVar2 + 1;
-    tevn = (HSD_TETev*)&tevn->c_ref;
-    if (3 < iVar2)
-        goto code_r0x80385fe0;
-    goto LAB_80385f0c;
-code_r0x80385fe0:
-    iVar2 = 0;
-LAB_80385fe8:
-    if (te->a_in[0].type == 1) {
-        iVar3 = i - idx;
-        ppabVar7 = (HSD_TExp**)((s32)tevs + iVar6);
-        iVar8 = idx;
-        if (idx < i) {
-            do {
-                if (te->a_in[0].exp == *ppabVar7) {
-                    bVar1 = dag->nb_dep;
-                    pHVar9 = list + iVar8;
-                    iVar8 = 0;
-                    pHVar5 = dag;
-                    uVar10 = (u32)bVar1;
-                    if (bVar1 == 0)
-                        goto LAB_80386058;
-                    goto LAB_80386040;
-                }
-                ppabVar7 = ppabVar7 + 1;
-                iVar8 = iVar8 + 1;
-                iVar3 = iVar3 + -1;
-            } while (iVar3 != 0);
-        }
-        goto LAB_80386094;
-    }
-    goto LAB_803860ac;
-    while (true) {
-        pHVar5 = (HSD_TExpDag*)&pHVar5->idx;
-        iVar8 = iVar8 + 1;
-        uVar10 = uVar10 - 1;
-        if (uVar10 == 0)
-            break;
-    LAB_80386040:
-        if (pHVar5->depend[0] == pHVar9)
-            break;
-    }
-LAB_80386058:
-    if ((s32)(u32)bVar1 <= iVar8) {
-        bVar1 = dag->nb_dep;
-        dag->nb_dep = bVar1 + 1;
-        dag->depend[bVar1] = pHVar9;
-        pHVar9->nb_ref = pHVar9->nb_ref + 1;
-    }
-LAB_80386094:
-    HSD_CheckAssert("HSD_TExpMakeDag: i <= 0", i > iVar8);
-LAB_803860ac:
-    iVar2 = iVar2 + 1;
-    te = (HSD_TETev*)&te->c_ref;
-    if (3 < iVar2)
-        goto code_r0x803860bc;
-    goto LAB_80385fe8;
-code_r0x803860bc:
-    dag = dag + -1;
-    tev_start = tev_start + -1;
-    idx = idx + -1;
-    iVar6 = iVar6 + -4;
-    goto LAB_803860cc;
-#else
-    u8 bVar1;
-    s32 iVar2;
-    s32 n;
-    s32 oidx;
-    s32 iVar3;
-    u32 type;
-    s32* piVar4;
-    s32 offset;
-    HSD_TExp* t;
-    s32 temp;
-    HSD_TExpDag* pHVar5;
-    s32 iVar6;
-    s32* v;
-    HSD_TExp** clist;
-    HSD_TExp** ppabVar7;
-    HSD_TExp* c_tev;
-    HSD_TExp* tev;
-    s32 iVar8;
-    s32 k;
-    HSD_TExpDag* cdag;
-    HSD_TExpDag* pHVar9;
-    s32 num;
-    HSD_TExp* te;
-    s32 i;
-    s32 j;
-    s32 idx;
-    HSD_TExpDag* dag;
-    HSD_TETev* tevn;
-    u8 cnt;
-    u32 uVar10;
-    s32 dist[32];
-    HSD_TExp* tevs[33];
-    HSD_TExp** tev_start;
-    HSD_TExp** tev_list;
-
-    type = HSD_TExpGetType((HSD_TExp*)root);
-    HSD_CheckAssert("HSD_TExpMakeDag: type != 1", type == 1);
-    tevs[0] = root;
-    i = 1;
-    j = 0;
-    tev_start = tevs;
-    while (j < i) {
-        HSD_CheckAssert("HSD_TExpMakeDag: j > HSD_TEXP_MAX_NUM", j <= HSD_TEXP_MAX_NUM);
-        c_tev = *tev_start;
-        k = 0;
-        tev = c_tev;
-        do {
-            iVar6 = i;
-            if (tev->tev.c_in[0].type == 1) {
-                num = 0;
-                tev_list = tevs;
-                iVar2 = i;
-                if (0 < i) {
-                    do {
-                        if (*tev_list == tev->tev.c_in[0].exp)
-                            break;
-                        tev_list = tev_list + 1;
-                        num = num + 1;
-                        iVar2 = iVar2 + -1;
-                    } while (iVar2 != 0);
-                }
-                if (i <= num) {
-                    iVar6 = i + 1;
-                    tevs[i] = tev->tev.c_in[0].exp;
-                }
-            }
-            k = k + 1;
-            tev = (HSD_TExp*)&tev->tev.c_ref;
-            i = iVar6;
-        } while (k < 4);
-        iVar2 = 0;
-        do {
-            i = iVar6;
-            if (c_tev->tev.a_in[0].type == 1) {
-                iVar3 = 0;
-                tev_list = tevs;
-                iVar8 = iVar6;
-                if (0 < iVar6) {
-                    do {
-                        if (*tev_list == c_tev->tev.a_in[0].exp)
-                            break;
-                        tev_list = tev_list + 1;
-                        iVar3 = iVar3 + 1;
-                        iVar8 = iVar8 + -1;
-                    } while (iVar8 != 0);
-                }
-                if (iVar6 <= iVar3) {
-                    i = iVar6 + 1;
-                    tevs[iVar6] = c_tev->tev.a_in[0].exp;
-                }
-            }
-            iVar2 = iVar2 + 1;
-            c_tev = (HSD_TExp*)&c_tev->tev.c_ref;
-            iVar6 = i;
-        } while (iVar2 < 4);
-        tev_start = tev_start + 1;
-        j = j + 1;
-    }
-    iVar6 = 0;
-    if (0 < i) {
-        if (8 < i) {
-            cnt = (i - 1U) >> 3;
-            piVar4 = dist;
-            if (0 < i + -8) {
-                do {
-                    *piVar4 = -1;
-                    iVar6 = iVar6 + 8;
-                    piVar4[1] = -1;
-                    piVar4[2] = -1;
-                    piVar4[3] = -1;
-                    piVar4[4] = -1;
-                    piVar4[5] = -1;
-                    piVar4[6] = -1;
-                    piVar4[7] = -1;
-                    piVar4 = piVar4 + 8;
-                    cnt = cnt - 1;
-                } while (cnt != 0);
-            }
-        }
-        piVar4 = dist + iVar6;
-        iVar2 = i - iVar6;
-        if (iVar6 < i) {
-            do {
-                *piVar4 = -1;
-                piVar4 = piVar4 + 1;
-                iVar2 = iVar2 + -1;
-            } while (iVar2 != 0);
-        }
-    }
     CalcDistance((HSD_TETev**)tevs, dist, (HSD_TETev*)tevs[0], i, 0);
-    iVar6 = 0;
-    while (iVar6 < i) {
-        offset = iVar6 + 1;
-        n = i - offset;
-        v = dist + offset;
-        tev_start = tevs + offset;
-        if (offset < i) {
-            do {
-                if (*v < v[-1]) {
-                    t = tev_start[-1];
-                    tev_start[-1] = *tev_start;
-                    *tev_start = t;
-                    temp = v[-1];
-                    v[-1] = *v;
-                    *v = temp;
-                }
-                v = v + 1;
-                tev_start = tev_start + 1;
-                n = n + -1;
-            } while (n != 0);
+
+    j = 0;
+    while (k = j, l = i, j < i) {
+        while (l = k, k = l + 1, k < i) {
+            if (dist[k] < dist[l]) {
+                HSD_TExp* t = tevs[l];
+                tevs[l] = tevs[k];
+                tevs[k] = t;
+
+                s32 temp = dist[l];
+                dist[l] = dist[k];
+                dist[k] = temp;
+            }
         }
-        iVar6 = iVar6 + 1;
+        ++j;
     }
-    idx = i + -1;
-    iVar6 = idx * 4;
-    dag = list + idx;
-    tev_start = tevs + idx;
-LAB_803860cc:
-    if (idx < 0) {
-        return i;
-    }
-    te = *tev_start;
-    iVar2 = 0;
-    dag->idx = (u8)idx;
-    dag->nb_ref = 0;
-    dag->nb_dep = 0;
-    dag->tev = &te->tev;
-    tevn = &te->tev;
-LAB_80385f0c:
-    if (tevn->c_in[0].type == 1) {
-        oidx = i - idx;
-        clist = (HSD_TExp**)((s32)tevs + iVar6);
-        iVar8 = idx;
-        if (idx < i) {
-            do {
-                if (tevn->c_in[0].exp == *clist) {
-                    bVar1 = dag->nb_dep;
-                    cdag = list + iVar8;
-                    iVar8 = 0;
-                    pHVar5 = dag;
-                    uVar10 = (u32)bVar1;
-                    if (bVar1 == 0)
-                        goto LAB_80385f7c;
-                    goto LAB_80385f64;
+
+    #if 0
+    for (; l > 0; --l){
+        HSD_TExpDag* dag = &list[l];
+        HSD_TETev* tev = &tevs[l]->tev;
+        dag->idx = l;
+        dag->nb_dep = 0;
+        dag->nb_ref = 0;
+        dag->tev = tev;
+
+        for (j = 0; j < 4; ++j) {
+            k = l;
+            if (tev->c_in[j].type == HSD_TE_TEV) {
+            JUMP_1:
+                if (k < i) {
+                    if (tev->c_in[j].exp != tevs[k]) {
+                        ++k;
+                        goto JUMP_1;
+                    }
+                    
+                    HSD_TExpDag* t_dag = &list[k];
+                    for (k = 0; k < dag->nb_dep && dag->depend[k] != t_dag; ++k) {
+                        if (dag->depend[k] == t_dag) {
+                            break;
+                        }
+                    }
+                    if (dag->nb_dep <= k) {
+                        u32 offset = dag->nb_dep;
+                        dag->nb_dep += 1;
+                        dag->depend[offset] = t_dag;
+                        t_dag->nb_ref += 1;
+                    }
                 }
-                clist = clist + 1;
+                assert(k < i);
+            }
+        }
+
+        for (j = 0; j < 4; ++j) {
+            k = l;
+            if (tev->a_in[j].type == HSD_TE_TEV) {
+            JUMP_2:
+                if (k < i) {
+                    if (tev->a_in[j].exp != tevs[k]) {
+                        ++k;
+                        goto JUMP_2;
+                    }
+                    
+                    HSD_TExpDag* t_dag = &list[k];
+                    for (k = 0; k < dag->nb_dep && dag->depend[k] != t_dag; ++k) {
+                        if (dag->depend[k] == t_dag) {
+                            break;
+                        }
+                    }
+                    if (dag->nb_dep <= k) {
+                        u32 offset = dag->nb_dep;
+                        dag->nb_dep += 1;
+                        dag->depend[offset] = t_dag;
+                        t_dag->nb_ref += 1;
+                    }
+                }
+                assert(k < i);
+            }
+        }
+    }
+    #else
+    for (idx = i - 1, dag = list + idx, tev_start = tevs + idx; idx >= 0; --idx, --dag, --tev_start) {
+        te = *tev_start;
+        dag->idx = idx;
+        dag->nb_ref = 0;
+        dag->nb_dep = 0;
+        dag->tev = &te->tev;
+        tevn = &te->tev;
+
+        for (j = 0; j < 4; ++j) {
+            if (tevn->c_in[j].type == 1) {
+                oidx = i - idx;
+                clist = &tevs[idx];
+                iVar8 = idx;
+                if (idx < i) {
+                    do {
+                        if (tevn->c_in[j].exp == *clist) {
+                            cdag = list + iVar8;
+                            iVar8 = 0;
+                            pHVar5 = dag;
+                            uVar10 = dag->nb_dep;
+                            if (dag->nb_dep == 0)
+                                goto LAB_80385f7c;
+                            goto LAB_80385f64;
+                        }
+                        clist = clist + 1;
+                        iVar8 = iVar8 + 1;
+                        oidx = oidx + -1;
+                    } while (oidx != 0);
+                }
+                goto LAB_80385fb8;
+            }
+            continue;
+            while (true) {
+                pHVar5 = (HSD_TExpDag*)&pHVar5->idx;
                 iVar8 = iVar8 + 1;
-                oidx = oidx + -1;
-            } while (oidx != 0);
+                uVar10 = uVar10 - 1;
+                if (uVar10 == 0)
+                    break;
+            LAB_80385f64:
+                if (pHVar5->depend[0] == cdag)
+                    break;
+            }
+        LAB_80385f7c:
+            if (dag->nb_dep <= iVar8) {
+                dag->nb_dep += 1;
+                dag->depend[dag->nb_dep - 1] = cdag;
+                cdag->nb_ref = cdag->nb_ref + 1;
+            }
+        LAB_80385fb8:
+            HSD_CheckAssert("HSD_TExpMakeDag: i <= iVar8", i > iVar8);
         }
-        goto LAB_80385fb8;
-    }
-    goto LAB_80385fd0;
-    while (true) {
-        pHVar5 = (HSD_TExpDag*)&pHVar5->idx;
-        iVar8 = iVar8 + 1;
-        uVar10 = uVar10 - 1;
-        if (uVar10 == 0)
-            break;
-    LAB_80385f64:
-        if (pHVar5->depend[0] == cdag)
-            break;
-    }
-LAB_80385f7c:
-    if ((s32)(u32)bVar1 <= iVar8) {
-        bVar1 = dag->nb_dep;
-        dag->nb_dep = bVar1 + 1;
-        dag->depend[bVar1] = cdag;
-        cdag->nb_ref = cdag->nb_ref + 1;
-    }
-LAB_80385fb8:
-    HSD_CheckAssert("HSD_TExpMakeDag: i <= iVar8", i > iVar8);
-LAB_80385fd0:
-    iVar2 = iVar2 + 1;
-    tevn = (HSD_TETev*)&tevn->c_ref;
-    if (3 < iVar2)
-        goto code_r0x80385fe0;
-    goto LAB_80385f0c;
-code_r0x80385fe0:
-    iVar2 = 0;
-LAB_80385fe8:
-    if (te->tev.a_in[0].type == 1) {
-        iVar3 = i - idx;
-        ppabVar7 = (HSD_TExp**)((s32)tevs + iVar6);
-        iVar8 = idx;
-        if (idx < i) {
-            do {
-                if (te->tev.a_in[0].exp == *ppabVar7) {
-                    bVar1 = dag->nb_dep;
-                    pHVar9 = list + iVar8;
-                    iVar8 = 0;
-                    pHVar5 = dag;
-                    uVar10 = (u32)bVar1;
-                    if (bVar1 == 0)
-                        goto LAB_80386058;
-                    goto LAB_80386040;
+
+        for (j = 0; j < 4; ++j) {
+            if (te->tev.a_in[j].type == 1) {
+                iVar3 = i - idx;
+                ppabVar7 = &tevs[idx];
+                iVar8 = idx;
+                if (idx < i) {
+                    do {
+                        if (te->tev.a_in[j].exp == *ppabVar7) {
+                            pHVar9 = list + iVar8;
+                            iVar8 = 0;
+                            pHVar5 = dag;
+                            uVar10 = dag->nb_dep;
+                            if (dag->nb_dep == 0)
+                                goto LAB_80386058;
+                            goto LAB_80386040;
+                        }
+                        ppabVar7 = ppabVar7 + 1;
+                        iVar8 = iVar8 + 1;
+                        iVar3 = iVar3 + -1;
+                    } while (iVar3 != 0);
                 }
-                ppabVar7 = ppabVar7 + 1;
+                goto LAB_80386094;
+            }
+            continue;
+            while (true) {
+                pHVar5 = (HSD_TExpDag*)&pHVar5->idx;
                 iVar8 = iVar8 + 1;
-                iVar3 = iVar3 + -1;
-            } while (iVar3 != 0);
+                uVar10 = uVar10 - 1;
+                if (uVar10 == 0)
+                    break;
+            LAB_80386040:
+                if (pHVar5->depend[0] == pHVar9)
+                    break;
+            }
+        LAB_80386058:
+            if (dag->nb_dep <= iVar8) {
+                dag->nb_dep += 1;
+                dag->depend[dag->nb_dep - 1] = pHVar9;
+                pHVar9->nb_ref = pHVar9->nb_ref + 1;
+            }
+        LAB_80386094:
+            HSD_CheckAssert("HSD_TExpMakeDag: i <= iVar8", i > iVar8);
         }
-        goto LAB_80386094;
     }
-    goto LAB_803860ac;
-    while (true) {
-        pHVar5 = (HSD_TExpDag*)&pHVar5->idx;
-        iVar8 = iVar8 + 1;
-        uVar10 = uVar10 - 1;
-        if (uVar10 == 0)
-            break;
-    LAB_80386040:
-        if (pHVar5->depend[0] == pHVar9)
-            break;
-    }
-LAB_80386058:
-    if ((s32)(u32)bVar1 <= iVar8) {
-        bVar1 = dag->nb_dep;
-        dag->nb_dep = bVar1 + 1;
-        dag->depend[bVar1] = pHVar9;
-        pHVar9->nb_ref = pHVar9->nb_ref + 1;
-    }
-LAB_80386094:
-    HSD_CheckAssert("HSD_TExpMakeDag: i <= iVar8", i > iVar8);
-LAB_803860ac:
-    iVar2 = iVar2 + 1;
-    te = (HSD_TExp*)&te->tev.c_ref;
-    if (3 < iVar2)
-        goto code_r0x803860bc;
-    goto LAB_80385fe8;
-code_r0x803860bc:
-    dag = dag + -1;
-    tev_start = tev_start + -1;
-    idx = idx + -1;
-    iVar6 = iVar6 + -4;
-    goto LAB_803860cc;
-#endif
+    #endif
+    return i;
 }
 
 //80385944
@@ -1924,7 +1683,7 @@ static void order_dag(s32 num, u32* dep_mtx, u32* full_dep_mtx, HSD_TExpDag* lis
         total_dep = (ready_set & ~(1 << idx)) | dep_mtx[idx];
         u32 bits = 0;
         for (u32 i = 0; i < num; i++) {
-            if ((total_dep & 1 << i) != 0) {
+            if ((total_dep & (1 << i)) != 0) {
                 bits |= full_dep_mtx[i];
             }
         }
@@ -1933,7 +1692,7 @@ static void order_dag(s32 num, u32* dep_mtx, u32* full_dep_mtx, HSD_TExpDag* lis
             order_dag(num, dep_mtx, full_dep_mtx, list, depth_00, list[idx].depend[0]->idx, done_set, total_dep, order, min, min_order);
         } else {
             for (u32 i = 0; i < num; i++) {
-                if ((total_dep & 1 << i) != 0) {
+                if ((total_dep & (1 << i)) != 0) {
                     order_dag(num, dep_mtx, full_dep_mtx, list, depth_00, i, done_set, total_dep, order, min, min_order);
                 }
             }
@@ -1946,7 +1705,7 @@ static void make_dependency_mtx(s32 num, HSD_TExpDag* list, u32* dep_mtx)
     for (u32 i = 0; i < num; ++i) {
         dep_mtx[i] = 0;
         for (u32 j = 0; j < list[i].nb_dep; ++j) {
-            dep_mtx[i] = dep_mtx[i] | 1 << list[i].depend[j]->idx;
+            dep_mtx[i] |= (1 << list[i].depend[j]->idx);
         }
     }
 }
