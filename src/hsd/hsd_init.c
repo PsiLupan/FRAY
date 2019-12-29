@@ -117,9 +117,9 @@ void HSD_GXInit(void)
         static GXColor black = { 0, 0, 0, 0 };
         int i;
 
-        GX_InitLightPos(&lightobj, 1.0, 0.0, 0.0);
-        GX_InitLightDir(&lightobj, 1.0, 0.0, 0.0);
-        GX_InitLightAttn(&lightobj, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+        GX_InitLightPos(&lightobj, 1.0f, 0.0f, 0.0f);
+        GX_InitLightDir(&lightobj, 1.0f, 0.0f, 0.0f);
+        GX_InitLightAttn(&lightobj, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
         GX_InitLightColor(&lightobj, black);
         for (i = 0; i < MAX_GXLIGHT - 1; i++){
             GX_LoadLightObj(&lightobj, HSD_Index2LightID(i));

@@ -10,7 +10,7 @@ static u32 r13_4074 = 0; //conditional frames elapsed
 HSD_ObjAllocData aobj_alloc_data; //804C0880
 
 typedef struct _callback {
-    u32 count;
+    struct _callback* next;
     void (*func_ptr)(void);
 } callback;
 
@@ -68,9 +68,11 @@ void HSD_AObjInitEndCallBack(void)
 //803640B0
 void HSD_AObjInvokeCallBacks(void)
 {
-    if (!r13_4070) {
-        if (r13_4078.count > 0) {
+    if (r13_4074 != 0 && r13_4070 == 0) {
+        callback* cb = &r13_4078;
+        while(cb != NULL){
             (r13_4078.func_ptr)();
+            cb = cb->next;
         }
     }
 }
@@ -257,5 +259,5 @@ void HSD_AObjSetCurrentFrame(HSD_AObj* aobj, f32 frame)
 //80365390
 void _HSD_AObjForgetMemory(void)
 {
-    r13_4078.count = 0;
+    r13_4078.next = NULL;
 }
