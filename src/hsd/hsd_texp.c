@@ -33,7 +33,7 @@ static u8 HSD_Index2TevRegID(u32 idx)
     case 2:
         return GX_TEVREG2;
     case 3:
-        return 0;
+        return GX_TEVPREV;
     default:
         return GX_TEVREG0;
     }
