@@ -23,6 +23,11 @@ s32 HSD_PadGetResetSwitch(void)
     return (HSD_PadLibData.reset_switch != 0) ? TRUE : FALSE;
 }
 
+static void HSD_PadRawQueueShift(u32 qnum, u8* qpos)
+{
+    *qpos = (*qpos + 1) - ((*qpos + 1) / qnum) * qnum;
+}
+
 //803769FC
 void HSD_PadRenewRawStatus(void)
 {
@@ -35,13 +40,13 @@ void HSD_PadRenewRawStatus(void)
     HSD_PadRumbleInterpret();
     PAD_Read(status);
 
-    PADStatus* queue = (PADStatus*)(HSD_PadLibData.queue->stat + HSD_PadLibData.qwrite * 4);
+    PADStatus* queue = &(HSD_PadLibData.queue->stat[HSD_PadLibData.qwrite]);
     if (HSD_PadLibData.qcount == HSD_PadLibData.qnum) {
         if (HSD_PadLibData.qtype == 1) {
-
+            HSD_PadRawQueueShift(HSD_PadLibData.qnum, &HSD_PadLibData.qread);
         } else if (HSD_PadLibData.qtype == 0) {
-            HSD_PadLibData.qread = (HSD_PadLibData.qread + 1) - (HSD_PadLibData.qread + 1) / HSD_PadLibData.qnum * HSD_PadLibData.qnum;
-            PADStatus* rqueue = (PADStatus*)(HSD_PadLibData.queue->stat + HSD_PadLibData.qread * 4);
+            HSD_PadRawQueueShift(HSD_PadLibData.qnum, &HSD_PadLibData.qread);
+            PADStatus* rqueue = &(HSD_PadLibData.queue->stat[HSD_PadLibData.qread]);
             if (HSD_PadLibData.qnum == 1) {
                 status[0].button = status[0].button | rqueue[0].button;
                 status[1].button = status[1].button | rqueue[1].button;
@@ -62,7 +67,7 @@ void HSD_PadRenewRawStatus(void)
     for (u8 i = 0; i < 4; i++) {
         queue[i] = status[i];
     }
-    HSD_PadLibData.qwrite = (HSD_PadLibData.qwrite + 1) - (HSD_PadLibData.qwrite + 1) / HSD_PadLibData.qnum * HSD_PadLibData.qnum;
+    HSD_PadRawQueueShift(HSD_PadLibData.qnum, &HSD_PadLibData.qwrite);
 JMP:
     if (status[0].err == PAD_ERR_NO_CONTROLLER) {
         mask |= PAD_CHAN0_BIT;
@@ -99,9 +104,9 @@ void HSD_PadFlushQueue(HSD_FlushType ftype)
     case HSD_PAD_FLUSH_QUEUE_MERGE:
         while (HSD_PadLibData.qcount > 1) {
             u8 qread = HSD_PadLibData.qread;
-            HSD_PadLibData.qread = (qread + 1) - ((qread + 1) / HSD_PadLibData.qnum) * HSD_PadLibData.qnum;
-            PADStatus* qwrite = (PADStatus*)(HSD_PadLibData.queue->stat + qread * 4);
-            PADStatus* qdst = (PADStatus*)(HSD_PadLibData.queue->stat + HSD_PadLibData.qread * 4);
+            HSD_PadRawQueueShift(HSD_PadLibData.qnum, &HSD_PadLibData.qread);
+            PADStatus* qwrite = &(HSD_PadLibData.queue->stat[qread]);
+            PADStatus* qdst = &(HSD_PadLibData.queue->stat[HSD_PadLibData.qread]);
             qdst[0].button = qdst[0].button | qwrite[0].button;
             qdst[1].button = qdst[1].button | qwrite[1].button;
             qdst[2].button = qdst[2].button | qwrite[2].button;
@@ -305,9 +310,8 @@ void HSD_PadRenewMasterStatus(void)
     u32 intr = IRQ_Disable();
     if (HSD_PadLibData.qcount != 0) {
         u8 qread = HSD_PadLibData.qread;
-        u8 qwrite = qread + 1;
-        HSD_PadLibData.qread = qwrite - (qwrite / HSD_PadLibData.qnum) * HSD_PadLibData.qnum;
-        PADStatus* pad_status = (PADStatus*)(HSD_PadLibData.queue->stat + qread * 4);
+        PADStatus* pad_status = &(HSD_PadLibData.queue->stat[qread]);
+        HSD_PadRawQueueShift(HSD_PadLibData.qnum, &HSD_PadLibData.qread);
         HSD_PadLibData.qcount -= 1;
 
         for (u8 i = 0; i < 4; ++i) {
@@ -369,7 +373,7 @@ void HSD_PadRenewMasterStatus(void)
             }
 
             qread += 1;
-            pad_status = (PADStatus*)(HSD_PadLibData.queue->stat + qread * 4);
+            pad_status = &(HSD_PadLibData.queue->stat[qread]);
         }
     }
     IRQ_Restore(intr);
