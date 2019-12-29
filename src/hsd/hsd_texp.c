@@ -879,7 +879,7 @@ static s32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
 //80384B20
 static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev, u32* init_aprev)
 {
-    u32 args[4] = { GX_CA_A0, GX_CA_A1, GX_CA_A2, GX_CA_APREV };
+    u32 args[4] = { GX_TEVREG0, GX_TEVREG1, GX_TEVREG2, GX_TEVPREV };
 
     u32 swap;
     u8 arg;
@@ -1293,7 +1293,7 @@ s32 HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_l
         HSD_CheckAssert("HSD_TExpCompile: val < 0", val >= 0);
     }
 
-    for (num = num - 1; num > -1; num = num - 1) {
+    for (num = num - 1; num > -1; --num) {
         HSD_TExpSimplify2(order[num]);
     }
 
@@ -1302,8 +1302,7 @@ s32 HSD_TExpCompile(HSD_TExp* texp, HSD_TExpTevDesc** tevdesc, HSD_TExp** texp_l
     *tevdesc = NULL;
     for (u32 i = 0; i < num; ++i) {
         HSD_TExpTevDesc* tdesc = hsdAllocMemPiece(sizeof(HSD_TExpTevDesc));
-        u32 stage = HSD_Index2TevStage(i);
-        tdesc->desc.stage = stage;
+        tdesc->desc.stage = HSD_Index2TevStage(i);
         TExp2TevDesc(order[(num - i) - 1], tdesc, &init_cprev, &init_aprev);
         tdesc->desc.next = &(*tevdesc)->desc;
         *tevdesc = tdesc;
