@@ -153,7 +153,7 @@ static void HSD_VIGXDrawDoneCB(void)
 }
 
 //80375E60
-static s32 HSD_VIGetDrawDoneWaitingFlag(void)
+__attribute__((noinline)) static s32 HSD_VIGetDrawDoneWaitingFlag(void)
 {
     return _p->drawdone.waiting;
 }
@@ -242,7 +242,7 @@ s32 HSD_VIWaitXFBDrawEnable(void)
     return idx;
 }
 
-void HSD_VIGXSetDrawDone(int arg)
+void HSD_VIGXSetDrawDone(s32 arg)
 {
     while (HSD_VIGetDrawDoneWaitingFlag())
         GX_WaitDrawDone();
