@@ -1421,7 +1421,6 @@ s32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
 
     tevs[0] = root;
     i = 1;
-    tev_start = tevs;
     for (j = 0; j < i; ++j) {
         HSD_CheckAssert("HSD_TExpMakeDag: j > HSD_TEXP_MAX_NUM", j <= HSD_TEXP_MAX_NUM);
 
