@@ -362,10 +362,10 @@ void HSD_JObjAddAnim(HSD_JObj* jobj,
             }
         }
         if (union_type_dobj(jobj)) {
-            HSD_ShapeAnim* sh_anim = NULL;
+            HSD_ShapeAnimDObj* sh_anim = NULL;
             HSD_MatAnim* mat_anim = NULL;
             if (sh_joint != NULL) {
-                sh_anim = sh_joint->shapeanim;
+                sh_anim = sh_joint->shapeanimdobj;
             }
             if (mat_joint != NULL) {
                 mat_anim = mat_joint->matanim;

@@ -47,19 +47,17 @@ void HSD_PObjRemoveAnimAllByFlags(HSD_PObj* pobj, u32 flags)
 }
 
 //8036B978
-void HSD_PObjAddAnimAll(HSD_PObj* pobj, HSD_SList* list)
+void HSD_PObjAddAnimAll(HSD_PObj* pobj, HSD_ShapeAnim* shapeanim)
 {
-    if (pobj != NULL && list != NULL) {
-        HSD_SList* j = list;
-        for (HSD_PObj* pp = pobj; pp != NULL; pp = pp->next) {
-            assert(pobj_type(pobj) == POBJ_SHAPEANIM && pobj->u.shape_set != NULL);
-            if (j != NULL) {
-                if (pp->aobj != NULL) {
-                    HSD_AObjRemove(pobj->aobj);
-                }
-                pobj->aobj = HSD_AObjLoadDesc((HSD_AObjDesc*)j->data);
-                j = j->next;
+    HSD_PObj* pp;
+    HSD_ShapeAnim* sa;
+
+    if (pobj != NULL && shapeanim != NULL) {
+        for (pp = pobj, sa = shapeanim; pp != NULL; pp = pp->next, sa = sa->next) {
+            if (pp->aobj != NULL) {
+                HSD_AObjRemove(pobj->aobj);
             }
+            pobj->aobj = HSD_AObjLoadDesc(sa->aobjdesc);
         }
     }
 }
@@ -69,7 +67,7 @@ void HSD_PObjReqAnimAllByFlags(HSD_PObj* pobj, f32 startframe, u32 flags)
 {
     if (pobj != NULL) {
         for (HSD_PObj* p = pobj; p != NULL && flags != 0; p = p->next) {
-            if (flags & POBJ_ANIM) {
+            if (pobj_type(pobj) == POBJ_SHAPEANIM && flags & POBJ_ANIM) {
                 HSD_AObjReqAnim(pobj->aobj, startframe);
             }
         }
@@ -780,7 +778,7 @@ void HSD_PObjClearMtxMark(void* obj, u32 mark)
 //8036E04C
 void HSD_PObjSetMtxMark(s32 idx, void* obj, u32 mark)
 {
-    if (idx <= 0 || idx >= 2){
+    if (idx <= 0 || idx >= 2) {
         return;
     }
 
@@ -806,7 +804,7 @@ void HSD_PObjGetMtxMark(s32 idx, void** obj, u32* mark)
 static PObjSetupFlag GetSetupFlags(HSD_JObj* jobj)
 {
     PObjSetupFlag flags = SETUP_NONE;
-    
+
     if (jobj->flags & LIGHTING) {
         flags |= SETUP_NORMAL;
     }
@@ -1041,7 +1039,6 @@ static void PObjRelease(HSD_Class* o)
     if (pobj->aobj) {
         HSD_AObjRemove(pobj->aobj);
     }
-
 
     switch (pobj_type(pobj)) {
     case POBJ_SHAPEANIM:

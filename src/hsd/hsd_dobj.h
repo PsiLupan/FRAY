@@ -35,6 +35,11 @@ typedef struct _HSD_DObjInfo {
     int (*load)(HSD_DObj* dobj, HSD_DObjDesc* desc);
 } HSD_DObjInfo;
 
+typedef struct _HSD_ShapeAnimDObj {
+    struct _HSD_ShapeAnimDObj* next;
+    struct _HSD_ShapeAnim* shapeanim;
+} HSD_ShapeAnimDObj;
+
 #define HSD_DOBJ(o) ((HSD_DObj*)(o))
 #define HSD_DOBJ_INFO(i) ((HSD_DObjInfo*)(i))
 #define HSD_DOBJ_METHOD(o) HSD_DOBJ_INFO(HSD_CLASS_METHOD(o))
@@ -47,7 +52,7 @@ void HSD_DObjSetFlags(HSD_DObj*, u32);
 void HSD_DObjClearFlags(HSD_DObj*, u32);
 void HSD_DObjModifyFlags(HSD_DObj*, u32, u32);
 void HSD_DObjRemoveAnimAllByFlags(HSD_DObj*, u32);
-void HSD_DObjAddAnimAll(HSD_DObj*, HSD_MatAnim*, HSD_ShapeAnim*);
+void HSD_DObjAddAnimAll(HSD_DObj*, HSD_MatAnim*, HSD_ShapeAnimDObj*);
 void HSD_DObjReqAnimAllByFlags(HSD_DObj*, u32, f32);
 void HSD_DObjReqAnimAll(HSD_DObj*, f32);
 void HSD_DObjAnimAll(HSD_DObj*);
