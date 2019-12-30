@@ -528,7 +528,6 @@ void HSD_SetupChannel(HSD_Chan* ch)
                         }
                     }
                 }
-                prev_ch[chan].amb_color.a = ch->amb_color.a;
                 GX_SetChanAmbColor(ch->chan, ch->amb_color);
             } else {
                 chan_disabled[chan] = 0;
