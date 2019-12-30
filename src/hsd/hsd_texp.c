@@ -605,26 +605,24 @@ static s32 AssignColorReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
     HSD_TECnst* cnst = &tev->c_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
         if (cnst->comp == HSD_TE_X) {
-            u32 i, j;
-            for (i = 4, j = 4; i > 0; --i, ++j) {
-                if (res->reg[j].alpha == 0) {
-                    res->reg[j].alpha = 1;
-                    cnst->reg = j;
+            for (u32 i = 4; i < 8; ++i) {
+                if (res->reg[i].alpha == 0) {
+                    res->reg[i].alpha = 1;
+                    cnst->reg = i;
                     cnst->idx = 3;
                     tev->c_in[idx].type = HSD_TE_IMM;
-                    tev->c_in[idx].arg = a_in[j - 4];
+                    tev->c_in[idx].arg = a_in[i - 4];
                     return 0;
                 }
             }
         } else {
-            u32 i, j;
-            for (i = 4, j = 4; i > 0; --i, ++j) {
-                if (res->reg[j].color == 0) {
-                    res->reg[j].color = 3;
-                    cnst->reg = j;
+            for (u32 i = 4; i < 8; ++i) {
+                if (res->reg[i].color == 0) {
+                    res->reg[i].color = 3;
+                    cnst->reg = i;
                     cnst->idx = 0;
                     tev->c_in[idx].type = HSD_TE_IMM;
-                    tev->c_in[idx].arg = c_in[j - 4];
+                    tev->c_in[idx].arg = c_in[i - 4];
                     return 0;
                 }
             }
@@ -650,14 +648,13 @@ static s32 AssignAlphaReg(HSD_TETev* tev, u32 idx, HSD_TExpRes* res)
 
     HSD_TECnst* cnst = &tev->a_in[idx].exp->cnst;
     if (cnst->reg == HSD_TE_UNDEF) {
-        u32 i, j;
-        for (i = 4, j = 4; i > 0; --i, ++j) {
-            if (res->reg[j].alpha == 0) {
-                res->reg[j].alpha = 1;
-                cnst->reg = j;
+        for (u32 i = 4; i < 8; ++i) {
+            if (res->reg[i].alpha == 0) {
+                res->reg[i].alpha = 1;
+                cnst->reg = i;
                 cnst->idx = 3;
                 tev->a_in[idx].type = HSD_TE_IMM;
-                tev->a_in[idx].arg = args[j - 4];
+                tev->a_in[idx].arg = args[i - 4];
                 return 0;
             }
         }
@@ -1087,7 +1084,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
 
         if (texp->cnst.reg < 8) {
             s32 x;
-            changed = changed | (1 << (u32)texp->cnst.reg);
+            changed |= (1 << (u32)texp->cnst.reg);
             if (texp->cnst.comp != HSD_TE_RGB) {
                 switch (texp->cnst.ctype) {
                 case HSD_TE_U8:

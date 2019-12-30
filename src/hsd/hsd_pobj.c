@@ -690,8 +690,8 @@ static void drawShapeAnim(HSD_PObj* pobj)
 
     if (shape_set->flags & SHAPESET_AVERAGE) {
         blend = shape_set->blend.bl;
-        shape_id = fminf(fmaxf(0, (s32)blend), shape_set->nb_shape - 1);
-        blend = fminf(fmaxf(0.0, blend - (f32)shape_id), 1.0);
+        shape_id = min(max(0, (s32)blend), shape_set->nb_shape - 1);
+        blend = minf(max(0.0, blend - (f32)shape_id), 1.0f);
         for (u32 i = 0; i < shape_set->nb_vertex_index; i++) {
             f32 s0[3], s1[3];
             get_shape_vertex_xyz(shape_set, shape_id, i, s0);
@@ -728,7 +728,7 @@ static void drawShapeAnim(HSD_PObj* pobj)
         for (u32 i = 0; i < shape_set->nb_vertex_index; i++) {
             get_shape_vertex_xyz(shape_set, 0, i, vertex_buffer[i]);
             for (u32 j = 0; j < shape_set->nb_shape; j++) {
-                f32 b = fmaxf(0.0, blend_bp[j]);
+                f32 b = fmaxf(0.0f, blend_bp[j]);
                 f32 s[3];
                 get_shape_vertex_xyz(shape_set, j + 1, i, s);
                 vertex_buffer[i][0] += s[0] * b;
@@ -742,7 +742,7 @@ static void drawShapeAnim(HSD_PObj* pobj)
                     s32 idx = i * 3;
                     get_shape_nbt_xyz(shape_set, 0, i, normal_buffer[idx]);
                     for (u32 j = 0; j < shape_set->nb_shape; j++) {
-                        f32 b = fmaxf(0.0, blend_bp[j]);
+                        f32 b = fmaxf(0.0f, blend_bp[j]);
                         f32 s[9];
                         get_shape_nbt_xyz(shape_set, j + 1, i, s);
                         for (u32 k = 0; k < 9; k++) {
@@ -754,7 +754,7 @@ static void drawShapeAnim(HSD_PObj* pobj)
                 for (u32 i = 0; i < shape_set->nb_normal_index; i++) {
                     get_shape_normal_xyz(shape_set, 0, i, normal_buffer[i]);
                     for (u32 j = 0; j < shape_set->nb_shape; j++) {
-                        f32 b = fmaxf(0.0, blend_bp[j]);
+                        f32 b = fmaxf(0.0f, blend_bp[j]);
                         f32 s[3];
                         get_shape_normal_xyz(shape_set, j + 1, i, s);
                         normal_buffer[i][0] += s[0] * b;
@@ -803,9 +803,10 @@ void HSD_PObjGetMtxMark(s32 idx, void** obj, u32* mark)
     }
 }
 
-static u32 GetSetupFlags(HSD_JObj* jobj)
+static PObjSetupFlag GetSetupFlags(HSD_JObj* jobj)
 {
-    u32 flags = SETUP_NONE;
+    PObjSetupFlag flags = SETUP_NONE;
+    
     if (jobj->flags & LIGHTING) {
         flags |= SETUP_NORMAL;
     }
@@ -830,7 +831,7 @@ static void SetupRigidModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rendermod
 {
     HSD_JObj* jobj;
     Mtx n;
-    u32 flags;
+    PObjSetupFlag flags;
 
     jobj = HSD_JObjGetCurrent();
     void* obj;
@@ -862,7 +863,7 @@ static void SetupSharedVtxModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 rende
 {
     HSD_JObj* jobj;
     Mtx n0, n1, m;
-    u32 flags = SETUP_NONE;
+    PObjSetupFlag flags = SETUP_NONE;
 
     jobj = HSD_JObjGetCurrent();
     void* obj;
@@ -924,10 +925,11 @@ static void SetupEnvelopeModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 render
     s32 MtxIdx = 0;
     MtxP right;
     Mtx mtx;
+    PObjSetupFlag flags = SETUP_NONE;
 
     jobj = HSD_JObjGetCurrent();
     HSD_PObjClearMtxMark(NULL, HSD_MTX_ENVELOPE);
-    u32 flags = GetSetupFlags(jobj);
+    flags = GetSetupFlags(jobj);
     right = _HSD_mkEnvelopeModelNodeMtx(jobj, mtx);
 
     for (MtxIdx = 0, list = pobj->u.envelope_list; MtxIdx < 10 && list; MtxIdx++, list = list->next) {
