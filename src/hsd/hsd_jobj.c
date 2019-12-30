@@ -82,7 +82,7 @@ static void HSD_JObjWalkTree0(HSD_JObj* jobj,
         if (JOBJ_INSTANCE(jobj)) {
             for (HSD_JObj* i = jobj->child; i != NULL; i = i->next) {
                 assert(i->prev != NULL);
-                u32 type = 0;
+                type = 0;
                 if (i->prev->child == i) {
                     type = 1;
                 } else {

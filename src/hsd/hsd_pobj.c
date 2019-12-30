@@ -931,7 +931,7 @@ static void SetupEnvelopeModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 render
     right = _HSD_mkEnvelopeModelNodeMtx(jobj, mtx);
 
     for (MtxIdx = 0, list = pobj->u.envelope_list; MtxIdx < 10 && list; MtxIdx++, list = list->next) {
-        Mtx mtx, tmp;
+        Mtx tmp, tmtx;
         MtxP mtxp;
         HSD_Envelope* envelope = list->data;
         s32 mtx_no = HSD_Index2PosNrmMtx(MtxIdx);
@@ -940,13 +940,13 @@ static void SetupEnvelopeModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 render
         if (envelope->weight >= (1.0f - FLT_EPSILON)) {
             HSD_JObjSetupMatrix(envelope->jobj);
             if (right) {
-                guMtxConcat(envelope->jobj->mtx, envelope->jobj->vmtx, mtx);
-                mtxp = mtx;
+                guMtxConcat(envelope->jobj->mtx, envelope->jobj->vmtx, tmtx);
+                mtxp = tmtx;
             } else {
                 mtxp = envelope->jobj->mtx;
             }
         } else {
-            mtx[0][0] = mtx[0][1] = mtx[0][2] = mtx[0][3] = mtx[1][0] = mtx[1][1] = mtx[1][2] = mtx[1][3] = mtx[2][0] = mtx[2][1] = mtx[2][2] = mtx[2][3] = 0.0f;
+            tmtx[0][0] = tmtx[0][1] = tmtx[0][2] = tmtx[0][3] = tmtx[1][0] = tmtx[1][1] = tmtx[1][2] = tmtx[1][3] = tmtx[2][0] = tmtx[2][1] = tmtx[2][2] = tmtx[2][3] = 0.0f;
             while (envelope) {
                 HSD_JObj* jp;
 
@@ -957,24 +957,24 @@ static void SetupEnvelopeModelMtx(HSD_PObj* pobj, Mtx vmtx, Mtx pmtx, u32 render
                 assert(jp->vmtx);
 
                 guMtxConcat(jp->mtx, jp->vmtx, tmp);
-                HSD_MtxScaledAdd(envelope->weight, tmp, mtx, mtx);
+                HSD_MtxScaledAdd(envelope->weight, tmp, tmtx, tmtx);
                 envelope = envelope->next;
             }
-            mtxp = mtx;
+            mtxp = tmtx;
         }
         if (right) {
-            guMtxConcat(mtxp, right, mtx);
+            guMtxConcat(mtxp, right, tmtx);
         }
         guMtxConcat(vmtx, mtxp, tmp);
         GX_LoadPosMtxImm(tmp, mtx_no);
 
         if (flags & SETUP_NORMAL) {
-            mkNormalMtx(tmp, mtx);
+            mkNormalMtx(tmp, tmtx);
             if (jobj->flags & LIGHTING) {
-                GX_LoadNrmMtxImm(mtx, mtx_no);
+                GX_LoadNrmMtxImm(tmtx, mtx_no);
             }
             if (flags & SETUP_NORMAL_PROJECTION) {
-                GX_LoadTexMtxImm(mtx, HSD_Index2TexMtx(MtxIdx), GX_MTX3x4);
+                GX_LoadTexMtxImm(tmtx, HSD_Index2TexMtx(MtxIdx), GX_MTX3x4);
             }
         }
     }
