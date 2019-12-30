@@ -70,7 +70,6 @@ void HSD_DObjAddAnimAll(HSD_DObj* dobj, HSD_MatAnim* mat_anim, HSD_ShapeAnimDObj
     HSD_ShapeAnimDObj* sh;
 
     if (dobj != NULL) {
-        HSD_MatAnim* m = mat_anim;
         for (i = dobj, m = mat_anim, sh = sh_anim; i != NULL; i = i->next, m = m->next, sh = sh->next) {
             HSD_ShapeAnim* shapeanim = NULL;
             if (sh != NULL) {
