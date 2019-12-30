@@ -1084,7 +1084,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
 
         if (texp->cnst.reg < 8) {
             s32 x;
-            changed = changed | (1 << (u32)texp->cnst.reg);
+            changed |= (1 << (u32)texp->cnst.reg);
             if (texp->cnst.comp != HSD_TE_RGB) {
                 switch (texp->cnst.ctype) {
                 case HSD_TE_U8:
