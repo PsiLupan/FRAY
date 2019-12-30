@@ -1254,8 +1254,7 @@ void HSD_JObjSetCurrent(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
         HSD_JObjRefThis(jobj);
-        HSD_JObj* current = current_jobj;
-        HSD_JObjUnref(current);
+        HSD_JObjUnref(current_jobj);
         current_jobj = jobj;
     }
 }
