@@ -13,15 +13,15 @@
 #define HSD_DEFAULT_MAX_SHAPE_VERTICES 2000
 #define HSD_DEFAULT_MAX_SHAPE_NORMALS 2000
 
-#define POBJ_ANIM 1 << 3
-#define POBJ_SKIN 0 << 12
-#define POBJ_SHAPEANIM 1 << 12
-#define POBJ_ENVELOPE 2 << 12
+#define POBJ_ANIM (1 << 3)
+#define POBJ_SKIN (0 << 12)
+#define POBJ_SHAPEANIM (1 << 12)
+#define POBJ_ENVELOPE (2 << 12)
 
 #define pobj_type(o) (o->flags & 0x3000)
 
-#define POBJ_CULLFRONT 0x4000
-#define POBJ_CULLBACK 0x8000
+#define POBJ_CULLFRONT (1 << 14)
+#define POBJ_CULLBACK (1 << 15)
 
 #define SHAPESET_AVERAGE 1
 #define SHAPESET_ADDITIVE 1 << 1
@@ -119,13 +119,13 @@ typedef struct _HSD_ShapeSetDesc {
 
 typedef struct _HSD_ShapeAnim {
     struct _HSD_ShapeAnim* next;
-    HSD_SList* aobjdescs_list;
+    HSD_AObjDesc* aobjdesc;
 } HSD_ShapeAnim;
 
 typedef struct _HSD_ShapeAnimJoint {
     struct _HSD_ShapeAnimJoint* child;
     struct _HSD_ShapeAnimJoint* next;
-    struct _HSD_ShapeAnim* shapeanim;
+    struct _HSD_ShapeAnimDObj* shapeanimdobj;
 } HSD_ShapeAnimJoint;
 
 typedef struct _HSD_PObjInfo {
@@ -144,7 +144,7 @@ extern HSD_PObjInfo hsdPObj;
 
 u16 HSD_PObjGetFlags(HSD_PObj*);
 void HSD_PObjRemoveAnimAllByFlags(HSD_PObj*, u32);
-void HSD_PObjAddAnimAll(HSD_PObj*, HSD_SList*);
+void HSD_PObjAddAnimAll(HSD_PObj*, HSD_ShapeAnim*);
 void HSD_PObjReqAnimAllByFlags(HSD_PObj*, f32, u32);
 void HSD_PObjAnimAll(HSD_PObj*);
 HSD_PObj* HSD_PObjLoadDesc(HSD_PObjDesc*);
