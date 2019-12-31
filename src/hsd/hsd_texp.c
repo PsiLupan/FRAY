@@ -815,8 +815,8 @@ static s32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                     }
                 }
             } else {
-                if (AssignColorReg(&texp->tev, 3, res) == -1) {
-                    val = AssignColorKonst(&texp->tev, 3, res);
+                if (AssignColorKonst(&texp->tev, 3, res) == -1){
+                    val = AssignColorReg(&texp->tev, 3, res);
                     return val;
                 }
             }
@@ -1739,7 +1739,7 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
         result[i] = (HSD_TExp*)list[min_order[i]].tev;
 
         if (result[i]->tev.c_dst != HSD_TE_UNDEF) {
-            resource->reg[result[i]->tev.c_dst].color = 3;
+            resource->reg[result[i]->tev.c_dst + 4].color = 3;
             for (j = 0; j < 4; j++) {
                 if (HSD_TExpGetType(result[i]->tev.c_in[j].exp) == HSD_TE_TEV) {
                     if (result[i]->tev.c_in[j].sel == 1) {
@@ -1752,7 +1752,7 @@ void HSD_TExpSchedule(u32 num, HSD_TExpDag* list, HSD_TExp** result, HSD_TExpRes
         }
 
         if (result[i]->tev.a_dst != HSD_TE_UNDEF) {
-            resource->reg[result[i]->tev.a_dst].alpha = 1;
+            resource->reg[result[i]->tev.a_dst + 4].alpha = 1;
             for (j = 0; j < 4; j++) {
                 if (HSD_TExpGetType(result[i]->tev.a_in[j].exp) == HSD_TE_TEV) {
                     result[i]->tev.a_in[j].arg = args[result[i]->tev.a_in[j].exp->tev.a_dst];
