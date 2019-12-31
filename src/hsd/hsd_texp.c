@@ -815,7 +815,7 @@ static s32 TExpAssignReg(HSD_TExp* texp, HSD_TExpRes* res)
                     }
                 }
             } else {
-                if (AssignColorKonst(&texp->tev, 3, res) == -1){
+                if (AssignColorKonst(&texp->tev, 3, res) == -1) {
                     val = AssignColorReg(&texp->tev, 3, res);
                     return val;
                 }
@@ -1057,55 +1057,35 @@ void HSD_TExpSetReg(HSD_TExp* texp)
 
     GXColor reg[8];
 
-    for (; ; texp = texp->cnst.next) {
-        if (texp == NULL) {
-            if (changed != 0) {
-                GX_PixModeSync();
-                for (i = 0; i < 4; ++i) {
-                    if ((changed & (1 << i)) != 0) {
-                        GX_SetTevKColor(tev_regid[i], reg[i]);
-                    }
-                }
-
-                for (i = 4; i < 7; ++i) {
-                    if ((changed & (1 << i)) != 0) {
-                        GX_SetTevColor(tev_regid[i - 3], reg[i]);
-                    }
-                }
-                HSD_StateInvalidate(HSD_STATE_TEV_REGISTER);
-                GX_PixModeSync();
-            }
-            return;
-        }
-
+    for (; texp != NULL; texp = texp->cnst.next) {
         HSD_CheckAssert("HSD_TExpSetReg: texp->type != HSD_TE_CNST", texp->type == HSD_TE_CNST);
 
         if (texp->cnst.reg > 7) {
             continue;
         }
-        
+
         s32 x;
         changed |= (1 << (u32)texp->cnst.reg);
         if (texp->cnst.comp != HSD_TE_RGB) {
             switch (texp->cnst.ctype) {
             case HSD_TE_U8:
-                x = *(u8 *)texp->cnst.val;
+                x = *(u8*)texp->cnst.val;
                 break;
 
             case HSD_TE_U16:
-                x = *(u16 *)texp->cnst.val;
+                x = *(u16*)texp->cnst.val;
                 break;
 
             case HSD_TE_U32:
-                x = *(s32 *)texp->cnst.val;
+                x = *(s32*)texp->cnst.val;
                 break;
 
             case HSD_TE_F32:
-                x = (s32)(255.0f * *(f32 *)texp->cnst.val);
+                x = (s32)(255.0f * *(f32*)texp->cnst.val);
                 break;
 
             case HSD_TE_F64:
-                x = (s32)(255.0 * *(f64 *)texp->cnst.val);
+                x = (s32)(255.0 * *(f64*)texp->cnst.val);
                 break;
             }
 
@@ -1143,18 +1123,17 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     reg[texp->cnst.reg].b = (u8)x;
                 }
             }
-        }
-        else {
+        } else {
             HSD_TEType ctype = texp->cnst.ctype;
             s32 r;
             s32 g;
             s32 b;
-            f64 *ptr_64;
+            f64* ptr_64;
             if (ctype == 1) {
             LAB_80385060:
                 if (ctype == 2) {
                 LAB_803850dc:
-                    ptr_64 = (f64 *)(texp->cnst.val);
+                    ptr_64 = (f64*)(texp->cnst.val);
                     r = (u32)(255.0 * ptr_64[0]);
                     g = (u32)(255.0 * ptr_64[1]);
                     b = (u32)(255.0 * ptr_64[2]);
@@ -1162,14 +1141,14 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     if (ctype < 2) {
                         if (ctype < 1)
                             goto LAB_803850dc;
-                        u16 *ptr = (u16 *)(texp->cnst.val);
+                        u16* ptr = (u16*)(texp->cnst.val);
                         r = ptr[0];
                         g = ptr[1];
                         b = ptr[2];
                     } else {
                         if (3 < ctype)
                             goto LAB_803850dc;
-                        f32 *ptr = (f32 *)(texp->cnst.val);
+                        f32* ptr = (f32*)(texp->cnst.val);
                         r = (u32)(255.0f * ptr[0]);
                         g = (u32)(255.0f * ptr[1]);
                         b = (u32)(255.0f * ptr[2]);
@@ -1201,14 +1180,14 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                 reg[texp->cnst.reg].b = (u8)b;
             } else {
                 if (ctype == 0) {
-                    GXColor *c = (GXColor *)texp->cnst.val;
+                    GXColor* c = (GXColor*)texp->cnst.val;
                     reg[texp->cnst.reg].r = c->r;
                     reg[texp->cnst.reg].g = c->g;
                     reg[texp->cnst.reg].b = c->b;
                 } else {
                     if (2 < ctype)
                         goto LAB_80385060;
-                    u32 *ptr = (u32 *)(texp->cnst.val);
+                    u32* ptr = (u32*)(texp->cnst.val);
                     r = ptr[0];
                     g = ptr[1];
                     b = ptr[2];
@@ -1230,6 +1209,23 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                 }
             }
         }
+    }
+
+    if (changed != 0) {
+        GX_PixModeSync();
+        for (i = 0; i < 4; ++i) {
+            if ((changed & (1 << i)) != 0) {
+                GX_SetTevKColor(tev_regid[i], reg[i]);
+            }
+        }
+
+        for (i = 4; i < 7; ++i) {
+            if ((changed & (1 << i)) != 0) {
+                GX_SetTevColor(tev_regid[i - 3], reg[i]);
+            }
+        }
+        HSD_StateInvalidate(HSD_STATE_TEV_REGISTER);
+        GX_PixModeSync();
     }
 }
 
@@ -1477,7 +1473,7 @@ s32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
         ++j;
     }
 
-    #if 0
+#if 0
     for (; l > 0; --l){
         HSD_TExpDag* dag = &list[l];
         HSD_TETev* tev = &tevs[l]->tev;
@@ -1540,7 +1536,7 @@ s32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
             }
         }
     }
-    #else
+#else
     for (idx = i - 1, dag = list + idx, tev_start = tevs + idx; idx >= 0; --idx, --dag, --tev_start) {
         te = *tev_start;
         dag->idx = idx;
@@ -1637,7 +1633,7 @@ s32 HSD_TExpMakeDag(HSD_TExp* root, HSD_TExpDag* list)
             HSD_CheckAssert("HSD_TExpMakeDag: i <= iVar8", i > iVar8);
         }
     }
-    #endif
+#endif
     return i;
 }
 
