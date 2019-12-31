@@ -689,7 +689,7 @@ static void drawShapeAnim(HSD_PObj* pobj)
     if (shape_set->flags & SHAPESET_AVERAGE) {
         blend = shape_set->blend.bl;
         shape_id = min(max(0, (s32)blend), shape_set->nb_shape - 1);
-        blend = minf(max(0.0, blend - (f32)shape_id), 1.0f);
+        blend = min(max(0.0, blend - (f32)shape_id), 1.0f);
         for (u32 i = 0; i < shape_set->nb_vertex_index; i++) {
             f32 s0[3], s1[3];
             get_shape_vertex_xyz(shape_set, shape_id, i, s0);
