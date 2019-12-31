@@ -1057,21 +1057,19 @@ void HSD_TExpSetReg(HSD_TExp* texp)
 
     GXColor reg[8];
 
-    while (true) {
+    for (; ; texp = texp->cnst.next) {
         if (texp == NULL) {
             if (changed != 0) {
                 GX_PixModeSync();
                 for (i = 0; i < 4; ++i) {
                     if ((changed & (1 << i)) != 0) {
-                        GXColor col = reg[i];
-                        GX_SetTevKColor(tev_regid[i], col);
+                        GX_SetTevKColor(tev_regid[i], reg[i]);
                     }
                 }
 
                 for (i = 4; i < 7; ++i) {
                     if ((changed & (1 << i)) != 0) {
-                        GXColor col = reg[i];
-                        GX_SetTevColor(tev_regid[i - 3], col);
+                        GX_SetTevColor(tev_regid[i - 3], reg[i]);
                     }
                 }
                 HSD_StateInvalidate(HSD_STATE_TEV_REGISTER);
@@ -1082,156 +1080,156 @@ void HSD_TExpSetReg(HSD_TExp* texp)
 
         HSD_CheckAssert("HSD_TExpSetReg: texp->type != HSD_TE_CNST", texp->type == HSD_TE_CNST);
 
-        if (texp->cnst.reg < 8) {
-            s32 x;
-            changed |= (1 << (u32)texp->cnst.reg);
-            if (texp->cnst.comp != HSD_TE_RGB) {
-                switch (texp->cnst.ctype) {
-                case HSD_TE_U8:
-                    x = *(u8*)texp->cnst.val;
+        if (texp->cnst.reg > 7) {
+            continue;
+        }
+        
+        s32 x;
+        changed |= (1 << (u32)texp->cnst.reg);
+        if (texp->cnst.comp != HSD_TE_RGB) {
+            switch (texp->cnst.ctype) {
+            case HSD_TE_U8:
+                x = *(u8 *)texp->cnst.val;
+                break;
+
+            case HSD_TE_U16:
+                x = *(u16 *)texp->cnst.val;
+                break;
+
+            case HSD_TE_U32:
+                x = *(s32 *)texp->cnst.val;
+                break;
+
+            case HSD_TE_F32:
+                x = (s32)(255.0f * *(f32 *)texp->cnst.val);
+                break;
+
+            case HSD_TE_F64:
+                x = (s32)(255.0 * *(f64 *)texp->cnst.val);
+                break;
+            }
+
+            if (x > 255) {
+                x = 255;
+            }
+            if (x < 0) {
+                x = 0;
+            }
+
+            if (texp->cnst.reg < 4) {
+                switch (texp->cnst.idx) {
+                case 0:
+                    reg[texp->cnst.reg].r = (u8)x;
                     break;
-                case HSD_TE_U16:
-                    x = (u8)*(u16*)texp->cnst.val;
+
+                case 1:
+                    reg[texp->cnst.reg].g = (u8)x;
                     break;
 
-                case HSD_TE_U32:
-                    x = (u8)*(s32*)texp->cnst.val;
+                case 2:
+                    reg[texp->cnst.reg].b = (u8)x;
                     break;
 
-                case HSD_TE_F32:
-                    x = (u8)(s32)(255.0f * *(f32*)texp->cnst.val);
+                case 3:
+                    reg[texp->cnst.reg].a = (u8)x;
                     break;
-
-                case HSD_TE_F64:
-                    x = (u8)(s32)(255.0 * *(f64*)texp->cnst.val);
-                    break;
-                }
-
-                if (x > 255) {
-                    x = 255;
-                }
-                if (x < 0) {
-                    x = 0;
-                }
-
-                if (texp->cnst.reg < 4) {
-                    switch (texp->cnst.idx) {
-                    case 0:
-                        reg[texp->cnst.reg].r = (u8)x;
-                        break;
-
-                    case 1:
-                        reg[texp->cnst.reg].g = (u8)x;
-                        break;
-
-                    case 2:
-                        reg[texp->cnst.reg].b = (u8)x;
-                        break;
-
-                    case 3:
-                        reg[texp->cnst.reg].a = (u8)x;
-                        break;
-                    default:
-                        reg[texp->cnst.reg].a = (u8)x;
-                        break;
-                    }
-                } else {
-                    if (texp->cnst.idx == 3) {
-                        reg[texp->cnst.reg].a = (u8)x;
-                    } else {
-                        reg[texp->cnst.reg].r = (u8)x;
-                        reg[texp->cnst.reg].g = (u8)x;
-                        reg[texp->cnst.reg].b = (u8)x;
-                    }
                 }
             } else {
-                HSD_TEType ctype = texp->cnst.ctype;
-                s32 r;
-                s32 g;
-                s32 b;
-                f64* ptr_64;
-                if (ctype == 1) {
-                LAB_80385060:
-                    if (ctype == 2) {
-                    LAB_803850dc:
-                        ptr_64 = (f64*)(texp->cnst.val);
-                        r = (u32)(255.0 * ptr_64[0]);
-                        g = (u32)(255.0 * ptr_64[1]);
-                        b = (u32)(255.0 * ptr_64[2]);
+                if (texp->cnst.idx == 3) {
+                    reg[texp->cnst.reg].a = (u8)x;
+                } else {
+                    reg[texp->cnst.reg].r = (u8)x;
+                    reg[texp->cnst.reg].g = (u8)x;
+                    reg[texp->cnst.reg].b = (u8)x;
+                }
+            }
+        }
+        else {
+            HSD_TEType ctype = texp->cnst.ctype;
+            s32 r;
+            s32 g;
+            s32 b;
+            f64 *ptr_64;
+            if (ctype == 1) {
+            LAB_80385060:
+                if (ctype == 2) {
+                LAB_803850dc:
+                    ptr_64 = (f64 *)(texp->cnst.val);
+                    r = (u32)(255.0 * ptr_64[0]);
+                    g = (u32)(255.0 * ptr_64[1]);
+                    b = (u32)(255.0 * ptr_64[2]);
+                } else {
+                    if (ctype < 2) {
+                        if (ctype < 1)
+                            goto LAB_803850dc;
+                        u16 *ptr = (u16 *)(texp->cnst.val);
+                        r = ptr[0];
+                        g = ptr[1];
+                        b = ptr[2];
                     } else {
-                        if (ctype < 2) {
-                            if (ctype < 1)
-                                goto LAB_803850dc;
-                            u16* ptr = (u16*)(texp->cnst.val);
-                            r = ptr[0];
-                            g = ptr[1];
-                            b = ptr[2];
-                        } else {
-                            if (3 < ctype)
-                                goto LAB_803850dc;
-                            f32* ptr = (f32*)(texp->cnst.val);
-                            r = (u32)(255.0f * ptr[0]);
-                            g = (u32)(255.0f * ptr[1]);
-                            b = (u32)(255.0f * ptr[2]);
-                        }
+                        if (3 < ctype)
+                            goto LAB_803850dc;
+                        f32 *ptr = (f32 *)(texp->cnst.val);
+                        r = (u32)(255.0f * ptr[0]);
+                        g = (u32)(255.0f * ptr[1]);
+                        b = (u32)(255.0f * ptr[2]);
                     }
+                }
 
-                    if (r < 0) {
-                        r = 0;
-                    }
+                if (r < 0) {
+                    r = 0;
+                }
+                if (r > 255) {
+                    r = 255;
+                }
+                reg[texp->cnst.reg].r = (u8)r;
+
+                if (g < 0) {
+                    g = 0;
+                }
+                if (g > 255) {
+                    g = 255;
+                }
+                reg[texp->cnst.reg].g = (u8)g;
+
+                if (b < 0) {
+                    b = 0;
+                }
+                if (b > 255) {
+                    b = 255;
+                }
+                reg[texp->cnst.reg].b = (u8)b;
+            } else {
+                if (ctype == 0) {
+                    GXColor *c = (GXColor *)texp->cnst.val;
+                    reg[texp->cnst.reg].r = c->r;
+                    reg[texp->cnst.reg].g = c->g;
+                    reg[texp->cnst.reg].b = c->b;
+                } else {
+                    if (2 < ctype)
+                        goto LAB_80385060;
+                    u32 *ptr = (u32 *)(texp->cnst.val);
+                    r = ptr[0];
+                    g = ptr[1];
+                    b = ptr[2];
+
                     if (r > 255) {
                         r = 255;
                     }
                     reg[texp->cnst.reg].r = (u8)r;
 
-                    if (g < 0) {
-                        g = 0;
-                    }
                     if (g > 255) {
                         g = 255;
                     }
                     reg[texp->cnst.reg].g = (u8)g;
 
-                    if (b < 0) {
-                        b = 0;
-                    }
                     if (b > 255) {
                         b = 255;
                     }
                     reg[texp->cnst.reg].b = (u8)b;
-                } else {
-                    if (ctype == 0) {
-                        GXColor* c = (GXColor*)texp->cnst.val;
-                        reg[texp->cnst.reg].r = c->r;
-                        reg[texp->cnst.reg].g = c->g;
-                        reg[texp->cnst.reg].b = c->b;
-                    } else {
-                        if (2 < ctype)
-                            goto LAB_80385060;
-                        u32* ptr = (u32*)(texp->cnst.val);
-                        r = ptr[0];
-                        g = ptr[1];
-                        b = ptr[2];
-
-                        if (r > 255) {
-                            r = 255;
-                        }
-                        reg[texp->cnst.reg].r = (u8)r;
-
-                        if (g > 255) {
-                            g = 255;
-                        }
-                        reg[texp->cnst.reg].g = (u8)g;
-
-                        if (b > 255) {
-                            b = 255;
-                        }
-                        reg[texp->cnst.reg].b = (u8)b;
-                    }
                 }
             }
         }
-        texp = texp->cnst.next;
     }
 }
 
