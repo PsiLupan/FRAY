@@ -82,7 +82,7 @@ static void HSD_JObjWalkTree0(HSD_JObj* jobj,
         if (JOBJ_INSTANCE(jobj)) {
             for (HSD_JObj* i = jobj->child; i != NULL; i = i->next) {
                 assert(i->prev != NULL);
-                u32 type = 0;
+                type = 0;
                 if (i->prev->child == i) {
                     type = 1;
                 } else {
@@ -362,10 +362,10 @@ void HSD_JObjAddAnim(HSD_JObj* jobj,
             }
         }
         if (union_type_dobj(jobj)) {
-            HSD_ShapeAnim* sh_anim = NULL;
+            HSD_ShapeAnimDObj* sh_anim = NULL;
             HSD_MatAnim* mat_anim = NULL;
             if (sh_joint != NULL) {
-                sh_anim = sh_joint->shapeanim;
+                sh_anim = sh_joint->shapeanimdobj;
             }
             if (mat_joint != NULL) {
                 mat_anim = mat_joint->matanim;
@@ -1254,8 +1254,7 @@ void HSD_JObjSetCurrent(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
         HSD_JObjRefThis(jobj);
-        HSD_JObj* current = current_jobj;
-        HSD_JObjUnref(current);
+        HSD_JObjUnref(current_jobj);
         current_jobj = jobj;
     }
 }

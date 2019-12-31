@@ -168,12 +168,12 @@ HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc)
 
             u32 id = aobjdesc->obj_id;
             if (id != 0) {
-                HSD_Obj* hsdObj = (HSD_Obj*)HSD_IDGetDataFromTable(0, id, 0);
-                void* obj = (void*)hsdObj;
+                HSD_Obj* hsd_obj = (HSD_Obj*)HSD_IDGetDataFromTable(0, id, 0);
+                void* obj = (void*)hsd_obj;
 
-                if (hsdObj != NULL) {
-                    hsdObj->ref_count = hsdObj->ref_count + 1;
-                    assert(hsdObj->ref_count != HSD_OBJ_NOREF);
+                if (hsd_obj != NULL) {
+                    hsd_obj->ref_count = hsd_obj->ref_count + 1;
+                    assert(hsd_obj->ref_count != HSD_OBJ_NOREF);
                 } else {
                     obj = (HSD_Obj*)HSD_JObjLoadJoint((HSD_JObjDesc*)aobjdesc->obj_id);
                 }

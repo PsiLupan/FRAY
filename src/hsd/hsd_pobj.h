@@ -13,30 +13,32 @@
 #define HSD_DEFAULT_MAX_SHAPE_VERTICES 2000
 #define HSD_DEFAULT_MAX_SHAPE_NORMALS 2000
 
-#define POBJ_ANIM 1 << 3
-#define POBJ_SKIN 0 << 12
-#define POBJ_SHAPEANIM 1 << 12
-#define POBJ_ENVELOPE 2 << 12
+#define POBJ_ANIM (1 << 3)
+#define POBJ_SKIN (0 << 12)
+#define POBJ_SHAPEANIM (1 << 12)
+#define POBJ_ENVELOPE (2 << 12)
 
 #define pobj_type(o) (o->flags & 0x3000)
 
-#define POBJ_CULLFRONT 0x4000
-#define POBJ_CULLBACK 0x8000
+#define POBJ_CULLFRONT (1 << 14)
+#define POBJ_CULLBACK (1 << 15)
 
 #define SHAPESET_AVERAGE 1
 #define SHAPESET_ADDITIVE 1 << 1
 
-#define SETUP_NONE 0
-#define SETUP_NORMAL 1
-#define SETUP_JOINT0 1
-#define SETUP_JOINT1 2
-#define SETUP_REFLECTION 3
-#define SETUP_HIGHLIGHT 5
-#define SETUP_NORMAL_PROJECTION 6
-
 #define GX_NOP 0
 #define GX_VAT_MASK 0x7
 #define GX_OPCODE_MASK 0xF8
+
+typedef enum _PObjSetupFlag {
+    SETUP_NORMAL = 1,
+    SETUP_REFLECTION = 2,
+    SETUP_HIGHLIGHT = 4,
+    SETUP_NORMAL_PROJECTION = 6,
+    SETUP_JOINT0 = 1,
+    SETUP_JOINT1 = 2,
+    SETUP_NONE = 0
+} PObjSetupFlag;
 
 //Polygon Object
 typedef struct _HSD_PObj {
@@ -75,7 +77,7 @@ typedef struct _HSD_VtxDescList {
     u32 comp_type;
     u8 frac;
     u16 stride;
-    f32* vertex;
+    void* vertex;
 } HSD_VtxDescList;
 
 typedef struct _HSD_Envelope {
@@ -117,13 +119,13 @@ typedef struct _HSD_ShapeSetDesc {
 
 typedef struct _HSD_ShapeAnim {
     struct _HSD_ShapeAnim* next;
-    HSD_SList* aobjdescs_list;
+    HSD_AObjDesc* aobjdesc;
 } HSD_ShapeAnim;
 
 typedef struct _HSD_ShapeAnimJoint {
     struct _HSD_ShapeAnimJoint* child;
     struct _HSD_ShapeAnimJoint* next;
-    struct _HSD_ShapeAnim* shapeanim;
+    struct _HSD_ShapeAnimDObj* shapeanimdobj;
 } HSD_ShapeAnimJoint;
 
 typedef struct _HSD_PObjInfo {
@@ -142,7 +144,7 @@ extern HSD_PObjInfo hsdPObj;
 
 u16 HSD_PObjGetFlags(HSD_PObj*);
 void HSD_PObjRemoveAnimAllByFlags(HSD_PObj*, u32);
-void HSD_PObjAddAnimAll(HSD_PObj*, HSD_SList*);
+void HSD_PObjAddAnimAll(HSD_PObj*, HSD_ShapeAnim*);
 void HSD_PObjReqAnimAllByFlags(HSD_PObj*, f32, u32);
 void HSD_PObjAnimAll(HSD_PObj*);
 HSD_PObj* HSD_PObjLoadDesc(HSD_PObjDesc*);

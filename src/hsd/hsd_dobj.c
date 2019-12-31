@@ -63,17 +63,19 @@ void HSD_DObjRemoveAnimAllByFlags(HSD_DObj* dobj, u32 flags)
 }
 
 //8035DEA0
-void HSD_DObjAddAnimAll(HSD_DObj* dobj, HSD_MatAnim* mat_anim, HSD_ShapeAnim* sh_anim)
+void HSD_DObjAddAnimAll(HSD_DObj* dobj, HSD_MatAnim* mat_anim, HSD_ShapeAnimDObj* sh_anim)
 {
+    HSD_DObj* i;
+    HSD_MatAnim* m;
+    HSD_ShapeAnimDObj* sh;
+
     if (dobj != NULL) {
-        HSD_MatAnim* m = mat_anim;
-        HSD_ShapeAnim* sh = sh_anim;
-        for (HSD_DObj* i = dobj; i != NULL; i = i->next, m = m->next, sh = sh->next) {
-            HSD_SList* slist = NULL;
+        for (i = dobj, m = mat_anim, sh = sh_anim; i != NULL; i = i->next, m = m->next, sh = sh->next) {
+            HSD_ShapeAnim* shapeanim = NULL;
             if (sh != NULL) {
-                slist = sh->aobjdescs_list;
+                shapeanim = sh->shapeanim;
             }
-            HSD_PObjAddAnimAll(i->pobj, slist);
+            HSD_PObjAddAnimAll(i->pobj, shapeanim);
             HSD_MObjAddAnim(i->mobj, m);
         }
     }
