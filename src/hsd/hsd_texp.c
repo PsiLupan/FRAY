@@ -1113,6 +1113,9 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                 case 3:
                     reg[texp->cnst.reg].a = (u8)x;
                     break;
+                default:
+                    reg[texp->cnst.reg].a = (u8)x;
+                    break;
                 }
             } else {
                 if (texp->cnst.idx == 3) {
@@ -1184,6 +1187,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
                     reg[texp->cnst.reg].r = c->r;
                     reg[texp->cnst.reg].g = c->g;
                     reg[texp->cnst.reg].b = c->b;
+                    reg[texp->cnst.reg].a = reg[texp->cnst.reg].a;
                 } else {
                     if (2 < ctype)
                         goto LAB_80385060;

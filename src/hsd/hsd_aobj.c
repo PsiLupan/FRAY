@@ -100,7 +100,6 @@ void HSD_AObjStopAnim(HSD_AObj* aobj, void* obj, void (*callback)())
 void HSD_AObjInterpretAnim(HSD_AObj* aobj, void* caller_obj, void (*updatecb)())
 {
     f32 framerate = 0;
-    f32 curr_frame = 0;
 
     if (aobj != NULL) {
         if (!(aobj->flags & AOBJ_NO_ANIM)) {
@@ -108,21 +107,17 @@ void HSD_AObjInterpretAnim(HSD_AObj* aobj, void* caller_obj, void (*updatecb)())
                 aobj->flags &= 0xF7FFFFFF;
                 framerate = 300.0f;
             } else {
-                framerate = aobj->framerate;
-                curr_frame = aobj->curr_frame;
-                curr_frame = curr_frame + framerate;
-                aobj->curr_frame = curr_frame;
+                aobj->curr_frame += aobj->framerate;
             }
 
             if ((aobj->flags & AOBJ_LOOP) && (aobj->end_frame <= aobj->curr_frame)) {
-                if (aobj->rewind_frame >= aobj->end_frame) {
+                if (aobj->end_frame <= aobj->rewind_frame) {
                     aobj->curr_frame = aobj->end_frame;
                 } else {
                     HSD_FObjStopAnimAll(aobj->fobj, caller_obj, updatecb, framerate);
-                    f32 e_frame = aobj->end_frame - aobj->rewind_frame;
                     f32 c_frame = aobj->curr_frame - aobj->rewind_frame;
-                    f32 r_frame = aobj->rewind_frame - fmodf(c_frame, e_frame);
-                    aobj->curr_frame = r_frame;
+                    f32 e_frame = aobj->end_frame - aobj->rewind_frame;
+                    aobj->curr_frame = aobj->rewind_frame + fmodf(c_frame, e_frame);
                     HSD_FObjReqAnimAll(aobj->fobj, aobj->curr_frame);
                 }
                 framerate = 300.0f;
