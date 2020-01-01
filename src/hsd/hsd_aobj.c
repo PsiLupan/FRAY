@@ -70,7 +70,7 @@ void HSD_AObjInvokeCallBacks(void)
 {
     if (r13_4074 != 0 && r13_4070 == 0) {
         callback* cb = &r13_4078;
-        while(cb != NULL){
+        while (cb != NULL) {
             (r13_4078.func_ptr)();
             cb = cb->next;
         }
@@ -149,39 +149,40 @@ void HSD_AObjInterpretAnim(HSD_AObj* aobj, void* caller_obj, void (*updatecb)())
 //8036439C
 HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc)
 {
-    if (aobjdesc != NULL) {
-        HSD_AObj* aobj = HSD_AObjAlloc();
-        if (aobj != NULL) {
-            aobj->flags |= aobjdesc->flags & (AOBJ_LOOP | AOBJ_NO_UPDATE);
-            HSD_AObjSetRewindFrame(aobj, 0.0f);
-            HSD_AObjSetEndFrame(aobj, aobjdesc->end_frame);
+    if (aobjdesc == NULL) {
+        return NULL;
+    }
+    HSD_AObj* aobj = HSD_AObjAlloc();
+    if (aobj != NULL) {
+        aobj->flags |= aobjdesc->flags & (AOBJ_LOOP | AOBJ_NO_UPDATE);
+        HSD_AObjSetRewindFrame(aobj, 0.0f);
+        HSD_AObjSetEndFrame(aobj, aobjdesc->end_frame);
 
-            HSD_FObj* fobj = (HSD_FObj*)HSD_FObjLoadDesc(aobjdesc->fobjdesc);
-            if (aobj->fobj != NULL)
-                HSD_FObjRemoveAll(aobj->fobj);
-            aobj->fobj = fobj;
+        HSD_FObj* fobj = (HSD_FObj*)HSD_FObjLoadDesc(aobjdesc->fobjdesc);
+        if (aobj->fobj != NULL){
+            HSD_FObjRemoveAll(aobj->fobj);
+        }
+        aobj->fobj = fobj;
 
-            u32 id = aobjdesc->obj_id;
-            if (id != 0) {
-                HSD_Obj* hsd_obj = (HSD_Obj*)HSD_IDGetDataFromTable(0, id, 0);
-                void* obj = (void*)hsd_obj;
+        u32 id = aobjdesc->obj_id;
+        if (id != 0) {
+            HSD_Obj* hsd_obj = (HSD_Obj*)HSD_IDGetDataFromTable(0, id, 0);
+            void* obj = (void*)hsd_obj;
 
-                if (hsd_obj != NULL) {
-                    hsd_obj->ref_count = hsd_obj->ref_count + 1;
-                    assert(hsd_obj->ref_count != HSD_OBJ_NOREF);
-                } else {
-                    obj = (HSD_Obj*)HSD_JObjLoadJoint((HSD_JObjDesc*)aobjdesc->obj_id);
-                }
-
-                HSD_JObj* jobj = HSD_JOBJ(aobj->hsd_obj);
-                if (jobj)
-                    HSD_JObjUnref(jobj);
-                aobj->hsd_obj = obj;
-                return aobj;
+            if (hsd_obj != NULL) {
+                hsd_obj->ref_count = hsd_obj->ref_count + 1;
+                assert(hsd_obj->ref_count != HSD_OBJ_NOREF);
+            } else {
+                obj = (HSD_Obj*)HSD_JObjLoadJoint((HSD_JObjDesc*)aobjdesc->obj_id);
             }
+
+            HSD_JObj* jobj = HSD_JOBJ(aobj->hsd_obj);
+            if (jobj)
+                HSD_JObjUnref(jobj);
+            aobj->hsd_obj = obj;
         }
     }
-    return NULL;
+    return aobj;
 }
 
 //803644CC
