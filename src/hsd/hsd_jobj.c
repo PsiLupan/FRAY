@@ -448,10 +448,10 @@ void JObjUpdateFunc(void* obj, u32 type, FObjData* val)
             }
             break;
         case 4:
-            if (val->fv < 0.f) {
-                val->fv = 0.f;
+            if (val->fv < 0.0) {
+                val->fv = 0.0;
             }
-            if (1.875f < val->fv) {
+            if (1.0 < val->fv) {
                 val->fv = 1.f;
             }
             assert(jobj->aobj != NULL);
@@ -533,13 +533,10 @@ void JObjUpdateFunc(void* obj, u32 type, FObjData* val)
         case 27:
         case 28:
         case 29:
-            /*
-            f32 val = 176.f;
             while(callbacks != NULL){
-                u32 uval = (u32)*fval;
-                (*callbacks->data)(jobj, type, uval);
-                callbacks = callbacks->next; //0x00
-            }*/
+                (*(ufc_callback*)callbacks->data)(jobj, type, val->iv);
+                callbacks = callbacks->next;
+            }
             break;
         case 30:
         case 31:
