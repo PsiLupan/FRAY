@@ -5,13 +5,13 @@
 #include "hsd_memory.h"
 
 static struct _GXViewport {
-   f32 x0,y0,x1,y1,n,f;
+    f32 x0, y0, x1, y1, n, f;
 } GXViewport;
 
-void GX_SetViewport_Wrapper(f32 xOrig, f32 yOrig, f32 wd,f32 ht, f32 nearZ ,f32 farZ)
+void GX_SetViewport_Wrapper(f32 xOrig, f32 yOrig, f32 wd, f32 ht, f32 nearZ, f32 farZ)
 {
     GXViewport.x0 = xOrig;
-    GXViewport.y0 = yOrig;// - 0.5f;
+    GXViewport.y0 = yOrig; // - 0.5f;
     GXViewport.x1 = wd;
     GXViewport.y1 = ht;
     GXViewport.n = nearZ;
@@ -19,7 +19,8 @@ void GX_SetViewport_Wrapper(f32 xOrig, f32 yOrig, f32 wd,f32 ht, f32 nearZ ,f32 
     GX_SetViewport(xOrig, yOrig, wd, ht, nearZ, farZ);
 }
 
-void GX_GetViewportv(f32* vp){
+void GX_GetViewportv(f32* vp)
+{
     vp[0] = GXViewport.x0;
     vp[1] = GXViewport.y0;
     vp[2] = GXViewport.x1;
@@ -82,12 +83,17 @@ HSD_SList* HSD_SListRemove(HSD_SList* list)
 //80378A34
 f32 splGetHermite(f32 fterm, f32 time, f32 p0, f32 p1, f32 d0, f32 d1)
 {
-    f32 fVar1 = time * time;
-    f32 fVar2 = fterm * fterm * fVar1 * time;
-    f32 fVar5 = 3.0f * fVar1 * fterm * fterm;
-    f32 fVar3 = fVar2 - fVar1 * fterm;
-    f32 fVar4 = 2.0f * fVar2 * fterm;
-    return d1 * fVar3 + d0 * (time + (fVar3 - fVar1 * fterm)) + p0 * (1.0f + (fVar4 - fVar5)) + p1 * (-fVar4 + fVar5);
+    f32 fVar1;
+    f32 fVar2;
+    f32 fVar3;
+    f32 fVar4;
+
+    fVar1 = time * time;
+    fVar2 = fterm * fterm * fVar1 * time;
+    fVar3 = 3.0f * fVar1 * fterm * fterm;
+    fVar4 = fVar2 - fVar1 * fterm;
+    fVar2 = 2.0f * fVar2 * fterm;
+    return d1 * fVar4 + d0 * (time + (fVar4 - fVar1 * fterm)) + p0 * (1.0f + (fVar2 - fVar3)) + p1 * (-fVar2 + fVar3);
 }
 
 //80378F38

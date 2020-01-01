@@ -97,45 +97,59 @@ void HSD_FObjStopAnimAll(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 fr
 //8036AC10
 static f32 FObjLoadData(u8** curr_parse, u8 frac)
 {
-    if (frac == 0) {
-        u8* parse_pos = *curr_parse;
-        *curr_parse += 1;
-        u32 data = *parse_pos;
+    f32 result;
+    u32 data;
+    u8* parse_pos;
+
+    if ((frac & 0xFF) == 0) {
         parse_pos = *curr_parse;
+        data = *parse_pos;
         *curr_parse += 1;
-        data |= (*parse_pos << 8);
+
         parse_pos = *curr_parse;
+        data |= (*parse_pos) << 8;
         *curr_parse += 1;
-        data |= (*parse_pos << 16);
+
         parse_pos = *curr_parse;
+        data |= (*parse_pos) << 16;
         *curr_parse += 1;
-        return (f32)(data | (*parse_pos << 24));
+
+        parse_pos = *curr_parse;
+        data |= (*parse_pos) << 24;
+        *curr_parse += 1;
+
+        return (f32)(data);
     }
 
-    f32 fvar;
     u8 flag = frac & 0xE0;
     if (flag == 96) {
         u8 val = (**curr_parse);
         *curr_parse += 1;
-        fvar = val;
+        result = val;
     } else if (flag < 96) {
         if (flag == 64) {
-            u8* parse_pos = *curr_parse;
-            u32 data = *parse_pos;
+            parse_pos = *curr_parse;
+            data = (*parse_pos);
             *curr_parse += 1;
-            data |= (*parse_pos << 8);
+
+            parse_pos = *curr_parse;
+            data |= (*parse_pos) << 8;
             *curr_parse += 1;
-            return (f32)(data);
+
+            result = (f32)(data);
         } else {
-            if (flag > 64 || flag != 32) {
+            if (63 < flag || flag != 32) {
                 return 0.0f;
             } else {
-                u8* parse_pos = *curr_parse;
-                u32 data = *parse_pos;
+                parse_pos = *curr_parse;
+                data = (*parse_pos);
                 *curr_parse += 1;
-                data |= (*parse_pos << 8);
+
+                parse_pos = *curr_parse;
+                data |= (*parse_pos) << 8;
                 *curr_parse += 1;
-                return (f32)(data);
+
+                result = (f32)(data);
             }
         }
     } else {
@@ -144,9 +158,9 @@ static f32 FObjLoadData(u8** curr_parse, u8 frac)
         }
         u8 val = (**curr_parse);
         *curr_parse += 1;
-        fvar = (f32)val;
+        result = (f32)val;
     }
-    return fvar / (1 << (frac & 0x1F));
+    return result / (1 << (frac & 0x1F));
 }
 
 //8036ADDC
@@ -221,7 +235,7 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
             break;
 
         case HSD_A_OP_KEY:
-            if (!(fobj->flags & 0x80)){
+            if (!(fobj->flags & 0x80)) {
                 return;
             }
             fobjdata.fv = fobj->p0;
@@ -398,7 +412,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
     f64 dVar6;
     f64 dVar7;
 
-    dVar7 = (double)frame;
+    dVar7 = (f64)frame;
     dVar6 = 0.0F;
     if (fobj == (HSD_FObj*)0x0) {
         uVar2 = 0;
