@@ -452,12 +452,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                                         break;
                                     if (uVar2 == 6) {
                                         fobj->time = (fobj->time + dVar6);
-                                        if ((fobj->flags & 0x40) != 0) {
-                                            fobj->op_intrp = fobj->op;
-                                            fobj->flags &= 0xbf;
-                                            fobj->flags |= 0x80;
-                                            fobj->p0 = fobj->p1;
-                                        }
+                                        FObjLaunchKeyData(fobj);
                                         FObjUpdateAnim(fobj, obj, obj_update);
                                         return;
                                     }
