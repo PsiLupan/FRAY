@@ -3,6 +3,7 @@
 
 #include <gctypes.h>
 
+#include "hsd_fobj.h"
 #include "hsd_object.h"
 #include "hsd_util.h"
 
@@ -94,7 +95,7 @@ void HSD_RObjReqAnimAllByFlags(HSD_RObj*, u32, f32);
 void HSD_RObjReqAnimAll(HSD_RObj*, f32);
 void HSD_RObjAddAnimAll(HSD_RObj*, HSD_RObjAnimJoint*);
 u32 HSD_RObjGetGlobalPosition(HSD_RObj*, u32, guVector*);
-void HSD_RObjUpdateAll(HSD_RObj*, void*, void (*)(void*, u32, update*));
+void HSD_RObjUpdateAll(HSD_RObj*, void*, void (*)(void*, u32, FObjData*));
 void HSD_RObjResolveRefsAll(HSD_RObj*, HSD_RObjDesc*);
 HSD_RObj* HSD_RObjLoadDesc(HSD_RObjDesc*);
 void HSD_RObjRemove(HSD_RObj*);

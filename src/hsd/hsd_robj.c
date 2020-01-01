@@ -178,13 +178,13 @@ u32 HSD_RObjGetGlobalPosition(HSD_RObj* robj, u32 flag, guVector* pos)
 }
 
 //8037BFB0
-void HSD_RObjUpdateAll(HSD_RObj* robj, void* jobj, void (*obj_update)(void*, u32, update*))
+void HSD_RObjUpdateAll(HSD_RObj* robj, void* jobj, void (*obj_update)(void*, u32, FObjData*))
 {
     if (robj != NULL) {
         guVector pos;
         u32 pos_count = HSD_RObjGetGlobalPosition(robj, 1, &pos);
         if (pos_count != 0) {
-            update up;
+            FObjData up;
             up.p = pos;
             (*obj_update)(jobj, 0x35, &up);
             (*obj_update)(jobj, 0x38, NULL);

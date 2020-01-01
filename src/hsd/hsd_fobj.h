@@ -54,6 +54,8 @@ typedef struct _HSD_FObjDesc {
 
 typedef struct _HSD_FObjData {
     f32 fv;
+    s32 iv;
+    guVector p;
 } FObjData;
 
 HSD_ObjAllocData* HSD_FObjGetAllocData(void);

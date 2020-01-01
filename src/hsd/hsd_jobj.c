@@ -412,7 +412,7 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj,
 }
 
 // 8036FDC0
-void JObjUpdateFunc(void* obj, u32 type, update* val)
+void JObjUpdateFunc(void* obj, u32 type, FObjData* val)
 {
     HSD_JObj* jobj = (HSD_JObj*)obj;
     if (jobj != NULL) {
