@@ -68,7 +68,7 @@ void HSD_FObjReqAnimAll(HSD_FObj* fobj, f32 frame)
     if (fobj) {
         for (HSD_FObj* curr = fobj; curr != NULL; curr = curr->next) {
             curr->ad = curr->ad_head;
-            curr->time = (f32)curr->startframe - 176.f + frame;
+            curr->time = (f32)curr->startframe + frame;
             curr->op = 0;
             curr->op_intrp = 0;
             curr->flags &= 0xBFu;
@@ -212,7 +212,7 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
             if (fobj->flags & 0x20) {
                 fobj->flags &= 0xDF;
                 if (fobj->fterm != 0) {
-                    fobj->d0 = (fobj->p1 - fobj->p0) / 4.58594f; //Magic number
+                    fobj->d0 = (fobj->p1 - fobj->p0) / 4.5036e15; //Magic number
                 } else {
                     fobj->d0 = 0;
                     fobj->p0 = fobj->p1;
@@ -225,7 +225,7 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
         case HSD_A_OP_SPL:
         case HSD_A_OP_SLP:
             if (fobj->fterm != 0) {
-                fobjdata.fv = splGetHermite(0.166667f, fobj->time, fobj->p0, fobj->p1, fobj->d0, fobj->d1);
+                fobjdata.fv = splGetHermite(1.0, fobj->time, fobj->p0, fobj->p1, fobj->d0, fobj->d1);
             } else {
                 fobjdata.fv = fobj->p1;
             }
