@@ -61,7 +61,7 @@ void HSD_FObjInitAllocData(void);
 void HSD_FObjRemove(HSD_FObj*);
 void HSD_FObjRemoveAll(HSD_FObj*);
 u8 HSD_FObjSetState(HSD_FObj*, u8);
-u8 HSD_FObjGetState(HSD_FObj*);
+u32 HSD_FObjGetState(HSD_FObj*);
 void HSD_FObjReqAnimAll(HSD_FObj*, f32);
 void HSD_FObjStopAnim(HSD_FObj*, void*, void (*)(), f32);
 void HSD_FObjStopAnimAll(HSD_FObj*, void*, void (*)(), f32);
