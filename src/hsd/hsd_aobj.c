@@ -38,7 +38,7 @@ u32 HSD_AObjGetFlags(HSD_AObj* aobj)
 void HSD_AObjSetFlags(HSD_AObj* aobj, u32 flags)
 {
     if (aobj != NULL)
-        aobj->flags |= flags & 0x30000000;
+        aobj->flags |= (flags & (AOBJ_LOOP | AOBJ_NO_UPDATE));
 }
 
 //80364038
@@ -152,7 +152,7 @@ HSD_AObj* HSD_AObjLoadDesc(HSD_AObjDesc* aobjdesc)
     if (aobjdesc != NULL) {
         HSD_AObj* aobj = HSD_AObjAlloc();
         if (aobj != NULL) {
-            aobj->flags |= aobjdesc->flags & 0x30000000;
+            aobj->flags |= aobjdesc->flags & (AOBJ_LOOP | AOBJ_NO_UPDATE);
             HSD_AObjSetRewindFrame(aobj, 0.0f);
             HSD_AObjSetEndFrame(aobj, aobjdesc->end_frame);
 
