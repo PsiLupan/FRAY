@@ -60,7 +60,7 @@ void HSD_FObjReqAnimAll(HSD_FObj* fobj, f32 frame)
             curr->time = (f32)curr->startframe + frame;
             curr->op = 0;
             curr->op_intrp = 0;
-            curr->flags &= 0xBFu;
+            curr->flags &= 0xBF;
             curr->nb_pack = 0;
             curr->fterm = 0;
             curr->p0 = 0.f;
@@ -79,7 +79,7 @@ void HSD_FObjStopAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 frame
         if (fobj->op_intrp == HSD_A_OP_KEY) {
             HSD_FObjInterpretAnim(fobj, obj, obj_update, frame);
         }
-        fobj->flags &= 0xF0u;
+        fobj->flags &= 0xF0;
     }
 }
 
@@ -146,7 +146,7 @@ static f32 FObjLoadData(u8** curr_parse, u8 frac)
         *curr_parse += 1;
         fvar = (f32)val;
     }
-    return fvar / (1 << (frac & 0x1f));
+    return fvar / (1 << (frac & 0x1F));
 }
 
 //8036ADDC
@@ -176,8 +176,8 @@ static void FObjLaunchKeyData(HSD_FObj* fobj)
 {
     if (fobj->flags & 0x40) {
         fobj->op_intrp = fobj->op;
-        fobj->flags &= 0xBFu;
-        fobj->flags |= 0x80u;
+        fobj->flags &= 0xBF;
+        fobj->flags |= 0x80;
         fobj->p0 = fobj->p1;
     }
 }
@@ -201,7 +201,7 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
             if (fobj->flags & 0x20) {
                 fobj->flags &= 0xDF;
                 if (fobj->fterm != 0) {
-                    fobj->d0 = (fobj->p1 - fobj->p0) / 4.5036e15; //Magic number
+                    fobj->d0 = (fobj->p1 - fobj->p0) / (f32)fobj->fterm;
                 } else {
                     fobj->d0 = 0;
                     fobj->p0 = fobj->p1;
@@ -214,15 +214,16 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
         case HSD_A_OP_SPL:
         case HSD_A_OP_SLP:
             if (fobj->fterm != 0) {
-                fobjdata.fv = splGetHermite(1.0, fobj->time, fobj->p0, fobj->p1, fobj->d0, fobj->d1);
+                fobjdata.fv = splGetHermite(1.0 / fobj->fterm, fobj->time, fobj->p0, fobj->p1, fobj->d0, fobj->d1);
             } else {
                 fobjdata.fv = fobj->p1;
             }
             break;
 
         case HSD_A_OP_KEY:
-            if (!(fobj->flags & 0x80))
+            if (!(fobj->flags & 0x80)){
                 return;
+            }
             fobjdata.fv = fobj->p0;
             fobj->flags &= 0x7F;
             break;

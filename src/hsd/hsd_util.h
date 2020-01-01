@@ -31,12 +31,6 @@ typedef struct _HSD_Spline {
     f32* segPoly[5]; //0x14
 } HSD_Spline;
 
-typedef union _update {
-    f32 fv;
-    s32 iv;
-    guVector p;
-} update;
-
 void GX_SetViewport_Wrapper(f32, f32, f32, f32, f32, f32);
 void GX_GetViewport(f32*, f32*, f32*, f32*, f32*, f32*);
 void GX_GetViewportv(f32*);
