@@ -449,7 +449,7 @@ void JObjUpdateFunc(void* obj, u32 type, FObjData* val)
             break;
         case 4:
             if (val->fv < 0.0) {
-                val->fv = 0.0;
+                val->fv = 0.f;
             }
             if (1.0 < val->fv) {
                 val->fv = 1.f;
@@ -570,24 +570,24 @@ void JObjUpdateFunc(void* obj, u32 type, FObjData* val)
             }
             break;
         case 50:
-            jobj->mtx[0][0] = val->p.x;
-            jobj->mtx[1][0] = val->p.y;
-            jobj->mtx[2][0] = val->p.z;
+            guMtxRowCol(jobj->mtx, 0, 0) = val->p.x;
+            guMtxRowCol(jobj->mtx, 1, 0) = val->p.y;
+            guMtxRowCol(jobj->mtx, 2, 0) = val->p.z;
             break;
         case 51:
-            jobj->mtx[0][1] = val->p.x;
-            jobj->mtx[1][1] = val->p.y;
-            jobj->mtx[2][1] = val->p.z;
+            guMtxRowCol(jobj->mtx, 0, 1) = val->p.x;
+            guMtxRowCol(jobj->mtx, 1, 1) = val->p.y;
+            guMtxRowCol(jobj->mtx, 2, 1) = val->p.z;
             break;
         case 52:
-            jobj->mtx[0][2] = val->p.x;
-            jobj->mtx[1][2] = val->p.y;
-            jobj->mtx[2][2] = val->p.z;
+            guMtxRowCol(jobj->mtx, 0, 2) = val->p.x;
+            guMtxRowCol(jobj->mtx, 1, 2) = val->p.y;
+            guMtxRowCol(jobj->mtx, 2, 2) = val->p.z;
             break;
         case 53:
-            jobj->mtx[0][3] = val->p.x;
-            jobj->mtx[1][3] = val->p.y;
-            jobj->mtx[2][3] = val->p.z;
+            guMtxRowCol(jobj->mtx, 0, 3) = val->p.x;
+            guMtxRowCol(jobj->mtx, 1, 3) = val->p.y;
+            guMtxRowCol(jobj->mtx, 2, 3) = val->p.z;
             break;
         case 54:
         case 55:
