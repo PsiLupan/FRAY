@@ -403,26 +403,27 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
     result = 5;
     fobj->flags = (fobj->flags & 0xF0) | result;
 #else
-    u32 uVar1;
+    u32 fterm;
     u32 uVar2;
     s32 iVar3;
     u8 state;
-    u8* pbVar4;
+    u8* read_ptr;
     f64 dVar5;
-    f64 dVar6;
-    f64 dVar7;
+    f32 fVar6;
 
-    dVar7 = (f64)frame;
-    dVar6 = 0.0F;
-    if (fobj == (HSD_FObj*)0x0) {
+    if (fobj == NULL) {
         uVar2 = 0;
     } else {
         uVar2 = HSD_FObjGetState(fobj);
     }
-    if (uVar2 == 0 || (fobj->time = (fobj->time + dVar7), (fobj->time < 0.0))) {
-        return;
+    if (uVar2 == 0) {
+        fobj->time = (fobj->time + frame);
+        if (fobj->time < 0.0) {
+            return;
+        }
     }
 
+    fVar6 = 0.0F;
     do {
         while (true) {
             while (true) {
@@ -432,8 +433,8 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                             do {
                                 while (true) {
                                     while (uVar2 == 4) {
-                                        uVar1 = fobj->fterm;
-                                        if (fobj->time < (f32)uVar1) {
+                                        fterm = fobj->fterm;
+                                        if (fobj->time < (f32)fterm) {
                                             FObjUpdateAnim(fobj, obj, obj_update);
                                             if (fobj == NULL) {
                                                 return;
@@ -442,22 +443,22 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                                             return;
                                         }
                                         uVar2 = 3;
-                                        dVar6 = (f64)uVar1;
-                                        fobj->time = fobj->time - (f32)uVar1;
+                                        fVar6 = (f32)fterm;
+                                        fobj->time = fobj->time - (f32)fterm;
                                         if (fobj != NULL) {
-                                            fobj->flags = (fobj->flags & 0xf0) | 3;
+                                            fobj->flags = (fobj->flags & 0xF0) | 3;
                                         }
                                     }
                                     if (uVar2 < 4)
                                         break;
                                     if (uVar2 == 6) {
-                                        fobj->time = (fobj->time + dVar6);
+                                        fobj->time = (fobj->time + fVar6);
                                         FObjLaunchKeyData(fobj);
                                         FObjUpdateAnim(fobj, obj, obj_update);
                                         return;
                                     }
                                     if ((uVar2 < 6) && (uVar2 = 4, fobj != NULL)) {
-                                        fobj->flags = (fobj->flags & 0xf0) | 4;
+                                        fobj->flags = (fobj->flags & 0xF0) | 4;
                                     }
                                 }
                                 if (uVar2 == 0) {
@@ -469,41 +470,40 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                             if ((fobj->flags & 0x80) != 0) {
                                 FObjUpdateAnim(fobj, obj, obj_update);
                             }
-                            if (fobj == (HSD_FObj*)0x0) {
+                            if (fobj == NULL) {
                                 state = 0;
                             } else {
-                                state = fobj->flags & 0xf;
+                                state = fobj->flags & 0xF;
                             }
 
-                            if (fobj->ad + -(s32)fobj->ad_head < (u8*)fobj->length) {
+                            if ((fobj->ad - fobj->ad_head) < fobj->length) {
                                 uVar2 = 0;
                                 iVar3 = 0;
                                 do {
-                                    pbVar4 = fobj->ad;
-                                    fobj->ad = pbVar4 + 1;
-                                    state = *pbVar4;
+                                    read_ptr = fobj->ad;
+                                    fobj->ad = read_ptr + 1;
+                                    state = *read_ptr;
                                     uVar2 |= (state & 0x7f) << iVar3;
                                     iVar3 = iVar3 + 7;
                                 } while ((state & 0x80) != 0);
                                 fobj->fterm = (u16)uVar2;
                                 fobj->flags |= 0x20;
                                 if (fobj != NULL) {
-                                    fobj->flags = (fobj->flags & 0xf0) | 2;
+                                    fobj->flags = (fobj->flags & 0xF0) | 2;
                                 }
                                 uVar2 = 2;
                             } else {
                                 uVar2 = 6;
                             }
                         }
-                        if (fobj->ad + -(s32)fobj->ad_head < (u8*)fobj->length)
+                        if ((fobj->ad - fobj->ad_head) < fobj->length)
                             break;
                         uVar2 = 6;
                     }
                     fobj->op_intrp = fobj->op;
                     if (fobj->nb_pack == 0) {
-                        fobj->op = *fobj->ad & 0xf;
-                        iVar3 = parseOpCode(&fobj->ad);
-                        fobj->nb_pack = (u16)iVar3;
+                        fobj->op = *fobj->ad & 0xF;
+                        fobj->nb_pack = (u16)parseOpCode(&fobj->ad);
                     }
                     fobj->nb_pack = fobj->nb_pack - 1;
                     state = fobj->op;
@@ -512,7 +512,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                     if (fobj == NULL) {
                         uVar2 = 0;
                     } else {
-                        uVar2 = fobj->flags & 0xf;
+                        uVar2 = fobj->flags & 0xF;
                     }
 
                     fobj->p0 = fobj->p1;
@@ -532,10 +532,10 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                 if (state < 4)
                     break;
                 if (state == 6) {
-                    if (fobj == (HSD_FObj*)0x0) {
+                    if (fobj == NULL) {
                         uVar2 = 0;
                     } else {
-                        uVar2 = fobj->flags & 0xf;
+                        uVar2 = fobj->flags & 0xF;
                     }
 
                     FObjLaunchKeyData(fobj);
@@ -582,7 +582,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                     fobj->p1 = dVar5;
                     if (fobj->op_intrp != 5) {
                         fobj->d0 = fobj->d1;
-                        fobj->d1 = dVar7;
+                        fobj->d1 = 0.0F;
                     }
                     if (uVar2 == 1) {
                         uVar2 = 3;
@@ -604,7 +604,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                 fobj->d0 = fobj->d1;
                 dVar5 = FObjLoadData(&fobj->ad, fobj->frac_value);
                 fobj->p1 = dVar5;
-                fobj->d1 = dVar7;
+                fobj->d1 = 0.0F;
                 if (uVar2 == 1) {
                     state = 3;
                 } else {
@@ -625,7 +625,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
         fobj->p1 = dVar5;
         if (fobj->op_intrp != 5) {
             fobj->d0 = fobj->d1;
-            fobj->d1 = dVar7;
+            fobj->d1 = 0.0F;
         }
         if (uVar2 == 1) {
             uVar2 = 3;
@@ -633,7 +633,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
             uVar2 = 4;
         }
         if (fobj != NULL) {
-            fobj->flags = (u8)uVar2 | (fobj->flags & 0xf0);
+            fobj->flags = (u8)uVar2 | (fobj->flags & 0xF0);
         }
     } while (true);
 #endif
