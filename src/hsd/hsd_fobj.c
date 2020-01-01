@@ -642,22 +642,8 @@ HSD_FObj* HSD_FObjLoadDesc(HSD_FObjDesc* desc)
 {
     if (desc) {
         HSD_FObj* fobj = HSD_FObjAlloc();
-        HSD_FObjDesc* next_desc = desc->next;
-        HSD_FObj* next_fobj = NULL;
-        if (next_desc) {
-            next_fobj = HSD_FObjAlloc();
-            HSD_FObj* next_next_fobj = HSD_FObjLoadDesc(next_desc->next);
-            next_fobj->next = next_next_fobj;
-            next_fobj->startframe = (u16)next_desc->startframe;
-            next_fobj->obj_type = next_desc->type;
-            next_fobj->frac_value = next_desc->frac_value;
-            next_fobj->frac_slope = next_desc->frac_slope;
-            next_fobj->ad_head = next_desc->ad;
-            next_fobj->length = next_desc->length;
-            next_fobj->flags = 0;
-        }
-        fobj->next = next_fobj;
-        fobj->startframe = (u16)desc->startframe;
+        fobj->next = HSD_FObjLoadDesc(desc->next);
+        fobj->startframe = (s16)desc->startframe;
         fobj->obj_type = desc->type;
         fobj->frac_value = desc->frac_value;
         fobj->frac_slope = desc->frac_slope;
