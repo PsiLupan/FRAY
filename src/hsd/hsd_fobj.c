@@ -150,13 +150,13 @@ static f32 FObjLoadData(u8** curr_parse, u8 frac)
 }
 
 //8036ADDC
-static u16 parseOpCode(u8** curr_parse)
+static u8 parseOpCode(u8** curr_parse)
 {
     u8* temp = *curr_parse;
     *curr_parse = temp + 1;
     u32 lshift = 3;
 
-    u16 result = ((*temp >> 4) & 7) + 1;
+    u8 result = ((*temp >> 4) & 7) + 1;
     if ((*temp & 0x80) == 0) {
         return result;
     }
