@@ -395,36 +395,7 @@ void HSD_JObjAddAnimAll(HSD_JObj* jobj,
                 sh_joint = sh_joint->child;
             }
             while (i != NULL) {
-                HSD_AnimJoint* i_an_joint = NULL;
-                HSD_MatAnimJoint* i_mat_joint = NULL;
-                HSD_ShapeAnimJoint* i_sh_joint = NULL;
-
-                HSD_JObjAddAnim(i, an_joint, mat_joint, sh_joint);
-                if (JOBJ_INSTANCE(i)) {
-                    HSD_JObj* j = i->child;
-                    if (an_joint != NULL) {
-                        i_an_joint = an_joint->child;
-                    }
-                    if (mat_joint != NULL) {
-                        i_mat_joint = mat_joint->child;
-                    }
-                    if (sh_joint != NULL) {
-                        i_sh_joint = sh_joint->child;
-                    }
-                    while (j != NULL) {
-                        HSD_JObjAddAnimAll(j, i_an_joint, i_mat_joint, i_sh_joint);
-                        j = j->next;
-                        if (i_an_joint != NULL) {
-                            i_an_joint = i_an_joint->next;
-                        }
-                        if (i_mat_joint != NULL) {
-                            i_mat_joint = i_mat_joint->next;
-                        }
-                        if (i_sh_joint != NULL) {
-                            i_sh_joint = i_sh_joint->next;
-                        }
-                    }
-                }
+                HSD_JObjAddAnimAll(i, an_joint, mat_joint, sh_joint);
                 i = i->next;
                 if (an_joint != NULL) {
                     an_joint = an_joint->next;
