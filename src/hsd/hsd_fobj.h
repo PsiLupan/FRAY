@@ -32,7 +32,7 @@ typedef struct _HSD_FObj {
     u8 frac_value; //0x14
     u8 frac_slope; //0x15
     u16 nb_pack; //0x16
-    u16 startframe; //0x18
+    s16 startframe; //0x18
     u16 fterm; //0x1A
     f32 time; //0x1C
     f32 p0; //0x20
@@ -44,7 +44,7 @@ typedef struct _HSD_FObj {
 typedef struct _HSD_FObjDesc {
     struct _HSD_FObjDesc* next; //0x00
     u32 length; //0x04
-    u32 startframe; //0x08
+    f32 startframe; //0x08
     u8 type; //0x0C
     u8 frac_value; //0x0D
     u8 frac_slope; //0x0E
