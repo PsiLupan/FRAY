@@ -54,7 +54,7 @@ u8 HSD_FObjSetState(HSD_FObj* fobj, u8 state)
 }
 
 //8036AA64
-u8 HSD_FObjGetState(HSD_FObj* fobj)
+u32 HSD_FObjGetState(HSD_FObj* fobj)
 {
     if (fobj) {
         return fobj->flags & 0xF;
@@ -440,7 +440,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                                         uVar2 = 3;
                                         dVar6 = (f64)uVar1;
                                         fobj->time = fobj->time - (f32)uVar1;
-                                        if (fobj != (HSD_FObj*)0x0) {
+                                        if (fobj != NULL) {
                                             fobj->flags = (fobj->flags & 0xf0) | 3;
                                         }
                                     }
@@ -643,7 +643,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
 //8036B6CC
 void HSD_FObjInterpretAnimAll(HSD_FObj* fobj, void* caller_obj, void (*callback)(), f32 frame)
 {
-    for (HSD_FObj* curr = fobj; curr != NULL; curr = fobj->next) {
+    for (HSD_FObj* curr = fobj; curr != NULL; curr = curr->next) {
         HSD_FObjInterpretAnim(curr, caller_obj, callback, frame);
     }
 }
