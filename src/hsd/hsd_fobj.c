@@ -68,7 +68,7 @@ void HSD_FObjReqAnimAll(HSD_FObj* fobj, f32 frame)
     if (fobj) {
         for (HSD_FObj* curr = fobj; curr != NULL; curr = curr->next) {
             curr->ad = curr->ad_head;
-            curr->time = (f32)curr->startframe - 176.f + frame;
+            curr->time = (f32)curr->startframe + frame;
             curr->op = 0;
             curr->op_intrp = 0;
             curr->flags &= 0xBFu;
