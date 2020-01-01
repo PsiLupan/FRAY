@@ -19,28 +19,17 @@ void HSD_FObjInitAllocData(void)
 //8036A974
 void HSD_FObjRemove(HSD_FObj* fobj)
 {
-    if (fobj)
+    if (fobj) {
         HSD_FObjFree(fobj);
+    }
 }
 
 //8036A99C
 void HSD_FObjRemoveAll(HSD_FObj* fobj)
 {
     if (fobj) {
-        HSD_FObj* child = fobj->next;
-        if (child) {
-            HSD_FObj* child_2 = child->next;
-            if (child_2) {
-                HSD_FObj* child_3 = child_2->next;
-                if (child_3) {
-                    HSD_FObjRemoveAll(child_3->next);
-                    HSD_FObjRemove(child_3);
-                }
-                HSD_FObjFree(child_2);
-            }
-            HSD_FObjFree(child);
-        }
-        HSD_FObjFree(fobj);
+        HSD_FObjRemoveAll(fobj->next);
+        HSD_FObjRemove(fobj);
     }
 }
 
@@ -128,7 +117,7 @@ static f32 FObjLoadData(u8** curr_parse, u8 frac)
     if (flag == 96) {
         u8 val = (**curr_parse);
         *curr_parse += 1;
-        fvar = val - 176.f;
+        fvar = val;
     } else if (flag < 96) {
         if (flag == 64) {
             u8* parse_pos = *curr_parse;
@@ -136,7 +125,7 @@ static f32 FObjLoadData(u8** curr_parse, u8 frac)
             *curr_parse += 1;
             data |= (*parse_pos << 8);
             *curr_parse += 1;
-            return (f32)(data)-176.f;
+            return (f32)(data);
         } else {
             if (flag > 64 || flag != 32) {
                 return 0.0f;
@@ -146,7 +135,7 @@ static f32 FObjLoadData(u8** curr_parse, u8 frac)
                 *curr_parse += 1;
                 data |= (*parse_pos << 8);
                 *curr_parse += 1;
-                return (f32)(data)-176.f;
+                return (f32)(data);
             }
         }
     } else {
@@ -155,9 +144,9 @@ static f32 FObjLoadData(u8** curr_parse, u8 frac)
         }
         u8 val = (**curr_parse);
         *curr_parse += 1;
-        fvar = val - 176.f;
+        fvar = (f32)val;
     }
-    return fvar / ((1 << (frac & 0x1f)) - 176.f);
+    return fvar / (1 << (frac & 0x1f));
 }
 
 //8036ADDC
