@@ -276,22 +276,11 @@ void HSD_JObjReqAnimByFlags(HSD_JObj* jobj, u32 flags, f32 frame)
 void HSD_JObjReqAnimAllByFlags(HSD_JObj* jobj, u32 flags, f32 frame)
 {
     if (jobj != NULL) {
-        if ((flags & SKELETON) != 0) {
-            HSD_AObjReqAnim(jobj->aobj, frame);
-        }
-        if (union_type_dobj(jobj)) {
-            HSD_DObjReqAnimAllByFlags(jobj->u.dobj, flags, frame);
-        }
-        HSD_RObjReqAnimAllByFlags(jobj->robj, flags, frame);
+        HSD_JObjReqAnimByFlags(jobj, flags, frame);
 
         if (JOBJ_INSTANCE(jobj)) {
             for (HSD_JObj* i = jobj->child; i != NULL; i = i->next) {
-                HSD_JObjReqAnimByFlags(i, flags, frame);
-                if (JOBJ_INSTANCE(i)) {
-                    for (HSD_JObj* n = i->child; n != NULL; n = n->next) {
-                        HSD_JObjReqAnimAllByFlags(n, flags, frame);
-                    }
-                }
+                HSD_JObjReqAnimAllByFlags(i, flags, frame);
             }
         }
     }
