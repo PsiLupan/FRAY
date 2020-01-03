@@ -86,7 +86,7 @@ void HSD_FObjStopAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 frame
         if (fobj->op_intrp == HSD_A_OP_KEY) {
             HSD_FObjInterpretAnim(fobj, obj, obj_update, frame);
         }
-        fobj->flags &= 0xF0;
+        HSD_FObjSetState(fobj, 0);
     }
 }
 
@@ -94,10 +94,7 @@ void HSD_FObjStopAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 frame
 void HSD_FObjStopAnimAll(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 frame)
 {
     for (HSD_FObj* curr = fobj; curr != NULL; curr = curr->next) {
-        if (fobj->op_intrp == HSD_A_OP_KEY) {
-            HSD_FObjInterpretAnim(curr, obj, obj_update, frame);
-        }
-        curr->flags &= 0xF0u;
+        HSD_FObjStopAnim(curr, obj, obj_update, frame);
     }
 }
 
@@ -294,7 +291,7 @@ static u32 FObjAnimSLP(HSD_FObj* fobj)
     fobj->d0 = fobj->d1;
     fobj->d1 = parseFloat(&fobj->ad, fobj->frac_slope);
 
-    return HSD_FObjGetState(fobj);
+    return state;
 }
 
 static u32 FObjAnimKey(HSD_FObj* fobj)
@@ -401,8 +398,7 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
 {
     FObjData fobjdata;
     if (obj_update) {
-        u8 state = fobj->op_intrp;
-        switch (state) {
+        switch (fobj->op_intrp) {
         case HSD_A_OP_CON:
             if (fobj->time < (f32)fobj->fterm) {
                 fobjdata.fv = fobj->p0;
@@ -485,8 +481,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                         return;
                     }
                     if (state < 6) {
-                        state = 4;
-                        HSD_FObjSetState(fobj, 4);
+                        state = HSD_FObjSetState(fobj, 4);
                     }
                 }
             }
@@ -494,8 +489,7 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
                 break;
             fterm = (f32)fobj->fterm;
             fobj->time -= (f32)fobj->fterm;
-            state = 3;
-            HSD_FObjSetState(fobj, 3);
+            state = HSD_FObjSetState(fobj, 3);
         }
         FObjUpdateAnim(fobj, obj, obj_update);
         HSD_FObjSetState(fobj, 5);

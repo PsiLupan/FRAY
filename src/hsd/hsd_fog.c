@@ -30,7 +30,7 @@ void HSD_FogSet(HSD_Fog* fog)
             f32 v[6];
             GX_GetViewportv(v);
             HSD_FogAdj* fogadj = fog->fog_adj;
-            u32 offset = (v[0] + (v[2] * (f32)fogadj->center));
+            s32 offset = (v[0] + (v[2] * (f32)fogadj->center));
             if (offset < 0) {
                 offset = 0;
             } else if (offset > 640) {
