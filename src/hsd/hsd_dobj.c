@@ -108,6 +108,7 @@ void HSD_DObjAnimAll(HSD_DObj* dobj)
 {
     if (dobj != NULL) {
         for (HSD_DObj* i = dobj; i != NULL; i = i->next) {
+            HSD_AObjInterpretAnim(dobj->aobj, dobj, NULL);
             HSD_PObjAnimAll(i->pobj);
             HSD_MObjAnim(i->mobj);
         }
