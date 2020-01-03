@@ -584,7 +584,7 @@ void HSD_TExpAlphaIn(HSD_TExp* texp, HSD_TEInput sel_a, HSD_TExp* exp_a, HSD_TEI
 }
 
 //80384050
-void HSD_TExpOrder(HSD_TExp* texp, void* tex, u8 chan)
+void HSD_TExpOrder(HSD_TExp* texp, HSD_TObj* tex, u8 chan)
 {
     HSD_CheckAssert("HSD_TExpOrder: texp == NULL", texp != NULL);
     HSD_CheckAssert("HSD_TExpOrder: texp->type != HSD_TE_TEV", HSD_TExpGetType(texp) == HSD_TE_TEV);
