@@ -269,16 +269,9 @@ static void WObjInfoInit(void)
 void HSD_WObjUnref(HSD_WObj* wobj)
 {
     if (wobj != NULL) {
-        u16 ref_count = wobj->parent.ref_count;
-        u32 lz = __builtin_clz(-ref_count);
-        lz = lz >> 5;
-        if (lz == 0) {
-            wobj->parent.ref_count -= 1;
-            lz = __builtin_clz(-ref_count);
-            lz = lz >> 5;
-        }
-        if (lz != 0) {
+        if (ref_DEC(&wobj->parent) != 0) {
             HSD_OBJECT_METHOD(wobj)->release((HSD_Class*)wobj);
+            HSD_OBJECT_METHOD(wobj)->destroy((HSD_Class*)wobj);
         }
     }
 }
