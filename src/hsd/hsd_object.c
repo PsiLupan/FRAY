@@ -334,7 +334,7 @@ HSD_ClassInfo* hsdSearchClassInfo(char* class_name)
 
 s32 ref_CNT(HSD_Obj* obj)
 {
-    if (obj->ref_count == -1) {
+    if (obj->ref_count == HSD_OBJ_NOREF) {
         return -1;
     } else {
         return obj->ref_count;

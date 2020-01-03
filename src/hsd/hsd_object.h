@@ -47,8 +47,8 @@ typedef struct _HSD_ClassInfo {
 
 typedef struct _HSD_Object {
     struct _HSD_Class parent;
-    u16 ref_count;
-    u16 ref_count_individual;
+    s16 ref_count;
+    s16 ref_count_individual;
 } HSD_Obj;
 
 typedef struct _HSD_ObjInfo {
