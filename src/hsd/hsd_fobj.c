@@ -195,26 +195,6 @@ static f32 parseFloat(u8** curr_parse, u8 frac)
     return result / (1 << (frac & 0x1F));
 }
 
-static u32 FObjAnimSPL0(HSD_FObj* fobj)
-{
-    u32 state = HSD_FObjGetState(fobj);
-    assert(state == 1 || state == 2);
-
-    fobj->p0 = fobj->p1;
-    fobj->d0 = fobj->d1;
-    fobj->p1 = parseFloat(&fobj->ad, fobj->frac_value);
-    fobj->d1 = 0.0F;
-
-    u8 temp;
-    if (state == 1){
-        temp = 3;
-    }else{
-        temp = 4;
-    }
-
-    return HSD_FObjSetState(fobj, temp);
-}
-
 static u32 FObjAnimCON(HSD_FObj* fobj)
 {
     u32 state = HSD_FObjGetState(fobj);
@@ -254,6 +234,26 @@ static u32 FObjAnimLinear(HSD_FObj* fobj)
     } else {
         temp = 4;
     }
+    return HSD_FObjSetState(fobj, temp);
+}
+
+static u32 FObjAnimSPL0(HSD_FObj* fobj)
+{
+    u32 state = HSD_FObjGetState(fobj);
+    assert(state == 1 || state == 2);
+
+    fobj->p0 = fobj->p1;
+    fobj->d0 = fobj->d1;
+    fobj->p1 = parseFloat(&fobj->ad, fobj->frac_value);
+    fobj->d1 = 0.0F;
+
+    u8 temp;
+    if (state == 1){
+        temp = 3;
+    }else{
+        temp = 4;
+    }
+
     return HSD_FObjSetState(fobj, temp);
 }
 
@@ -311,7 +311,7 @@ static f32 FObjLoadData(HSD_FObj* fobj)
 {
     u32 res;
 
-    if((s32)fobj->ad - (s32)fobj->ad_head < fobj->length){
+    if(fobj->ad - fobj->ad_head < fobj->length){
         fobj->op_intrp = fobj->op;
         if (fobj->nb_pack == 0)
         {
@@ -378,7 +378,7 @@ static u32 FObjLoadWait(HSD_FObj* fobj)
 
     assert(HSD_FObjGetState(fobj) == 3);
 
-    if ((s32)fobj->ad - (s32)fobj->ad_head < fobj->length) {
+    if (fobj->ad - fobj->ad_head < fobj->length) {
         fobj->fterm = parseWait(&fobj->ad);;
         fobj->flags |= 0x20;
         res = HSD_FObjSetState(fobj, 2);
