@@ -11,7 +11,7 @@ Not at present, though if someone has or is willing to create one, I'm open to i
 ## What is the current progress?
 The codebase fluctuates quite often between compilable and non-compilable due to my regular contribution of bad/broken code. A rough estimate of progress around the codebase itself is that HAL's sysdolphin library is recreated to the extent that Melee uses, save for Shadow, Audio, and other small bits and pieces of incomplete code.
 
-At this point in time, the Title Screen renders several textures briefly before crashing. https://youtu.be/UIawNVK_rYM
+At this point in time, the Title Screen renders completely, save for the Press Start and copyright text. However, it ceases rendering after the first frame, leading to no animated effects.
 
 ## How much different from the original game will this be?
 FRAY does not presently attempt to reimplement playing the movie files, creating/manipulating memory card data, the Tournament system, or implementing the game's debug menu. 
