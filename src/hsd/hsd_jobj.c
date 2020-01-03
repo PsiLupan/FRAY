@@ -998,12 +998,7 @@ void HSD_JObjAddNext(HSD_JObj* jobj, HSD_JObj* next)
 
         while (curr != NULL) {
             curr->prev = next;
-            u32 flags = (curr->flags | curr->flags << 10) & (ROOT_OPA | ROOT_TEXEDGE | ROOT_XLU);
-            HSD_JObj* i = next;
-            while (i != NULL && (flags & ~i->flags) != 0) {
-                i->flags |= flags;
-                i = i->prev;
-            }
+            UpdateParentTrspBits(next, curr);
             curr = curr->next;
         }
     }
@@ -1013,11 +1008,13 @@ void HSD_JObjAddNext(HSD_JObj* jobj, HSD_JObj* next)
 HSD_JObj* HSD_JObjGetPrev(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
-        if (!jobj->prev)
+        if (jobj->prev == NULL){
             return NULL;
+        }
 
-        if (jobj->prev->child == jobj)
+        if (jobj->prev->child == jobj){
             return NULL;
+        }
 
         for (HSD_JObj* i = jobj->prev->child; i != NULL; i = i->next) {
             if (i->next == jobj) {
@@ -1298,13 +1295,7 @@ static void resolveIKEffector(HSD_JObj* jobj)
                 guVector w_vec = { guMtxRowCol(prev->mtx, 0, 3), guMtxRowCol(prev->mtx, 1, 3), guMtxRowCol(prev->mtx, 2, 3) };
                 guVector x_vec = { guMtxRowCol(prev->mtx, 0, 0), guMtxRowCol(prev->mtx, 1, 0), guMtxRowCol(prev->mtx, 2, 0) };
                 f32 dot = guVecDotProduct(&x_vec, &x_vec);
-                dot = 1.f / (1e-10f + dot);
-                if (0.f < dot) {
-                    f64 sval = 1.0 / sqrt(dot);
-                    sval = 0.5 * sval * -(dot * sval * sval - 3.0);
-                    sval = 0.5 * sval * -(dot * sval * sval - 3.0);
-                    dot = (f32)(dot * 0.5 * sval * -(dot * sval * sval - 3.0));
-                }
+                dot = sqrtf(1.f / (1e-10f + dot));
                 guVecScale(&x_vec, &x_vec, dot);
                 f32 val = 1.f;
                 if (prev->pvec != NULL) {
