@@ -1115,23 +1115,11 @@ void HSD_JObjClearFlags(HSD_JObj* jobj, u32 flags)
 void HSD_JObjClearFlagsAll(HSD_JObj* jobj, u32 flags)
 {
     if (jobj != NULL) {
-        if ((jobj->flags ^ flags) & CLASSICAL_SCALE) {
-            HSD_JObjSetMtxDirty(jobj);
-        }
-        jobj->flags &= ~flags;
+        HSD_JObjClearFlags(jobj, flags);
 
         if (JOBJ_INSTANCE(jobj)) {
-            for (HSD_JObj* i = jobj->child; i != NULL; i = i->child) {
-                if ((i->flags ^ flags) & CLASSICAL_SCALE) {
-                    HSD_JObjSetMtxDirty(i);
-                }
-                i->flags &= ~flags;
-
-                if (JOBJ_INSTANCE(i)) {
-                    for (HSD_JObj* j = i->child; j != NULL; j = j->child) {
-                        HSD_JObjClearFlagsAll(j, flags);
-                    }
-                }
+            for (HSD_JObj* i = jobj->child; i != NULL; i = i->next) {
+                HSD_JObjClearFlagsAll(i, flags);
             }
         }
     }
