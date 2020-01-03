@@ -79,14 +79,21 @@ void HSD_TObjAddAnimAll(HSD_TObj* tobj, HSD_TexAnim* texanim)
     }
 }
 
+void HSD_TObjReqAnimByFlags(HSD_TObj* tobj, f32 startframe, u32 flags)
+{
+    if (tobj != NULL) {
+        if (flags & TOBJ_ANIM) {
+            HSD_AObjReqAnim(tobj->aobj, startframe);
+        }
+    }
+}
+
 //8035E760
 void HSD_TObjReqAnimAllByFlags(HSD_TObj* tobj, f32 startframe, u32 flags)
 {
     if (tobj != NULL) {
-        for (HSD_TObj* tp = tobj; tp; tp = tp->next) {
-            if (flags & TOBJ_ANIM) {
-                HSD_AObjReqAnim(tobj->aobj, startframe);
-            }
+        for (HSD_TObj* tp = tobj; tp != NULL; tp = tp->next) {
+            HSD_TObjReqAnimByFlags(tp, startframe, flags);
         }
     }
 }
@@ -94,18 +101,13 @@ void HSD_TObjReqAnimAllByFlags(HSD_TObj* tobj, f32 startframe, u32 flags)
 //8035E7D4
 void HSD_TObjReqAnim(HSD_TObj* tobj, f32 startframe)
 {
-    if (tobj != NULL)
-        HSD_AObjReqAnim(tobj->aobj, startframe);
+    HSD_TObjReqAnimByFlags(tobj, startframe, TOBJ_ANIM);
 }
 
 //8035E800
 void HSD_TObjReqAnimAll(HSD_TObj* tobj, f32 startframe)
 {
-    if (tobj != NULL) {
-        for (HSD_TObj* tp = tobj; tp; tp = tp->next) {
-            HSD_AObjReqAnim(tobj->aobj, startframe);
-        }
-    }
+    HSD_TObjReqAnimAllByFlags(tobj, startframe, TOBJ_ANIM);
 }
 
 //8035E860
@@ -261,8 +263,8 @@ void HSD_TObjAnimAll(HSD_TObj* tobj)
 {
     HSD_TObj* tp;
     if (tobj) {
-        for (tp = tobj; tp; tp = tp->next) {
-            HSD_AObjInterpretAnim(tp->aobj, tp, TObjUpdateFunc);
+        for (tp = tobj; tp != NULL; tp = tp->next) {
+            HSD_TObjAnim(tp);
         }
     }
 }
