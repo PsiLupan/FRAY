@@ -113,11 +113,26 @@ typedef struct _HSD_MObjDesc {
     struct _HSD_PEDesc* pedesc;
 } HSD_MObjDesc;
 
+typedef struct _HSD_ChanAnim {
+    struct _HSD_ChanAnim* next;
+    struct _HSD_AObjDesc* aobjdesc;
+} HSD_ChanAnim;
+
+typedef struct _HSD_TevRegAnim {
+    struct _HSD_TevRegAnim* next;
+    struct _HSD_AObjDesc* aobjdesc;
+} HSD_TevRegAnim;
+
+typedef struct _HSD_RenderAnim {
+    struct _HSD_ChanAnim* chananim;
+    struct _HSD_TevRegAnim* reganim;
+} HSD_RenderAnim;
+
 typedef struct _HSD_MatAnim {
     struct _HSD_MatAnim* next;
     struct _HSD_AObjDesc* aobjdesc;
     struct _HSD_TexAnim* texanim;
-    void* renderanim; //struct _HSD_RenderAnim *renderanim; - Commented out until I actually run into an instance of it to test w/
+    struct _HSD_RenderAnim* renderanim;
 } HSD_MatAnim;
 
 typedef struct _HSD_MatAnimJoint {
