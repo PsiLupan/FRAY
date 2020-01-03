@@ -148,6 +148,7 @@ void HSD_JObjSetCurrent(HSD_JObj*);
 HSD_JObj* HSD_JObjGetCurrent(void);
 void HSD_JObjSetupMatrix(HSD_JObj*);
 void HSD_JObjSetupMatrixSub(HSD_JObj*);
+MtxP HSD_JObjGetMtxPtr(HSD_JObj*);
 void HSD_JObjSetMtxDirtySub(HSD_JObj*);
 void HSD_JObjSetDPtclCallback(void (*)(s32, s32, s32, HSD_JObj*));
 

@@ -1333,6 +1333,12 @@ void HSD_JObjSetupMatrixSub(HSD_JObj* jobj)
     return;
 }
 
+MtxP HSD_JObjGetMtxPtr(HSD_JObj* jobj){
+    assert(jobj != NULL);
+    HSD_JObjSetupMatrix(jobj);
+    return jobj->mtx;
+}
+
 // 803732E8
 void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj)
 {
