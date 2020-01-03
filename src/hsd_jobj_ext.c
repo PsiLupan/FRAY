@@ -72,7 +72,7 @@ void JObj_SetAnimSpeed(HSD_JObj* jobj, f32 anim_speed[3])
     } else {
         HSD_JObjAnimAll(jobj);
         f32 curr_frame = JObj_GetFrame(jobj);
-        if (anim_speed[1] < curr_frame) {
+        if (anim_speed[1] <= curr_frame) {
             curr_frame = anim_speed[2] + (curr_frame - anim_speed[1]);
             HSD_JObjReqAnimAll(jobj, curr_frame);
             HSD_JObjAnimAll(jobj);
@@ -98,7 +98,7 @@ f32 JObj_GetFrame(HSD_JObj* jobj)
             }
         }
     }
-    if ((jobj->flags & 0x1000) == 0) {
+    if (JOBJ_INSTANCE(jobj)) {
         HSD_JObj* child = jobj->child;
         while (child != NULL) {
             f32 frame = JObj_GetFrame(child);
