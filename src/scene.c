@@ -276,13 +276,6 @@ static void Scene_InitStaticMem()
 {
 }
 
-//801A146C
-static void Scene_ReqAnimAll_Callback(HSD_GObj* gobj)
-{
-    HSD_JObj* jobj = GOBJ_HSD_JOBJ(gobj);
-    Scene_ReqAnimAll(jobj, title_frames);
-}
-
 //801A1C18
 static void Scene_Minor_Class0_OnFrame(u32 unused, u32 inputs)
 {
@@ -380,7 +373,7 @@ static void Scene_Minor_Class0_OnLoad(void* unk_struct)
     GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
     HSD_JObjAddAnimAll(jobj, (HSD_AnimJoint*)title_ptrs.bg_top_animjoint,
         (HSD_MatAnimJoint*)title_ptrs.bg_top_matanim_joint, (HSD_ShapeAnimJoint*)title_ptrs.bg_top_shapeanim_joint);
-    GObj_CreateProcWithCallback(gobj_2, Scene_ReqAnimAll_Callback, 0);
+    GObj_CreateProcWithCallback(gobj_2, Menu_Title_ReqAnimAll_Callback, 0);
 
     u8 major = Scene_GetCurrentMajor();
     u8 minor = Scene_GetCurrentMinor();

@@ -1,5 +1,4 @@
 #include "scGmTitle.h"
-#include "gobj.h"
 #include "hsd_jobj_ext.h"
 #include "scene.h"
 
@@ -7,6 +6,13 @@ GmTitle_File title_ptrs; //80479B28
 u32 title_inputs; //804D6878
 f32 title_anim_speed[3] = { 0.0f, 1600.f, 400.f }; //803DA4F0
 f32 title_frames[3] = { 0.f, 1330.f, 130.f }; //803DA4FC
+
+//801A146C
+void Menu_Title_ReqAnimAll_Callback(HSD_GObj* gobj)
+{
+    HSD_JObj* jobj = GOBJ_HSD_JOBJ(gobj);
+    Scene_ReqAnimAll(jobj, title_frames);
+}
 
 //801A1498
 static void Menu_Title_801A1498(HSD_GObj* gobj)
