@@ -894,7 +894,7 @@ void HSD_JObjRemoveAll(HSD_JObj* jobj)
             }
         }
 
-        while (jobj != NULL;) {
+        while (jobj != NULL) {
             HSD_JObj* next = jobj->next;
             jobj->prev = NULL;
             jobj->next = NULL;
