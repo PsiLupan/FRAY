@@ -1340,7 +1340,7 @@ void HSD_JObjSetMtxDirtySub(HSD_JObj* jobj)
     if (JOBJ_INSTANCE(jobj)) {
         for (HSD_JObj* j = jobj->child; j != NULL; j = j->next) {
             if ((j->flags & MTX_INDEP_PARENT) == 0 && HSD_JObjMtxIsDirty(j) == 0) {
-                HSD_JObjSetMtxDirtySub(jobj);
+                HSD_JObjSetMtxDirtySub(j);
             }
         }
     }
