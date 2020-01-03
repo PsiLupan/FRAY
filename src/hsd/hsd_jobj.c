@@ -795,11 +795,13 @@ void HSD_JObjResolveRefs(HSD_JObj* jobj, HSD_JObjDesc* desc)
 // 80370FF4
 void HSD_JObjResolveRefsAll(HSD_JObj* jobj, HSD_JObjDesc* desc)
 {
-    for (; jobj != NULL && desc != NULL; jobj = jobj->next, desc = desc->next) {
+    while (jobj != NULL && desc != NULL) {
         HSD_JObjResolveRefs(jobj, desc);
         if (JOBJ_INSTANCE(jobj)) {
             HSD_JObjResolveRefsAll(jobj->child, desc->child);
         }
+        jobj = jobj->next;
+        desc = desc->next;
     }
 }
 
