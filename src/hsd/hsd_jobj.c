@@ -784,8 +784,7 @@ void HSD_JObjResolveRefs(HSD_JObj* jobj, HSD_JObjDesc* desc)
             HSD_JObj* child = (HSD_JObj*)HSD_IDGetDataFromTable(NULL, (u32)desc->child, NULL);
             jobj->child = child;
             HSD_CheckAssert("JObjResolveRefs child == NULL", jobj->child != NULL);
-            jobj->child->parent.ref_count += 1;
-            assert(jobj->child->parent.ref_count != HSD_OBJ_NOREF);
+            HSD_JObjRef(jobj->child);
         }
         if (union_type_dobj(jobj)) {
             HSD_DObjResolveRefsAll(jobj->u.dobj, desc->u.dobjdesc);
@@ -796,20 +795,24 @@ void HSD_JObjResolveRefs(HSD_JObj* jobj, HSD_JObjDesc* desc)
 // 80370FF4
 void HSD_JObjResolveRefsAll(HSD_JObj* jobj, HSD_JObjDesc* desc)
 {
-    HSD_JObj* jo = jobj;
-    HSD_JObjDesc* jdesc = desc;
-    for (; jo != NULL && jdesc != NULL; jo = jo->next, jdesc = jdesc->next) {
-        HSD_JObjResolveRefs(jo, jdesc);
-        if (JOBJ_INSTANCE(jo)) {
-            HSD_JObjDesc* dchild = jdesc->child;
-            HSD_JObj* child = jo->child;
-            for (; child != NULL && dchild != NULL; child = child->next, dchild = dchild->next) {
-                HSD_JObjResolveRefs(child, dchild);
-                if (JOBJ_INSTANCE(child)) {
-                    HSD_JObjResolveRefsAll(child->child, dchild->child);
-                }
-            }
+    for (; jobj != NULL && desc != NULL; jobj = jobj->next, desc = desc->next) {
+        HSD_JObjResolveRefs(jobj, desc);
+        if (JOBJ_INSTANCE(jobj)) {
+            HSD_JObjResolveRefsAll(jobj->child, desc->child);
         }
+    }
+}
+
+void HSD_JObjRef(HSD_JObj* jobj){
+    if (jobj != NULL) {
+        ref_INC(&jobj->parent);
+    }
+}
+
+void HSD_JObjRefThis(HSD_JObj* jobj)
+{
+    if (jobj != NULL) {
+        iref_INC(&jobj->parent);
     }
 }
 
@@ -817,31 +820,14 @@ void HSD_JObjResolveRefsAll(HSD_JObj* jobj, HSD_JObjDesc* desc)
 void HSD_JObjUnref(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
-        u16 ref_count = jobj->parent.ref_count;
-        u32 lz = __builtin_clz(0xFFFF - ref_count);
-        lz = lz >> 5;
-        if (lz == 0) {
-            jobj->parent.ref_count -= 1;
-            lz = __builtin_clz(-ref_count);
-            lz = lz >> 5;
-        }
-        if (lz != 0) {
-            u16 ref_count_indiv = jobj->parent.ref_count_individual;
-            if ((ref_count_indiv - 1) < 0) {
+        if (ref_DEC(&jobj->parent) != 0) {
+            if (iref_CNT(&jobj->parent) < 0) {
                 HSD_OBJECT_METHOD(jobj)->release((HSD_Class*)jobj);
                 HSD_OBJECT_METHOD(jobj)->destroy((HSD_Class*)jobj);
             } else {
-                jobj->parent.ref_count_individual += 1;
-                assert(jobj->parent.ref_count_individual != 0);
+                iref_INC(&jobj->parent);
                 HSD_JOBJ_METHOD(jobj)->release_child(jobj);
-                lz = __builtin_clz(-jobj->parent.ref_count_individual);
-                lz = lz >> 5;
-                if (lz == 0) {
-                    jobj->parent.ref_count_individual -= 1;
-                    lz = __builtin_clz(-jobj->parent.ref_count_individual);
-                    lz = lz >> 5;
-                }
-                if (lz != 0) {
+                if (iref_DEC(&jobj->parent) != 0) {
                     HSD_OBJECT_METHOD(jobj)->release((HSD_Class*)jobj);
                     HSD_OBJECT_METHOD(jobj)->destroy((HSD_Class*)jobj);
                 }
@@ -850,32 +836,12 @@ void HSD_JObjUnref(HSD_JObj* jobj)
     }
 }
 
-void HSD_JObjRefThis(HSD_JObj* jobj)
-{
-    if (jobj != NULL) {
-        jobj->parent.ref_count_individual += 1;
-        assert(jobj->parent.ref_count_individual != 0);
-    }
-}
-
 // 803712C0
 void HSD_JObjUnrefThis(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
-        s16 ref_count_individual = jobj->parent.ref_count_individual;
-        u32 lz = __builtin_clz(-ref_count_individual);
-        lz = lz >> 5;
-        if (lz == 0) {
-            jobj->parent.ref_count_individual -= 1;
-            lz = __builtin_clz(-ref_count_individual);
-            lz = lz >> 5;
-        }
-        if (lz != 0) {
-            s16 ref_count = jobj->parent.ref_count;
-            if (ref_count == HSD_OBJ_NOREF) {
-                ref_count = -1;
-            }
-            if (ref_count < 0) {
+        if (iref_DEC(&jobj->parent) != 0) {
+            if(ref_CNT(&jobj->parent) < 0){
                 HSD_OBJECT_METHOD(jobj)->release((HSD_Class*)jobj);
                 HSD_OBJECT_METHOD(jobj)->destroy((HSD_Class*)jobj);
             }
@@ -927,11 +893,13 @@ void HSD_JObjRemoveAll(HSD_JObj* jobj)
                 jobj->prev->next = NULL;
             }
         }
-        for (HSD_JObj* curr = jobj; curr != NULL; curr = curr->next) {
-            curr->prev = NULL;
-            curr->next = NULL;
 
-            HSD_JObjUnref(curr);
+        while (jobj != NULL;) {
+            HSD_JObj* next = jobj->next;
+            jobj->prev = NULL;
+            jobj->next = NULL;
+            HSD_JObjUnref(jobj);
+            jobj = next;
         }
     }
 }
@@ -1221,7 +1189,7 @@ HSD_JObj* HSD_JObjAlloc(void)
 void HSD_JObjSetCurrent(HSD_JObj* jobj)
 {
     if (jobj != NULL) {
-        HSD_JObjRefThis(jobj);
+        HSD_JObjRef(jobj);
         HSD_JObjUnref(current_jobj);
         current_jobj = jobj;
     }

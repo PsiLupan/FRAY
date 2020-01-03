@@ -214,8 +214,7 @@ void HSD_RObjResolveRefsAll(HSD_RObj* robj, HSD_RObjDesc* robjdesc)
                 HSD_JObj* jobj = HSD_IDGetDataFromTable(NULL, (u32)rdesc->u.joint, NULL);
                 ro->u.jobj = jobj;
                 assert(ro->u.jobj != NULL);
-                ro->u.jobj->parent.ref_count_individual += 1;
-                assert(ro->u.jobj->parent.ref_count_individual != 0);
+                HSD_JObjRefThis(ro->u.jobj);
             } else {
                 if (flags == 0) {
                     HSD_RvalueResolveRefsAll(ro->u.exp.rvalue, rdesc->u.exp->rvalue);
