@@ -3,6 +3,8 @@
 
 #include <gctypes.h>
 
+#include "gobj.h"
+
 typedef struct _GmTitle_File {
     void* top_joint;
     void* top_animjoint;
@@ -19,6 +21,7 @@ extern GmTitle_File title_ptrs;
 extern u32 title_inputs;
 extern f32 title_frames[3];
 
+void Menu_Title_ReqAnimAll_Callback(HSD_GObj*);
 void Menu_Title_SetupLogos();
 void Menu_Title_Prep();
 void Menu_Title_Decide(void* state);
