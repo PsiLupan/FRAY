@@ -199,6 +199,7 @@ void HSD_JObjRemoveAnimByFlags(HSD_JObj* jobj, u32 flags)
     if (jobj != NULL) {
         if ((flags & SKELETON) != 0) {
             HSD_AObjRemove(jobj->aobj);
+            jobj->aobj = NULL;
         }
         if (union_type_dobj(jobj)) {
             HSD_DObjRemoveAnimAllByFlags(jobj->u.dobj, flags);
@@ -211,22 +212,11 @@ void HSD_JObjRemoveAnimByFlags(HSD_JObj* jobj, u32 flags)
 void HSD_JObjRemoveAnimAllByFlags(HSD_JObj* jobj, u32 flags)
 {
     if (jobj != NULL) {
-        if ((flags & SKELETON) != 0) {
-            HSD_AObjRemove(jobj->aobj);
-        }
-        if (union_type_dobj(jobj)) {
-            HSD_DObjRemoveAnimAllByFlags(jobj->u.dobj, flags);
-        }
-        HSD_RObjRemoveAnimAllByFlags(jobj->robj, flags);
+        HSD_JObjRemoveAnimByFlags(jobj, flags);
 
         if (JOBJ_INSTANCE(jobj)) {
             for (HSD_JObj* i = jobj->child; i != NULL; i = i->next) {
-                HSD_JObjRemoveAnimByFlags(i, flags);
-                if (JOBJ_INSTANCE(i)) {
-                    for (HSD_JObj* n = i->child; n != NULL; n = n->next) {
-                        HSD_JObjRemoveAnimAllByFlags(n, flags);
-                    }
-                }
+                HSD_JObjRemoveAnimAllByFlags(i, flags);
             }
         }
     }
