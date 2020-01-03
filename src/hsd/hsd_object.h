@@ -47,8 +47,8 @@ typedef struct _HSD_ClassInfo {
 
 typedef struct _HSD_Object {
     struct _HSD_Class parent;
-    s16 ref_count;
-    s16 ref_count_individual;
+    u16 ref_count;
+    u16 ref_count_individual;
 } HSD_Obj;
 
 typedef struct _HSD_ObjInfo {
@@ -90,5 +90,12 @@ void hsdInitClassInfo(HSD_ClassInfo*, HSD_ClassInfo*, char*, char*, s32, s32);
 void* hsdNew(HSD_ClassInfo*);
 BOOL hsdIsDescendantOf(HSD_ClassInfo*, HSD_ClassInfo*);
 HSD_ClassInfo* hsdSearchClassInfo(char*);
+
+s32 ref_CNT(HSD_Obj*);
+void ref_INC(HSD_Obj*);
+s32 ref_DEC(HSD_Obj*);
+s32 iref_CNT(HSD_Obj*);
+void iref_INC(HSD_Obj*);
+s32 iref_DEC(HSD_Obj*);
 
 #endif

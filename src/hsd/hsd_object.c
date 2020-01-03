@@ -244,10 +244,10 @@ static void _hsdClassRelease(HSD_Class* info)
 static void _hsdClassDestroy(HSD_Class* class)
 {
     HSD_ClassInfo* info = (class->class_info ? class->class_info : NULL);
-	if(info != NULL){
-		info->head.nb_exist -= 1;
+    if (info != NULL) {
+        info->head.nb_exist -= 1;
         hsdFreeMemPiece(class, info->head.obj_size);
-	}
+    }
 }
 
 //80382294
@@ -303,19 +303,20 @@ void* hsdNew(HSD_ClassInfo* info)
 }
 
 //80382538
-BOOL hsdIsDescendantOf(HSD_ClassInfo* i, HSD_ClassInfo* p){
-    if(i != NULL && p != NULL){
-        if((i->head.flags & 1) == 0){
+BOOL hsdIsDescendantOf(HSD_ClassInfo* i, HSD_ClassInfo* p)
+{
+    if (i != NULL && p != NULL) {
+        if ((i->head.flags & 1) == 0) {
             (*i->head.info_init)();
         }
-        if((p->head.flags & 1) == 0){
+        if ((p->head.flags & 1) == 0) {
             (*p->head.info_init)();
         }
         while (true) {
-            if(i == NULL){
+            if (i == NULL) {
                 return FALSE;
             }
-            if(i == p){
+            if (i == p) {
                 break;
             }
             i = i->head.parent;
@@ -329,4 +330,52 @@ BOOL hsdIsDescendantOf(HSD_ClassInfo* i, HSD_ClassInfo* p){
 HSD_ClassInfo* hsdSearchClassInfo(char* class_name)
 {
     return NULL; //class_name is never set, so why the fuck would I write this?
+}
+
+s32 ref_CNT(HSD_Obj* obj)
+{
+    if (obj->ref_count == -1) {
+        return -1;
+    } else {
+        return obj->ref_count;
+    }
+}
+
+void ref_INC(HSD_Obj* obj)
+{
+    obj->ref_count += 1;
+    assert(obj->ref_count != HSD_OBJ_NOREF);
+}
+
+s32 ref_DEC(HSD_Obj* obj)
+{
+    s32 lz = __builtin_clz(0xFFFF - obj->ref_count);
+    lz = lz >> 5;
+    if (lz == 0) {
+        lz = __builtin_clz(obj->ref_count);
+        lz = lz >> 5;
+        obj->ref_count -= 1;
+    }
+    return lz;
+}
+
+s32 iref_CNT(HSD_Obj* obj){
+    return obj->ref_count_individual - 1;
+}
+
+void iref_INC(HSD_Obj* obj){
+    obj->ref_count_individual += 1;
+    assert(obj->ref_count_individual != 0);
+}
+
+s32 iref_DEC(HSD_Obj* obj)
+{
+    s32 lz = __builtin_clz(obj->ref_count_individual);
+    lz = lz >> 5;
+    if (lz == 0) {
+        obj->ref_count_individual -= 1;
+        lz = __builtin_clz(obj->ref_count_individual);
+        lz = lz >> 5;
+    }
+    return lz;
 }
