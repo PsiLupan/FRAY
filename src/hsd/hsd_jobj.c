@@ -427,10 +427,10 @@ void JObjUpdateFunc(void* obj, u32 type, FObjData* val)
             }
             break;
         case 4:
-            if (val->fv < 0.0) {
+            if (val->fv < 0.0F) {
                 val->fv = 0.f;
             }
-            if (1.0 < val->fv) {
+            if (1.0F < val->fv) {
                 val->fv = 1.f;
             }
             assert(jobj->aobj != NULL);

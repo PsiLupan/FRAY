@@ -412,7 +412,7 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
                 if (fobj->fterm != 0) {
                     fobj->d0 = (fobj->p1 - fobj->p0) / (f32)fobj->fterm;
                 } else {
-                    fobj->d0 = 0;
+                    fobj->d0 = 0.F;
                     fobj->p0 = fobj->p1;
                 }
             }
@@ -453,11 +453,9 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
         state = HSD_FObjGetState(fobj);
     }
 
-    if (state != 0 && (fobj->time += rate, 0.0 <= fobj->time)) {
+    if (state != 0 && (fobj->time += rate, 0.0F <= fobj->time)) {
         while (TRUE) {
-            while (TRUE) {
-                if (state == 4)
-                    break;
+            while (state != 4) {
                 if (state < 4) {
                     if (state == 0) {
                         return;
