@@ -317,7 +317,7 @@ static u32 FObjLoadData(HSD_FObj* fobj)
 {
     u32 res;
 
-    if (fobj->ad - fobj->ad_head < fobj->length) {
+    if ((fobj->ad - fobj->ad_head) < fobj->length) {
         fobj->op_intrp = fobj->op;
         if (fobj->nb_pack == 0) {
             fobj->op = parseOpCode(&fobj->ad);
@@ -360,21 +360,20 @@ static u32 FObjLoadData(HSD_FObj* fobj)
     return res;
 }
 
-static u32 parseWait(u8** read_ptr)
+static s32 parseWait(u8** read_ptr)
 {
-    u32 read = 0;
+    s32 wait = 0;
     s32 lshift = 0;
-    u8 val;
+    u8* parse;
 
     do {
-        u8* parse = *read_ptr;
+        parse = *read_ptr;
         *read_ptr = parse + 1;
-        val = *parse;
-        read |= (read & 0x7f) << lshift;
-        lshift = lshift + 7;
-    } while ((val & 0x80) != 0);
+        wait |= (*parse & 0x7f) << lshift;
+        lshift += 7;
+    } while ((*parse & 0x80) != 0);
 
-    return read;
+    return wait;
 }
 
 static u32 FObjLoadWait(HSD_FObj* fobj)
@@ -383,7 +382,7 @@ static u32 FObjLoadWait(HSD_FObj* fobj)
 
     assert(HSD_FObjGetState(fobj) == 3);
 
-    if (fobj->ad - fobj->ad_head < fobj->length) {
+    if ((fobj->ad - fobj->ad_head) < fobj->length) {
         fobj->fterm = parseWait(&fobj->ad);
         fobj->flags |= 0x20;
         res = HSD_FObjSetState(fobj, 2);
