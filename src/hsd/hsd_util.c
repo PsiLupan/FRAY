@@ -122,18 +122,19 @@ void HSD_MtxInverseConcat(Mtx inv, Mtx src, Mtx dst)
     f32 fVar11;
     f32 fVar12;
     f32 fVar13;
-    f64 dVar14;
-    f64 dVar15;
-    f64 dVar16;
-    f64 dVar17;
+    f32 fVar14;
+    f32 fVar15;
+    f32 fVar16;
+    f32 fVar17;
     f32 local_54;
     f32 local_44;
     f32 local_34;
 
-    fVar13 = -(guMtxRowCol(inv, 1, 2) * guMtxRowCol(inv, 0, 0) * guMtxRowCol(inv, 2, 1) - -(guMtxRowCol(inv, 2, 2) * guMtxRowCol(inv, 1, 0) * guMtxRowCol(inv, 0, 1) - -(guMtxRowCol(inv, 0, 2) * guMtxRowCol(inv, 2, 0) * guMtxRowCol(inv, 1, 1) - (guMtxRowCol(inv, 2, 1) * guMtxRowCol(inv, 0, 2) * guMtxRowCol(inv, 1, 0) + guMtxRowCol(inv, 2, 2) * guMtxRowCol(inv, 0, 0) * guMtxRowCol(inv, 1, 1) + guMtxRowCol(inv, 2, 0) * guMtxRowCol(inv, 0, 1) * guMtxRowCol(inv, 1, 2)))));
-    if (1e-10 <= (f32)((u32)fVar13 & 0x7fffffff)) {
+    fVar13 = -(guMtxRowCol(inv, 1, 2) * guMtxRowCol(inv, 0, 0) * guMtxRowCol(inv, 2, 1)
+        - -(guMtxRowCol(inv, 2, 2) * guMtxRowCol(inv, 1, 0) * guMtxRowCol(inv, 0, 1) - -(guMtxRowCol(inv, 0, 2) * guMtxRowCol(inv, 2, 0) * guMtxRowCol(inv, 1, 1) - (guMtxRowCol(inv, 2, 1) * guMtxRowCol(inv, 0, 2) * guMtxRowCol(inv, 1, 0) + guMtxRowCol(inv, 2, 2) * guMtxRowCol(inv, 0, 0) * guMtxRowCol(inv, 1, 1) + guMtxRowCol(inv, 2, 0) * guMtxRowCol(inv, 0, 1) * guMtxRowCol(inv, 1, 2)))));
+    if (FLT_MIN != fVar13) {
         fVar1 = guMtxRowCol(inv, 1, 1);
-        fVar13 = 1.0f / fVar13;
+        fVar13 = 1.0F / fVar13;
         fVar2 = guMtxRowCol(inv, 0, 2);
         fVar3 = guMtxRowCol(inv, 2, 0);
         fVar4 = guMtxRowCol(inv, 2, 1);
@@ -143,52 +144,48 @@ void HSD_MtxInverseConcat(Mtx inv, Mtx src, Mtx dst)
         fVar8 = guMtxRowCol(inv, 2, 2);
         fVar9 = guMtxRowCol(inv, 0, 0);
         fVar10 = guMtxRowCol(inv, 1, 3);
-        dVar15 = (f64)guMtxRowCol(inv, 0, 3);
+        fVar15 = guMtxRowCol(inv, 0, 3);
         fVar11 = guMtxRowCol(inv, 2, 3);
-        dVar14 = (f64)(fVar13 * (fVar1 * fVar8 - fVar4 * fVar5));
+        fVar14 = (fVar13 * (fVar1 * fVar8 - fVar4 * fVar5));
         fVar12 = fVar13 * -(fVar6 * fVar8 - fVar4 * fVar2);
-        dVar16 = (f64)(fVar13 * -(fVar7 * fVar8 - fVar3 * fVar5));
+        fVar16 = (fVar13 * -(fVar7 * fVar8 - fVar3 * fVar5));
         fVar8 = fVar13 * (fVar9 * fVar8 - fVar3 * fVar2);
-        dVar17 = (f64)(fVar13 * (fVar7 * fVar4 - fVar3 * fVar1));
+        fVar17 = (fVar13 * (fVar7 * fVar4 - fVar3 * fVar1));
         fVar3 = fVar13 * -(fVar9 * fVar4 - fVar3 * fVar6);
         fVar4 = fVar13 * (fVar6 * fVar5 - fVar1 * fVar2);
         fVar2 = fVar13 * -(fVar9 * fVar5 - fVar7 * fVar2);
         fVar13 = fVar13 * (fVar9 * fVar1 - fVar7 * fVar6);
-        local_54 = -(fVar4 * fVar11 - -dVar14 * dVar15 - (fVar12 * fVar10));
-        local_44 = -(fVar2 * fVar11 - -dVar16 * dVar15 - (fVar8 * fVar10));
-        local_34 = -(fVar13 * fVar11 - -dVar17 * dVar15 - (fVar3 * fVar10));
+        local_54 = -(fVar4 * fVar11 - -fVar14 * fVar15 - (fVar12 * fVar10));
+        local_44 = -(fVar2 * fVar11 - -fVar16 * fVar15 - (fVar8 * fVar10));
+        local_34 = -(fVar13 * fVar11 - -fVar17 * fVar15 - (fVar3 * fVar10));
         if ((inv == dst) || (src == dst)) {
             Mtx m;
-            guMtxRowCol(m, 0, 0) = fVar4 * guMtxRowCol(src, 2, 0) + (dVar14 * guMtxRowCol(src, 0, 0) + (fVar12 * guMtxRowCol(src, 1, 0)));
-            guMtxRowCol(m, 0, 1) = fVar4 * guMtxRowCol(src, 2, 1) + (dVar14 * guMtxRowCol(src, 0, 1) + (fVar12 * guMtxRowCol(src, 1, 1)));
-            guMtxRowCol(m, 0, 2) = fVar4 * guMtxRowCol(src, 2, 2) + (dVar14 * guMtxRowCol(src, 0, 2) + (fVar12 * guMtxRowCol(src, 1, 2)));
-            guMtxRowCol(m, 0, 3) = local_54 + fVar4 * guMtxRowCol(src, 2, 3) + (dVar14 * guMtxRowCol(src, 0, 3) + (fVar12 * guMtxRowCol(src, 1, 3)));
-            guMtxRowCol(m, 1, 0) = fVar2 * guMtxRowCol(src, 2, 0) + (dVar16 * guMtxRowCol(src, 0, 0) + (fVar8 * guMtxRowCol(src, 1, 0)));
-            guMtxRowCol(m, 1, 1) = fVar2 * guMtxRowCol(src, 2, 1) + (dVar16 * guMtxRowCol(src, 0, 1) + (fVar8 * guMtxRowCol(src, 1, 1)));
-            guMtxRowCol(m, 1, 2) = fVar2 * guMtxRowCol(src, 2, 2) + (dVar16 * guMtxRowCol(src, 0, 2) + (fVar8 * guMtxRowCol(src, 1, 2)));
-            guMtxRowCol(m, 1, 3) = local_44 + fVar2 * guMtxRowCol(src, 2, 3) + (dVar16 * guMtxRowCol(src, 0, 3) + (fVar8 * guMtxRowCol(src, 1, 3)));
-            guMtxRowCol(m, 2, 0) = fVar13 * guMtxRowCol(src, 2, 0) + (dVar17 * guMtxRowCol(src, 0, 0) + (fVar3 * guMtxRowCol(src, 1, 0)));
-            guMtxRowCol(m, 2, 1) = fVar13 * guMtxRowCol(src, 2, 1) + (dVar17 * guMtxRowCol(src, 0, 1) + (fVar3 * guMtxRowCol(src, 1, 1)));
-            guMtxRowCol(m, 2, 2) = fVar13 * guMtxRowCol(src, 2, 2) + (dVar17 * guMtxRowCol(src, 0, 2) + (fVar3 * guMtxRowCol(src, 1, 2)));
-            guMtxRowCol(m, 2, 3) = local_34 + fVar13 * guMtxRowCol(src, 2, 3) + (dVar17 * guMtxRowCol(src, 0, 3) + (fVar3 * guMtxRowCol(src, 1, 3)));
+            guMtxRowCol(m, 0, 0) = fVar4 * guMtxRowCol(src, 2, 0) + (fVar14 * guMtxRowCol(src, 0, 0) + (fVar12 * guMtxRowCol(src, 1, 0)));
+            guMtxRowCol(m, 0, 1) = fVar4 * guMtxRowCol(src, 2, 1) + (fVar14 * guMtxRowCol(src, 0, 1) + (fVar12 * guMtxRowCol(src, 1, 1)));
+            guMtxRowCol(m, 0, 2) = fVar4 * guMtxRowCol(src, 2, 2) + (fVar14 * guMtxRowCol(src, 0, 2) + (fVar12 * guMtxRowCol(src, 1, 2)));
+            guMtxRowCol(m, 0, 3) = local_54 + fVar4 * guMtxRowCol(src, 2, 3) + (fVar14 * guMtxRowCol(src, 0, 3) + (fVar12 * guMtxRowCol(src, 1, 3)));
+            guMtxRowCol(m, 1, 0) = fVar2 * guMtxRowCol(src, 2, 0) + (fVar16 * guMtxRowCol(src, 0, 0) + (fVar8 * guMtxRowCol(src, 1, 0)));
+            guMtxRowCol(m, 1, 1) = fVar2 * guMtxRowCol(src, 2, 1) + (fVar16 * guMtxRowCol(src, 0, 1) + (fVar8 * guMtxRowCol(src, 1, 1)));
+            guMtxRowCol(m, 1, 2) = fVar2 * guMtxRowCol(src, 2, 2) + (fVar16 * guMtxRowCol(src, 0, 2) + (fVar8 * guMtxRowCol(src, 1, 2)));
+            guMtxRowCol(m, 1, 3) = local_44 + fVar2 * guMtxRowCol(src, 2, 3) + (fVar16 * guMtxRowCol(src, 0, 3) + (fVar8 * guMtxRowCol(src, 1, 3)));
+            guMtxRowCol(m, 2, 0) = fVar13 * guMtxRowCol(src, 2, 0) + (fVar17 * guMtxRowCol(src, 0, 0) + (fVar3 * guMtxRowCol(src, 1, 0)));
+            guMtxRowCol(m, 2, 1) = fVar13 * guMtxRowCol(src, 2, 1) + (fVar17 * guMtxRowCol(src, 0, 1) + (fVar3 * guMtxRowCol(src, 1, 1)));
+            guMtxRowCol(m, 2, 2) = fVar13 * guMtxRowCol(src, 2, 2) + (fVar17 * guMtxRowCol(src, 0, 2) + (fVar3 * guMtxRowCol(src, 1, 2)));
+            guMtxRowCol(m, 2, 3) = local_34 + fVar13 * guMtxRowCol(src, 2, 3) + (fVar17 * guMtxRowCol(src, 0, 3) + (fVar3 * guMtxRowCol(src, 1, 3)));
             guMtxCopy(m, dst);
         } else {
-            guMtxRowCol(dst, 0, 0) = fVar4 * guMtxRowCol(src, 2, 0) + (dVar14 * guMtxRowCol(src, 0, 0) + (fVar12 * guMtxRowCol(src, 1, 0)));
-            guMtxRowCol(dst, 0, 1) = fVar4 * guMtxRowCol(src, 2, 1) + (dVar14 * guMtxRowCol(src, 0, 1) + (fVar12 * guMtxRowCol(src, 1, 1)));
-            guMtxRowCol(dst, 0, 2) = fVar4 * guMtxRowCol(src, 2, 2) + (dVar14 * guMtxRowCol(src, 0, 2) + (fVar12 * guMtxRowCol(src, 1, 2)));
-            guMtxRowCol(dst, 0, 3) = local_54 + fVar4 * guMtxRowCol(src, 2, 3) + (dVar14 * guMtxRowCol(src, 0, 3) + (fVar12 * guMtxRowCol(src, 1, 3)));
-            guMtxRowCol(dst, 1, 0) = fVar2 * guMtxRowCol(src, 2, 0) + (dVar16 * guMtxRowCol(src, 0, 0) + (fVar8 * guMtxRowCol(src, 1, 0)));
-            guMtxRowCol(dst, 1, 1) = fVar2 * guMtxRowCol(src, 2, 1) + (dVar16 * guMtxRowCol(src, 0, 1) + (fVar8 * guMtxRowCol(src, 1, 1)));
-            guMtxRowCol(dst, 1, 2) = fVar2 * guMtxRowCol(src, 2, 2) + (dVar16 * guMtxRowCol(src, 0, 2) + (fVar8 * guMtxRowCol(src, 1, 2)));
-            guMtxRowCol(dst, 1, 3) = local_44 + fVar2 * guMtxRowCol(src, 2, 3) + (dVar16 * guMtxRowCol(src, 0, 3) + (fVar8 * guMtxRowCol(src, 1, 3)));
-            guMtxRowCol(dst, 2, 0) = fVar13 * guMtxRowCol(src, 2, 0) + (dVar17 * guMtxRowCol(src, 0, 0) + (fVar3 * guMtxRowCol(src, 1, 0)));
-            guMtxRowCol(dst, 2, 1) = fVar13 * guMtxRowCol(src, 2, 1) + (dVar17 * guMtxRowCol(src, 0, 1) + (fVar3 * guMtxRowCol(src, 1, 1)));
-            guMtxRowCol(dst, 2, 2) = fVar13 * guMtxRowCol(src, 2, 2) + (dVar17 * guMtxRowCol(src, 0, 2) + (fVar3 * guMtxRowCol(src, 1, 2)));
-            guMtxRowCol(dst, 2, 3) = local_34 + fVar13 * guMtxRowCol(src, 2, 3) + (dVar17 * guMtxRowCol(src, 0, 3) + (fVar3 * guMtxRowCol(src, 1, 3)));
-        }
-    } else {
-        if (src != dst) {
-            guMtxCopy(src, dst);
+            guMtxRowCol(dst, 0, 0) = fVar4 * guMtxRowCol(src, 2, 0) + (fVar14 * guMtxRowCol(src, 0, 0) + (fVar12 * guMtxRowCol(src, 1, 0)));
+            guMtxRowCol(dst, 0, 1) = fVar4 * guMtxRowCol(src, 2, 1) + (fVar14 * guMtxRowCol(src, 0, 1) + (fVar12 * guMtxRowCol(src, 1, 1)));
+            guMtxRowCol(dst, 0, 2) = fVar4 * guMtxRowCol(src, 2, 2) + (fVar14 * guMtxRowCol(src, 0, 2) + (fVar12 * guMtxRowCol(src, 1, 2)));
+            guMtxRowCol(dst, 0, 3) = local_54 + fVar4 * guMtxRowCol(src, 2, 3) + (fVar14 * guMtxRowCol(src, 0, 3) + (fVar12 * guMtxRowCol(src, 1, 3)));
+            guMtxRowCol(dst, 1, 0) = fVar2 * guMtxRowCol(src, 2, 0) + (fVar16 * guMtxRowCol(src, 0, 0) + (fVar8 * guMtxRowCol(src, 1, 0)));
+            guMtxRowCol(dst, 1, 1) = fVar2 * guMtxRowCol(src, 2, 1) + (fVar16 * guMtxRowCol(src, 0, 1) + (fVar8 * guMtxRowCol(src, 1, 1)));
+            guMtxRowCol(dst, 1, 2) = fVar2 * guMtxRowCol(src, 2, 2) + (fVar16 * guMtxRowCol(src, 0, 2) + (fVar8 * guMtxRowCol(src, 1, 2)));
+            guMtxRowCol(dst, 1, 3) = local_44 + fVar2 * guMtxRowCol(src, 2, 3) + (fVar16 * guMtxRowCol(src, 0, 3) + (fVar8 * guMtxRowCol(src, 1, 3)));
+            guMtxRowCol(dst, 2, 0) = fVar13 * guMtxRowCol(src, 2, 0) + (fVar17 * guMtxRowCol(src, 0, 0) + (fVar3 * guMtxRowCol(src, 1, 0)));
+            guMtxRowCol(dst, 2, 1) = fVar13 * guMtxRowCol(src, 2, 1) + (fVar17 * guMtxRowCol(src, 0, 1) + (fVar3 * guMtxRowCol(src, 1, 1)));
+            guMtxRowCol(dst, 2, 2) = fVar13 * guMtxRowCol(src, 2, 2) + (fVar17 * guMtxRowCol(src, 0, 2) + (fVar3 * guMtxRowCol(src, 1, 2)));
+            guMtxRowCol(dst, 2, 3) = local_34 + fVar13 * guMtxRowCol(src, 2, 3) + (fVar17 * guMtxRowCol(src, 0, 3) + (fVar3 * guMtxRowCol(src, 1, 3)));
         }
     }
 }
@@ -197,98 +194,69 @@ void HSD_MtxInverseConcat(Mtx inv, Mtx src, Mtx dst)
 void HSD_MtxGetRotation(Mtx mtx, guVector* rotation)
 {
     f32 fVar1;
-    f64 dVar2;
-    f64 dVar3;
-    f64 dVar4;
-    f64 dVar5;
-    f64 dVar6;
-    f64 dVar7;
+    f32 dVar2;
+    f32 dVar3;
+    f32 dVar4;
 
-    dVar2 = (guMtxRowCol(mtx, 2, 0) * guMtxRowCol(mtx, 2, 0) + guMtxRowCol(mtx, 0, 0) * guMtxRowCol(mtx, 0, 0) + guMtxRowCol(mtx, 1, 0) * guMtxRowCol(mtx, 1, 0));
-    if (0.f < dVar2) {
-        dVar3 = 1.0 / sqrt(dVar2);
-        dVar5 = 0.5;
-        dVar4 = 3.0;
-        dVar3 = dVar5 * dVar3 * -(dVar2 * dVar3 * dVar3 - dVar4);
-        dVar3 = dVar5 * dVar3 * -(dVar2 * dVar3 * dVar3 - dVar4);
-        dVar2 = (dVar2 * dVar5 * dVar3 * -(dVar2 * dVar3 * dVar3 - dVar4));
-    }
-    if (FLT_MIN <= dVar2) {
-        dVar3 = (guMtxRowCol(mtx, 2, 1) * guMtxRowCol(mtx, 2, 1) + guMtxRowCol(mtx, 0, 1) * guMtxRowCol(mtx, 0, 1) + guMtxRowCol(mtx, 1, 1) * guMtxRowCol(mtx, 1, 1));
-        if (0.f < dVar3) {
-            dVar4 = 1.0 / sqrt(dVar3);
-            dVar6 = 0.5;
-            dVar5 = 3.0;
-            dVar4 = dVar6 * dVar4 * -(dVar3 * dVar4 * dVar4 - dVar5);
-            dVar4 = dVar6 * dVar4 * -(dVar3 * dVar4 * dVar4 - dVar5);
-            dVar3 = (dVar3 * dVar6 * dVar4 * -(dVar3 * dVar4 * dVar4 - dVar5));
-        }
-        if (FLT_MIN <= dVar3) {
-            dVar4 = (guMtxRowCol(mtx, 2, 2) * guMtxRowCol(mtx, 2, 2) + guMtxRowCol(mtx, 0, 2) * guMtxRowCol(mtx, 0, 2) + guMtxRowCol(mtx, 1, 2) * guMtxRowCol(mtx, 1, 2));
-            if (0.f < dVar4) {
-                dVar5 = 1.0 / sqrt(dVar4);
-                dVar7 = 0.5;
-                dVar6 = 3.0;
-                dVar5 = dVar7 * dVar5 * -(dVar4 * dVar5 * dVar5 - dVar6);
-                dVar5 = dVar7 * dVar5 * -(dVar4 * dVar5 * dVar5 - dVar6);
-                dVar4 = (dVar4 * dVar7 * dVar5 * -(dVar4 * dVar5 * dVar5 - dVar6));
+    dVar2 = sqrtf(guMtxRowCol(mtx, 2, 0) * guMtxRowCol(mtx, 2, 0) + guMtxRowCol(mtx, 0, 0) * guMtxRowCol(mtx, 0, 0) + guMtxRowCol(mtx, 1, 0) * guMtxRowCol(mtx, 1, 0));
+    dVar3 = sqrtf(guMtxRowCol(mtx, 2, 1) * guMtxRowCol(mtx, 2, 1) + guMtxRowCol(mtx, 0, 1) * guMtxRowCol(mtx, 0, 1) + guMtxRowCol(mtx, 1, 1) * guMtxRowCol(mtx, 1, 1));
+    dVar4 = sqrtf(guMtxRowCol(mtx, 2, 2) * guMtxRowCol(mtx, 2, 2) + guMtxRowCol(mtx, 0, 2) * guMtxRowCol(mtx, 0, 2) + guMtxRowCol(mtx, 1, 2) * guMtxRowCol(mtx, 1, 2));
+    if (dVar2 < FLT_MIN || dVar3 < FLT_MIN || dVar4 < FLT_MIN) {
+        rotation->x = 0.F;
+        rotation->y = 0.F;
+        rotation->z = 0.F;
+    } else {
+        fVar1 = (-(guMtxRowCol(mtx, 2, 0)) / dVar2);
+        if (fVar1 < 1.f) {
+            if (-1.f < fVar1) {
+                dVar2 = asinf(fVar1);
+            } else {
+                dVar2 = -1.5708f;
             }
-            if (FLT_MIN <= dVar4) {
-                fVar1 = (-(guMtxRowCol(mtx, 2, 0)) / dVar2);
-                if (fVar1 < 1.f) {
-                    if (-1.f < fVar1) {
-                        dVar2 = asinf(fVar1);
-                    } else {
-                        dVar2 = -1.5708f;
-                    }
+        } else {
+            dVar2 = 1.5708f;
+        }
+        rotation->y = dVar2;
+        dVar2 = cosf(rotation->y);
+
+        if (dVar2 < FLT_MIN) {
+            if (FLT_MIN < (f32)((u32)guMtxRowCol(mtx, 1, 1) & 0x7fffffff)) {
+                dVar2 = atan2f(guMtxRowCol(mtx, 0, 1), guMtxRowCol(mtx, 1, 1));
+            } else {
+                if (guMtxRowCol(mtx, 0, 1) < 0.f) {
+                    dVar2 = -1.5708f;
                 } else {
                     dVar2 = 1.5708f;
                 }
-                rotation->y = dVar2;
-                dVar2 = cos(rotation->y);
-                dVar5 = FLT_MIN;
-                if (dVar5 <= dVar2) {
-                    if (dVar5 < (f32)((u32)(guMtxRowCol(mtx, 2, 2) / dVar4) & 0x7fffffff)) {
-                        dVar2 = atan2f((guMtxRowCol(mtx, 2, 1) / dVar4), (guMtxRowCol(mtx, 2, 2) / dVar4));
-                    } else {
-                        if ((guMtxRowCol(mtx, 2, 1) / dVar3) < 0.f) {
-                            dVar2 = -1.5708f;
-                        } else {
-                            dVar2 = 1.5708f;
-                        }
-                    }
-                    rotation->x = dVar2;
-                    if (FLT_MIN < (f32)((u32)guMtxRowCol(mtx, 0, 0) & 0x7fffffff)) {
-                        dVar2 = atan2f(guMtxRowCol(mtx, 1, 0), guMtxRowCol(mtx, 0, 0));
-                    } else {
-                        if (guMtxRowCol(mtx, 1, 0) < 0.f) {
-                            dVar2 = -1.5708f;
-                        } else {
-                            dVar2 = 1.5708f;
-                        }
-                    }
-                    rotation->z = dVar2;
-                    return;
-                }
-                if (dVar5 < (f32)((u32)guMtxRowCol(mtx, 1, 1) & 0x7fffffff)) {
-                    dVar2 = atan2f(guMtxRowCol(mtx, 0, 1), guMtxRowCol(mtx, 1, 1));
-                } else {
-                    if (guMtxRowCol(mtx, 0, 1) < 0.f) {
-                        dVar2 = -1.5708f;
-                    } else {
-                        dVar2 = 1.5708f;
-                    }
-                }
-                rotation->x = dVar2;
-                rotation->z = 0.f;
-                return;
             }
+            rotation->x = dVar2;
+            rotation->z = 0.f;
+            return;
+        } else {
+            if (FLT_MIN < (f32)((u32)(guMtxRowCol(mtx, 2, 2) / dVar4) & 0x7fffffff)) {
+                dVar2 = atan2f((guMtxRowCol(mtx, 2, 1) / dVar4), (guMtxRowCol(mtx, 2, 2) / dVar4));
+            } else {
+                if ((guMtxRowCol(mtx, 2, 1) / dVar3) < 0.f) {
+                    dVar2 = -1.5708f;
+                } else {
+                    dVar2 = 1.5708f;
+                }
+            }
+            rotation->x = dVar2;
+
+            if (FLT_MIN < (f32)((u32)guMtxRowCol(mtx, 0, 0) & 0x7fffffff)) {
+                dVar2 = atan2f(guMtxRowCol(mtx, 1, 0), guMtxRowCol(mtx, 0, 0));
+            } else {
+                if (guMtxRowCol(mtx, 1, 0) < 0.f) {
+                    dVar2 = -1.5708f;
+                } else {
+                    dVar2 = 1.5708f;
+                }
+            }
+            rotation->z = dVar2;
+            return;
         }
     }
-    fVar1 = 0.f;
-    rotation->x = fVar1;
-    rotation->y = fVar1;
-    rotation->z = fVar1;
 }
 
 //8037A120
