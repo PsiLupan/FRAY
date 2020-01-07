@@ -27,6 +27,8 @@ static u32 iparam_xfb_max_num = HSD_DEFAULT_XFB_MAX_NUM;
 static u32 iparam_heap_max_num = 0;
 static u32 iparam_audio_heap_size = HSD_DEFAULT_AUDIO_SIZE;
 
+static HSD_CacheBit need_invalidate;
+
 static HSD_VIStatus vi_status;
 
 //80374F28
@@ -121,7 +123,7 @@ void HSD_GXInit(void)
         GX_InitLightDir(&lightobj, 1.0f, 0.0f, 0.0f);
         GX_InitLightAttn(&lightobj, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
         GX_InitLightColor(&lightobj, black);
-        for (i = 0; i < MAX_GXLIGHT - 1; i++){
+        for (i = 0; i < MAX_GXLIGHT - 1; i++) {
             GX_LoadLightObj(&lightobj, HSD_Index2LightID(i));
         }
     }
@@ -166,7 +168,7 @@ void HSD_SetNextArena(void* start, void* end)
 //80375530
 HSD_RenderPass HSD_GetCurrentRenderPass(void)
 {
-  return current_render_pass;
+    return current_render_pass;
 }
 
 //80375538
@@ -181,6 +183,21 @@ void HSD_StartRender(HSD_RenderPass pass)
         GX_SetPixelFmt(current_pix_fmt, GX_ZC_LINEAR);
     }
     GX_SetFieldMode(rmode->field_rendering, rmode->xfbHeight < rmode->viHeight);
+
+    if (need_invalidate) {
+        if (need_invalidate & HSD_CACHE_VTX) {
+            GX_InvVtxCache();
+        }
+        if (need_invalidate & HSD_CACHE_TEX) {
+            GX_InvalidateTexAll();
+        }
+        need_invalidate = HSD_CACHE_NONE;
+    }
+}
+
+void _HSD_NeedCacheInvalidate(HSD_CacheBit cache)
+{
+    need_invalidate |= cache;
 }
 
 //803755A8

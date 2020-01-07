@@ -919,8 +919,6 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
             return;
         }
         DVD_CheckDisk();
-        GX_InvVtxCache();
-        GX_InvalidateTexAll();
         HSD_StartRender(HSD_RP_SCREEN);
         GObj_RunGXLinkMaxCallbacks();
         //HSD_IsScreenRenderPass(); - This function just stores the result of rp == 0 in the cmp register

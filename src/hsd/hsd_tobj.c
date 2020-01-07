@@ -117,9 +117,9 @@ static void TObjUpdateFunc(void* obj, u32 type, FObjData* val)
     if (tobj != NULL) {
         switch (type) {
         case HSD_A_T_TIMG: {
-            int n;
+            s32 n;
             assert(tobj->imagetbl);
-            n = (int)val->fv;
+            n = (s32)val->fv;
             if (tobj->imagetbl[n]) {
                 tobj->imagedesc = tobj->imagetbl[n];
             }
@@ -295,6 +295,8 @@ static int TObjLoad(HSD_TObj* tobj, HSD_TObjDesc* td)
     tobj->flags |= TEX_MTX_DIRTY;
     tobj->tlut_no = (u8)-1;
     tobj->tev = HSD_TObjTevLoadDesc(td->tev);
+
+    _HSD_NeedCacheInvalidate(HSD_CACHE_TEX);
 
     return 0;
 }
