@@ -25,6 +25,12 @@ typedef enum _HSD_InitParam {
     HSD_INIT_RENDER_MODE_OBJ
 } HSD_InitParam;
 
+typedef enum _HSD_CacheBit {
+    HSD_CACHE_NONE = 0,
+    HSD_CACHE_VTX = 1,
+    HSD_CACHE_TEX = 2
+} HSD_CacheBit;
+
 void HSD_InitComponent(void);
 void HSD_GXSetFifoObj(GXFifoObj*);
 void HSD_DVDInit(void);
@@ -33,7 +39,8 @@ void* HSD_AllocateFIFO(u32);
 void HSD_GXInit(void);
 
 HSD_RenderPass HSD_GetCurrentRenderPass(void);
-void HSD_StartRender(HSD_RenderPass pass);
+void HSD_StartRender(HSD_RenderPass);
+void _HSD_NeedCacheInvalidate(HSD_CacheBit);
 
 void HSD_ObjInit(void);
 void HSD_ObjDumpStat(void);

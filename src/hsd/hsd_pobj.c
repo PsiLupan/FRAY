@@ -179,6 +179,9 @@ static s32 PObjLoad(HSD_PObj* pobj, HSD_PObjDesc* desc)
     default:
         HSD_Halt("PObjLoad: Unexpected type");
     }
+
+    _HSD_NeedCacheInvalidate(HSD_CACHE_VTX);
+
     return 0;
 }
 
