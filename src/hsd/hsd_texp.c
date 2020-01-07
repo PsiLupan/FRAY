@@ -1000,7 +1000,7 @@ static void TExp2TevDesc(HSD_TExp* texp, HSD_TExpTevDesc* desc, u32* init_cprev,
             arg = texp->tev.a_in[i].arg;
             swap = arg;
             if (arg == 0xFF) {
-                swap = GX_CC_ZERO;
+                swap = GX_CA_ZERO;
             }
             switch (i) {
             case 0:
