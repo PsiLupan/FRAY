@@ -462,27 +462,18 @@ void JObjUpdateFunc(void* obj, u32 type, FObjData* val)
             }
             break;
         case 8:
-            if ((f32)((u32)val->fv & 0x7FFFFFFF) < 0.001f) {
-                val->fv = 0.001f;
-            }
             jobj->scale.x = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
                 HSD_JObjSetMtxDirty(jobj);
             }
             break;
         case 9:
-            if ((f32)((u32)val->fv & 0x7FFFFFFF) < 0.001f) {
-                val->fv = 0.001f;
-            }
             jobj->scale.y = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
                 HSD_JObjSetMtxDirty(jobj);
             }
             break;
         case 10:
-            if ((f32)((u32)val->fv & 0x7FFFFFFF) < 0.001f) {
-                val->fv = 0.001f;
-            }
             jobj->scale.z = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
                 HSD_JObjSetMtxDirty(jobj);
@@ -583,10 +574,10 @@ void JObjUpdateFunc(void* obj, u32 type, FObjData* val)
                 jobj->position.y = guMtxRowCol(mtx, 1, 3);
                 jobj->position.z = guMtxRowCol(mtx, 2, 3);
             }
-            if ((type - 54) < 2) {
+            if (type == 54 || type == 55) {
                 HSD_MtxGetRotation(mtx, (guVector*)&jobj->rotation);
             }
-            if ((type == 54) || type == 57) {
+            if (type == 54 || type == 57) {
                 // HSD_MtxGetScale(mtx, &jobj->scale);
                 guMtxScale(mtx, jobj->scale.x, jobj->scale.y, jobj->scale.z);
             }
