@@ -75,26 +75,26 @@ void HSD_CObjAddAnim(HSD_CObj* cobj, HSD_CameraAnim* anim)
 }
 
 //80367948
-void CObjUpdateFunc(HSD_CObj* cobj, u32 type, f32* val)
+void CObjUpdateFunc(HSD_CObj* cobj, u32 type, FObjData* val)
 {
     if (cobj != NULL) {
         guVector vec;
         switch (type) {
         case 1:
             HSD_CObjGetEyePosition(cobj, &vec);
-            vec.x = *val;
+            vec.x = val->fv;
             HSD_CObjSetEyePosition(cobj, vec);
             break;
 
         case 2:
             HSD_CObjGetEyePosition(cobj, &vec);
-            vec.y = *val;
+            vec.y = val->fv;
             HSD_CObjSetEyePosition(cobj, vec);
             break;
 
         case 3:
             HSD_CObjGetEyePosition(cobj, &vec);
-            vec.z = *val;
+            vec.z = val->fv;
             HSD_CObjSetEyePosition(cobj, vec);
             break;
 
@@ -102,24 +102,24 @@ void CObjUpdateFunc(HSD_CObj* cobj, u32 type, f32* val)
         case 6:
         case 7:
             HSD_CObjGetInterest(cobj, &vec);
-            vec.x = *val;
+            vec.x = val->fv;
             HSD_CObjSetInterest(cobj, vec);
             break;
 
         case 9:
-            HSD_CObjSetRoll(cobj, *val);
+            HSD_CObjSetRoll(cobj, val->fv);
             break;
 
         case 10:
-            HSD_CObjSetFov(cobj, *val);
+            HSD_CObjSetFov(cobj, val->fv);
             break;
 
         case 11:
-            HSD_CObjSetNear(cobj, *val);
+            HSD_CObjSetNear(cobj, val->fv);
             break;
 
         case 12:
-            HSD_CObjSetFar(cobj, *val);
+            HSD_CObjSetFar(cobj, val->fv);
             break;
 
         default:
@@ -335,35 +335,64 @@ void HSD_CObjSetEyePosition(HSD_CObj* cobj, guVector pos)
     HSD_WObjSetPosition(cobj->eye_position, &pos);
 }
 
+static s32 vec_normalize_check(guVector* src, guVector* dst)
+{
+    if (src == NULL || dst == NULL) {
+        return -1;
+    } else if (FLT_MIN < fabs(src->x)
+        || FLT_MIN < fabs(src->y)
+        || FLT_MIN < fabs(src->z)) {
+        guVecNormalize(src);
+        dst = src;
+        return 0;
+    }
+    return -1;
+}
+
+
+static s32 roll2upvec(HSD_CObj* cobj, f32 roll, guVector* up)
+{
+    guVector eye, v0, v1;
+    Mtx m;
+
+    if (HSD_CObjGetEyeVector(cobj, &eye) != 0) {
+        if (0.0001 <= 1.0 - fabsf(eye.y)) {
+            f64 xz = sqrtf((eye.x * eye.x) + (eye.z * eye.z));
+            v0.y = xz;
+            v0.x = eye.x * (-eye.y / v0.y);
+            v0.z = eye.z * (-eye.y / v0.y);
+        } else {
+            f64 yz = sqrtf((eye.y * eye.y) + (eye.z * eye.z));
+            v0.x = yz;
+            v0.y = eye.y * (-eye.x / v0.x);
+            v0.z = eye.z / (-eye.x / v0.x);
+        }
+        guMtxRotAxisRad(m, &v0, -roll);
+        guVecMultiplySR(m, &v0, &v1);
+        up->x = v1.x;
+        up->y = v1.y;
+        up->z = v1.z;
+        guVecNormalize(up);
+        return 1;
+    }
+    return 0;
+}
+
+
 //8036885C
 s32 HSD_CObjGetEyeVector(HSD_CObj* cobj, guVector* vec)
 {
     if (cobj != NULL && cobj->eye_position != NULL && cobj->interest != NULL && vec != NULL) {
         guVector eye_pos;
         guVector interest_pos;
-        HSD_WObjGetPosition(cobj->eye_position, &eye_pos);
-        HSD_WObjGetPosition(cobj->interest, &interest_pos);
+        HSD_CObjGetEyePosition(cobj, &eye_pos);
+        HSD_CObjGetInterest(cobj, &interest_pos);
 
         guVecSub(&interest_pos, &eye_pos, vec);
 
-        if (vec == NULL) {
-            return -1;
-        }
-        if ((f32)((u32)vec->x & 0x7FFFFFFF) > FLT_MIN
-            && (f32)((u32)vec->y & 0x7FFFFFFF) > FLT_MIN
-            && (f32)((u32)vec->z & 0x7FFFFFFF) > FLT_MIN) {
-            guVecNormalize(vec);
-            return 0;
-        } else {
-            return -1;
-        }
+        return __builtin_clz(vec_normalize_check(vec, vec)) >> 5;
     }
-    if (vec != NULL) {
-        vec->x = 0.0f;
-        vec->y = 0.0f;
-        vec->z = -1.0f;
-    }
-    return -1;
+    return 0;
 }
 
 //80368A08
@@ -390,32 +419,7 @@ s32 HSD_CObjGetUpVector(HSD_CObj* cobj, guVector* vec)
 {
     if (cobj != NULL && vec != NULL) {
         if ((cobj->flags & 1) == 0) {
-            guVector eye;
-            guVector v;
-
-            s32 eye_res = HSD_CObjGetEyeVector(cobj, &eye);
-            if (eye_res == 0){
-                return 0;
-            }else {
-                f32 y_abs = fabsf(eye.y);
-                if (0.0001 <= 1.0 - y_abs) {
-                    f32 y = sqrtf(eye.x * eye.x + eye.z * eye.z);
-                    v.y = y;
-                    v.x = eye.x - (eye.y / v.y);
-                    v.z = eye.z * (-eye.y / v.y);
-                } else {
-                    f32 y = sqrtf(eye.y * eye.y + eye.z * eye.z);
-                    v.x = y;
-                    v.y = eye.y * (-eye.x / v.x);
-                    v.z = eye.z * (-eye.x / v.x);
-                }
-
-                Mtx mtx;
-                guMtxRotAxisRad(mtx, &eye, -cobj->u.roll);
-                c_guVecMultiplySR(mtx, &v, vec);
-                guVecNormalize(vec);
-                return 1;
-            }
+            return roll2upvec(cobj, cobj->u.roll, vec);
         } else {
             vec->x = cobj->u.up.x;
             vec->y = cobj->u.up.y;
@@ -448,7 +452,7 @@ void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec)
                             val = -1.94635f;
                         }
                     } else {
-                        val = (f32)atan2((double)rvec.y, (double)rvec.x);
+                        val = atan2f(rvec.y, rvec.x);
                     }
                 } else {
                     val = 0.0f;
@@ -456,25 +460,15 @@ void HSD_CObjSetUpVector(HSD_CObj* cobj, guVector* vec)
             }
             HSD_CObjSetRoll(cobj, val);
         } else {
-            BOOL use_local = FALSE;
-            if (vec == NULL) {
-                use_local = FALSE;
-            } else {
-                f32 n = FLT_MIN;
-                if (n < vec->x || n < vec->y || n < vec->z) {
-                    use_local = TRUE;
-                }
-            }
-            guVector uvec = { 0.f, 1.f, 0.f };
-            if (use_local == TRUE) {
-                //uvec = local_vec; No fucking clue how the local vector ends up on the stack
-            }
-            if (cobj->u.up.x != uvec.x || cobj->u.up.y != uvec.y || cobj->u.up.z != uvec.z) {
+            guVector up;
+            vec_normalize_check(vec, &up);
+
+            if (cobj->u.up.x != up.x || cobj->u.up.y != up.y || cobj->u.up.z != up.z) {
                 HSD_CObjSetMtxDirty(cobj);
+                cobj->u.up.x = up.x;
+                cobj->u.up.y = up.y;
+                cobj->u.up.z = up.z;
             }
-            cobj->u.up.x = uvec.x;
-            cobj->u.up.y = uvec.y;
-            cobj->u.up.z = uvec.z;
         }
     }
 }
@@ -521,46 +515,17 @@ MtxP HSD_CObjGetInvViewingMtxPtrDirect(HSD_CObj* cobj)
 //803699C0
 void HSD_CObjSetRoll(HSD_CObj* cobj, f32 roll)
 {
-    guVector eye, up, res;
-    Mtx rmtx;
+    guVector up;
 
     if (cobj != NULL) {
         if ((cobj->flags & 1) == 0) {
             if (cobj->u.roll != roll) {
-                cobj->flags |= 0xC0000000;
+                HSD_CObjSetMtxDirty(cobj);
             }
             cobj->u.roll = roll;
         } else {
-            if (HSD_CObjGetEyeVector(cobj, &eye) == 0) {
-                if (0.0001 <= 1.0 - fabs((f64)eye.y)) {
-                    f64 xz = (eye.x * eye.x) + (eye.z * eye.z);
-                    if (xz > 0) {
-                        f64 rec = 1.0 / sqrt(xz);
-                        rec = 0.5 * rec * -(xz * rec * rec - 3.0);
-                        rec = 0.5 * rec * -(xz * rec * rec - 3.0);
-                        xz = (xz * 0.5 * rec * -(xz * rec * rec - 3.0));
-                    }
-                    up.y = xz;
-                    up.x = eye.x * (-eye.y / up.y);
-                    up.z = -eye.y / up.y;
-                } else {
-                    f64 yz = (eye.y * eye.y) + (eye.z * eye.z);
-                    if (yz > 0) {
-                        f64 rec = 1.0 / sqrt(yz);
-                        rec = 0.5 * rec * -(yz * rec * rec - 3.0);
-                        rec = 0.5 * rec * -(yz * rec * rec - 3.0);
-                        yz = (yz * 0.5 * rec * -(yz * rec * rec - 3.0));
-                    }
-                    up.x = yz;
-                    up.y = eye.y * (-eye.x / up.x);
-                    up.z = -eye.x / up.x;
-                }
-                up.z = eye.z * up.z;
-                guMtxRotAxisRad(rmtx, &eye, -roll);
-                guVecMultiplySR(rmtx, &up, &res);
-                guVecNormalize(&res);
-            }
-            HSD_CObjSetUpVector(cobj, &res);
+            roll2upvec(cobj, roll, &up);
+            HSD_CObjSetUpVector(cobj, &up);
         }
     }
 }
@@ -955,18 +920,10 @@ static int CObjLoad(HSD_CObj* cobj, HSD_CObjDesc* desc)
     cobj->scissor_top = desc->scissor_tb;
     HSD_WObjInit(cobj->eye_position, desc->eye_desc);
     HSD_WObjInit(cobj->interest, desc->interest_desc);
-    cobj->near = desc->near;
-    cobj->far = desc->far;
+    HSD_CObjSetNear(cobj, desc->near);
+    HSD_CObjSetFar(cobj, desc->far);
     if ((desc->flags & 1) == 0) {
-        if ((cobj->flags & 1) == 0) {
-            if (cobj->u.roll != desc->roll) {
-                cobj->flags |= 0xC0000000;
-            }
-            cobj->u.roll = desc->roll;
-        } else {
-            //roll2upvec(cobj, ??);
-            //HSD_CObjSetUpVector(cobj, ??);
-        }
+        HSD_CObjSetRoll(cobj, desc->roll);
     } else {
         if (desc->vector == NULL) {
             guVector vec = { 0.f, 1.f, 0.f };
@@ -978,23 +935,13 @@ static int CObjLoad(HSD_CObj* cobj, HSD_CObjDesc* desc)
     u8 proj_type = desc->projection_type;
     switch (proj_type) {
     case PROJ_PERSPECTIVE:
-        cobj->projection_type = PROJ_PERSPECTIVE;
-        cobj->projection_param.perspective.fov = desc->projection_param.perspective.fov;
-        cobj->projection_param.perspective.aspect = desc->projection_param.perspective.aspect;
+        HSD_CObjSetPerspective(cobj, desc->projection_param.perspective.fov, desc->projection_param.perspective.aspect);
         break;
     case PROJ_FRUSTRUM:
-        cobj->projection_type = PROJ_FRUSTRUM;
-        cobj->projection_param.frustrum.top = desc->projection_param.frustrum.top;
-        cobj->projection_param.frustrum.bottom = desc->projection_param.frustrum.bottom;
-        cobj->projection_param.frustrum.left = desc->projection_param.frustrum.left;
-        cobj->projection_param.frustrum.right = desc->projection_param.frustrum.right;
+        HSD_CObjSetFrustrum(cobj, desc->projection_param.frustrum.top, desc->projection_param.frustrum.bottom, desc->projection_param.frustrum.left, desc->projection_param.frustrum.right);
         break;
     case PROJ_ORTHO:
-        cobj->projection_type = PROJ_ORTHO;
-        cobj->projection_param.ortho.top = desc->projection_param.ortho.top;
-        cobj->projection_param.ortho.bottom = desc->projection_param.ortho.bottom;
-        cobj->projection_param.ortho.left = desc->projection_param.ortho.left;
-        cobj->projection_param.ortho.right = desc->projection_param.ortho.right;
+        HSD_CObjSetOrtho(cobj, desc->projection_param.ortho.top, desc->projection_param.ortho.bottom, desc->projection_param.ortho.left, desc->projection_param.ortho.right);
         break;
     default:
         HSD_Halt("Unexpected projection type");
