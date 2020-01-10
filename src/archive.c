@@ -4,7 +4,6 @@
 #include <malloc.h>
 #include <math.h>
 
-#include <di/di.h>
 
 static s32 file_load_status = 0;
 
@@ -41,18 +40,14 @@ void* Archive_Alloc(u32 offset, u32 size)
 //800161A0
 static s32 Archive_GetFileLoadStatus()
 {
-    //sub_800195D0();
+    DVD_CheckDisk();
     return file_load_status;
 }
 
 //8001615C
 static void Archive_DVDCallback(s32 result, dvdcmdblk* fileInfo)
 {
-    if (result >= 0) {
-        file_load_status = 1;
-    }
-    file_load_status = -1;
-    HSD_Halt("DVDReadAsync failed");
+    file_load_status = 1;
 }
 
 //8001634C
@@ -102,8 +97,10 @@ void Archive_LoadFileIntoMemory(char* filepath, u8* mem, u32 filelength)
         HSD_Halt("Archive_LoadFileIntoMemory: Could not open file");
     }
     dvdcmdblk cmdblk;
-    u32 addr = handle.addr;
-    DVD_ReadPrio(&cmdblk, mem, filelength + 0x1F & 0xFFFFFFE0, addr, 2);
+    DVD_ReadAbsAsyncPrio(&cmdblk, mem, filelength + 0x1F & 0xFFFFFFE0, handle.addr, Archive_DVDCallback, 2);
+    do {
+        file_load_status = Archive_GetFileLoadStatus();
+    } while (file_load_status == 0);
 }
 
 //80016A54
