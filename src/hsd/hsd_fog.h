@@ -13,8 +13,8 @@ typedef struct _HSD_FogAdj {
     #ifdef NEW_LIB
     u32 flags;
     #endif
-    u16 center; //0x08
-    u16 width; //0xA
+    s16 center; //0x08
+    s16 width; //0xA
     Mtx44 mtx; //0x0C
     struct _HSD_AObj* aobj;
 } HSD_FogAdj;
@@ -60,6 +60,8 @@ void HSD_FogAddAnim(HSD_Fog*, HSD_AObjDesc*);
 void HSD_FogReqAnim(HSD_Fog*, f32);
 void HSD_FogReqAnimByFlags(HSD_Fog*, u32, f32);
 void HSD_FogInterpretAnim(HSD_Fog*);
-void FogUpdateFunc(HSD_Fog*, u32, f32*);
+void HSD_FogAdjSetCenter(HSD_FogAdj*, s32);
+void HSD_FogAdjSetWidth(HSD_FogAdj*, s32);
+void FogUpdateFunc(HSD_Fog*, u32, FObjData*);
 
 #endif

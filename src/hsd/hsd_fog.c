@@ -148,38 +148,72 @@ void HSD_FogInterpretAnim(HSD_Fog* fog)
     }
 }
 
+void HSD_FogAdjSetCenter(HSD_FogAdj* fog_adj, s32 center){
+    if (fog_adj != NULL){
+        if(center < -320){
+            fog_adj->center = -320;
+        }else{
+            if(center < 320){
+                fog_adj->center = (s16)center;
+            }else{
+                fog_adj->center = 320;
+            }
+        }
+    }
+}
+
+void HSD_FogAdjSetWidth(HSD_FogAdj* fog_adj, s32 width){
+    if (fog_adj != NULL){
+        if(width < 1){
+            fog_adj->width = 0;
+        }else{
+            if(width < 640){
+                fog_adj->width = (s16)width;
+            }else{
+                fog_adj->width = 640;
+            }
+        }
+    }
+}
+
 //8037DF60
-void FogUpdateFunc(HSD_Fog* fog, u32 type, f32* fv)
+void FogUpdateFunc(HSD_Fog* fog, u32 type, FObjData* val)
 {
     if (fog != NULL) {
         switch (type) {
         case 1:
-            fog->start = *fv;
+            fog->start = val->fv;
             break;
 
         case 2:
-            fog->end = *fv;
+            fog->end = val->fv;
             break;
 
         case 5:
-            fog->color.r = (u8)(255.f * *fv);
+            fog->color.r = (u8)(255.f * HSD_ClampFloat(val->fv, 0, 1));
             break;
 
         case 6:
-            fog->color.g = (u8)(255.f * *fv);
+            fog->color.g = (u8)(255.f * HSD_ClampFloat(val->fv, 0, 1));
             break;
 
         case 7:
-            fog->color.b = (u8)(255.f * *fv);
+            fog->color.b = (u8)(255.f * HSD_ClampFloat(val->fv, 0, 1));
             break;
 
         case 8:
-            fog->color.a = (u8)(255.f * *fv);
+            fog->color.a = (u8)(255.f * HSD_ClampFloat(val->fv, 0, 1));
             break;
 
         case 20:
             if (fog->fog_adj != NULL) {
-                fog->fog_adj->center = (u16)*fv;
+                HSD_FogAdjSetCenter(fog->fog_adj, (s32)val->fv);
+            }
+            break;
+        
+        case 21:
+            if (fog->fog_adj != NULL){
+                HSD_FogAdjSetWidth(fog->fog_adj, (s32)val->fv);
             }
             break;
         }

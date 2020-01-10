@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include <gcutil.h>
+#include <ogc/cache.h>
 #include <ogc/irq.h>
 #include <ogc/lwp.h>
 
@@ -36,6 +37,8 @@ static void __DVDFSInit(void)
     fst = memalign(32, fst_size + 0x1F & 0xFFFFFFE0);
     start_memory[14] = (u32)fst;
     start_memory[15] = fst_size;
+
+    DCFlushRange((void*)0x80000000, 0x40);
 
     if(fst_size > 0x4000){
         u32 max_iterations = (u32)ceil((double)fst_size / (double)0x4000);
