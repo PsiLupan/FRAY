@@ -2301,11 +2301,62 @@ static void MergeResources(HSD_TETev* dst, HSD_TETev* src)
     }
 }
 
+static u32 ResConflict(HSD_TExp* t1, HSD_TExp* t2)
+{
+    if (t1->tev.tex == NULL || t2->tev.tex == NULL || t1->tev.tex == t2->tev.tex) {
+        if (t1->tev.chan == 0xFF || t2->tev.chan == 0xFF || t1->tev.chan == t2->tev.chan) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+    return 1;
+}
+
+static u32 IsUsingColorCnst(HSD_TExp* texp)
+{
+    if ((texp->tev.c_in[0].type != HSD_TE_CNST) && (texp->tev.c_in[1].type != HSD_TE_CNST)) {
+        if (texp->tev.c_in[2].type != HSD_TE_CNST) {
+            if (texp->tev.c_in[3].type != HSD_TE_CNST) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
 //803870E4
 static u32 SimplifyByMerge(HSD_TExp* texp)
 {
+#if 0
     u8 sel;
     BOOL bVar2;
+    BOOL bVar3;
+    u32 result;
+
+    HSD_TExp* curr;
+    result = FALSE;
+    do {
+        sel = texp->tev.c_op;
+        bVar3 = false;
+        if ((texp->tev.c_op == 0 || texp->tev.c_op == 1) && texp->tev.c_in[2].sel == 7) {
+            curr = texp->tev.c_in[0].exp;
+            sel = texp->tev.c_in[0].sel;
+            if (texp->tev.c_in[0].type != HSD_TE_TEV || texp->tev.c_in[0].sel != 1 || curr->tev.c_range != 0 || texp->tev.c_in[3].sel != 7 || ResConflict(texp, curr) != 0 || (IsUsingColorCnst(texp) != 0 && IsUsingColorCnst(curr) != 0)) {
+
+                curr = texp->tev.c_in[3].exp;
+                sel = texp->tev.c_in[3].sel;
+
+                if (texp->tev.c_op != 0 || texp->tev.c_in[3].type != 1 || texp->tev.c_in[3].sel != 1 || curr->tev.c_range != 0 || curr->tev.c_in[3].sel != 7 || ResConflict(texp, curr) != 0 || (IsUsingColorCnst(texp) != 0 && IsUsingColorCnst(curr) != 0)) {
+                    goto ALPHA;
+                }
+            }
+        }
+
+    ALPHA:
+    } while (true);
+#else
+    u8 sel;
     BOOL bVar3;
     u32 result;
 
@@ -2345,17 +2396,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                         if ((curr->tev.c_op == 0 || curr->tev.c_op == 1)
                             && curr->tev.c_in[3].sel == 7 && curr->tev.c_scale == 0) {
 
-                            if (texp->tev.tex == NULL || curr->tev.tex == NULL || texp->tev.tex == curr->tev.tex) {
-                                if (texp->tev.chan == 0xFF || curr->tev.chan == 0xFF || texp->tev.chan == curr->tev.chan) {
-                                    bVar2 = false;
-                                } else {
-                                    bVar2 = true;
-                                }
-                            } else {
-                                bVar2 = true;
-                            }
-
-                            if (!bVar2) {
+                            if (ResConflict(texp, curr) == 0) {
                                 bVar3 = CalcBias(curr->tev.c_op, texp->tev.c_bias, curr->tev.c_bias, &texp->tev.c_bias);
                                 if (bVar3) {
                                     if (curr->tev.c_op == 1) {
@@ -2379,17 +2420,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                         && (curr = texp->tev.c_in[3].exp, curr->tev.c_scale == 0)
                         && (texp->tev.c_bias == 0 || texp->tev.c_bias != curr->tev.c_bias)) {
 
-                        if (texp->tev.tex == NULL || curr->tev.tex == NULL || texp->tev.tex == curr->tev.tex) {
-                            if (texp->tev.chan == 0xFF || curr->tev.chan == 0xFF || texp->tev.chan == curr->tev.chan) {
-                                bVar2 = false;
-                            } else {
-                                bVar2 = true;
-                            }
-                        } else {
-                            bVar2 = true;
-                        }
-
-                        if (!bVar2) {
+                        if (ResConflict(texp, curr) == 0) {
                             bVar3 = true;
                             for (u32 i = 0; i < 4; ++i) {
                                 texp->tev.c_in[i].type = curr->tev.c_in[i].type;
@@ -2439,17 +2470,8 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                     sel = texp->tev.a_in[0].sel;
                     if ((curr->tev.a_op == 0 || curr->tev.a_op == 1)
                         && curr->tev.a_in[3].sel == 7 && curr->tev.a_scale == 0) {
-                        if (texp->tev.tex == NULL || curr->tev.tex == NULL || texp->tev.tex == curr->tev.tex) {
-                            if (texp->tev.chan == 0xFF || curr->tev.chan == 0xFF || texp->tev.chan == curr->tev.chan) {
-                                bVar2 = false;
-                            } else {
-                                bVar2 = true;
-                            }
-                        } else {
-                            bVar2 = true;
-                        }
 
-                        if (!bVar2) {
+                        if (ResConflict(texp, curr) == 0) {
                             bVar3 = CalcBias(curr->tev.a_op, texp->tev.a_bias, curr->tev.a_bias, &texp->tev.a_bias);
                             if (bVar3) {
                                 if (curr->tev.a_op == 1) {
@@ -2478,17 +2500,8 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                         curr = texp->tev.a_in[3].exp;
                         sel = texp->tev.a_in[3].sel;
                         if (curr->tev.a_scale == 0 && (texp->tev.a_bias == 0 || texp->tev.a_bias != curr->tev.a_bias)) {
-                            if (texp->tev.tex == NULL || curr->tev.tex == NULL || texp->tev.tex == curr->tev.tex) {
-                                if (texp->tev.chan == 0xff || curr->tev.chan == 0xff || texp->tev.chan == curr->tev.chan) {
-                                    bVar2 = false;
-                                } else {
-                                    bVar2 = true;
-                                }
-                            } else {
-                                bVar2 = true;
-                            }
 
-                            if (!bVar2) {
+                            if (ResConflict(texp, curr) == 0) {
                                 bVar3 = true;
                                 for (u32 i = 0; i < 4; ++i) {
                                     texp->tev.a_in[i].type = curr->tev.a_in[i].type;
@@ -2521,6 +2534,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
         }
         result = TRUE;
     } while (true);
+#endif
 }
 
 #ifdef NEW_LIB
