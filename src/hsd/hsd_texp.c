@@ -1886,6 +1886,7 @@ static u32 SimplifySrc(HSD_TExp* texp)
 //8038687C
 static u32 SimplifyThis(HSD_TExp* texp)
 {
+    u8 op;
     u8 type;
     BOOL match;
     s32 tex_c;
@@ -1925,9 +1926,8 @@ static u32 SimplifyThis(HSD_TExp* texp)
             texp->tev.ras_swap = HSD_TE_UNDEF;
         }
 
-        u8 op = texp->tev.a_op;
         match = FALSE;
-        if (op == 0xff || ((u8)(op - 0xe) < 2) || op < 2) {
+        if (texp->tev.a_op == 0xFF ||  texp->tev.a_op == 0xE ||  texp->tev.a_op == 0xF) {
             if ((texp->tev.c_op != 0xFF) && (texp->tev.c_ref == 0)) {
                 texp->tev.c_op = 0xFF;
                 for (u32 i = 0; i < 4; i++) {
@@ -1967,7 +1967,9 @@ static u32 SimplifyThis(HSD_TExp* texp)
 
                         match = TRUE;
                     }
-                } else if (texp->tev.c_in[2].sel == 8) {
+                }
+
+                if (texp->tev.c_in[2].sel == 8) {
                     if (texp->tev.c_in[0].sel != 7) {
                         HSD_TExpUnref(texp->tev.c_in[0].exp, texp->tev.c_in[0].sel);
                         texp->tev.c_in[0].type = 0;
@@ -1997,6 +1999,25 @@ static u32 SimplifyThis(HSD_TExp* texp)
                     }
                 }
 
+                if (texp->tev.c_in[0].sel == 7 && texp->tev.c_in[1].sel == 8){
+                    texp->tev.c_in[0].type = texp->tev.c_in[2].type;
+                    texp->tev.c_in[0].sel = texp->tev.c_in[2].sel;
+                    texp->tev.c_in[0].arg = texp->tev.c_in[2].arg;
+                    texp->tev.c_in[0].exp = texp->tev.c_in[2].exp;
+
+                    texp->tev.c_in[1].type = 0;
+                    texp->tev.c_in[1].sel = 7;
+                    texp->tev.c_in[1].arg = 0xFF;
+                    texp->tev.c_in[1].exp = NULL;
+
+                    texp->tev.c_in[2].type = 0;
+                    texp->tev.c_in[2].sel = 7;
+                    texp->tev.c_in[2].arg = 0xFF;
+                    texp->tev.c_in[2].exp = NULL;
+
+                    match = true;
+                }
+
                 if (texp->tev.c_in[0].sel == 7 && texp->tev.c_in[1].sel == 7 && texp->tev.c_in[3].sel == 7 && texp->tev.c_bias == 0) {
                     texp->tev.c_op = 0xff;
 
@@ -2011,8 +2032,8 @@ static u32 SimplifyThis(HSD_TExp* texp)
                 break;
             case 8:
             case 10:
-            case 0xc:
-            case 0xe:
+            case 12:
+            case 14:
                 if (texp->tev.c_in[2].sel == 7) {
                     texp->tev.c_op = 0;
 
@@ -2048,9 +2069,9 @@ static u32 SimplifyThis(HSD_TExp* texp)
                 }
                 break;
             case 9:
-            case 0xb:
-            case 0xd:
-            case 0xf:
+            case 11:
+            case 13:
+            case 15:
                 if (texp->tev.c_in[2].sel == 7) {
                     texp->tev.c_op = 0;
 
@@ -2157,7 +2178,9 @@ static u32 SimplifyThis(HSD_TExp* texp)
 
                         match = TRUE;
                     }
-                } else if (texp->tev.a_in[2].sel == 8) {
+                } 
+                
+                if (texp->tev.a_in[2].sel == 8) {
                     if (texp->tev.a_in[0].sel != 7) {
                         HSD_TExpUnref(texp->tev.a_in[0].exp, texp->tev.a_in[0].sel);
                         texp->tev.a_in[0].type = 0;
@@ -2186,6 +2209,7 @@ static u32 SimplifyThis(HSD_TExp* texp)
                         match = TRUE;
                     }
                 }
+
                 if (texp->tev.a_in[0].sel == 7 && texp->tev.a_in[1].sel == 7 && texp->tev.a_in[3].sel == 7) {
                     texp->tev.a_op = 0xFF;
                     match = TRUE;
@@ -2224,7 +2248,7 @@ static u32 SimplifyThis(HSD_TExp* texp)
                 texp->tev.a_in[1].exp = NULL;
 
                 match = TRUE;
-            } else if ((texp->tev.a_in[0].sel == 7) && (texp->tev.a_in[1].sel == 7)) {
+            } else if (texp->tev.a_in[0].sel == 7 && texp->tev.a_in[1].sel == 7) {
                 texp->tev.a_op = 0;
 
                 texp->tev.a_in[0].type = texp->tev.a_in[2].type;
