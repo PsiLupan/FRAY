@@ -1927,7 +1927,7 @@ static u32 SimplifyThis(HSD_TExp* texp)
         }
 
         match = FALSE;
-        if (texp->tev.a_op == 0xFF ||  texp->tev.a_op == 0xE ||  texp->tev.a_op == 0xF) {
+        if (texp->tev.a_op == 0xFF || texp->tev.a_op == 0xE || texp->tev.a_op == 0xF) {
             if ((texp->tev.c_op != 0xFF) && (texp->tev.c_ref == 0)) {
                 texp->tev.c_op = 0xFF;
                 for (u32 i = 0; i < 4; i++) {
@@ -1999,7 +1999,7 @@ static u32 SimplifyThis(HSD_TExp* texp)
                     }
                 }
 
-                if (texp->tev.c_in[0].sel == 7 && texp->tev.c_in[1].sel == 8){
+                if (texp->tev.c_in[0].sel == 7 && texp->tev.c_in[1].sel == 8) {
                     texp->tev.c_in[0].type = texp->tev.c_in[2].type;
                     texp->tev.c_in[0].sel = texp->tev.c_in[2].sel;
                     texp->tev.c_in[0].arg = texp->tev.c_in[2].arg;
@@ -2178,8 +2178,8 @@ static u32 SimplifyThis(HSD_TExp* texp)
 
                         match = TRUE;
                     }
-                } 
-                
+                }
+
                 if (texp->tev.a_in[2].sel == 8) {
                     if (texp->tev.a_in[0].sel != 7) {
                         HSD_TExpUnref(texp->tev.a_in[0].exp, texp->tev.a_in[0].sel);
@@ -2703,7 +2703,7 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
 {
     u32 res = 0;
     if (HSD_TExpGetType(texp) == HSD_TE_TEV) {
-        res = SimplifySrc(texp) != 0 ? 1 : 0;
+        //res = SimplifySrc(texp) != 0 ? 1 : 0;
         res = SimplifyThis(texp) != 0 ? 1 : res;
         res = SimplifyByMerge(texp) != 0 ? 1 : res;
 #ifdef NEW_LIB
@@ -2717,50 +2717,49 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
 u32 HSD_TExpSimplify2(HSD_TExp* texp)
 {
     HSD_TExp* t;
+    u8 sel;
 
     for (u32 i = 0; i < 4; i++) {
         t = texp->tev.c_in[i].exp;
-        if (texp->tev.c_in[i].type == HSD_TE_TEV && texp->tev.c_in[i].sel == 1) {
-            if (IsThroughColor(t)) {
-                if (t->tev.c_in[3].type == HSD_TE_KONST) {
-                    if (texp->tev.kcsel == 0xFF) {
-                        texp->tev.kcsel = t->tev.kcsel;
-                    } else if (texp->tev.kcsel != t->tev.kcsel) {
-                        continue;
-                    }
-                } else if (t->tev.c_in[3].type != HSD_TE_IMM) {
+        sel = texp->tev.c_in[i].sel;
+        if (texp->tev.c_in[i].type == HSD_TE_TEV && texp->tev.c_in[i].sel == 1 && IsThroughColor(t)) {
+            if (t->tev.c_in[3].type == HSD_TE_KONST) {
+                if (texp->tev.kcsel == 0xFF) {
+                    texp->tev.kcsel = t->tev.kcsel;
+                } else if (texp->tev.kcsel != t->tev.kcsel) {
                     continue;
                 }
-                texp->tev.c_in[i].type = t->tev.c_in[3].type;
-                texp->tev.c_in[i].sel = t->tev.c_in[3].sel;
-                texp->tev.c_in[i].arg = t->tev.c_in[3].arg;
-                texp->tev.c_in[i].exp = t->tev.c_in[3].exp;
-                HSD_TExpRef(texp->tev.c_in[i].exp, texp->tev.c_in[i].sel);
-                HSD_TExpUnref(t, texp->tev.c_in[i].sel);
+            } else if (t->tev.c_in[3].type != HSD_TE_IMM) {
+                continue;
             }
+            texp->tev.c_in[i].type = t->tev.c_in[3].type;
+            texp->tev.c_in[i].sel = t->tev.c_in[3].sel;
+            texp->tev.c_in[i].arg = t->tev.c_in[3].arg;
+            texp->tev.c_in[i].exp = t->tev.c_in[3].exp;
+            HSD_TExpRef(texp->tev.c_in[i].exp, texp->tev.c_in[i].sel);
+            HSD_TExpUnref(t, sel);
         }
     }
 
     for (u32 i = 0; i < 4; i++) {
         t = texp->tev.a_in[i].exp;
-        if (texp->tev.a_in[i].type == HSD_TE_TEV) {
-            if (IsThroughAlpha(t)) {
-                if (t->tev.a_in[3].type == HSD_TE_KONST) {
-                    if (texp->tev.kasel == 0xFF) {
-                        texp->tev.kasel = t->tev.kasel;
-                    } else if (texp->tev.kasel != t->tev.kasel) {
-                        continue;
-                    }
-                } else if (t->tev.a_in[3].type != HSD_TE_IMM) {
+        sel = texp->tev.a_in[i].sel;
+        if (texp->tev.a_in[i].type == HSD_TE_TEV && IsThroughAlpha(t)) {
+            if (t->tev.a_in[3].type == HSD_TE_KONST) {
+                if (texp->tev.kasel == 0xFF) {
+                    texp->tev.kasel = t->tev.kasel;
+                } else if (texp->tev.kasel != t->tev.kasel) {
                     continue;
                 }
-                texp->tev.a_in[i].type = t->tev.a_in[3].type;
-                texp->tev.a_in[i].sel = t->tev.a_in[3].sel;
-                texp->tev.a_in[i].arg = t->tev.a_in[3].arg;
-                texp->tev.a_in[i].exp = t->tev.a_in[3].exp;
-                HSD_TExpRef(texp->tev.a_in[i].exp, texp->tev.a_in[i].sel);
-                HSD_TExpUnref(t, texp->tev.a_in[i].sel);
+            } else if (t->tev.a_in[3].type != HSD_TE_IMM) {
+                continue;
             }
+            texp->tev.a_in[i].type = t->tev.a_in[3].type;
+            texp->tev.a_in[i].sel = t->tev.a_in[3].sel;
+            texp->tev.a_in[i].arg = t->tev.a_in[3].arg;
+            texp->tev.a_in[i].exp = t->tev.a_in[3].exp;
+            HSD_TExpRef(texp->tev.a_in[i].exp, texp->tev.a_in[i].sel);
+            HSD_TExpUnref(t, sel);
         }
     }
 
