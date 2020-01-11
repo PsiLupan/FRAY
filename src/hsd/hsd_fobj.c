@@ -101,68 +101,51 @@ void HSD_FObjStopAnimAll(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 fr
 //8036AC10
 static f32 parseFloat(u8** curr_parse, u8 frac)
 {
-    f32 result;
-    u32 data;
-    u8* parse_pos;
+    f32 result = 0.f;
+    s32 decimal_base;
 
     if ((frac & 0xFF) == 0) {
-        parse_pos = *curr_parse;
-        data = *parse_pos;
+        decimal_base = **curr_parse;
         *curr_parse += 1;
 
-        parse_pos = *curr_parse;
-        data |= (*parse_pos) << 8;
+        decimal_base |= (**curr_parse) << 8;
         *curr_parse += 1;
 
-        parse_pos = *curr_parse;
-        data |= (*parse_pos) << 16;
+        decimal_base |= (**curr_parse) << 16;
         *curr_parse += 1;
 
-        parse_pos = *curr_parse;
-        data |= (*parse_pos) << 24;
+        decimal_base |= (**curr_parse) << 24;
         *curr_parse += 1;
 
-        return (f32)(data);
+        return (f32)(decimal_base);
     }
 
     u8 flag = frac & 0xE0;
     if (flag == 96) {
-        u8 val = (**curr_parse);
+        result = (f32)(**curr_parse);
         *curr_parse += 1;
-        result = (f32)val;
     } else if (flag < 96) {
         if (flag == 64) {
-            parse_pos = *curr_parse;
-            data = (*parse_pos);
-            *curr_parse += 1;
+            decimal_base = ((*curr_parse)[0]);
+            decimal_base |= ((*curr_parse)[1]) << 8;
+            *curr_parse += 2;
 
-            parse_pos = *curr_parse;
-            data |= (*parse_pos) << 8;
-            *curr_parse += 1;
-
-            result = (f32)(data);
+            result = (f32)(decimal_base);
+        } else if (63 < flag || flag != 32) {
+            return 0.0f;
         } else {
-            if (63 < flag || flag != 32) {
-                return 0.0f;
-            } else {
-                parse_pos = *curr_parse;
-                data = (*parse_pos);
-                *curr_parse += 1;
+            decimal_base = ((*curr_parse)[0]);
+            decimal_base |= (s8)((*curr_parse)[1]) << 8; //This is (s8), because there is an extsb in the assembly that would only happen that way
+            *curr_parse += 2;
 
-                parse_pos = *curr_parse;
-                data |= (*parse_pos) << 8;
-                *curr_parse += 1;
-
-                result = (f32)(data);
-            }
+            result = (f32)(decimal_base);
         }
     } else {
         if (flag != 128) {
             return 0.0f;
         }
-        u8 val = (**curr_parse);
+        result = (f32)(**curr_parse);
         *curr_parse += 1;
-        result = (f32)val;
     }
     return result / (1 << (frac & 0x1F));
 }
