@@ -109,6 +109,8 @@ void splArcLengthPoint(HSD_Spline* spline, f32 s, guVector* pos)
 //80379598
 void HSD_MtxInverseConcat(Mtx inv, Mtx src, Mtx dst)
 {
+    Mtx m;
+
     f32 fVar1;
     f32 fVar2;
     f32 fVar3;
@@ -126,12 +128,11 @@ void HSD_MtxInverseConcat(Mtx inv, Mtx src, Mtx dst)
     f32 fVar15;
     f32 fVar16;
     f32 fVar17;
-    f32 local_54;
-    f32 local_44;
-    f32 local_34;
 
     fVar13 = -(guMtxRowCol(inv, 1, 2) * guMtxRowCol(inv, 0, 0) * guMtxRowCol(inv, 2, 1)
-        - -(guMtxRowCol(inv, 2, 2) * guMtxRowCol(inv, 1, 0) * guMtxRowCol(inv, 0, 1) - -(guMtxRowCol(inv, 0, 2) * guMtxRowCol(inv, 2, 0) * guMtxRowCol(inv, 1, 1) - (guMtxRowCol(inv, 2, 1) * guMtxRowCol(inv, 0, 2) * guMtxRowCol(inv, 1, 0) + guMtxRowCol(inv, 2, 2) * guMtxRowCol(inv, 0, 0) * guMtxRowCol(inv, 1, 1) + guMtxRowCol(inv, 2, 0) * guMtxRowCol(inv, 0, 1) * guMtxRowCol(inv, 1, 2)))));
+        - -(guMtxRowCol(inv, 2, 2) * guMtxRowCol(inv, 1, 0) * guMtxRowCol(inv, 0, 1)
+              - -(guMtxRowCol(inv, 0, 2) * guMtxRowCol(inv, 2, 0) * guMtxRowCol(inv, 1, 1)
+                    - (guMtxRowCol(inv, 2, 1) * guMtxRowCol(inv, 0, 2) * guMtxRowCol(inv, 1, 0) + guMtxRowCol(inv, 2, 2) * guMtxRowCol(inv, 0, 0) * guMtxRowCol(inv, 1, 1) + guMtxRowCol(inv, 2, 0) * guMtxRowCol(inv, 0, 1) * guMtxRowCol(inv, 1, 2)))));
     if (FLT_MIN != fVar13) {
         fVar1 = guMtxRowCol(inv, 1, 1);
         fVar13 = 1.0F / fVar13;
@@ -155,37 +156,36 @@ void HSD_MtxInverseConcat(Mtx inv, Mtx src, Mtx dst)
         fVar4 = fVar13 * (fVar6 * fVar5 - fVar1 * fVar2);
         fVar2 = fVar13 * -(fVar9 * fVar5 - fVar7 * fVar2);
         fVar13 = fVar13 * (fVar9 * fVar1 - fVar7 * fVar6);
-        local_54 = -(fVar4 * fVar11 - -fVar14 * fVar15 - (fVar12 * fVar10));
-        local_44 = -(fVar2 * fVar11 - -fVar16 * fVar15 - (fVar8 * fVar10));
-        local_34 = -(fVar13 * fVar11 - -fVar17 * fVar15 - (fVar3 * fVar10));
+        guMtxRowCol(m, 0, 3) = -(fVar4 * fVar11 - -fVar14 * fVar15 - fVar12 * fVar10);
+        guMtxRowCol(m, 1, 3) = -(fVar2 * fVar11 - -fVar16 * fVar15 - fVar8 * fVar10);
+        guMtxRowCol(m, 2, 3) = -(fVar13 * fVar11 - -fVar17 * fVar15 - fVar3 * fVar10);
         if ((inv == dst) || (src == dst)) {
-            Mtx m;
-            guMtxRowCol(m, 0, 0) = fVar4 * guMtxRowCol(src, 2, 0) + (fVar14 * guMtxRowCol(src, 0, 0) + (fVar12 * guMtxRowCol(src, 1, 0)));
-            guMtxRowCol(m, 0, 1) = fVar4 * guMtxRowCol(src, 2, 1) + (fVar14 * guMtxRowCol(src, 0, 1) + (fVar12 * guMtxRowCol(src, 1, 1)));
-            guMtxRowCol(m, 0, 2) = fVar4 * guMtxRowCol(src, 2, 2) + (fVar14 * guMtxRowCol(src, 0, 2) + (fVar12 * guMtxRowCol(src, 1, 2)));
-            guMtxRowCol(m, 0, 3) = local_54 + fVar4 * guMtxRowCol(src, 2, 3) + (fVar14 * guMtxRowCol(src, 0, 3) + (fVar12 * guMtxRowCol(src, 1, 3)));
-            guMtxRowCol(m, 1, 0) = fVar2 * guMtxRowCol(src, 2, 0) + (fVar16 * guMtxRowCol(src, 0, 0) + (fVar8 * guMtxRowCol(src, 1, 0)));
-            guMtxRowCol(m, 1, 1) = fVar2 * guMtxRowCol(src, 2, 1) + (fVar16 * guMtxRowCol(src, 0, 1) + (fVar8 * guMtxRowCol(src, 1, 1)));
-            guMtxRowCol(m, 1, 2) = fVar2 * guMtxRowCol(src, 2, 2) + (fVar16 * guMtxRowCol(src, 0, 2) + (fVar8 * guMtxRowCol(src, 1, 2)));
-            guMtxRowCol(m, 1, 3) = local_44 + fVar2 * guMtxRowCol(src, 2, 3) + (fVar16 * guMtxRowCol(src, 0, 3) + (fVar8 * guMtxRowCol(src, 1, 3)));
-            guMtxRowCol(m, 2, 0) = fVar13 * guMtxRowCol(src, 2, 0) + (fVar17 * guMtxRowCol(src, 0, 0) + (fVar3 * guMtxRowCol(src, 1, 0)));
-            guMtxRowCol(m, 2, 1) = fVar13 * guMtxRowCol(src, 2, 1) + (fVar17 * guMtxRowCol(src, 0, 1) + (fVar3 * guMtxRowCol(src, 1, 1)));
-            guMtxRowCol(m, 2, 2) = fVar13 * guMtxRowCol(src, 2, 2) + (fVar17 * guMtxRowCol(src, 0, 2) + (fVar3 * guMtxRowCol(src, 1, 2)));
-            guMtxRowCol(m, 2, 3) = local_34 + fVar13 * guMtxRowCol(src, 2, 3) + (fVar17 * guMtxRowCol(src, 0, 3) + (fVar3 * guMtxRowCol(src, 1, 3)));
+            guMtxRowCol(m, 0, 0) = fVar4 * guMtxRowCol(src, 2, 0) + fVar14 * guMtxRowCol(src, 0, 0) + fVar12 * guMtxRowCol(src, 1, 0);
+            guMtxRowCol(m, 0, 1) = fVar4 * guMtxRowCol(src, 2, 1) + fVar14 * guMtxRowCol(src, 0, 1) + fVar12 * guMtxRowCol(src, 1, 1);
+            guMtxRowCol(m, 0, 2) = fVar4 * guMtxRowCol(src, 2, 2) + fVar14 * guMtxRowCol(src, 0, 2) + fVar12 * guMtxRowCol(src, 1, 2);
+            guMtxRowCol(m, 0, 3) = guMtxRowCol(m, 0, 3) + fVar4 * guMtxRowCol(src, 2, 3) + fVar14 * guMtxRowCol(src, 0, 3) + fVar12 * guMtxRowCol(src, 1, 3);
+            guMtxRowCol(m, 1, 0) = fVar2 * guMtxRowCol(src, 2, 0) + fVar16 * guMtxRowCol(src, 0, 0) + fVar8 * guMtxRowCol(src, 1, 0);
+            guMtxRowCol(m, 1, 1) = fVar2 * guMtxRowCol(src, 2, 1) + fVar16 * guMtxRowCol(src, 0, 1) + fVar8 * guMtxRowCol(src, 1, 1);
+            guMtxRowCol(m, 1, 2) = fVar2 * guMtxRowCol(src, 2, 2) + fVar16 * guMtxRowCol(src, 0, 2) + fVar8 * guMtxRowCol(src, 1, 2);
+            guMtxRowCol(m, 1, 3) = guMtxRowCol(m, 1, 3) + fVar2 * guMtxRowCol(src, 2, 3) + fVar16 * guMtxRowCol(src, 0, 3) + fVar8 * guMtxRowCol(src, 1, 3);
+            guMtxRowCol(m, 2, 0) = fVar13 * guMtxRowCol(src, 2, 0) + fVar17 * guMtxRowCol(src, 0, 0) + fVar3 * guMtxRowCol(src, 1, 0);
+            guMtxRowCol(m, 2, 1) = fVar13 * guMtxRowCol(src, 2, 1) + fVar17 * guMtxRowCol(src, 0, 1) + fVar3 * guMtxRowCol(src, 1, 1);
+            guMtxRowCol(m, 2, 2) = fVar13 * guMtxRowCol(src, 2, 2) + fVar17 * guMtxRowCol(src, 0, 2) + fVar3 * guMtxRowCol(src, 1, 2);
+            guMtxRowCol(m, 2, 3) = guMtxRowCol(m, 2, 3) + fVar13 * guMtxRowCol(src, 2, 3) + fVar17 * guMtxRowCol(src, 0, 3) + fVar3 * guMtxRowCol(src, 1, 3);
             guMtxCopy(m, dst);
         } else {
-            guMtxRowCol(dst, 0, 0) = fVar4 * guMtxRowCol(src, 2, 0) + (fVar14 * guMtxRowCol(src, 0, 0) + (fVar12 * guMtxRowCol(src, 1, 0)));
-            guMtxRowCol(dst, 0, 1) = fVar4 * guMtxRowCol(src, 2, 1) + (fVar14 * guMtxRowCol(src, 0, 1) + (fVar12 * guMtxRowCol(src, 1, 1)));
-            guMtxRowCol(dst, 0, 2) = fVar4 * guMtxRowCol(src, 2, 2) + (fVar14 * guMtxRowCol(src, 0, 2) + (fVar12 * guMtxRowCol(src, 1, 2)));
-            guMtxRowCol(dst, 0, 3) = local_54 + fVar4 * guMtxRowCol(src, 2, 3) + (fVar14 * guMtxRowCol(src, 0, 3) + (fVar12 * guMtxRowCol(src, 1, 3)));
-            guMtxRowCol(dst, 1, 0) = fVar2 * guMtxRowCol(src, 2, 0) + (fVar16 * guMtxRowCol(src, 0, 0) + (fVar8 * guMtxRowCol(src, 1, 0)));
-            guMtxRowCol(dst, 1, 1) = fVar2 * guMtxRowCol(src, 2, 1) + (fVar16 * guMtxRowCol(src, 0, 1) + (fVar8 * guMtxRowCol(src, 1, 1)));
-            guMtxRowCol(dst, 1, 2) = fVar2 * guMtxRowCol(src, 2, 2) + (fVar16 * guMtxRowCol(src, 0, 2) + (fVar8 * guMtxRowCol(src, 1, 2)));
-            guMtxRowCol(dst, 1, 3) = local_44 + fVar2 * guMtxRowCol(src, 2, 3) + (fVar16 * guMtxRowCol(src, 0, 3) + (fVar8 * guMtxRowCol(src, 1, 3)));
-            guMtxRowCol(dst, 2, 0) = fVar13 * guMtxRowCol(src, 2, 0) + (fVar17 * guMtxRowCol(src, 0, 0) + (fVar3 * guMtxRowCol(src, 1, 0)));
-            guMtxRowCol(dst, 2, 1) = fVar13 * guMtxRowCol(src, 2, 1) + (fVar17 * guMtxRowCol(src, 0, 1) + (fVar3 * guMtxRowCol(src, 1, 1)));
-            guMtxRowCol(dst, 2, 2) = fVar13 * guMtxRowCol(src, 2, 2) + (fVar17 * guMtxRowCol(src, 0, 2) + (fVar3 * guMtxRowCol(src, 1, 2)));
-            guMtxRowCol(dst, 2, 3) = local_34 + fVar13 * guMtxRowCol(src, 2, 3) + (fVar17 * guMtxRowCol(src, 0, 3) + (fVar3 * guMtxRowCol(src, 1, 3)));
+            guMtxRowCol(dst, 0, 0) = fVar4 * guMtxRowCol(src, 2, 0) + fVar14 * guMtxRowCol(src, 0, 0) + fVar12 * guMtxRowCol(src, 1, 0);
+            guMtxRowCol(dst, 0, 1) = fVar4 * guMtxRowCol(src, 2, 1) + fVar14 * guMtxRowCol(src, 0, 1) + fVar12 * guMtxRowCol(src, 1, 1);
+            guMtxRowCol(dst, 0, 2) = fVar4 * guMtxRowCol(src, 2, 2) + fVar14 * guMtxRowCol(src, 0, 2) + fVar12 * guMtxRowCol(src, 1, 2);
+            guMtxRowCol(dst, 0, 3) = guMtxRowCol(m, 0, 3) + fVar4 * guMtxRowCol(src, 2, 3) + fVar14 * guMtxRowCol(src, 0, 3) + fVar12 * guMtxRowCol(src, 1, 3);
+            guMtxRowCol(dst, 1, 0) = fVar2 * guMtxRowCol(src, 2, 0) + fVar16 * guMtxRowCol(src, 0, 0) + fVar8 * guMtxRowCol(src, 1, 0);
+            guMtxRowCol(dst, 1, 1) = fVar2 * guMtxRowCol(src, 2, 1) + fVar16 * guMtxRowCol(src, 0, 1) + fVar8 * guMtxRowCol(src, 1, 1);
+            guMtxRowCol(dst, 1, 2) = fVar2 * guMtxRowCol(src, 2, 2) + fVar16 * guMtxRowCol(src, 0, 2) + fVar8 * guMtxRowCol(src, 1, 2);
+            guMtxRowCol(dst, 1, 3) = guMtxRowCol(m, 1, 3) + fVar2 * guMtxRowCol(src, 2, 3) + fVar16 * guMtxRowCol(src, 0, 3) + fVar8 * guMtxRowCol(src, 1, 3);
+            guMtxRowCol(dst, 2, 0) = fVar13 * guMtxRowCol(src, 2, 0) + fVar17 * guMtxRowCol(src, 0, 0) + fVar3 * guMtxRowCol(src, 1, 0);
+            guMtxRowCol(dst, 2, 1) = fVar13 * guMtxRowCol(src, 2, 1) + fVar17 * guMtxRowCol(src, 0, 1) + fVar3 * guMtxRowCol(src, 1, 1);
+            guMtxRowCol(dst, 2, 2) = fVar13 * guMtxRowCol(src, 2, 2) + fVar17 * guMtxRowCol(src, 0, 2) + fVar3 * guMtxRowCol(src, 1, 2);
+            guMtxRowCol(dst, 2, 3) = guMtxRowCol(m, 2, 3) + fVar13 * guMtxRowCol(src, 2, 3) + fVar17 * guMtxRowCol(src, 0, 3) + fVar3 * guMtxRowCol(src, 1, 3);
         }
     }
 }
@@ -220,7 +220,7 @@ void HSD_MtxGetRotation(Mtx mtx, guVector* rotation)
         dVar2 = cosf(rotation->y);
 
         if (dVar2 < FLT_MIN) {
-            if (FLT_MIN < (f32)((u32)guMtxRowCol(mtx, 1, 1) & 0x7fffffff)) {
+            if (0.F != guMtxRowCol(mtx, 1, 1)) {
                 dVar2 = atan2f(guMtxRowCol(mtx, 0, 1), guMtxRowCol(mtx, 1, 1));
             } else {
                 if (guMtxRowCol(mtx, 0, 1) < 0.f) {
@@ -231,10 +231,9 @@ void HSD_MtxGetRotation(Mtx mtx, guVector* rotation)
             }
             rotation->x = dVar2;
             rotation->z = 0.f;
-            return;
         } else {
-            if (FLT_MIN < (f32)((u32)(guMtxRowCol(mtx, 2, 2) / dVar4) & 0x7fffffff)) {
-                dVar2 = atan2f((guMtxRowCol(mtx, 2, 1) / dVar4), (guMtxRowCol(mtx, 2, 2) / dVar4));
+            if (0.F != guMtxRowCol(mtx, 2, 2) / dVar4) {
+                dVar2 = atan2f((guMtxRowCol(mtx, 2, 1) / dVar3), (guMtxRowCol(mtx, 2, 2) / dVar4));
             } else {
                 if ((guMtxRowCol(mtx, 2, 1) / dVar3) < 0.f) {
                     dVar2 = -1.5708f;
@@ -244,7 +243,7 @@ void HSD_MtxGetRotation(Mtx mtx, guVector* rotation)
             }
             rotation->x = dVar2;
 
-            if (FLT_MIN < (f32)((u32)guMtxRowCol(mtx, 0, 0) & 0x7fffffff)) {
+            if (0.F != guMtxRowCol(mtx, 0, 0)) {
                 dVar2 = atan2f(guMtxRowCol(mtx, 1, 0), guMtxRowCol(mtx, 0, 0));
             } else {
                 if (guMtxRowCol(mtx, 1, 0) < 0.f) {
@@ -254,7 +253,6 @@ void HSD_MtxGetRotation(Mtx mtx, guVector* rotation)
                 }
             }
             rotation->z = dVar2;
-            return;
         }
     }
 }

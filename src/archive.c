@@ -97,10 +97,10 @@ void Archive_LoadFileIntoMemory(char* filepath, u8* mem, u32 filelength)
         HSD_Halt("Archive_LoadFileIntoMemory: Could not open file");
     }
     dvdcmdblk cmdblk;
-    DVD_ReadAbsAsyncPrio(&cmdblk, mem, filelength + 0x1F & 0xFFFFFFE0, handle.addr, Archive_DVDCallback, 2);
-    do {
+    DVD_ReadPrio(&cmdblk, mem, filelength + 0x1F & 0xFFFFFFE0, handle.addr, 2);
+    /*do {
         file_load_status = Archive_GetFileLoadStatus();
-    } while (file_load_status == 0);
+    } while (file_load_status == 0);*/
 }
 
 //80016A54
