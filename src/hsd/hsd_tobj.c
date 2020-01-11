@@ -40,7 +40,7 @@ void HSD_TObjAddAnim(HSD_TObj* tobj, HSD_TexAnim* texanim)
 {
     HSD_TexAnim* ta;
     if (tobj != NULL) {
-        if ((ta = lookupTextureAnim(tobj->id, texanim)) != NULL) {
+        if ((ta = lookupTextureAnim(tobj->anim_id, texanim)) != NULL) {
             int i;
             if (tobj->aobj != NULL) {
                 HSD_AObjRemove(tobj->aobj);
@@ -273,7 +273,7 @@ void HSD_TObjAnimAll(HSD_TObj* tobj)
 static int TObjLoad(HSD_TObj* tobj, HSD_TObjDesc* td)
 {
     tobj->next = HSD_TObjLoadDesc(td->next);
-    tobj->id = td->id;
+    tobj->anim_id = (u16)td->id;
     tobj->src = td->src;
     tobj->mtxid = GX_IDENTITY;
     tobj->rotate.x = td->rotate.x;
@@ -575,7 +575,6 @@ void HSD_TObjSetupTextureCoordGen(HSD_TObj* tobj)
 //8035F6B4
 void HSD_TObjSetupVolatileTev(HSD_TObj* tobj, u32 rendermode)
 {
-#pragma unused(rendermode)
     for (; tobj != NULL; tobj = tobj->next) {
         if (tobj->id == GX_TEXMAP_NULL)
             continue;
@@ -632,7 +631,6 @@ void HSD_TObjSetupVolatileTev(HSD_TObj* tobj, u32 rendermode)
                 tevdesc.coord = tobj->coord;
                 tevdesc.map = tobj->id;
                 HSD_SetupTevStage(&tevdesc);
-                break;
             }
             break;
         }
@@ -1609,6 +1607,17 @@ HSD_TObjTev* HSD_TObjTevAlloc(void)
     return tev;
 }
 
+void HSD_TObjTevFree(HSD_TObjTev *tev) {
+    hsdFreeMemPiece(tev, sizeof(HSD_TObjTev));
+}
+
+void HSD_TObjTevRemove(HSD_TObjTev *tev)
+{
+    if (tev != NULL) {
+        HSD_TObjTevFree(tev);
+    }
+}
+
 //803612F8
 HSD_ImageDesc* HSD_ImageDescAlloc(void)
 {
@@ -1641,6 +1650,16 @@ void HSD_ImageDescCopyFromEFB(HSD_ImageDesc* idesc, u16 origx, u16 origy, u8 cle
     }
 }
 
+static void TObjInit(HSD_Class *o)
+{
+    HSD_PARENT_INFO(&hsdTObj)->init(o);
+
+    if (o != NULL){
+        HSD_TObj *tobj = HSD_TOBJ(o);
+        tobj->anim_id = -1;
+    }
+}
+
 //8036142C
 static void TObjRelease(HSD_Class* o)
 {
@@ -1648,9 +1667,7 @@ static void TObjRelease(HSD_Class* o)
 
     HSD_AObjRemove(tobj->aobj);
     HSD_TlutFree(tobj->tlut);
-    if (tobj->tev != NULL) {
-        hsdFreeMemPiece(tobj->tev, sizeof(HSD_TObjTev));
-    }
+    HSD_TObjTevRemove(tobj->tev);
     if (tobj->tluttbl) {
         int i;
         for (i = 0; tobj->tluttbl[i]; i++) {
@@ -1678,6 +1695,7 @@ static void TObjInfoInit(void)
 {
     hsdInitClassInfo(HSD_CLASS_INFO(&hsdTObj), HSD_CLASS_INFO(&hsdClass), HSD_BASE_CLASS_LIBRARY, "hsd_tobj", sizeof(HSD_TObjInfo), sizeof(HSD_TObj));
 
+    HSD_CLASS_INFO(&hsdTObj)->init = TObjInit;
     HSD_CLASS_INFO(&hsdTObj)->release = TObjRelease;
     HSD_CLASS_INFO(&hsdTObj)->amnesia = TObjAmnesia;
     HSD_TOBJ_INFO(&hsdTObj)->load = TObjLoad;

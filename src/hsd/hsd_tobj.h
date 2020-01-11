@@ -144,6 +144,7 @@ typedef struct _HSD_TObj {
     u32 wrap_t; //GXTexWrapMode
     u8 repeat_s;
     u8 repeat_t;
+    u16 anim_id;
     u32 flags;
     f32 blending;
     u32 magFilt; //GXTexFilter
