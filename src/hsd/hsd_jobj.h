@@ -13,7 +13,7 @@
 #include "hsd_robj.h"
 
 #define SKELETON (1 << 0)
-#define SKELETON_ROOT (1 << 0)
+#define SKELETON_ROOT (1 << 1)
 #define ENVELOPE_MODEL (1 << 2)
 #define CLASSICAL_SCALE (1 << 3)
 #define HIDDEN (1 << 4)
