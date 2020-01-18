@@ -1814,8 +1814,8 @@ static u32 SimplifySrc(HSD_TExp* texp)
                             tev->c_in[i].arg = t->tev.c_in[3].arg;
                             tev->c_in[i].exp = t->tev.c_in[3].exp;
                             tev->chan = t->tev.chan;
-                            if (tev->tex_swap == HSD_TE_UNDEF) {
-                                tev->tex_swap = t->tev.tex_swap;
+                            if (tev->ras_swap == HSD_TE_UNDEF) {
+                                tev->ras_swap = t->tev.ras_swap;
                             }
                             HSD_TExpUnref(t, t->tev.c_in[i].sel);
                             res = TRUE;
