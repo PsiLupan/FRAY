@@ -1774,8 +1774,8 @@ static u32 SimplifySrc(HSD_TExp* texp)
                 res = TRUE;
             }
             if (sel == 1) {
-                sel = t->tev.c_op;
-                if (sel == GX_COLORNULL) {
+                u8 c_op = t->tev.c_op;
+                if (c_op == GX_COLORNULL) {
                     HSD_TExpUnref(t, tev->c_in[i].sel);
                     res = TRUE;
                     tev->c_in[i].type = 0;
@@ -1783,7 +1783,7 @@ static u32 SimplifySrc(HSD_TExp* texp)
                     tev->c_in[i].arg = 0xFF;
                     tev->c_in[i].exp = NULL;
                 } else {
-                    if (sel == 0 && t->tev.c_in[0].sel == 7 && t->tev.c_in[1].sel == 7 && t->tev.c_bias == 0 && t->tev.c_scale == 0) {
+                    if (c_op == 0 && t->tev.c_in[0].sel == 7 && t->tev.c_in[1].sel == 7 && t->tev.c_bias == 0 && t->tev.c_scale == 0) {
                         u8 type = t->tev.c_in[3].type;
 
                         if (type == HSD_TE_TEX) {
@@ -1797,7 +1797,7 @@ static u32 SimplifySrc(HSD_TExp* texp)
                                 if (tev->tex_swap == HSD_TE_UNDEF) {
                                     tev->tex_swap = t->tev.tex_swap;
                                 }
-                                HSD_TExpUnref(t, t->tev.c_in[i].sel);
+                                HSD_TExpUnref(t, sel);
                                 res = TRUE;
                             }
                         } else if (type == HSD_TE_TEV && (t->tev.c_in[3].exp->tev.c_clamp != 0 || t->tev.c_clamp == 0)) {
@@ -1806,7 +1806,7 @@ static u32 SimplifySrc(HSD_TExp* texp)
                             tev->c_in[i].arg = t->tev.c_in[3].arg;
                             tev->c_in[i].exp = t->tev.c_in[3].exp;
                             HSD_TExpRef(tev->c_in[i].exp, tev->c_in[i].sel);
-                            HSD_TExpUnref(t, t->tev.c_in[i].sel);
+                            HSD_TExpUnref(t, sel);
                             res = TRUE;
                         } else if (type == HSD_TE_RAS && (tev->chan == GX_COLORNULL || tev->chan == t->tev.chan) && (tev->ras_swap == HSD_TE_UNDEF || t->tev.ras_swap == HSD_TE_UNDEF || tev->ras_swap == t->tev.ras_swap)) {
                             tev->c_in[i].type = t->tev.c_in[3].type;
@@ -1817,7 +1817,15 @@ static u32 SimplifySrc(HSD_TExp* texp)
                             if (tev->ras_swap == HSD_TE_UNDEF) {
                                 tev->ras_swap = t->tev.ras_swap;
                             }
-                            HSD_TExpUnref(t, t->tev.c_in[i].sel);
+                            HSD_TExpUnref(t, sel);
+                            res = TRUE;
+                        } else if (type == HSD_TE_IMM) {
+                            tev->c_in[i].type = t->tev.c_in[3].type;
+                            tev->c_in[i].sel = t->tev.c_in[3].sel;
+                            tev->c_in[i].arg = t->tev.c_in[3].arg;
+                            tev->c_in[i].exp = t->tev.c_in[3].exp;
+                            HSD_TExpRef(tev->c_in[i].exp, tev->c_in[i].sel);
+                            HSD_TExpUnref(t, sel);
                             res = TRUE;
                         }
                     }
@@ -1848,8 +1856,8 @@ static u32 SimplifySrc(HSD_TExp* texp)
                 tev->a_in[i].exp = NULL;
             } else {
                 if (op == 0 && t->tev.a_in[0].sel == 7 && t->tev.a_in[1].sel == 7 && t->tev.a_bias == 0 && t->tev.a_scale == 0) {
-                    op = t->tev.a_in[3].type;
-                    if (op == HSD_TE_TEX) {
+                    u8 type = t->tev.a_in[3].type;
+                    if (type == HSD_TE_TEX) {
                         if (tev->tex == NULL || tev->tex == t->tev.tex) {
                             tev->a_in[i].type = t->tev.a_in[3].type;
                             tev->a_in[i].sel = t->tev.a_in[3].sel;
@@ -1859,7 +1867,7 @@ static u32 SimplifySrc(HSD_TExp* texp)
                             HSD_TExpUnref(t, sel);
                             res = TRUE;
                         }
-                    } else if (op == HSD_TE_TEV) {
+                    } else if (type == HSD_TE_TEV) {
                         tev->a_in[i].type = t->tev.a_in[3].type;
                         tev->a_in[i].sel = t->tev.a_in[3].sel;
                         tev->a_in[i].arg = t->tev.a_in[3].arg;
@@ -1867,12 +1875,20 @@ static u32 SimplifySrc(HSD_TExp* texp)
                         HSD_TExpRef(tev->a_in[i].exp, tev->a_in[i].sel);
                         HSD_TExpUnref(t, sel);
                         res = TRUE;
-                    } else if (op == HSD_TE_RAS && (tev->chan == GX_COLORNULL || tev->chan == t->tev.chan)) {
+                    } else if (type == HSD_TE_RAS && (tev->chan == GX_COLORNULL || tev->chan == t->tev.chan)) {
                         tev->a_in[i].type = t->tev.a_in[3].type;
                         tev->a_in[i].sel = t->tev.a_in[3].sel;
                         tev->a_in[i].arg = t->tev.a_in[3].arg;
                         tev->a_in[i].exp = t->tev.a_in[3].exp;
                         tev->chan = t->tev.chan;
+                        HSD_TExpUnref(t, sel);
+                        res = TRUE;
+                    } else if (type == HSD_TE_IMM) {
+                        tev->a_in[i].type = t->tev.a_in[3].type;
+                        tev->a_in[i].sel = t->tev.a_in[3].sel;
+                        tev->a_in[i].arg = t->tev.a_in[3].arg;
+                        tev->a_in[i].exp = t->tev.a_in[3].exp;
+                        HSD_TExpRef(tev->a_in[i].exp, tev->a_in[i].sel);
                         HSD_TExpUnref(t, sel);
                         res = TRUE;
                     }
