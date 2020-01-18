@@ -13,7 +13,7 @@
 #include "hsd_robj.h"
 
 #define SKELETON (1 << 0)
-#define SKELETON_ROOT (1 << 0)
+#define SKELETON_ROOT (1 << 1)
 #define ENVELOPE_MODEL (1 << 2)
 #define CLASSICAL_SCALE (1 << 3)
 #define HIDDEN (1 << 4)
@@ -43,7 +43,7 @@
 #define union_type_dobj(o) ((o->flags & 0x4020) == 0)
 #define union_type_ptcl(o) ((o->flags & PTCL) != 0)
 
-#define HSD_TrspMask u32
+typedef u32 HSD_TrspMask;
 
 //Joint Object
 typedef struct _HSD_JObj {

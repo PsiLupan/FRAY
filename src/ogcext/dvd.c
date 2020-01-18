@@ -20,36 +20,41 @@ static FSTEntry* entry_table = NULL; //r13_4424
 static u32* start_memory = NULL; //r13_4428
 static lwpq_t dvd_wait_queue;
 
-static u8* fst;
-static u8 fst_info[32] ATTRIBUTE_ALIGN(32);
-
-dvdcmdblk cmdblk;
+static s8* fst;
 
 static void __DVDFSInit(void)
 {
+    dvdcmdblk cmdblk;
+    DiskHeader header;
+
+    memset(&cmdblk, 0, sizeof(dvdcmdblk));
+    memset(&header, 0, sizeof(DiskHeader));
+
     start_memory = (u32*)(0x80000000);
 
-    DVD_ReadPrio(&cmdblk, fst_info, 32, 0x424, 2);
+    DVD_ReadPrio(&cmdblk, &header, sizeof(DiskHeader), 0, 2); //Read in the disc header
 
-    u32 fst_offset = ((u32*)(fst_info))[0];
-    u32 fst_size = ((u32*)(fst_info))[1];
+    if (header.DVDMagicWord != 0xC2339F3D) {
+        //We'll do some error handling for this later
+    }
 
-    fst = memalign(32, fst_size + 0x1F & 0xFFFFFFE0);
-    start_memory[14] = (u32)fst;
-    start_memory[15] = fst_size;
+    fst = memalign(32, header.FSTSize);
+    start_memory[14] = header.FSTOffset;
+    start_memory[15] = header.FSTSize;
 
     DCFlushRange((void*)0x80000000, 0x40);
 
-    if(fst_size > 0x4000){
-        u32 max_iterations = (u32)ceil((double)fst_size / (double)0x4000);
-        u32 size = fst_size + 0x1F & 0xFFFFFFE0;
-        for(u32 i = 0; i < max_iterations; i++){
-            if(size > 0x4000){
-                DVD_ReadPrio(&cmdblk, fst + (i * 0x4000), 0x4000, (fst_offset + (0x4000 * i)), 2);
-            }else{
-                DVD_ReadPrio(&cmdblk, fst + (i * 0x4000), size, (fst_offset + (0x4000 * i)), 2);
+    if (header.FSTSize > 0x4000) {
+        u32 size = header.FSTSize;
+        for (u32 i = 0; size > 0; i++) {
+            memset(&cmdblk, 0, sizeof(dvdcmdblk));
+            if (size > 0x4000) {
+                DVD_ReadPrio(&cmdblk, fst + (i * 0x4000), 0x4000, (header.FSTOffset + (0x4000 * i)), 2);
+                size -= 0x4000;
+            } else {
+                DVD_ReadPrio(&cmdblk, fst + (i * 0x4000), size, (header.FSTOffset + (0x4000 * i)), 2);
+                size = 0;
             }
-            size -= 0x4000;
         }
     }
 

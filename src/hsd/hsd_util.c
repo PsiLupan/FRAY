@@ -290,23 +290,9 @@ void HSD_MkRotationMtx(Mtx mtx, guVector* vec)
 //8037A250
 void HSD_MtxSRT(Mtx mtx, guVector* scale, guVector* rot, guVector* pos, guVector* pvec)
 {
-    f64 dVar1;
-    f64 cos_rot_z;
-    f64 dVar2;
-    f64 dVar3;
-    f64 scale_y;
-    f64 scale_z;
-    f64 dVar4;
-    f64 dVar5;
-    f64 dVar6;
-    f64 scale_x;
-    f64 dVar7;
-    f64 dVar8;
-    f64 sin_rot_x;
-    f64 cos_rot_x;
-    f64 sin_rot_y;
-    f64 cos_rot_y;
-    f64 sin_rot_z;
+    f64 scale_x, scale_y, scale_z;
+    f64 scale_x_y, scale_x_z, scale_y_x, scale_y_z, scale_z_x, scale_z_y;
+    f64 sin_rot_x, cos_rot_x, sin_rot_y, cos_rot_y, sin_rot_z, cos_rot_z;
 
     sin_rot_x = sin((f64)rot->x);
     cos_rot_x = cos((f64)rot->x);
@@ -317,33 +303,29 @@ void HSD_MtxSRT(Mtx mtx, guVector* scale, guVector* rot, guVector* pos, guVector
     scale_x = (f64)scale->x;
     scale_y = (f64)scale->y;
     scale_z = (f64)scale->z;
-    dVar1 = scale_y;
-    dVar2 = scale_z;
-    dVar3 = scale_z;
-    dVar4 = scale_y;
-    dVar5 = scale_x;
-    dVar7 = scale_x;
+    scale_x_y = scale_x;
+    scale_x_z = scale_x;
+    scale_y_x = scale_y;
+    scale_y_z = scale_y;
+    scale_z_x = scale_z;
+    scale_z_y = scale_z;
     if (pvec != NULL) {
-        dVar4 = 1.0;
-        dVar8 = (f64)pvec->x;
-        dVar6 = (f64)pvec->y;
-        dVar5 = (f64)pvec->z;
-        dVar1 = (scale_y * (dVar6 * (dVar4 / dVar8)));
-        dVar2 = (scale_z * (dVar5 * (dVar4 / dVar8)));
-        dVar7 = (scale_x * (dVar8 * (dVar4 / dVar6)));
-        dVar3 = (scale_z * (dVar5 * (dVar4 / dVar6)));
-        dVar5 = (scale_x * (dVar8 * (dVar4 / dVar5)));
-        dVar4 = (scale_y * (dVar6 * (dVar4 / dVar5)));
+        scale_y_x *= pvec->y / pvec->x;
+        scale_z_x *= pvec->z / pvec->x;
+        scale_x_y *= pvec->x / pvec->y;
+        scale_z_y *= pvec->z / pvec->y;
+        scale_x_z *= pvec->x / pvec->z;
+        scale_y_z *= pvec->y / pvec->z;
     }
-    guMtxRowCol(mtx, 0, 0) = (f32)(cos_rot_z * (scale_x * cos_rot_y));
-    guMtxRowCol(mtx, 1, 0) = (f32)(sin_rot_z * (dVar7 * cos_rot_y));
-    guMtxRowCol(mtx, 2, 0) = (f32)(-dVar5) * sin_rot_y;
-    guMtxRowCol(mtx, 0, 1) = (f32)(dVar1 * (cos_rot_z * (sin_rot_x * sin_rot_y) - (cos_rot_x * sin_rot_z)));
-    guMtxRowCol(mtx, 1, 1) = (f32)(scale_y * (sin_rot_z * (sin_rot_x * sin_rot_y) + (cos_rot_x * cos_rot_z)));
-    guMtxRowCol(mtx, 2, 1) = (f32)(cos_rot_y * (dVar4 * sin_rot_x));
-    guMtxRowCol(mtx, 0, 2) = (f32)(dVar2 * (cos_rot_z * (cos_rot_x * sin_rot_y) + (sin_rot_x * sin_rot_z)));
-    guMtxRowCol(mtx, 1, 2) = (f32)(dVar3 * (sin_rot_z * (cos_rot_x * sin_rot_y) - (sin_rot_x * cos_rot_z)));
-    guMtxRowCol(mtx, 2, 2) = (f32)(cos_rot_y * (scale_z * cos_rot_x));
+    guMtxRowCol(mtx, 0, 0) = (f32)(scale_x   * (cos_rot_z * cos_rot_y));
+    guMtxRowCol(mtx, 1, 0) = (f32)(scale_x_y * (sin_rot_z * cos_rot_y));
+    guMtxRowCol(mtx, 2, 0) = (f32)(scale_x_z * (-sin_rot_y));
+    guMtxRowCol(mtx, 0, 1) = (f32)(scale_y_x * (cos_rot_z * (sin_rot_x * sin_rot_y) - (cos_rot_x * sin_rot_z)));
+    guMtxRowCol(mtx, 1, 1) = (f32)(scale_y   * (sin_rot_z * (sin_rot_x * sin_rot_y) + (cos_rot_x * cos_rot_z)));
+    guMtxRowCol(mtx, 2, 1) = (f32)(scale_y_z * (cos_rot_y * sin_rot_x));
+    guMtxRowCol(mtx, 0, 2) = (f32)(scale_z_x * (cos_rot_z * (cos_rot_x * sin_rot_y) + (sin_rot_x * sin_rot_z)));
+    guMtxRowCol(mtx, 1, 2) = (f32)(scale_z_y * (sin_rot_z * (cos_rot_x * sin_rot_y) - (sin_rot_x * cos_rot_z)));
+    guMtxRowCol(mtx, 2, 2) = (f32)(scale_z   * (cos_rot_y * cos_rot_x));
     guMtxRowCol(mtx, 0, 3) = pos->x;
     guMtxRowCol(mtx, 1, 3) = pos->y;
     guMtxRowCol(mtx, 2, 3) = pos->z;
