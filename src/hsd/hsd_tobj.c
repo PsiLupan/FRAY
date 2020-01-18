@@ -954,14 +954,11 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
 {
     HSD_TExp *e0, *e1;
     HSD_TExp *c_src, *a_src;
-    HSD_TEInput c_sel, a_sel;
     s32 repeat = (lightmap_done & tobj_lightmap(tobj)) != 0;
 
     c_src = HSD_TEXP_TEX;
-    c_sel = HSD_TE_RGB;
 
     a_src = HSD_TEXP_TEX;
-    a_sel = HSD_TE_A;
 
     e0 = HSD_TExpTev(list);
 
@@ -975,16 +972,16 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
     case TEX_COLORMAP_ALPHA_MASK:
         HSD_TExpColorOp(e0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
         HSD_TExpColorIn(e0, HSD_TE_RGB, *c,
-            c_sel, c_src,
-            a_sel, a_src,
+            HSD_TE_RGB, c_src,
+            HSD_TE_A, a_src,
             HSD_TE_0, HSD_TEXP_ZERO);
         break;
 
     case TEX_COLORMAP_RGB_MASK:
         HSD_TExpColorOp(e0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
         HSD_TExpColorIn(e0, HSD_TE_RGB, *c,
-            c_sel, c_src,
-            c_sel, c_src,
+            HSD_TE_RGB, c_src,
+            HSD_TE_RGB, c_src,
             HSD_TE_0, HSD_TEXP_ZERO);
         break;
 
@@ -992,7 +989,7 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
         e1 = HSD_TExpCnst(&tobj->blending, HSD_TE_X, HSD_TE_F32, list);
         HSD_TExpColorOp(e0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
         HSD_TExpColorIn(e0, HSD_TE_RGB, *c,
-            c_sel, c_src,
+            HSD_TE_RGB, c_src,
             HSD_TE_X, e1,
             HSD_TE_0, HSD_TEXP_ZERO);
         break;
@@ -1001,7 +998,7 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
         HSD_TExpColorOp(e0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
         HSD_TExpColorIn(e0, HSD_TE_0, HSD_TEXP_ZERO,
             HSD_TE_RGB, *c,
-            c_sel, c_src,
+            HSD_TE_RGB, c_src,
             HSD_TE_0, HSD_TEXP_ZERO);
         break;
 
@@ -1010,7 +1007,7 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
         HSD_TExpColorIn(e0, HSD_TE_0, HSD_TEXP_ZERO,
             HSD_TE_0, HSD_TEXP_ZERO,
             HSD_TE_0, HSD_TEXP_ZERO,
-            c_sel, c_src);
+            HSD_TE_RGB, c_src);
         break;
 
     case TEX_COLORMAP_NONE:
@@ -1024,7 +1021,7 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
 
     case TEX_COLORMAP_ADD:
         HSD_TExpColorOp(e0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
-        HSD_TExpColorIn(e0, c_sel, c_src,
+        HSD_TExpColorIn(e0, HSD_TE_RGB, c_src,
             HSD_TE_0, HSD_TEXP_ZERO,
             HSD_TE_0, HSD_TEXP_ZERO,
             HSD_TE_RGB, *c);
@@ -1032,7 +1029,7 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
 
     case TEX_COLORMAP_SUB:
         HSD_TExpColorOp(e0, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
-        HSD_TExpColorIn(e0, c_sel, c_src,
+        HSD_TExpColorIn(e0, HSD_TE_RGB, c_src,
             HSD_TE_0, HSD_TEXP_ZERO,
             HSD_TE_0, HSD_TEXP_ZERO,
             HSD_TE_RGB, *c);
@@ -1048,8 +1045,8 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
         case TEX_ALPHAMAP_ALPHA_MASK:
             HSD_TExpAlphaOp(e0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
             HSD_TExpAlphaIn(e0, HSD_TE_A, *a,
-                a_sel, a_src,
-                a_sel, a_src,
+                HSD_TE_A, a_src,
+                HSD_TE_A, a_src,
                 HSD_TE_0, HSD_TEXP_ZERO);
             break;
 
@@ -1057,7 +1054,7 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
             e1 = HSD_TExpCnst(&tobj->blending, HSD_TE_X, HSD_TE_F32, list);
             HSD_TExpAlphaOp(e0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
             HSD_TExpAlphaIn(e0, HSD_TE_A, *a,
-                a_sel, a_src,
+                HSD_TE_A, a_src,
                 HSD_TE_X, e1,
                 HSD_TE_0, HSD_TEXP_ZERO);
             break;
@@ -1066,7 +1063,7 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
             HSD_TExpAlphaOp(e0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
             HSD_TExpAlphaIn(e0, HSD_TE_0, HSD_TEXP_ZERO,
                 HSD_TE_A, *a,
-                a_sel, a_src,
+                HSD_TE_A, a_src,
                 HSD_TE_0, HSD_TEXP_ZERO);
             break;
 
@@ -1075,7 +1072,7 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
             HSD_TExpAlphaIn(e0, HSD_TE_0, HSD_TEXP_ZERO,
                 HSD_TE_0, HSD_TEXP_ZERO,
                 HSD_TE_0, HSD_TEXP_ZERO,
-                a_sel, a_src);
+                HSD_TE_A, a_src);
             break;
 
         case TEX_ALPHAMAP_NONE:
@@ -1089,7 +1086,7 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
 
         case TEX_ALPHAMAP_ADD:
             HSD_TExpAlphaOp(e0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
-            HSD_TExpAlphaIn(e0, a_sel, a_src,
+            HSD_TExpAlphaIn(e0, HSD_TE_A, a_src,
                 HSD_TE_0, HSD_TEXP_ZERO,
                 HSD_TE_0, HSD_TEXP_ZERO,
                 HSD_TE_A, *a);
@@ -1097,7 +1094,7 @@ static void TObjMakeTExp(HSD_TObj* tobj, u32 lightmap, u32 lightmap_done, HSD_TE
 
         case TEX_ALPHAMAP_SUB:
             HSD_TExpAlphaOp(e0, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_ENABLE);
-            HSD_TExpAlphaIn(e0, a_sel, a_src,
+            HSD_TExpAlphaIn(e0, HSD_TE_A, a_src,
                 HSD_TE_0, HSD_TEXP_ZERO,
                 HSD_TE_0, HSD_TEXP_ZERO,
                 HSD_TE_A, *a);
