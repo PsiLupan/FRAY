@@ -1808,14 +1808,14 @@ static u32 SimplifySrc(HSD_TExp* texp)
                             HSD_TExpRef(tev->c_in[i].exp, tev->c_in[i].sel);
                             HSD_TExpUnref(t, t->tev.c_in[i].sel);
                             res = TRUE;
-                        } else if (type == HSD_TE_RAS && (tev->chan == GX_COLORNULL || tev->chan == t->tev.chan) && (tev->ras_swap == HSD_TE_UNDEF || t->tev.ras_swap == HSD_TE_UNDEF || tev->ras_swap == t->tev.tex_swap)) {
+                        } else if (type == HSD_TE_RAS && (tev->chan == GX_COLORNULL || tev->chan == t->tev.chan) && (tev->ras_swap == HSD_TE_UNDEF || t->tev.ras_swap == HSD_TE_UNDEF || tev->ras_swap == t->tev.ras_swap)) {
                             tev->c_in[i].type = t->tev.c_in[3].type;
                             tev->c_in[i].sel = t->tev.c_in[3].sel;
                             tev->c_in[i].arg = t->tev.c_in[3].arg;
                             tev->c_in[i].exp = t->tev.c_in[3].exp;
                             tev->chan = t->tev.chan;
-                            if (tev->tex_swap == HSD_TE_UNDEF) {
-                                tev->tex_swap = t->tev.tex_swap;
+                            if (tev->ras_swap == HSD_TE_UNDEF) {
+                                tev->ras_swap = t->tev.ras_swap;
                             }
                             HSD_TExpUnref(t, t->tev.c_in[i].sel);
                             res = TRUE;
@@ -2703,7 +2703,7 @@ u32 HSD_TExpSimplify(HSD_TExp* texp)
 {
     u32 res = 0;
     if (HSD_TExpGetType(texp) == HSD_TE_TEV) {
-        //res = SimplifySrc(texp) != 0 ? 1 : 0;
+        res = SimplifySrc(texp) != 0 ? 1 : 0;
         res = SimplifyThis(texp) != 0 ? 1 : res;
         res = SimplifyByMerge(texp) != 0 ? 1 : res;
 #ifdef NEW_LIB
