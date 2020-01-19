@@ -313,7 +313,7 @@ void HSD_SetMaterialColor(GXColor ambient, GXColor diffuse, GXColor specular, f3
     matstate.ambient = ambient;
     matstate.diffuse = diffuse;
     matstate.specular = specular;
-    matstate.alpha = (u8)(255.0F * HSD_ClampFloat(alpha, 0.f, 1.f));
+    matstate.alpha = (u8)(255.0F * HSD_ClampFloat(alpha, 0, 1));
 }
 
 //80361A64

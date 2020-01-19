@@ -843,8 +843,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
             HSD_VISetXFBDrawDone();
             return;
         }
-        u32 i = 0;
-        while (i < pad_queue_count) {
+        for(u32 i = 0; i < pad_queue_count; ++i) {
             //HSD_PerfSetStartTime();
             HSD_PadRenewMasterStatus(); //Normally Pad_Renew() - Don't see much reason to use a wrapper function when not debugging
             /*if(debug_level >= 3){
@@ -912,7 +911,6 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
             if (match_controller.screen_ctrl != 0) {
                 break;
             }
-            ++i;
         }
         if (match_controller.screen_ctrl == 2) {
             HSD_VISetXFBDrawDone();

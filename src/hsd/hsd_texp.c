@@ -2433,6 +2433,7 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                 if (texp->tev.c_in[0].type == HSD_TE_TEV) {
                     if (texp->tev.c_in[0].sel == 1) {
                         curr = texp->tev.c_in[0].exp;
+                        sel = texp->tev.c_in[0].sel;
                         if ((curr->tev.c_op == 0 || curr->tev.c_op == 1)
                             && curr->tev.c_in[3].sel == 7 && curr->tev.c_scale == 0) {
 
@@ -2449,34 +2450,35 @@ static u32 SimplifyByMerge(HSD_TExp* texp)
                                         texp->tev.c_in[i].exp = curr->tev.c_in[i].exp;
                                         HSD_TExpRef(texp->tev.c_in[i].exp, texp->tev.c_in[i].sel);
                                     }
-                                    HSD_TExpUnref(curr, 1);
+                                    HSD_TExpUnref(curr, sel);
                                     MergeResources(&texp->tev, &curr->tev);
                                 }
                             }
                         }
                     }
                 } else {
-                    if (sel == HSD_TE_ZERO && texp->tev.c_in[3].type == HSD_TE_TEV && texp->tev.c_in[3].sel == 1
-                        && (curr = texp->tev.c_in[3].exp, curr->tev.c_scale == 0)
-                        && (texp->tev.c_bias == 0 || texp->tev.c_bias != curr->tev.c_bias)) {
+                    if (sel == HSD_TE_ZERO && texp->tev.c_in[3].type == HSD_TE_TEV && texp->tev.c_in[3].sel == 1) {
+                        curr = texp->tev.c_in[3].exp;
+                        sel = texp->tev.c_in[3].sel;
+                        if (curr->tev.c_scale == 0 && (texp->tev.c_bias == 0 || texp->tev.c_bias != curr->tev.c_bias)) {
+                            if (ResConflict(texp, curr) == 0) {
+                                bVar3 = true;
+                                for (u32 i = 0; i < 4; ++i) {
+                                    texp->tev.c_in[i].type = curr->tev.c_in[i].type;
+                                    texp->tev.c_in[i].sel = curr->tev.c_in[i].sel;
+                                    texp->tev.c_in[i].arg = curr->tev.c_in[i].arg;
+                                    texp->tev.c_in[i].exp = curr->tev.c_in[i].exp;
+                                    HSD_TExpRef(texp->tev.c_in[i].exp, texp->tev.c_in[i].sel);
+                                }
+                                texp->tev.c_op = curr->tev.c_op;
+                                CalcBias(curr->tev.c_op, texp->tev.c_bias, curr->tev.c_bias, &texp->tev.c_bias);
 
-                        if (ResConflict(texp, curr) == 0) {
-                            bVar3 = true;
-                            for (u32 i = 0; i < 4; ++i) {
-                                texp->tev.c_in[i].type = curr->tev.c_in[i].type;
-                                texp->tev.c_in[i].sel = curr->tev.c_in[i].sel;
-                                texp->tev.c_in[i].arg = curr->tev.c_in[i].arg;
-                                texp->tev.c_in[i].exp = curr->tev.c_in[i].exp;
-                                HSD_TExpRef(texp->tev.c_in[i].exp, texp->tev.c_in[i].sel);
+                                if (texp->tev.c_clamp == 0xFF || texp->tev.c_clamp == 0) {
+                                    texp->tev.c_clamp = curr->tev.c_clamp;
+                                }
+                                MergeResources(&texp->tev, &curr->tev);
+                                HSD_TExpUnref(curr, sel);
                             }
-                            texp->tev.c_op = curr->tev.c_op;
-                            CalcBias(curr->tev.c_op, texp->tev.c_bias, curr->tev.c_bias, &texp->tev.c_bias);
-
-                            if (texp->tev.c_clamp == 0xFF || texp->tev.c_clamp == 0) {
-                                texp->tev.c_clamp = curr->tev.c_clamp;
-                            }
-                            MergeResources(&texp->tev, &curr->tev);
-                            HSD_TExpUnref(curr, 1);
                         }
                     }
                 }
