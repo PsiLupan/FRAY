@@ -196,11 +196,11 @@ typedef struct _HSD_TlutDesc {
 } HSD_TlutDesc;
 
 typedef struct _HSD_TexLODDesc {
-    u8 minFilt; //GXTexFilter
+    u32 minFilt; //GXTexFilter
     f32 LODBias;
     u8 bias_clamp; //GXBool
     u8 edgeLODEnable; //GXBool
-    u8 max_anisotropy; //GXAnisotropy
+    u32 max_anisotropy; //GXAnisotropy
 } HSD_TexLODDesc;
 
 typedef struct _HSD_ImageDesc {
