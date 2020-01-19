@@ -104,7 +104,7 @@ static f32 parseFloat(u8** curr_parse, u8 frac)
     f32 result = 0.f;
     s32 decimal_base;
 
-    if ((frac & 0xFF) == 0) {
+    if (frac == HSD_A_FRAC_FLOAT) {
         decimal_base = **curr_parse;
         *curr_parse += 1;
 
@@ -120,33 +120,37 @@ static f32 parseFloat(u8** curr_parse, u8 frac)
         return (f32)(decimal_base);
     }
 
-    u8 flag = frac & 0xE0;
-    if (flag == 96) {
+    switch (frac & 0xE0) {
+    case HSD_A_FRAC_S16:
+        decimal_base = ((*curr_parse)[0]);
+        decimal_base |= (s8)((*curr_parse)[1]) << 8; //This is (s8), because there is an extsb in the assembly that would only happen that way
+        *curr_parse += 2;
+
+        result = (f32)(decimal_base);
+        break;
+
+    case HSD_A_FRAC_U16:
+        decimal_base = ((*curr_parse)[0]);
+        decimal_base |= ((*curr_parse)[1]) << 8;
+        *curr_parse += 2;
+
+        result = (f32)(decimal_base);
+        break;
+
+    case HSD_A_FRAC_S8:
         result = (f32)(**curr_parse);
         *curr_parse += 1;
-    } else if (flag < 96) {
-        if (flag == 64) {
-            decimal_base = ((*curr_parse)[0]);
-            decimal_base |= ((*curr_parse)[1]) << 8;
-            *curr_parse += 2;
+        break;
 
-            result = (f32)(decimal_base);
-        } else if (63 < flag || flag != 32) {
-            return 0.0f;
-        } else {
-            decimal_base = ((*curr_parse)[0]);
-            decimal_base |= (s8)((*curr_parse)[1]) << 8; //This is (s8), because there is an extsb in the assembly that would only happen that way
-            *curr_parse += 2;
-
-            result = (f32)(decimal_base);
-        }
-    } else {
-        if (flag != 128) {
-            return 0.0f;
-        }
+    case HSD_A_FRAC_U8:
         result = (f32)(**curr_parse);
         *curr_parse += 1;
+        break;
+
+    default:
+        return 0.0F;
     }
+
     return result / (1 << (frac & 0x1F));
 }
 
