@@ -16,6 +16,12 @@
 #define HSD_A_OP_SLP 5
 #define HSD_A_OP_KEY 6
 
+#define HSD_A_FRAC_FLOAT (0 << 5)
+#define HSD_A_FRAC_S16 (1 << 5)
+#define HSD_A_FRAC_U16 (2 << 5)
+#define HSD_A_FRAC_S8 (3 << 5)
+#define HSD_A_FRAC_U8 (4 << 5)
+
 #define TYPE_ROBJ 1
 #define TYPE_JOBJ 12
 
