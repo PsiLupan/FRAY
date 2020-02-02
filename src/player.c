@@ -19,6 +19,438 @@ void Player_SetInvalidGround(Player* player)
 //800693AC
 void Player_ChangeActionState(HSD_GObj* gobj, u32 state, u32 flags, HSD_GObj* gobj_2, f32 start_frame, f32 frame_rate, f32 unk3)
 {
+    /*
+    HSD_JObj* jobj = (HSD_JObj*)gobj->hsd_obj;
+    Player* player = GOBJ_PLAYER(gobj);
+    player->x10_action_state = state;
+    player->x30_facedir_model = player->x2C_facedir;
+
+    assert(jobj != NULL);
+    jobj->position = player->xB0_xB8_pos;
+    if ((jobj->flags & MTX_INDEP_SRT) == 0) {
+        HSD_JObjSetMtxDirty(jobj);
+    }
+    sub_80076724(gobj, player->x60C_gfx);
+
+    if ((flags & 8) == 0) {
+        if ((player->x2219_flags >> 4 & 1) != 0) {
+            sub_8007AFF8(gobj);
+        }
+        if ((player->x2219_flags >> 3 & 1) != 0) {
+            sub_8007C114(gobj);
+        }
+    }
+    if ((flags & 0x100) == 0) {
+        player->x1198_thrown = 0;
+    }
+    if ((flags & 4) == 0) {
+        if (player->x1988_bodystate != 0) {
+            FUN_8007b62c(gobj, 0);
+        }
+        if ((player->x221A_flags >> 2 & 1) != 0) {
+            FUN_8007b0c0(gobj, 0);
+        }
+    }
+    if ((player->x221A_flags >> 1 & 1) != 0) {
+        FUN_8007b4e0(gobj);
+    }
+    if ((flags & 0x10) == 0 && (player->x221D_flags >> 5 & 1) != 0) {
+        FUN_80074a8c(gobj);
+    }
+    if ((flags & 0x80) == 0 && (player->x221E_flags & 1) != 0) {
+        FUN_80070654(gobj);
+    }
+    if ((flags & 0x400) == 0) {
+        player->x2221_flags &= 0xF7;
+        s32 res = FUN_8007e994(gobj);
+        if ((res != -1) && (res = FUN_8007e994(gobj), res != 6)) {
+            FUN_8007e83c(gobj, 6, 0.F);
+        }
+    }
+    
+    FUN_80070f28(gobj);
+    FUN_80070e74(gobj);
+    FUN_8007ecd4(player, 7);
+    FUN_8007ecd4(player, 8);
+    FUN_8007ecd4(player, 0x24);
+    if ((flags & 0x800) == 0) {
+        FUN_8007ecd4(player, 1);
+        FUN_8007ecd4(player, 0x19);
+    }
+    if ((flags & 0x10000) == 0 && (player->x2221_flags >> 6 & 1) != 0) {
+        FUN_8007b760(gobj, FUN_8007b6ec(gobj));
+        player->x2221_flags &= 0xBF;
+    }
+    FUN_8007e2f4(player, 0);
+    if (*(int*)&player->field_0x18f4 != 0) {
+        *(undefined4*)&player->field_0x18f4 = 0;
+        player->x2220_flags &= 0xF7;
+    }
+    if ((flags & 0x80000) == 0) {
+        player->x2222_flags &= 0xDF;
+    }
+    if ((flags & 0x800000) == 0) {
+        player->x2223_flags &= 0xF7;
+    }
+    if ((flags & 0x8000000) == 0) {
+        player->x2227_flags &= 0xDF;
+    }
+    if ((flags & 0x10000000) == 0 && (player->x221C_flags >> 1 & 1) != 0) {
+        player->x221C_flags &= 0xFD;
+        *(undefined2*)&player->field_0x2098 = (short)*(undefined4*)(*(int*)(in_r13 + -0x514c) + 0x4cc);
+    }
+
+    player->x221F_flags &= 0xEF;
+    player->x2219_flags &= 0xBF;
+    player->x2219_flags &= 0xDF;
+    player->field_0x182c = *(undefined4*)(in_r2 + -0x7790);
+    uVar2 = *(undefined4*)(in_r2 + -0x778c);
+    player->field_0x1850 = uVar2;
+    player->field_0x18a8 = uVar2;
+    player->field_0x18b4 = uVar2;
+    player->field_0x18a0 = uVar2;
+    player->x221A_flags &= 0xFE;
+    player->x221B_flags &= 0x7F;
+    player->x221C_flags &= 0xEF;
+    *(undefined4*)&player->field_0x19b4 = uVar2;
+    *(undefined4*)&player->field_0x19b8 = uVar2;
+    *(byte*)&player->field_0x221d = *(byte*)&player->field_0x221d & 0xfb;
+    *(byte*)&player->field_0x2218 = *(byte*)&player->field_0x2218 & 0xef;
+    *(byte*)&player->field_0x2218 = *(byte*)&player->field_0x2218 & 0xfd;
+    player->x221C_flags &= 0xF7;
+    *(undefined2*)&player->field_0x1a6a = 0;
+    player->x221D_flags &= 0xFE;
+    player->x221E_flags &= 0x7F;
+    player->x221E_flags &= 0xBF;
+    player->x221E_flags &= 0xDF;
+    player->x221F_flags &= 0xBF;
+    player->x221E_flags &= 0xFB;
+    player->x221E_flags &= 0xFD;
+    *(byte*)&player->field_0x2220 = *(byte*)&player->field_0x2220 & 0xef;
+    *(byte*)&player->field_0x2220 = *(byte*)&player->field_0x2220 & 0xfe;
+    *(undefined2*)&player->field_0x209c = 0;
+    player->field_0x2223 = player->field_0x2223 & 0x7f;
+    *(byte*)&player->field_0x2222 = *(byte*)&player->field_0x2222 & 0xef;
+    player->x2224_flags = player->x2224_flags & 0xFB;
+    *(byte*)&player->field_0x2225 = *(byte*)&player->field_0x2225 & 0xbf;
+    *(byte*)&player->field_0x2225 = *(byte*)&player->field_0x2225 & 0xf7;
+    FUN_8004cbf4(&player->x6F0_physics);
+    FUN_800deea8(gobj);
+    *(undefined4*)&player->field_0x2138 = *(undefined4*)(in_r2 + -0x7788);
+    player->x2224_flags &= 0xF7;
+    if ((flags & 0x40000) == 0) {
+        player->x221E_flags = (player->x221E_flags & 0xEF) | 0x10;
+    } else {
+        if ((player->x221E_flags >> 4 & 1) == 0) {
+            FUN_8007f578(gobj);
+        }
+    }
+    if ((flags & 0x400000) == 0) {
+        *(byte*)&player->x221E_flags = *(byte*)&player->x221E_flags & 0xf7 | 8;
+    }
+    if ((flags & 0x4000000) == 0) {
+        *(byte*)&player->field_0x2225 = *(byte*)&player->field_0x2225 & 0xdf | 0x20;
+    }
+    if ((flags & 1) == 0) {
+        player->x221A_flags &= 0xF7;
+    }
+    if ((flags & 0x1000) == 0) {
+        FUN_800c0134(player);
+    }
+    if (((flags & 2) == 0) && ((char)player->field_0x2219 < '\0')) {
+        FUN_8007db24(gobj);
+    }
+    if (((flags & 0x2000) == 0) && (*(int**)&player->field_0x20a0 != (int*)0x0)) {
+        HSD_JObjRemoveAll(*(int**)&player->field_0x20a0);
+        *(undefined4*)&player->field_0x20a0 = 0;
+    }
+    if (player->xE0_in_air == 0) {
+        if (player->x4_internal_id == 9) {
+            player->x222C_flags = 1;
+        }
+        player->x2221_flags &= 0xFB;
+        player->x2221_flags = (player->x2221_flags & 0xFE) | 1;
+        player->x2221_flags = (player->x2221_flags & 0xFD) | 2;
+        player->x2224_flags &= 0xBF;
+        player->x2227_flags = player->x2227_flags & 0xbf;
+        *(undefined4*)&player->field_0x213c = 0xffffffff;
+        if (((byte)player->x2227_flags >> 3 & 1) != 0) {
+            sub_8003FE1C(player->xC_slot, ((player->x221F_flags >> 3) & 1));
+            player->x2227_flags = player->x2227_flags & 0xf7;
+        }
+        player->x2227_flags = player->x2227_flags & 0xfb;
+        FUN_80040330((double)*(float*)&player->field_0x2140, (uint)player->slot,
+            (uint)(player->field_0x221f >> 3) & 1);
+        *(undefined4*)&player->field_0x2140 = *(undefined4*)(in_r2 + -0x778c);
+        *(byte*)&player->field_0x2228 = *(byte*)&player->field_0x2228 & 0xfd;
+        *(undefined4*)&player->field_0x2180 = 6;
+    }
+    if ((((state != 0xe) && (state != 0xf)) && (state != 0x10)) && (state != 0x11)) {
+        *(undefined4*)&player->field_0x196c = *(undefined4*)(in_r2 + -0x778c);
+    }
+    if ((flags & 0x200) == 0) {
+        FUN_80088884(player);
+        FUN_800888e0(player);
+        FUN_800887cc(player);
+    }
+    if ((flags & 0x20000) == 0) {
+        *(undefined*)&player->field_0x2100 = 0xff;
+    }
+    if ((flags & 0x8000) == 0) {
+        *(undefined2*)&player->field_0x209a = 0;
+    }
+    *(byte*)&player->field_0x2222 = *(byte*)&player->field_0x2222 & 0xfe;
+    if ((flags & 0x100000) == 0) {
+        *(undefined4*)&player->field_0x100 = *(undefined4*)(in_r2 + -0x7788);
+    } else {
+        *(undefined4*)&player->field_0x100 = *(undefined4*)(in_r2 + -0x778c);
+    }
+    if ((flags & 0x1000000) == 0) {
+        *(u16*)&player->x221C_flags = *(u16*)&player->x221C_flags & 0xFE3F;
+    }
+    *(undefined4*)&player->field_0x6bc = *(undefined4*)(in_r2 + -0x778c);
+    FUN_8007592c(player, 0);
+    FUN_80075af0((double)(float)(*(double*)(in_r2 + -0x7770) * (double)player->x2C_facedir), player, 0);
+    FUN_80075cb4((double)*(float*)(in_r2 + -0x778c), player, 0);
+    
+    if (state < player->x18_tblconstant) {
+        puVar8 = (uint*)((int)player->shared_action_table + state * 0x20);
+    } else {
+        puVar8 = (uint*)((int)player->move_table + (state - player->x18_tblconstant) * 0x20);
+    }
+    if (((player->xE0_in_air == 0) && ((flags & 0x40) == 0)) && (((*(byte*)((int)puVar8 + 9) >> 6 & 1) != 0 && (*(int*)&player->field_0x18c8 == -1)))) {
+        iVar5 = *(int*)(*(int*)(in_r13 + -0x514c) + 0x814);
+        if (iVar5 < 1) {
+            *(undefined4*)&player->field_0x18c8 = 1;
+        } else {
+            *(int*)&player->field_0x18c8 = iVar5;
+        }
+    }
+    local_50 = *(undefined4*)&player->field_0x2070;
+    FUN_800890d0(player, (uint) * (byte*)(puVar8 + 2));
+    FUN_800895e0(player, puVar8[1]);
+    *(byte*)&player->field_0x2225 = *(byte*)((int)puVar8 + 9) >> 3 & 0x10 | *(byte*)&player->field_0x2225 & 0xef;
+    if ((*(byte*)&player->field_0x2226 >> 3 & 1) != 0) {
+        if ((*(byte*)&player->field_0x2071 >> 2 & 1) != 0) {
+            FUN_800c8b2c(player, 0x7e, 0);
+        }
+        if ((*(byte*)&player->field_0x2071 >> 1 & 1) != 0) {
+            FUN_800c8b2c(player, 0x7f, 0);
+        }
+    }
+    if (*(code**)&player->field_0x21ec != (code*)0x0) {
+        (**(code**)&player->field_0x21ec)(gobj);
+        *(undefined4*)&player->field_0x21ec = 0;
+    }
+    if ((flags & 0x2000000) == 0) {
+        FUN_80037c60(gobj, local_50);
+    }
+    player->anim_state = *puVar8;
+    *(float*)&player->field_0x89c = (float)frame_rate;
+    *(float*)&player->field_0x8a0 = (float)frame_rate;
+    *(float*)&player->field_0x894 = (float)(dVar13 - (double)*(float*)&player->field_0x89c);
+    *(undefined4*)&player->field_0x898 = *(undefined4*)(in_r2 + -0x778c);
+    if (((char)player->field_0x594 < '\0') || ((player->field_0x594 >> 2 & 1) != 0)) {
+        bVar1 = true;
+    } else {
+        bVar1 = false;
+    }
+    if (player->anim_state != 0xffffffff) {
+        uVar3 = *(ushort*)&player->field_0x596 >> 6;
+        if ((flags & 0x200000) != 0) {
+            player->field_0x2223 = player->field_0x2223 & 0x7f | 0x80;
+            *(undefined*)&player->field_0x104 = 0x14;
+            frame_rate = (double)*(float*)(in_r2 + -0x778c);
+            *(float*)&player->field_0x89c = *(float*)(in_r2 + -0x778c);
+        }
+        if (gobj_2 == (HSD_GObj*)0x0) {
+            ppAVar6 = player->state_ptr + player->anim_state * 6;
+            puVar9 = &player->field_0x28->classifier + player->anim_state;
+        } else {
+            ppAVar6 = (AnimData**)(*(int*)((int)gobj_2->data + 0x24) + player->anim_state * 0x18);
+            puVar9 = (ushort*)(*(int*)((int)gobj_2->data + 0x28) + player->anim_state * 2);
+        }
+        *(AnimData**)&player->field_0x594 = ppAVar6[4];
+        FUN_8009e7b4(player, puVar9);
+        if ((flags & 0x20000000) == 0) {
+            if (gobj_2 == (HSD_GObj*)0x0) {
+                FUN_80085cd8(player, player, player->anim_state);
+            } else {
+                FUN_80085cd8(player, gobj_2->data, player->anim_state);
+                FUN_8007b8cc(player, gobj_2);
+            }
+            *(AnimData**)&player->field_0x3ec = ppAVar6[3];
+            *(undefined4*)&player->field_0x3f0 = 0;
+            dVar12 = (double)*(float*)(in_r2 + -0x778c);
+            if (dVar13 == dVar12) {
+                if (*(int*)&player->field_0x590 != 0) {
+                    if (((double)*(float*)(in_r2 + -0x7788) != param_3) && (bVar11 = param_3 == dVar12, dVar12 = param_3, bVar11)) {
+                        uStack68 = (uint) * (byte*)puVar9;
+                        local_48 = 0x43300000;
+                        dVar12 = (double)(float)((double)CONCAT44(0x43300000, uStack68) - *(double*)(in_r2 + -0x7768));
+                    }
+                    FUN_8006ebe8(dVar13, frame_rate, dVar12, gobj);
+                }
+                *(undefined4*)&player->field_0x3e4 = *(undefined4*)(in_r2 + -0x778c);
+            } else {
+                if (*(int*)&player->field_0x590 != 0) {
+                    if (((double)*(float*)(in_r2 + -0x7788) != param_3) && (bVar11 = param_3 == dVar12, dVar12 = param_3, bVar11)) {
+                        uStack68 = (uint) * (byte*)puVar9;
+                        local_48 = 0x43300000;
+                        dVar12 = (double)(float)((double)CONCAT44(0x43300000, uStack68) - *(double*)(in_r2 + -0x7768));
+                    }
+                    FUN_8006ebe8((double)(float)(dVar13 - frame_rate), frame_rate, dVar12, gobj);
+                }
+                FUN_8006e9b4(gobj);
+                if ((char)player->field_0x594 < '\0') {
+                    fVar4 = *(float*)(in_r2 + -0x778c);
+                    *(float*)&player->field_0x6b8 = fVar4;
+                    *(float*)&player->field_0x6b4 = fVar4;
+                    *(float*)&player->field_0x6b0 = fVar4;
+                    player->field_0x6ac = fVar4;
+                    *(float*)&player->field_0x6a8 = fVar4;
+                    *(float*)&player->field_0x6a4 = fVar4;
+                    *(undefined4*)&player->field_0x698 = *(undefined4*)&player->field_0x68c;
+                    *(undefined4*)&player->field_0x69c = *(undefined4*)&player->field_0x690;
+                    *(undefined4*)&player->field_0x6a0 = *(undefined4*)&player->field_0x694;
+                }
+                if ((player->field_0x594 >> 2 & 1) != 0) {
+                    uVar2 = *(undefined4*)(in_r2 + -0x778c);
+                    *(undefined4*)&player->field_0x6ec = uVar2;
+                    *(undefined4*)&player->field_0x6e8 = uVar2;
+                    *(undefined4*)&player->field_0x6e4 = uVar2;
+                    *(undefined4*)&player->field_0x6e0 = uVar2;
+                    *(undefined4*)&player->field_0x6dc = uVar2;
+                    *(undefined4*)&player->field_0x6d8 = uVar2;
+                    *(undefined4*)&player->field_0x6cc = *(undefined4*)&player->field_0x6c0;
+                    *(undefined4*)&player->field_0x6d0 = *(undefined4*)&player->field_0x6c4;
+                    *(undefined4*)&player->field_0x6d4 = *(undefined4*)&player->field_0x6c8;
+                }
+                *(float*)&player->field_0x3e4 = (float)-dVar13;
+            }
+            FUN_8006e9b4(gobj);
+            if (((uVar3 & 7) != 0) && (*(byte*)puVar9 != 0)) {
+                iVar5 = ((uint)uVar3 & 7) * 0x10;
+                iVar10 = *(int*)(player->bone_lookup_table + iVar5 + 4);
+                if (iVar10 == 0) {
+                    assert(in_r13 + -0x7ca0, 0x3d3, in_r13 + -0x7c98);
+                }
+                local_5c = *(undefined4*)(iVar10 + 0x38);
+                local_58 = *(undefined4*)(iVar10 + 0x3c);
+                local_54 = *(undefined4*)(iVar10 + 0x40);
+                iVar7 = *(int*)(player->bone_lookup_table + iVar5);
+                if (iVar7 == 0) {
+                    assert(in_r13 + -0x7ca0, 0x394, in_r13 + -0x7c98);
+                }
+                *(undefined4*)(iVar7 + 0x38) = local_5c;
+                *(undefined4*)(iVar7 + 0x3c) = local_58;
+                *(undefined4*)(iVar7 + 0x40) = local_54;
+                if (((*(uint*)(iVar7 + 0x14) & 0x2000000) == 0) && (iVar7 != 0)) {
+                    if (iVar7 == 0) {
+                        assert(in_r13 + -0x7ca0, 0x234, in_r13 + -0x7c98);
+                    }
+                    bVar11 = false;
+                    if (((*(uint*)(iVar7 + 0x14) & 0x800000) == 0) && ((*(uint*)(iVar7 + 0x14) & 0x40) != 0)) {
+                        bVar11 = true;
+                    }
+                    if (!bVar11) {
+                        HSD_JObjSetMtxDirtySub(iVar7);
+                    }
+                }
+                if (iVar10 == 0) {
+                    assert(in_r13 + -0x7ca0, 699, in_r13 + -0x7c98);
+                }
+                local_6c = *(undefined4*)(iVar10 + 0x1c);
+                local_68 = *(undefined4*)(iVar10 + 0x20);
+                local_64 = *(undefined4*)(iVar10 + 0x24);
+                local_60 = *(undefined4*)(iVar10 + 0x28);
+                FUN_8007584c(*(undefined4*)(player->bone_lookup_table + iVar5), &local_6c);
+            }
+            if ((char)player->field_0x594 < '\0') {
+                fVar4 = *(float*)(in_r2 + -0x778c);
+                if (dVar13 == (double)fVar4) {
+                    *(float*)&player->field_0x6b8 = fVar4;
+                    *(float*)&player->field_0x6b4 = fVar4;
+                    *(float*)&player->field_0x6b0 = fVar4;
+                    player->field_0x6ac = fVar4;
+                    *(float*)&player->field_0x6a8 = fVar4;
+                    *(float*)&player->field_0x6a4 = fVar4;
+                    *(undefined4*)&player->field_0x698 = *(undefined4*)&player->field_0x68c;
+                    *(undefined4*)&player->field_0x69c = *(undefined4*)&player->field_0x690;
+                    *(undefined4*)&player->field_0x6a0 = *(undefined4*)&player->field_0x694;
+                } else {
+                    if (((flags & 0x20) == 0) && (player->xE0_in_air == 0)) {
+                        fVar4 = player->field_0x6ac * player->x2C_facedir;
+                        (player->x80_x88_self_vel).x = fVar4;
+                        player->xEC_vel_ground_self_x = fVar4;
+                    }
+                }
+            }
+            if ((player->field_0x594 >> 2 & 1) != 0) {
+                fVar4 = *(float*)(in_r2 + -0x778c);
+                if (dVar13 == (double)fVar4) {
+                    *(float*)&player->field_0x6ec = fVar4;
+                    *(float*)&player->field_0x6e8 = fVar4;
+                    *(float*)&player->field_0x6e4 = fVar4;
+                    *(float*)&player->field_0x6e0 = fVar4;
+                    *(float*)&player->field_0x6dc = fVar4;
+                    *(float*)&player->field_0x6d8 = fVar4;
+                    *(undefined4*)&player->field_0x6cc = *(undefined4*)&player->field_0x6c0;
+                    *(undefined4*)&player->field_0x6d0 = *(undefined4*)&player->field_0x6c4;
+                    *(undefined4*)&player->field_0x6d4 = *(undefined4*)&player->field_0x6c8;
+                } else {
+                    if (((flags & 0x20) == 0) && (player->xE0_in_air == 0)) {
+                        fVar4 = *(float*)&player->field_0x6e0 * player->x2C_facedir;
+                        (player->x80_x88_self_vel).x = fVar4;
+                        player->xEC_vel_ground_self_x = fVar4;
+                    }
+                }
+            }
+            if ((flags & 0x4000) == 0) {
+                if (dVar13 == (double)*(float*)(in_r2 + -0x778c)) {
+                    FUN_800c0408(gobj);
+                    FUN_80073240(gobj);
+                } else {
+                    FUN_80073354(gobj);
+                }
+            } else {
+                FUN_8007349c(gobj);
+            }
+        } else {
+            player->anim_state = -1;
+        }
+    }
+    if (player->anim_state == -1) {
+        *(undefined4*)&player->field_0x594 = 0;
+        FUN_80070758(jobj);
+        FUN_80070758(*(undefined4*)&player->field_0x8ac);
+        *(undefined4*)&player->field_0x3ec = 0;
+        uVar2 = *(undefined4*)(in_r2 + -0x778c);
+        *(undefined4*)&player->field_0x8a4 = uVar2;
+        *(undefined4*)&player->field_0x8a8 = uVar2;
+    }
+    if (((bVar1) && (bVar1 = -1 < (char)player->field_0x594, bVar1)) && (bVar1)) {
+        FUN_8007cc78((double)*(float*)&player->field_0x138, player);
+    }
+    *(uint*)&player->field_0x21a0 = puVar8[3];
+    *(uint*)&player->field_0x219c = puVar8[4];
+    *(uint*)&player->field_0x21a4 = puVar8[5];
+    *(uint*)&player->field_0x21a8 = puVar8[6];
+    *(uint*)&player->field_0x21ac = puVar8[7];
+    *(undefined4*)&player->field_0x21b0 = 0;
+    *(undefined4*)&player->field_0x21bc = 0;
+    *(undefined4*)&player->field_0x21c0 = 0;
+    *(undefined4*)&player->field_0x21c4 = 0;
+    *(undefined4*)&player->field_0x21c8 = 0;
+    *(undefined4*)&player->field_0x21d0 = 0;
+    *(undefined4*)&player->field_0x21cc = 0;
+    *(undefined4*)&player->field_0x21d8 = 0;
+    *(undefined4*)&player->field_0x21d4 = 0;
+    *(undefined4*)&player->field_0x21dc = 0;
+    *(undefined4*)&player->field_0x21f0 = 0;
+    *(undefined4*)&player->field_0x21f4 = 0;
+    *(undefined4*)&player->field_0x21f8 = 0;
+    *(undefined4*)&player->field_0x21e4 = 0;*/
 }
 
 //80074A4C

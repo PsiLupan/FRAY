@@ -208,6 +208,8 @@ typedef struct _Player {
 
     u32* x5E8_bone_lookup_table;
 
+    void* x60C_gfx;
+
     f32 x620_joystick_x;
     f32 x624_joystick_y;
     f32 x628_prev_joystick_x;
@@ -231,6 +233,8 @@ typedef struct _Player {
 
     struct _Hitbox x914_hitbox[4];
 
+    u32 x1198_thrown;
+
     f32 x18A4_unk;
 
     u32 x18C4_last_atkeridx;
@@ -240,6 +244,8 @@ typedef struct _Player {
 
     HSD_GObj* x1974_held_item;
     u32 x1978_unk;
+
+    u32 x1988_bodystate;
 
     u16 x1A64_grabbable_flags;
 
@@ -261,9 +267,15 @@ typedef struct _Player {
     u8 x2218_flags;
     u8 x2219_flags;
     u8 x221A_flags;
+    u8 x221B_flags;
+    u8 x221C_flags;
     u8 x221D_flags;
+    u8 x221E_flags;
     u8 x221F_flags;
-
+    u8 x2220_flags;
+    u8 x2221_flags;
+    u8 x2222_flags;
+    u8 x2223_flags;
     u8 x2224_flags;
     s8 x2227_flags;
     u32 x222C_flags;
