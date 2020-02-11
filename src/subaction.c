@@ -38,6 +38,12 @@ void Subaction_Event_10_GoTo(SubactionInfo* event)
     event->data_position = (u32*)(*event->data_position);
 }
 
+//8007121C
+void Subaction_Event_2C(HSD_GObj* gobj, SubactionInfo* event)
+{
+
+}
+
 //8007168C
 //800716F8
 //80071774
