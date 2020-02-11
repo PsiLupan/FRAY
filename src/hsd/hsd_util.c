@@ -258,21 +258,21 @@ void HSD_MtxGetRotation(Mtx mtx, guVector* rotation)
 }
 
 //8037A120
-void HSD_MkRotationMtx(Mtx mtx, guVector* vec)
+void HSD_MkRotationMtx(Mtx mtx, guQuaternion* quat)
 {
-    f32 dVar2;
-    f32 dVar3;
-    f32 dVar4;
-    f32 dVar5;
-    f32 dVar6;
-    f32 dVar7;
+    f64 dVar2;
+    f64 dVar3;
+    f64 dVar4;
+    f64 dVar5;
+    f64 dVar6;
+    f64 dVar7;
 
-    dVar3 = sinf(vec->x);
-    dVar4 = cosf(vec->x);
-    dVar5 = sinf(vec->y);
-    dVar6 = cosf(vec->y);
-    dVar7 = sinf(vec->z);
-    dVar2 = cosf(vec->z);
+    dVar3 = sinf(quat->x);
+    dVar4 = cosf(quat->x);
+    dVar5 = sinf(quat->y);
+    dVar6 = cosf(quat->y);
+    dVar7 = sinf(quat->z);
+    dVar2 = cosf(quat->z);
     guMtxRowCol(mtx, 0, 0) = dVar6 * dVar2;
     guMtxRowCol(mtx, 1, 0) = dVar6 * dVar7;
     guMtxRowCol(mtx, 2, 0) = -dVar5;

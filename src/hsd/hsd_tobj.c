@@ -402,11 +402,11 @@ static void MakeTextureMtx(HSD_TObj* tobj)
         rot.y = tobj->rotate.y;
         rot.z = -tobj->rotate.z;
         trans.x = -tobj->translate.x;
-        trans.y = -(tobj->translate.y + (tobj->wrap_t == GX_MIRROR ? 1.0F / (tobj->repeat_t / tobj->scale.y) : 0.0F));
+        trans.y = -(tobj->translate.y + (tobj->wrap_t == GX_MIRROR ? 1.0F / ((f32)tobj->repeat_t / tobj->scale.y) : 0.0F));
         trans.z = tobj->translate.z;
 
         guMtxTrans(tobj->mtx, trans.x, trans.y, trans.z);
-        HSD_MkRotationMtx(m, (guVector*)&rot);
+        HSD_MkRotationMtx(m, &rot);
         guMtxConcat(m, tobj->mtx, tobj->mtx);
         guMtxScale(m, scale.x, scale.y, scale.z);
         guMtxConcat(m, tobj->mtx, tobj->mtx);
