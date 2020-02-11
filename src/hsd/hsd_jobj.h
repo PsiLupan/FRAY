@@ -12,6 +12,41 @@
 #include "hsd_mobj.h"
 #include "hsd_robj.h"
 
+#define HSD_A_J_ROTX 1
+#define HSD_A_J_ROTY 2
+#define HSD_A_J_ROTZ 3
+#define HSD_A_J_PATH 4
+#define HSD_A_J_TRAX 5
+#define HSD_A_J_TRAY 6
+#define HSD_A_J_TRAZ 7
+#define HSD_A_J_SCAX 8
+#define HSD_A_J_SCAY 9
+#define HSD_A_J_SCAZ 10
+#define HSD_A_J_NODE 11
+#define HSD_A_J_BRANCH 12
+
+#define HSD_A_J_SETBYTE0 20
+#define HSD_A_J_SETBYTE1 21
+#define HSD_A_J_SETBYTE2 22
+#define HSD_A_J_SETBYTE3 23
+#define HSD_A_J_SETBYTE4 24
+#define HSD_A_J_SETBYTE5 25
+#define HSD_A_J_SETBYTE6 26
+#define HSD_A_J_SETBYTE7 27
+#define HSD_A_J_SETBYTE8 28
+#define HSD_A_J_SETBYTE9 29
+
+#define HSD_A_J_SETFLOAT0 30
+#define HSD_A_J_SETFLOAT1 31
+#define HSD_A_J_SETFLOAT2 32
+#define HSD_A_J_SETFLOAT3 33
+#define HSD_A_J_SETFLOAT4 34
+#define HSD_A_J_SETFLOAT5 35
+#define HSD_A_J_SETFLOAT6 36
+#define HSD_A_J_SETFLOAT7 37
+#define HSD_A_J_SETFLOAT8 38
+#define HSD_A_J_SETFLOAT9 39
+
 #define SKELETON (1 << 0)
 #define SKELETON_ROOT (1 << 1)
 #define ENVELOPE_MODEL (1 << 2)
