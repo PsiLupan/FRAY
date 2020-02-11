@@ -101,20 +101,19 @@ void HSD_FObjStopAnimAll(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 fr
 //8036AC10
 static f32 parseFloat(u8** curr_parse, u8 frac)
 {
+    union {
+        f32 f;
+        u32 d;
+    } u;
     f32 result = 0.f;
     s32 decimal_base;
 
-    if (frac == HSD_A_FRAC_FLOAT) {
-        decimal_base = (*curr_parse)[0];
-        decimal_base |= (*curr_parse)[1] << 8;
-        decimal_base |= (*curr_parse)[2] << 16;
-        decimal_base |= (*curr_parse)[3] << 24;
-        *curr_parse += 4;
-
-        return (f32)(decimal_base);
-    }
-
     switch (frac & 0xE0) {
+    case HSD_A_FRAC_FLOAT:
+        u.d = (*curr_parse)[0] | (*curr_parse)[1] << 8 | (*curr_parse)[2] << 16 | (*curr_parse)[3] << 24;
+        *curr_parse += 4;
+        return u.f;
+
     case HSD_A_FRAC_S16:
         decimal_base = (*curr_parse)[0];
         decimal_base |= (s8)((*curr_parse)[1]) << 8; //This is (s8), because there is an extsb in the assembly that would only happen that way
