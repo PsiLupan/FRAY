@@ -43,7 +43,7 @@ f32 splGetHermite(f32, f32, f32, f32, f32, f32);
 void splArcLengthPoint(HSD_Spline*, f32, guVector*);
 void HSD_MtxInverseConcat(Mtx, Mtx, Mtx);
 void HSD_MtxGetRotation(Mtx, guVector*);
-void HSD_MkRotationMtx(Mtx, guVector*);
+void HSD_MkRotationMtx(Mtx, guQuaternion*);
 void HSD_MtxSRT(Mtx, guVector*, guVector*, guVector*, guVector*);
 void HSD_MtxSRTQuat(Mtx, guVector*, guQuaternion*, guVector*, guVector*);
 void HSD_MtxScaledAdd(f32, Mtx, Mtx, Mtx);

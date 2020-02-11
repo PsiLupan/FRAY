@@ -184,7 +184,7 @@ static void LObjUpdateFunc(void* obj, u32 type, FObjData* val)
 //80365620
 void HSD_LObjAnim(HSD_LObj* lobj)
 {
-    if (lobj) {
+    if (lobj != NULL) {
         HSD_AObjInterpretAnim(lobj->aobj, lobj, LObjUpdateFunc);
         HSD_WObjInterpretAnim(HSD_LObjGetPositionWObj(lobj));
         HSD_WObjInterpretAnim(HSD_LObjGetInterestWObj(lobj));
@@ -196,7 +196,7 @@ void HSD_LObjAnimAll(HSD_LObj* lobj)
 {
     HSD_LObj* lp;
 
-    if (lobj) {
+    if (lobj != NULL) {
         for (lp = lobj; lp; lp = lp->next) {
             HSD_AObjInterpretAnim(lp->aobj, lp, LObjUpdateFunc);
             HSD_WObjInterpretAnim(HSD_LObjGetPositionWObj(lp));
@@ -210,7 +210,7 @@ void HSD_LObjReqAnimAll(HSD_LObj* lobj, f32 startframe)
 {
     HSD_LObj* lp;
 
-    if (lobj) {
+    if (lobj != NULL) {
         for (lp = lobj; lp; lp = lp->next) {
             HSD_AObjReqAnim(lp->aobj, startframe);
             HSD_WObjReqAnim(HSD_LObjGetPositionWObj(lp), startframe);
@@ -225,7 +225,7 @@ void HSD_LObjGetLightVector(HSD_LObj* lobj, guVector* dir)
     guVector position = { 0.0F, 0.0F, 0.0F };
     guVector interest = { 0.0F, 0.0F, 0.0F };
 
-    if (lobj) {
+    if (lobj != NULL) {
         HSD_LObjGetPosition(lobj, &position);
         HSD_LObjGetInterest(lobj, &interest);
         guVecSub(&interest, &position, dir);
@@ -765,7 +765,7 @@ void HSD_LObjSetPosition(HSD_LObj* lobj, guVector* position)
 //80366D70
 BOOL HSD_LObjGetPosition(HSD_LObj* lobj, guVector* position)
 {
-    if (lobj && lobj->position) {
+    if (lobj != NULL && lobj->position != NULL) {
         HSD_WObjGetPosition(lobj->position, position);
         return TRUE;
     }
@@ -786,7 +786,7 @@ void HSD_LObjSetInterest(HSD_LObj* lobj, guVector* interest)
 //80366E38
 BOOL HSD_LObjGetInterest(HSD_LObj* lobj, guVector* interest)
 {
-    if (lobj && lobj->interest) {
+    if (lobj != NULL && lobj->interest != NULL) {
         HSD_WObjGetPosition(lobj->interest, interest);
         return TRUE;
     }
