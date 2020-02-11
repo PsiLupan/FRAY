@@ -388,29 +388,26 @@ static u32 HSD_TexMapID2PTTexMtx(u32 id)
 //8035EF38
 static void MakeTextureMtx(HSD_TObj* tobj)
 {
-    guVector scale;
+    Mtx m;
+    guVector trans, scale;
+    guQuaternion rot;
     assert(tobj->repeat_s && tobj->repeat_t);
-    {
-        Mtx m;
-        guVector trans;
-        guQuaternion rot;
 
-        scale.x = fabsf(tobj->scale.x) < FLT_EPSILON ? 0.0F : (f32)tobj->repeat_s / tobj->scale.x;
-        scale.y = fabsf(tobj->scale.y) < FLT_EPSILON ? 0.0F : (f32)tobj->repeat_t / tobj->scale.y;
-        scale.z = tobj->scale.z;
-        rot.x = tobj->rotate.x;
-        rot.y = tobj->rotate.y;
-        rot.z = -tobj->rotate.z;
-        trans.x = -tobj->translate.x;
-        trans.y = -(tobj->translate.y + (tobj->wrap_t == GX_MIRROR ? 1.0F / ((f32)tobj->repeat_t / tobj->scale.y) : 0.0F));
-        trans.z = tobj->translate.z;
+    scale.x = fabsf(tobj->scale.x) < FLT_EPSILON ? 0.0F : (f32)tobj->repeat_s / tobj->scale.x;
+    scale.y = fabsf(tobj->scale.y) < FLT_EPSILON ? 0.0F : (f32)tobj->repeat_t / tobj->scale.y;
+    scale.z = tobj->scale.z;
+    rot.x = tobj->rotate.x;
+    rot.y = tobj->rotate.y;
+    rot.z = -tobj->rotate.z;
+    trans.x = -tobj->translate.x;
+    trans.y = -(tobj->translate.y + (tobj->wrap_t == GX_MIRROR ? 1.0F / ((f32)tobj->repeat_t / tobj->scale.y) : 0.0F));
+    trans.z = tobj->translate.z;
 
-        guMtxTrans(tobj->mtx, trans.x, trans.y, trans.z);
-        HSD_MkRotationMtx(m, &rot);
-        guMtxConcat(m, tobj->mtx, tobj->mtx);
-        guMtxScale(m, scale.x, scale.y, scale.z);
-        guMtxConcat(m, tobj->mtx, tobj->mtx);
-    }
+    guMtxTrans(tobj->mtx, trans.x, trans.y, trans.z);
+    HSD_MkRotationMtx(m, &rot);
+    guMtxConcat(m, tobj->mtx, tobj->mtx);
+    guMtxScale(m, scale.x, scale.y, scale.z);
+    guMtxConcat(m, tobj->mtx, tobj->mtx);
 }
 
 //8035F0EC
@@ -563,7 +560,6 @@ void HSD_TObjSetupTextureCoordGen(HSD_TObj* tobj)
         if (tobj_bump(tobj)) {
             setupTextureCoordGen(tobj);
             setupTextureCoordGenBump(tobj);
-
         } else if (tobj_coord(tobj) == TEX_COORD_TOON) {
             setupTextureCoordGenToon(tobj);
         } else {
