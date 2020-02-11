@@ -105,36 +105,30 @@ static f32 parseFloat(u8** curr_parse, u8 frac)
     s32 decimal_base;
 
     if (frac == HSD_A_FRAC_FLOAT) {
-        decimal_base = **curr_parse;
-        *curr_parse += 1;
-
-        decimal_base |= (**curr_parse) << 8;
-        *curr_parse += 1;
-
-        decimal_base |= (**curr_parse) << 16;
-        *curr_parse += 1;
-
-        decimal_base |= (**curr_parse) << 24;
-        *curr_parse += 1;
+        decimal_base = (*curr_parse)[0];
+        decimal_base |= (*curr_parse)[1] << 8;
+        decimal_base |= (*curr_parse)[2] << 16;
+        decimal_base |= (*curr_parse)[3] << 24;
+        *curr_parse += 4;
 
         return (f32)(decimal_base);
     }
 
     switch (frac & 0xE0) {
     case HSD_A_FRAC_S16:
-        decimal_base = ((*curr_parse)[0]);
+        decimal_base = (*curr_parse)[0];
         decimal_base |= (s8)((*curr_parse)[1]) << 8; //This is (s8), because there is an extsb in the assembly that would only happen that way
         *curr_parse += 2;
         break;
 
     case HSD_A_FRAC_U16:
-        decimal_base = ((*curr_parse)[0]);
+        decimal_base = (*curr_parse)[0];
         decimal_base |= ((*curr_parse)[1]) << 8;
         *curr_parse += 2;
         break;
 
     case HSD_A_FRAC_S8:
-        decimal_base = (s8)((*curr_parse)[0]);
+        decimal_base = (s8)(**curr_parse);
         *curr_parse += 1;
         break;
 

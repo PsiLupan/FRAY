@@ -399,7 +399,7 @@ void JObjUpdateFunc(void* obj, u32 type, FObjData* val)
         HSD_SList* callbacks = ufc_callbacks;
 
         switch (type) {
-        case 1:
+        case HSD_A_J_ROTX:
             if ((jobj->flags & JOINT1) != 0) {
                 HSD_RObj* robj = HSD_RObjGetByType(jobj->robj, 0x40000000, 0);
                 if (robj != NULL) {
@@ -412,21 +412,24 @@ void JObjUpdateFunc(void* obj, u32 type, FObjData* val)
                 HSD_JObjSetMtxDirty(jobj);
             }
             break;
-        case 2:
+
+        case HSD_A_J_ROTY:
             assert(JOBJ_USE_QUATERNION(jobj) == 0);
             jobj->rotation.y = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
                 HSD_JObjSetMtxDirty(jobj);
             }
             break;
-        case 3:
+
+        case HSD_A_J_ROTZ:
             assert(JOBJ_USE_QUATERNION(jobj) == 0);
             jobj->rotation.z = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
                 HSD_JObjSetMtxDirty(jobj);
             }
             break;
-        case 4:
+
+        case HSD_A_J_PATH:
             if (val->fv < 0.0F) {
                 val->fv = 0.f;
             }
@@ -443,122 +446,140 @@ void JObjUpdateFunc(void* obj, u32 type, FObjData* val)
                 HSD_JObjSetMtxDirty(jobj);
             }
             break;
-        case 5:
+
+        case HSD_A_J_TRAX:
             jobj->position.x = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
                 HSD_JObjSetMtxDirty(jobj);
             }
             break;
-        case 6:
+
+        case HSD_A_J_TRAY:
             jobj->position.y = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
                 HSD_JObjSetMtxDirty(jobj);
             }
             break;
-        case 7:
+
+        case HSD_A_J_TRAZ:
             jobj->position.z = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
                 HSD_JObjSetMtxDirty(jobj);
             }
             break;
-        case 8:
+
+        case HSD_A_J_SCAX:
             jobj->scale.x = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
                 HSD_JObjSetMtxDirty(jobj);
             }
             break;
-        case 9:
+
+        case HSD_A_J_SCAY:
             jobj->scale.y = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
                 HSD_JObjSetMtxDirty(jobj);
             }
             break;
-        case 10:
+
+        case HSD_A_J_SCAZ:
             jobj->scale.z = val->fv;
             if ((jobj->flags & MTX_INDEP_SRT) == 0) {
                 HSD_JObjSetMtxDirty(jobj);
             }
             break;
-        case 11:
+
+        case HSD_A_J_NODE:
             if (val->fv <= 0.5) {
                 HSD_JObjSetFlags(jobj, HIDDEN);
             } else {
                 HSD_JObjClearFlags(jobj, HIDDEN);
             }
             break;
-        case 12:
+
+        case HSD_A_J_BRANCH:
             if (val->fv <= 0.5) {
                 HSD_JObjSetFlagsAll(jobj, HIDDEN);
             } else {
                 HSD_JObjClearFlagsAll(jobj, HIDDEN);
             }
             break;
-        case 20:
-        case 21:
-        case 22:
-        case 23:
-        case 24:
-        case 25:
-        case 26:
-        case 27:
-        case 28:
-        case 29:
+
+        case HSD_A_J_SETBYTE0:
+        case HSD_A_J_SETBYTE1:
+        case HSD_A_J_SETBYTE2:
+        case HSD_A_J_SETBYTE3:
+        case HSD_A_J_SETBYTE4:
+        case HSD_A_J_SETBYTE5:
+        case HSD_A_J_SETBYTE6:
+        case HSD_A_J_SETBYTE7:
+        case HSD_A_J_SETBYTE8:
+        case HSD_A_J_SETBYTE9:
             while(callbacks != NULL){
                 (*(ufc_callback*)callbacks->data)(jobj, type, val->iv);
                 callbacks = callbacks->next;
             }
             break;
-        case 30:
-        case 31:
-        case 32:
-        case 33:
-        case 34:
-        case 35:
-        case 36:
-        case 37:
-        case 38:
-        case 39:
+
+        case HSD_A_J_SETFLOAT0:
+        case HSD_A_J_SETFLOAT1:
+        case HSD_A_J_SETFLOAT2:
+        case HSD_A_J_SETFLOAT3:
+        case HSD_A_J_SETFLOAT4:
+        case HSD_A_J_SETFLOAT5:
+        case HSD_A_J_SETFLOAT6:
+        case HSD_A_J_SETFLOAT7:
+        case HSD_A_J_SETFLOAT8:
+        case HSD_A_J_SETFLOAT9:
             while (callbacks != NULL) {
                 ufc_callback* callback = callbacks->data;
                 (callback)(jobj, type, val->fv);
                 callbacks = callbacks->next;
             }
             break;
+
         case 40:
             if (dptcl_callback != NULL) {
                 (*dptcl_callback)(0, val->iv & 0x3f, val->iv >> 6 & 0xffffff, jobj); // 8005DB70 during gameplay
             }
             break;
+
         case 41:
             if (jsound_callback != NULL) {
                 (*jsound_callback)(val->iv);
             }
             break;
+
         case 42:
             if (ptcltgt_callback != NULL) {
                 (*ptcltgt_callback)(jobj, val->iv);
             }
             break;
+
         case 50:
             guMtxRowCol(jobj->mtx, 0, 0) = val->p.x;
             guMtxRowCol(jobj->mtx, 1, 0) = val->p.y;
             guMtxRowCol(jobj->mtx, 2, 0) = val->p.z;
             break;
+
         case 51:
             guMtxRowCol(jobj->mtx, 0, 1) = val->p.x;
             guMtxRowCol(jobj->mtx, 1, 1) = val->p.y;
             guMtxRowCol(jobj->mtx, 2, 1) = val->p.z;
             break;
+
         case 52:
             guMtxRowCol(jobj->mtx, 0, 2) = val->p.x;
             guMtxRowCol(jobj->mtx, 1, 2) = val->p.y;
             guMtxRowCol(jobj->mtx, 2, 2) = val->p.z;
             break;
+
         case 53:
             guMtxRowCol(jobj->mtx, 0, 3) = val->p.x;
             guMtxRowCol(jobj->mtx, 1, 3) = val->p.y;
             guMtxRowCol(jobj->mtx, 2, 3) = val->p.z;
             break;
+
         case 54:
         case 55:
         case 56:
