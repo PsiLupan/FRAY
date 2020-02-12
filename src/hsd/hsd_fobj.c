@@ -425,49 +425,39 @@ void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 
     u32 state;
     f32 fterm;
 
-    if (fobj == NULL) {
-        state = 0;
-    } else {
+    if (fobj != NULL) {
         state = HSD_FObjGetState(fobj);
-    }
-
-    if (state != 0 && (fobj->time += rate, 0.0F <= fobj->time)) {
-        while (TRUE) {
-            while (state != 4) {
-                if (state < 4) {
+        if (state != 0 && (fobj->time += rate, 0.0F <= fobj->time)) {
+            while (TRUE) {
+                while (state != 4) {
                     if (state == 0) {
                         return;
-                    }
-                    if (state > 0) {
-                        if (state < 3) {
-                            state = FObjLoadData(fobj);
-                        } else {
-                            if ((fobj->flags & 0x80) != 0) {
-                                FObjUpdateAnim(fobj, obj, obj_update);
-                            }
-                            state = FObjLoadWait(fobj);
+                    } else if (state < 3) {
+                        state = FObjLoadData(fobj);
+                    } else if (state == 3) {
+                        if ((fobj->flags & 0x80) != 0) {
+                            FObjUpdateAnim(fobj, obj, obj_update);
                         }
-                    }
-                } else {
-                    if (state == 6) {
+                        state = FObjLoadWait(fobj);
+                    } else if (state == 5) {
+                        state = HSD_FObjSetState(fobj, 4);
+                    } else if (state == 6) {
                         fobj->time = fobj->time + fterm;
                         FObjLaunchKeyData(fobj);
                         FObjUpdateAnim(fobj, obj, obj_update);
                         return;
                     }
-                    if (state < 6) {
-                        state = HSD_FObjSetState(fobj, 4);
-                    }
                 }
+                if (fobj->time < (f32)fobj->fterm) {
+                    break;
+                }
+                fterm = (f32)fobj->fterm;
+                fobj->time -= (f32)fobj->fterm;
+                state = HSD_FObjSetState(fobj, 3);
             }
-            if (fobj->time < (f32)fobj->fterm)
-                break;
-            fterm = (f32)fobj->fterm;
-            fobj->time -= (f32)fobj->fterm;
-            state = HSD_FObjSetState(fobj, 3);
+            FObjUpdateAnim(fobj, obj, obj_update);
+            HSD_FObjSetState(fobj, 5);
         }
-        FObjUpdateAnim(fobj, obj, obj_update);
-        HSD_FObjSetState(fobj, 5);
     }
 }
 
