@@ -19,7 +19,7 @@ void HSD_FObjInitAllocData(void)
 //8036A974
 void HSD_FObjRemove(HSD_FObj* fobj)
 {
-    if (fobj) {
+    if (fobj != NULL) {
         HSD_FObjFree(fobj);
     }
 }
@@ -27,7 +27,7 @@ void HSD_FObjRemove(HSD_FObj* fobj)
 //8036A99C
 void HSD_FObjRemoveAll(HSD_FObj* fobj)
 {
-    if (fobj) {
+    if (fobj != NULL) {
         HSD_FObjRemoveAll(fobj->next);
         HSD_FObjRemove(fobj);
     }
@@ -36,7 +36,7 @@ void HSD_FObjRemoveAll(HSD_FObj* fobj)
 //8036AA44
 u8 HSD_FObjSetState(HSD_FObj* fobj, u8 state)
 {
-    if (fobj) {
+    if (fobj != NULL) {
         fobj->flags = (fobj->flags & 0xF0) | (state & 0xF);
     }
     return state;
@@ -45,7 +45,7 @@ u8 HSD_FObjSetState(HSD_FObj* fobj, u8 state)
 //8036AA64
 u32 HSD_FObjGetState(HSD_FObj* fobj)
 {
-    if (fobj) {
+    if (fobj != NULL) {
         return fobj->flags & 0xF;
     }
     return 0;
@@ -82,7 +82,7 @@ void HSD_FObjReqAnimAll(HSD_FObj* fobj, f32 frame)
 //8036AB24
 void HSD_FObjStopAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 frame)
 {
-    if (fobj) {
+    if (fobj != NULL) {
         if (fobj->op_intrp == HSD_A_OP_KEY) {
             HSD_FObjInterpretAnim(fobj, obj, obj_update, frame);
         }
@@ -374,7 +374,7 @@ static u32 FObjLoadWait(HSD_FObj* fobj)
 void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FObjData))
 {
     FObjData fobjdata;
-    if (obj_update) {
+    if (obj_update != NULL) {
         switch (fobj->op_intrp) {
         case HSD_A_OP_CON:
             if (fobj->time < (f32)fobj->fterm) {
@@ -472,7 +472,7 @@ void HSD_FObjInterpretAnimAll(HSD_FObj* fobj, void* caller_obj, void (*callback)
 //8036B73C
 HSD_FObj* HSD_FObjLoadDesc(HSD_FObjDesc* desc)
 {
-    if (desc) {
+    if (desc != NULL) {
         HSD_FObj* fobj = HSD_FObjAlloc();
         fobj->next = HSD_FObjLoadDesc(desc->next);
         fobj->startframe = (s16)desc->startframe;
