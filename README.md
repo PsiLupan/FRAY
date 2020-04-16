@@ -6,7 +6,7 @@ Unlike other projects, FRAY does not currently intend to integrate a mix of ASM 
 
 ## Is there a Patcher to drop in these functions to the existing game?
 
-Not at present, though if someone has or is willing to create one, I'm open to it. I've looked at Hanafuda (https://github.com/AxioDL/hanafuda) and besides the LLVM toolchain crashing outright with an undecipherable exception, it'd take too much work for me to get it working for me. I'll possibly come back to it in the future.
+Not at present. I'm aware of some that I've not tested to provide adequate explanation to using them.
 
 ## What is the current progress?
 The codebase fluctuates quite often between compilable and non-compilable due to my regular contribution of bad/broken code. A rough estimate of progress around the codebase itself is that HAL's sysdolphin library is recreated to the extent that Melee uses, save for Shadow, Audio, and other small bits and pieces of incomplete code.
