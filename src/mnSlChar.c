@@ -1,11 +1,11 @@
 #include "mnSlChar.h"
 
-static void* stage_select_struct; //r13_77C0
+static void* match_struct; //r13_77C0
 
 //801A5244
-void* Menu_Get_StageSelectStruct()
+void* Menu_Get_MatchStruct()
 {
-    return stage_select_struct;
+    return match_struct; //+ 0x590;
 }
 
 //801A5618
@@ -21,15 +21,15 @@ void Menu_CSS_Decide()
 //801B14A0
 void Menu_CSS_VSMode_Prep(void* state)
 {
-    /* uVar1 = Menu_Get_StageSelectStruct();
-    Menu_CSS_EraseCharData(state, uVar1, 0);
-     */
+    /* 
+    Menu_CSS_EraseCharData(state, Menu_Get_MatchStruct(), 0);
+    */
 }
 
 //801B14DC
 void Menu_CSS_VSMode_Decide(void* state)
 {
-    /* uVar1 = Menu_Get_StageSelectStruct();
-    Menu_CSS_Decide(state, uVar1);
-     */
+    /*
+    Menu_CSS_Decide(state, Menu_Get_MatchStruct());
+    */
 }

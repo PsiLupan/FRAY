@@ -21,6 +21,13 @@ MinorScene GmTitle_Minors[2] = {
     END_MINOR
 }; //803DD6A0
 
+MinorScene GmVSMode_Minors[9] = {
+    { 0, 3, 0, Menu_CSS_VSMode_Prep, Menu_CSS_VSMode_Decide, 8, 0, 0, 0, NULL, NULL /*0x804807B0, 0x804807B0 */ },
+    { 1, 3, 0, stub /*801b1514*/, stub /*801b154c*/, 9, 0, 0, 0, NULL, NULL /*0x80480668, 0x80480668 */ },
+    //{ 2, 3, 0, }
+    END_MINOR
+}; //803DD9A0
+
 MinorScene GmOpening_Progressive_Minors[2] = {
     { 0, 2, 0, Menu_Opening_ProgressiveScan_Prep, Menu_Opening_ProgressiveScan_Decide, 40, 0, 0, 0, NULL, NULL /*0x804D6938, 0x804D693C*/ },
     END_MINOR
@@ -39,6 +46,7 @@ MinorSceneHandler scene_handlers[46] = {
 
 MajorScene major_scenes[46] = {
     { 1, 0, 0, NULL, NULL, NULL, &GmTitle_Minors },
+    { 0, 2, 0, Scene_ZeroFillPtr, stub, Scene_GmVSMode_Init, &GmVSMode_Minors },
     { 0, 39, 0, NULL, NULL, NULL, &GmOpening_Progressive_Minors },
     { 1, 40, 0, NULL, NULL, NULL, &GmOpening_Minors },
     { 0, 45, 0, NULL, NULL, NULL, NULL }
@@ -789,7 +797,7 @@ void Scene_PrepCommon()
 
     HSD_GObj* gobj = GObj_Create(0xE, 0, 0);
     stub_gobj = gobj;
-    if (stub_gobj != NULL){
+    if (stub_gobj != NULL) {
         GObj_CreateProcWithCallback(stub_gobj, stub, 0);
     }
 }
@@ -826,7 +834,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
         u32 intr = IRQ_Disable();
         HSD_PadRenewRawStatus();
         IRQ_Restore(intr);
-        
+
         //sub_80392E80(); Something memory card related
         u8 pad_queue_count;
         while (true) {
@@ -843,7 +851,7 @@ void Scene_PerFrameUpdate(void (*onframefunc)())
             HSD_VISetXFBDrawDone();
             return;
         }
-        for(u32 i = 0; i < pad_queue_count; ++i) {
+        for (u32 i = 0; i < pad_queue_count; ++i) {
             //HSD_PerfSetStartTime();
             HSD_PadRenewMasterStatus(); //Normally Pad_Renew() - Don't see much reason to use a wrapper function when not debugging
             /*if(debug_level >= 3){
@@ -940,6 +948,13 @@ MinorSceneHandler* Scene_GetClassHandler()
 MajorScene* Scene_GetMajorScenes()
 {
     return major_scenes;
+}
+
+//801A5598
+void Scene_GmVSMode_Init()
+{
+    //Scene_InitUsableStructs(*(int *)(r13_77C0) + 0x590);
+    //FUN_8015CDEC();
 }
 
 //801A55C4
