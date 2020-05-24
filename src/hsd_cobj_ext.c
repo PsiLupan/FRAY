@@ -10,10 +10,10 @@ HSD_CObj* CObj_Create(HSD_CObjDesc* cdesc)
             HSD_CObjSetAspect(cobj, 1.21733f);
         }
     }
-    u16 scissors[4];
+    u16 scissors[4] = {0};
     HSD_CObjGetScissor(cobj, scissors);
-    scissors[0] = 640;
-    scissors[2] = 480;
+    scissors[0] = scissors[0] > 640 ? 640 : scissors[0];
+    scissors[2] = scissors[2] > 480 ? 480 : scissors[2];
     HSD_CObjSetScissor(cobj, scissors);
     return cobj;
 }

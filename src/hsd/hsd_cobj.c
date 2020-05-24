@@ -176,11 +176,8 @@ u8 makeProjectionMtx(HSD_CObj* cobj, MtxP mtx)
 }
 
 //80367C28
-__attribute__((noinline)) static BOOL setupNormalCamera(HSD_CObj* cobj)
+static BOOL setupNormalCamera(HSD_CObj* cobj)
 {
-    u16 lr = 640; //804C1D84 and 804C1D8C
-    u16 tb = 480; //804C1D86 and 804C1D90
-
     f32 left = (f32)cobj->viewport_left;
     f32 right = (f32)cobj->viewport_right;
     f32 top = (f32)cobj->viewport_top;
@@ -912,16 +909,20 @@ static int CObjLoad(HSD_CObj* cobj, HSD_CObjDesc* desc)
 {
     cobj->flags = desc->flags;
     cobj->flags = (cobj->flags & 0xC0000000) | desc->flags;
+
     cobj->viewport_left = (f32)desc->viewport_left;
     cobj->viewport_right = (f32)desc->viewport_right;
     cobj->viewport_top = (f32)desc->viewport_top;
     cobj->viewport_bottom = (f32)desc->viewport_bottom;
+
     cobj->scissor_left = desc->scissor_lr;
     cobj->scissor_top = desc->scissor_tb;
+
     HSD_WObjInit(cobj->eye_position, desc->eye_desc);
     HSD_WObjInit(cobj->interest, desc->interest_desc);
     HSD_CObjSetNear(cobj, desc->near);
     HSD_CObjSetFar(cobj, desc->far);
+
     if ((desc->flags & 1) == 0) {
         HSD_CObjSetRoll(cobj, desc->roll);
     } else {
@@ -932,6 +933,7 @@ static int CObjLoad(HSD_CObj* cobj, HSD_CObjDesc* desc)
             HSD_CObjSetUpVector(cobj, desc->vector);
         }
     }
+    
     u8 proj_type = desc->projection_type;
     switch (proj_type) {
     case PROJ_PERSPECTIVE:
