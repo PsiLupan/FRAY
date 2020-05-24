@@ -179,7 +179,7 @@ void HSD_PadClampCheck3(s8* x, s8* y, u8 shift, s8 min, s8 max)
         }
         if (shift == 1 && total > 1e-10f) {
             *x = (s8)((f64)*x - (((f64)*x * (f64)min) / total));
-            *x = (s8)((f64)*y - (((f64)*y * (f64)min) / total));
+            *y = (s8)((f64)*y - (((f64)*y * (f64)min) / total));
         }
     } else {
         *x = 0;

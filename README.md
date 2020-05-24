@@ -6,17 +6,23 @@ Unlike other projects, FRAY does not currently intend to integrate a mix of ASM 
 
 ## Is there a Patcher to drop in these functions to the existing game?
 
-Not at present, though if someone has or is willing to create one, I'm open to it. I've looked at Hanafuda (https://github.com/AxioDL/hanafuda) and besides the LLVM toolchain crashing outright with an undecipherable exception, it'd take too much work for me to get it working for me. I'll possibly come back to it in the future.
+Not at present. I'm aware of some that I've not tested to provide adequate explanation to using them.
 
 ## What is the current progress?
 The codebase fluctuates quite often between compilable and non-compilable due to my regular contribution of bad/broken code. A rough estimate of progress around the codebase itself is that HAL's sysdolphin library is recreated to the extent that Melee uses, save for Shadow, Audio, and other small bits and pieces of incomplete code.
 
-At this point in time, the Title Screen renders completely and animates. The only issue is related to some transparency, flashing, and a workaround to make the top/bottom gray bar work. It also does not work on Nintendont, though I've not tested directly on a GC at this time.
+At this point in time, the Title Screen renders completely and animates with 1:1 to Melee, save for the lack of music. 
+
+The game will not boot on consoles as is, which I've not yet determined the cause of.
 
 ## How much different from the original game will this be?
 FRAY does not presently attempt to reimplement playing the movie files, creating/manipulating memory card data, the Tournament system, or implementing the game's debug menu. 
 
 The current decision to not implement those features was largely based on scope and the fact they're not reused portions of code throughout the game. Likewise, modders regularly remove these sections when attempting to free DOL space for mods. If they come back, I'd prefer to implement many "area-specific" features as REL files, which are essentially the GameCube/Wii equivalent of DLL files that can be loaded and unloaded at-will.
+
+## Will this ever run on a PC?
+
+If someone has enough knowledge of graphics programming to do it and can help deal with the Big Endian to Little Endian conversions, sure. It's unlikely I will be doing this, as I can only barely write OpenGL shaders and I'd like to keep my focus on finishing the project itself.
 
 ## How can I test it?
 Currently, you'll need to pull down the source, have a copy of devkitPPC with the PATH variable set, then you can compile with the installed MSys using "make" to produce the output files. The Wiki contains more information on the process.
