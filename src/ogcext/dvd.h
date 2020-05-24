@@ -52,10 +52,10 @@ typedef struct _FSTEntry {
 } FSTEntry;
 
 void DVDInit(void);
-void DVD_CheckDisk(void);
+BOOL DVD_CheckDisk(void);
 BOOL DVDFastOpen(s32, dvdfileinfo*);
 BOOL DVDClose(dvdfileinfo*);
-s32 DVDConvertFilenameToEntrynum(char*);
+s32 DVDConvertFilenameToEntrynum(const char*);
 s32 DVDConvertPathToEntrynum(char*);
 
 #endif

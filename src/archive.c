@@ -53,7 +53,7 @@ static void Archive_DVDCallback(s32 result, dvdcmdblk* fileInfo)
 //8001634C
 u32 Archive_GetDVDFileLengthByEntry(s32 entry)
 {
-    u32 len;
+    u32 len = 0;
     u32 intr = IRQ_Disable();
     dvdfileinfo handle;
     if (!DVDFastOpen(entry, &handle)) {
@@ -61,6 +61,8 @@ u32 Archive_GetDVDFileLengthByEntry(s32 entry)
     }
     len = handle.len;
     IRQ_Restore(intr);
+
+    DVDClose(&handle);
     return len;
 }
 
@@ -70,9 +72,8 @@ u32 Archive_GetDVDFileLengthByName(char* filepath)
     u32 len = 0;
     /*char* file_path = Archive_PathFromFilename(filename);*/
     s32 entry = DVDConvertPathToEntrynum(filepath);
-    if (entry == -1) {
-        HSD_Halt("Archive_GetDVDFileLengthByName: Could not locate file");
-    }
+    HSD_CheckAssert("Archive_LoadFileIntoMemory: Could not locate file", entry != -1);
+
     u32 intr = IRQ_Disable();
     dvdfileinfo handle;
     if (!DVDFastOpen(entry, &handle)) {
@@ -80,6 +81,8 @@ u32 Archive_GetDVDFileLengthByName(char* filepath)
     }
     len = handle.len;
     IRQ_Restore(intr);
+
+    DVDClose(&handle);
     return len;
 }
 
@@ -87,20 +90,19 @@ u32 Archive_GetDVDFileLengthByName(char* filepath)
 void Archive_LoadFileIntoMemory(char* filepath, u8* mem, u32 filelength)
 {
     s32 entry = DVDConvertPathToEntrynum(filepath);
-    if (entry == -1) {
-        HSD_Halt("Archive_LoadFileIntoMemory: Could not locate file");
-    }
+    HSD_CheckAssert("Archive_LoadFileIntoMemory: Could not locate file", entry != -1);
 
     /* The below is unique to Fray in order to accomplish the file loading */
     dvdfileinfo handle;
     if (!DVDFastOpen(entry, &handle)) {
         HSD_Halt("Archive_LoadFileIntoMemory: Could not open file");
     }
-    dvdcmdblk cmdblk;
-    DVD_ReadPrio(&cmdblk, mem, filelength + 0x1F & 0xFFFFFFE0, handle.addr, 2);
+    //dvdcmdblk cmdblk;
+    DVD_ReadPrio(&handle.block, mem, filelength + 0x1F & 0xFFFFFFE0, handle.addr, 2);
     /*do {
         file_load_status = Archive_GetFileLoadStatus();
     } while (file_load_status == 0);*/
+    DVDClose(&handle);
 }
 
 //80016A54
