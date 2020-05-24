@@ -31,6 +31,9 @@
 #include "scGmTrain.h"
 #include "scOpening.h"
 
+//Menu
+#include "mnSlChar.h"
+
 //Length: 0x14(20)
 typedef struct _GameState {
     u8 curr_major;
