@@ -9,6 +9,7 @@
 #include <ogc/cache.h>
 #include <ogc/irq.h>
 #include <ogc/lwp.h>
+#include <ogc/system.h>
 
 #define GET_OFFSET(o) ((u32)((o[0] << 16) | (o[1] << 8) | o[2]))
 
@@ -30,7 +31,7 @@ static void __DVDFSInit(void)
     memset(&cmdblk, 0, sizeof(dvdcmdblk));
     memset(&header, 0, sizeof(DiskHeader));
 
-    start_memory = (u32*)(0x80000000);
+    start_memory = (u32*)(SYS_BASE_CACHED);
 
     DVD_ReadPrio(&cmdblk, &header, sizeof(DiskHeader), 0, 2); //Read in the disc header
 
@@ -71,24 +72,42 @@ void DVDInit(void)
     LWP_InitQueue(&dvd_wait_queue);
 }
 
-//800195D0
-void DVD_CheckDisk(void)
+BOOL DVD_CheckDisk(void)
 {
-    //DVD_DisplayDiskError(resetCallback);
-    //MemoryCard_CheckToSave();
+    s32 status = DVD_GetDriveStatus();
+
+    switch (status) {
+        case DVD_STATE_BUSY:
+        case DVD_STATE_IGNORED:
+        case DVD_STATE_CANCELED:
+        case DVD_STATE_WAITING:
+            return TRUE;
+
+        case DVD_STATE_FATAL_ERROR:
+        case DVD_STATE_RETRY:
+        case DVD_STATE_MOTOR_STOPPED:
+        case DVD_STATE_COVER_CLOSED:
+        case DVD_STATE_COVER_OPEN:
+        case DVD_STATE_NO_DISK:
+        case DVD_STATE_WRONG_DISK:
+            return FALSE;
+    }
+
+    return FALSE;
 }
 
 BOOL DVDFastOpen(s32 entrynum, dvdfileinfo* fileinfo)
 {
-    if (entrynum >= 0 && entrynum < total_entries) {
-        u8 filetype = entry_table[entrynum].filetype;
-        if (filetype == T_FILE) {
-            fileinfo->addr = entry_table[entrynum].addr;
-            fileinfo->len = entry_table[entrynum].len;
-            fileinfo->cb = NULL;
-            fileinfo->block.state = 0;
-            return TRUE;
-        }
+    assert(entrynum > 0 && entrynum < total_entries);
+    assert(fileinfo != NULL);
+
+    u8 filetype = entry_table[entrynum].filetype;
+    if (filetype == T_FILE) {
+        fileinfo->addr = entry_table[entrynum].addr;
+        fileinfo->len = entry_table[entrynum].len;
+        fileinfo->cb = (dvdcallback)NULL;
+        fileinfo->block.state = DVD_STATE_END;
+        return TRUE;
     }
     return FALSE;
 }
@@ -203,19 +222,20 @@ s32 DVDCancel(dvdcmdblk* cmd)
 
 BOOL DVDClose(dvdfileinfo* fileinfo)
 {
-    //DVDCancel(&fileinf->cmd);
-    DVD_Reset(DVD_RESETSOFT);
+    DVD_CancelAllAsync(fileinfo->block.cb);
     return TRUE;
 }
 
-s32 DVDConvertFilenameToEntrynum(char* filename)
+s32 DVDConvertFilenameToEntrynum(const char* filename)
 {
     FSTEntry* p = entry_table;
     for (u32 i = 1; i < total_entries; ++i) { //Start @ 1 to skip FST header
         u32 string_offset = GET_OFFSET(p[i].offset);
-        u32 string = (u32)string_table + string_offset;
-        if (strcmp((char*)string, filename) == 0) {
-            return i;
+        char* string = (char*)((u32)string_table + string_offset);
+        if (strcmp(string, filename) == 0) {
+            if (entry_table[i].filetype == T_FILE) {
+                return (s32)i;
+            }
         }
     }
     return -1;
@@ -223,9 +243,8 @@ s32 DVDConvertFilenameToEntrynum(char* filename)
 
 s32 DVDConvertPathToEntrynum(char* filepath)
 {
-    if (filepath == NULL) {
-        return -1;
-    }
+    assert(filepath != NULL);
+
     char* file = NULL;
 
     char* dir = strtok(filepath, "/");
