@@ -17,7 +17,6 @@ typedef struct _HSD_DObj {
     struct _HSD_PObj* pobj; //0x0C
     struct _HSD_AObj* aobj; //0x10
     u32 flags; //0x14
-    u32 unk;
 } HSD_DObj;
 
 typedef struct _HSD_DObjDesc {

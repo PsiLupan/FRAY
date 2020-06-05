@@ -131,6 +131,8 @@ void Scene_PerFrameUpdate(void (*onframefunc)());
 MinorSceneHandler* Scene_GetClassHandler();
 
 MajorScene* Scene_GetMajorScenes();
+void Scene_GmVSMode_Init();
+u8* Scene_ZeroFillPtr();
 
 f32 Scene_ReqAnimAll(HSD_JObj*, f32*);
 
