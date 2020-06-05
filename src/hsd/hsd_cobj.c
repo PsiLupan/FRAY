@@ -194,7 +194,7 @@ static BOOL setupNormalCamera(HSD_CObj* cobj)
     u32 s_left = cobj->scissor_left;
     u32 s_right = cobj->scissor_right;
     u32 s_bottom = cobj->scissor_bottom;
-    GX_SetScissor(s_right, s_bottom, s_left, s_top);
+    GX_SetScissor(s_left, s_top, s_right, s_bottom);
 
     Mtx44 mtx;
     BOOL ortho = FALSE;
@@ -915,8 +915,8 @@ static int CObjLoad(HSD_CObj* cobj, HSD_CObjDesc* desc)
     cobj->viewport_top = (f32)desc->viewport_top;
     cobj->viewport_bottom = (f32)desc->viewport_bottom;
 
-    cobj->scissor_left = desc->scissor_lr;
-    cobj->scissor_top = desc->scissor_tb;
+    *((u32*)&cobj->scissor_left) = desc->scissor_lr;
+    *((u32*)&cobj->scissor_top) = desc->scissor_tb;
 
     HSD_WObjInit(cobj->eye_position, desc->eye_desc);
     HSD_WObjInit(cobj->interest, desc->interest_desc);
