@@ -21,7 +21,7 @@ MinorScene GmTitle_Minors[2] = {
     END_MINOR
 }; //803DD6A0
 
-MinorScene GmVSMode_Minors[9] = {
+MinorScene CSS_Minors[9] = {
     { 0, 3, 0, Menu_CSS_VSMode_Prep, Menu_CSS_VSMode_Decide, 8, 0, 0, 0, NULL, NULL /*0x804807B0, 0x804807B0 */ },
     { 1, 3, 0, stub /*801b1514*/, stub /*801b154c*/, 9, 0, 0, 0, NULL, NULL /*0x80480668, 0x80480668 */ },
     //{ 2, 3, 0, }
@@ -46,7 +46,7 @@ MinorSceneHandler scene_handlers[46] = {
 
 MajorScene major_scenes[46] = {
     { 1, 0, 0, NULL, NULL, NULL, &GmTitle_Minors },
-    { 0, 2, 0, Scene_ZeroFillPtr, stub, Scene_GmVSMode_Init, &GmVSMode_Minors },
+    { 0, 2, 0, Menu_CSS_Load, NULL /*Technically a stubbed function*/, Menu_CSS_Init, &CSS_Minors },
     { 0, 39, 0, NULL, NULL, NULL, &GmOpening_Progressive_Minors },
     { 1, 40, 0, NULL, NULL, NULL, &GmOpening_Minors },
     { 0, 45, 0, NULL, NULL, NULL, NULL }
@@ -79,8 +79,6 @@ u32 scene_80479C38[14][4]; //80479C38 - Length made up but currently assumed bas
 GameState gamestate; //80479D30
 
 void* unk_cb[19]; //80479D48
-
-u8 menu_804D6730[6];
 
 //8016795C
 static void Scene_InitStartMeleeData(s8* addr)
@@ -542,14 +540,20 @@ OUT:
     if (dword_8046B0F0.unk04) {
         //sub_80027DBC();
         HSD_PadReset();
-        /*s32 v16 = 0;
-    do {
-      v16 = sub_8001B6F8(); //Save related, so we can ignore for now
-    } while ( v16 == 11 );*/
-        //if ( !DVD_CheckDisk() )
-        //sub_8001F800(); Movie_Unload();
-        /*SYS_ResetSystem(1, 0, 0);
-    while (sub_8038EA50(1));*/
+        /*s32 i = 0;
+        do {
+            i = sub_8001B6F8(); //Save related, so we can ignore for now
+        } while ( i == 11 );
+        if (DVDCheckDisk() == 0) {
+            SYS_ResetSystem(1, 0, 0);
+        }
+            sub_8001F800(); Movie_Unload();
+        
+        i = 0;
+        do {
+            i = HSD_DevComIsBusy(1);
+        } while (i != 0);*/
+        
         Scene_InitStaticMem();
         memset(&gamestate, 0, 20);
         Scene_RunStartupInit();
@@ -948,21 +952,6 @@ MinorSceneHandler* Scene_GetClassHandler()
 MajorScene* Scene_GetMajorScenes()
 {
     return major_scenes;
-}
-
-//801A5598
-void Scene_GmVSMode_Init()
-{
-    //Scene_InitUsableStructs(*(int *)(r13_77C0) + 0x590);
-    //FUN_8015CDEC();
-}
-
-//801A55C4
-//801A55EC
-u8* Scene_ZeroFillPtr()
-{
-    memset(&menu_804D6730, 0, 6);
-    return &menu_804D6730[5];
 }
 
 //801AD088
