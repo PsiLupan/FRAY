@@ -3,7 +3,8 @@
 
 #include <gctypes.h>
 
-#include "gobj.h"
+#include "hsd/hsd_gobj.h"
+
 #include "player.h"
 
 void Hitbox_Deactivate(Hitbox*);

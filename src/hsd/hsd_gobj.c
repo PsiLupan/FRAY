@@ -1,9 +1,9 @@
-#include "gobj.h"
+#include "hsd_gobj.h"
 
-#include "hsd/hsd_cobj.h"
+#include "hsd_cobj.h"
 
-#include "hsd_cobj_ext.h"
-#include "hsd_jobj_ext.h"
+#include "ext/hsd_cobj_ext.h"
+#include "ext/hsd_jobj_ext.h"
 
 #define P_LINK_MAX 63
 #define GX_LINK_MAX 63

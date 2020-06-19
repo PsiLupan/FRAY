@@ -11,7 +11,7 @@
 
 #include "ogcext/dvd.h"
 
-#include "scene.h"
+#include "scene/scene.h"
 #include "util.h"
 
 static u32 arena_size; //-0x5110(r13)

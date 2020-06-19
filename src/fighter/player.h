@@ -6,7 +6,8 @@
 
 #include <math.h>
 
-#include "gobj.h"
+#include "hsd/hsd_gobj.h"
+
 #include "subaction.h"
 
 #define GOBJ_PLAYER(s) ((Player*)s->data)

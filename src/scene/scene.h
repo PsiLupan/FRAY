@@ -6,33 +6,33 @@
 #include <gctypes.h>
 
 #include "hsd/hsd_fog.h"
+#include "hsd/hsd_gobj.h"
 #include "hsd/hsd_jobj.h"
 #include "hsd/hsd_pad.h"
 #include "hsd/hsd_video.h"
 
-#include "hsd_cobj_ext.h"
-#include "hsd_fog_ext.h"
-#include "hsd_jobj_ext.h"
-#include "hsd_lobj_ext.h"
-#include "hsd_pad_ext.h"
+#include "hsd/ext/hsd_cobj_ext.h"
+#include "hsd/ext/hsd_fog_ext.h"
+#include "hsd/ext/hsd_jobj_ext.h"
+#include "hsd/ext/hsd_lobj_ext.h"
+#include "hsd/ext/hsd_pad_ext.h"
 
 #include "archive.h"
-#include "gobj.h"
-#include "match.h"
-#include "menu.h"
-#include "soundfx.h"
+#include "match/match.h"
+#include "menu/menu.h"
+#include "audio/soundfx.h"
 #include "util.h"
 
 #include "ogcext/dvd.h"
 
 //Scenes
-#include "scGmRst.h"
-#include "scGmTitle.h"
-#include "scGmTrain.h"
-#include "scOpening.h"
+#include "scene/scGmRst.h"
+#include "scene/scGmTitle.h"
+#include "scene/scGmTrain.h"
+#include "scene/scOpening.h"
 
 //Menu
-#include "mnSlChar.h"
+#include "menu/mnSlChar.h"
 
 //Length: 0x14(20)
 typedef struct _GameState {
