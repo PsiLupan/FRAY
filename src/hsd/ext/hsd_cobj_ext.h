@@ -6,7 +6,7 @@
 #include "hsd/hsd_cobj.h"
 #include "hsd/hsd_display.h"
 
-#include "gobj.h"
+#include "hsd/hsd_gobj.h"
 
 #define GOBJ_HSD_COBJ(s) ((HSD_CObj*)s->hsd_obj)
 

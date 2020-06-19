@@ -3,9 +3,9 @@
 
 #include <gctypes.h>
 
-#include "gobj.h"
-#include "hsd_jobj_ext.h"
-#include "player.h"
+#include "hsd/hsd_gobj.h"
+#include "hsd/ext/hsd_jobj_ext.h"
+#include "fighter/player.h"
 
 #define ITEM_HAMMER 0x1C
 #define ITEM_MARIO_FIREBALL 0x30

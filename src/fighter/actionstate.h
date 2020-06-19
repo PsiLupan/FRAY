@@ -4,8 +4,8 @@
 #include <gctypes.h>
 
 #include "hsd/hsd_aobj.h"
+#include "hsd/hsd_gobj.h"
 
-#include "gobj.h"
 #include "item.h"
 #include "player.h"
 

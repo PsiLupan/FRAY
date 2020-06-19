@@ -4,9 +4,8 @@
 #include <gctypes.h>
 
 #include "hsd/hsd_jobj.h"
+#include "hsd/hsd_gobj.h"
 #include "hsd/hsd_robj.h"
-
-#include "gobj.h"
 
 #define GOBJ_HSD_JOBJ(s) ((HSD_JObj*)s->hsd_obj)
 

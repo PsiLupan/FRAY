@@ -1,12 +1,11 @@
-#ifndef _ftFox_h_
-#define _ftFox_h_
+#ifndef _ftMarth_h_
+#define _ftMarth_h_
 
 #include <gctypes.h>
 
 #include "hsd/hsd_jobj.h"
+#include "hsd/hsd_gobj.h"
 
-#include "gobj.h"
-#include "item.h"
 #include "player.h"
 
 #endif

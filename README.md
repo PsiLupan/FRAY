@@ -13,7 +13,7 @@ The codebase fluctuates quite often between compilable and non-compilable due to
 
 At this point in time, the Title Screen renders completely and animates with 1:1 to Melee, save for the lack of music. 
 
-The game will not boot on consoles as is, which I've not yet determined the cause of.
+The game will also run on a GameCube through SD booting.
 
 ## How much different from the original game will this be?
 FRAY does not presently attempt to reimplement playing the movie files, creating/manipulating memory card data, the Tournament system, or implementing the game's debug menu. 

@@ -3,7 +3,7 @@
 
 #include <gctypes.h>
 
-#include "gobj.h"
+#include "hsd/hsd_gobj.h"
 
 #define STG_INTERNAL_CORNERIA 0xE
 #define STG_INTERNAL_VENOM 0xF

@@ -3,9 +3,9 @@
 
 #include <gctypes.h>
 
+#include "hsd/hsd_gobj.h"
 #include "hsd/hsd_jobj.h"
 
-#include "gobj.h"
 #include "item.h"
 #include "player.h"
 

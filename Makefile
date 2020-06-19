@@ -21,8 +21,8 @@ MACHDEP =  -DGEKKO -mcpu=750 \
 #---------------------------------------------------------------------------------
 TARGET		:= main
 BUILD		:= build
-SOURCES		:= src/asm src/ogcext/ src/hsd/ src
-INCLUDES	:= 
+SOURCES		:= src/hsd/ src/hsd/ext/ src/audio/ src/fighter/ src/item/ src/match/ src/menu/ src/ogcext/ src/scene/ src/stage/ src
+INCLUDES	:= src/hsd/ src/hsd/ext/ src/audio/ src/fighter/ src/item/ src/match/ src/menu/ src/ogcext/ src/scene/ src/stage/ src
 
 #---------------------------------------------------------------------------------
 # options for code generation

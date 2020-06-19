@@ -3,7 +3,7 @@
 
 #include <gctypes.h>
 
-#include "gobj.h"
+#include "hsd/hsd_gobj.h"
 
 typedef struct _GmTitle_File {
     void* top_joint;

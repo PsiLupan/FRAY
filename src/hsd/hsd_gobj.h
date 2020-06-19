@@ -1,11 +1,11 @@
-#ifndef _gobj_h_
-#define _gobj_h_
+#ifndef _hsd_gobj_h_
+#define _hsd_gobj_h_
 
 #include <assert.h>
 
 #include <gctypes.h>
 
-#include "hsd/hsd_jobj.h"
+#include "hsd_jobj.h"
 
 #define GOBJ_KIND_MENU_COBJ 1
 #define GOBJ_KIND_JOBJ 3

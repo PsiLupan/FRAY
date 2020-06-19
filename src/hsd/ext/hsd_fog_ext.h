@@ -4,8 +4,7 @@
 #include <gctypes.h>
 
 #include "hsd/hsd_fog.h"
-
-#include "gobj.h"
+#include "hsd/hsd_gobj.h"
 
 #define GOBJ_HSD_FOG(s) ((HSD_Fog*)s->hsd_obj)
 
