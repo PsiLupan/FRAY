@@ -13,35 +13,35 @@ GameState gamestate;
 
 #define END_MINOR                                      \
     {                                                  \
-        0xFF, 0, 0, NULL, NULL, 0, 0, 0, 0, NULL, NULL \
+        0xFF, 0, 0, NULL, NULL, 0, NULL, NULL \
     }
 
 MinorScene GmTitle_Minors[2] = {
-    { 0, 3, 0, Menu_Title_Prep, Menu_Title_Decide, 0, 0, 0, 0, NULL, &title_inputs },
+    { 0, 3, 0, Menu_Title_Prep, Menu_Title_Decide, 0, NULL, &title_inputs },
     END_MINOR
 }; //803DD6A0
 
 MinorScene CSS_Minors[9] = {
-    { 0, 3, 0, Menu_CSS_VSMode_Prep, Menu_CSS_VSMode_Decide, 8, 0, 0, 0, NULL, NULL /*0x804807B0, 0x804807B0 */ },
-    { 1, 3, 0, stub /*801b1514*/, stub /*801b154c*/, 9, 0, 0, 0, NULL, NULL /*0x80480668, 0x80480668 */ },
+    { 0, 3, 0, Menu_CSS_VSMode_Prep, Menu_CSS_VSMode_Decide, 8, NULL, NULL /*0x804807B0, 0x804807B0 */ },
+    { 1, 3, 0, stub /*801b1514*/, stub /*801b154c*/, 9, NULL, NULL /*0x80480668, 0x80480668 */ },
     //{ 2, 3, 0, }
     END_MINOR
 }; //803DD9A0
 
 MinorScene GmOpening_Progressive_Minors[2] = {
-    { 0, 2, 0, Menu_Opening_ProgressiveScan_Prep, Menu_Opening_ProgressiveScan_Decide, 40, 0, 0, 0, NULL, NULL /*0x804D6938, 0x804D693C*/ },
+    { 0, 2, 0, Menu_Opening_ProgressiveScan_Prep, Menu_Opening_ProgressiveScan_Decide, 40, NULL, NULL /*0x804D6938, 0x804D693C*/ },
     END_MINOR
 }; //803DFDA8
 
 MinorScene GmOpening_Minors[2] = {
-    { 0, 1, 0, Menu_Opening_Prep, Menu_Opening_Decide, 42, 0, 0, 0, NULL, NULL /*0x804D6940, 0x804D6948*/ },
+    { 0, 1, 0, Menu_Opening_Prep, Menu_Opening_Decide, 42, NULL, NULL /*0x804D6940, 0x804D6948*/ },
     END_MINOR
 }; //803DFDD8
 
 MinorSceneHandler scene_handlers[46] = {
-    { 0, 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL },
-    { 40, 0, Scene_Minor_Class40_OnFrame, Scene_Minor_Class40_OnLoad, Scene_Minor_Class40_OnLeave, NULL },
-    { 45, 0, NULL, NULL, NULL, NULL }
+    { 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL },
+    { 40, Scene_Minor_Class40_OnFrame, Scene_Minor_Class40_OnLoad, Scene_Minor_Class40_OnLeave, NULL },
+    { 45, NULL, NULL, NULL, NULL }
 }; //803DA920 - 45 in length
 
 MajorScene major_scenes[46] = {

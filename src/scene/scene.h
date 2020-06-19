@@ -58,7 +58,7 @@ extern GameState gamestate;
 
 typedef struct _MinorSceneHandler {
     u8 class_id;
-    u32 pad : 3;
+
     void (*OnFrame)();
     void (*OnLoad)();
     void (*OnLeave)();
@@ -74,9 +74,6 @@ typedef struct _MinorScene {
     void (*Decide)();
 
     u8 class_id;
-    u8 unk_1;
-    u8 unk_2;
-    u8 unk_3;
 
     void* unk_struct_0;
     void* unk_struct_1;
@@ -86,9 +83,11 @@ typedef struct _MajorScene {
     u8 preload;
     u8 idx;
     u16 flags;
+
     void (*Load)();
     void (*Unload)();
     void (*Init)();
+    
     void* minor_scenes;
 } MajorScene; //803DACA4
 
