@@ -19,7 +19,7 @@
 
 #include "archive.h"
 #include "match/match.h"
-#include "menu/menu.h"
+#include "menu.h"
 #include "audio/soundfx.h"
 #include "util.h"
 
@@ -30,9 +30,6 @@
 #include "scene/scGmTitle.h"
 #include "scene/scGmTrain.h"
 #include "scene/scOpening.h"
-
-//Menu
-#include "menu/mnSlChar.h"
 
 //Length: 0x14(20)
 typedef struct _GameState {

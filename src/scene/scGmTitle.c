@@ -7,6 +7,12 @@ u32 title_inputs; //804D6878
 f32 title_anim_speed[3] = { 0.0f, 1600.f, 400.f }; //803DA4F0
 f32 title_frames[3] = { 0.f, 1330.f, 130.f }; //803DA4FC
 
+static void* scene_sobj_desc; //0x4EB0(r13)
+
+static HSD_FogDesc* scene_fog_desc; //0x4F90(r13)
+static HSD_Lights* scene_lights_desc; //0x4F94(r13)
+static HSD_CObjDesc* scene_cobj_desc; //0x4F98(r13)
+
 //801A146C
 void Menu_Title_ReqAnimAll_Callback(HSD_GObj* gobj)
 {
@@ -67,6 +73,124 @@ void Menu_Title_SetupLogos()
     }
     sub_801BF128();
     */
+}
+
+//801A1C18
+void Menu_Title_OnFrame(u32 unused, u32 inputs)
+{
+    u32 res_r4;
+    Scene_801A36A0(4, NULL, &res_r4);
+    u32* r13_4F8C = Scene_Load4F80_idx3();
+    if (*r13_4F8C != 0) {
+        *r13_4F8C -= 1;
+    } else {
+        u32* pVal = Scene_Load4F80_idx2();
+        *pVal += 1;
+        if (*pVal <= 0x258) {
+            if (*pVal & 0x1000) {
+                SFX_80026F2C(0x1C);
+                SFX_RequestAudioLoad(0xC, 0, 0, 0);
+                SFX_AudioCacheUpdate();
+                SFX_80027648();
+                SFX_Menu_Common(1);
+                *pVal = inputs;
+                MatchController_ChangeScreen();
+            } else if (debug_level >= 3) {
+                if (*pVal & 0x100) {
+                    SFX_Menu_Common(1);
+                    *pVal = inputs;
+                    MatchController_ChangeScreen();
+                } else if (*pVal & 0x400) {
+                    SFX_Menu_Common(1);
+                    *pVal = inputs;
+                    MatchController_ChangeScreen();
+                } else if (*pVal & 0x800) {
+                    SFX_Menu_Common(1);
+                    *pVal = inputs;
+                    MatchController_ChangeScreen();
+                }
+            }
+        } else {
+            *pVal = 0;
+            MatchController_ChangeScreen();
+        }
+    }
+}
+
+//801A1E20
+void Menu_Title_OnLoad(void* unk_struct)
+{
+    SFX_StopMusic();
+    *Scene_Load4F80_idx3() = 0x14;
+    *Scene_Load4F80_idx2() = 0;
+    char* filename = "GmTtAll.usd";
+    /*if(sub_8000ADD4() == TRUE){ //CheckLanguage
+        filename = "GmTtAll.usd";
+    }else{
+        filename = "GmTtAll.dat";
+    }*/
+
+    Archive_LoadFileSections(filename, 24, &title_ptrs.top_joint, "TtlMoji_Top_joint",
+        &title_ptrs.top_animjoint, "TtlMoji_Top_animjoint", &title_ptrs.top_matanim_joint, "TtlMoji_Top_matanim_joint",
+        &title_ptrs.top_shapeanim_joint, "TtlMoji_Top_shapeanim_joint", &scene_cobj_desc, "ScTitle_cam_int1_camera", &scene_lights_desc, "ScTitle_scene_lights",
+        &scene_fog_desc, "ScTitle_fog", &title_ptrs.bg_top_joint, "TtlBg_Top_joint", &title_ptrs.bg_top_animjoint, "TtlBg_Top_animjoint",
+        &title_ptrs.bg_top_matanim_joint, "TtlBg_Top_matanim_joint", &title_ptrs.bg_top_shapeanim_joint, "TtlBg_Top_shapeanim_joint", &scene_sobj_desc, "TitleMark_sobjdesc");
+    SFX_80026F2C(0x12);
+    SFX_RequestAudioLoad(2, 0, 0, 4);
+    SFX_AudioCacheUpdate();
+
+    HSD_GObj* fog_gobj = GObj_Create(GOBJ_CLASS_HSD_FOG, 3, 0);
+    HSD_Fog* fog = HSD_FogLoadDesc(scene_fog_desc);
+    GObj_InitKindObj(fog_gobj, GOBJ_KIND_FOG, fog);
+    GObj_SetupGXLink(fog_gobj, Fog_Set_Callback, 0, 0);
+    GObj_CreateProcWithCallback(fog_gobj, Fog_InterpretAnim_Callback, 0);
+
+    HSD_GObj* lobj_gobj = GObj_Create(GOBJ_CLASS_HSD_LOBJ, 3, 128);
+    HSD_LObj* lobj = LObj_LoadLightDescs(scene_lights_desc);
+    GObj_InitKindObj(lobj_gobj, 2, lobj);
+    GObj_SetupGXLink(lobj_gobj, LObj_Setup_Callback, 0, 0);
+
+    HSD_GObj* menu_gobj = GObj_Create(GOBJ_CLASS_HSD_COBJ_TITLE, 0x14, 0);
+    HSD_CObj* menu_cobj = CObj_Create(scene_cobj_desc);
+    GObj_InitKindObj(menu_gobj, GOBJ_KIND_MENU_COBJ, menu_cobj);
+    GObj_SetupCameraGXLink(menu_gobj, CObj_SetErase_Callback, 0);
+
+    HSD_GObj* menu_gobj_2 = GObj_Create(GOBJ_CLASS_HSD_COBJ_TITLE, 0x14, 0);
+    HSD_CObj* menu_cobj_2 = CObj_Create(scene_cobj_desc);
+    GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_MENU_COBJ, menu_cobj_2);
+    GObj_SetupCameraGXLink(menu_gobj_2, CObj_Texture_Callback, 0xC);
+
+    menu_gobj_2->gxlink_prios = 0x209; //Priority 0, 3, 9
+
+    Menu_Title_SetupLogos();
+    SFX_80027648();
+    Menu_Title_LoadDemo();
+
+    HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
+    HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.bg_top_joint);
+    GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
+    GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
+    HSD_JObjAddAnimAll(jobj, (HSD_AnimJoint*)title_ptrs.bg_top_animjoint,
+        (HSD_MatAnimJoint*)title_ptrs.bg_top_matanim_joint, (HSD_ShapeAnimJoint*)title_ptrs.bg_top_shapeanim_joint);
+    GObj_CreateProcWithCallback(gobj_2, Menu_Title_ReqAnimAll_Callback, 0);
+
+    u8 major = Scene_GetCurrentMajor();
+    u8 minor = Scene_GetCurrentMinor();
+    if (major == 0 || (major == 24 && minor == 2)) { //Even forcing this condition, I couldn't see a visible difference
+        HSD_JObjReqAnimAll(jobj, 130.0f);
+    } else {
+        HSD_JObjReqAnimAll(jobj, title_frames[0]);
+    }
+    HSD_JObjAnimAll(jobj);
+
+    /*if(debug_level >= 1){
+    Menu_CreateTextObj(0, NULL, GOBJ_CLASS_TEXT, 13, 0, 14, 0, 19);
+    u8* unk_struct = sub_803A6754(0, 0);
+    sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", title_ptrs.debug_text);
+    void* unk = sub_803A6B98(unk_struct, "%s", 30.0f, 30.0f); //MenuTextDrawSome
+    unk_struct[0x49] = 1;
+    sub_803A7548(unk, unk_struct, 0.7f, 0.55f);
+  }*/
 }
 
 //801B087C

@@ -1,8 +1,5 @@
 #include "scene.h"
 
-static void Scene_Minor_Class0_OnFrame();
-static void Scene_Minor_Class0_OnLoad();
-
 static void Scene_Minor_Class40_OnFrame();
 static void Scene_Minor_Class40_OnLoad();
 static void Scene_Minor_Class40_OnLeave();
@@ -39,7 +36,7 @@ MinorScene GmOpening_Minors[2] = {
 }; //803DFDD8
 
 MinorSceneHandler scene_handlers[46] = {
-    { 0, Scene_Minor_Class0_OnFrame, Scene_Minor_Class0_OnLoad, NULL, NULL },
+    { 0, Menu_Title_OnFrame, Menu_Title_OnLoad, NULL, NULL },
     { 40, Scene_Minor_Class40_OnFrame, Scene_Minor_Class40_OnLoad, Scene_Minor_Class40_OnLeave, NULL },
     { 45, NULL, NULL, NULL, NULL }
 }; //803DA920 - 45 in length
@@ -53,12 +50,9 @@ MajorScene major_scenes[46] = {
 }; //803DACA4
 
 static u8 r13_3D40; //0x3D40(r13)
-static void* scene_sobj_desc; //0x4EB0(r13)
 static HSD_GObj* stub_gobj; //0x4F74(r13)
 static u32 r13_4F80[3];
-static HSD_FogDesc* scene_fog_desc; //0x4F90(r13)
-static HSD_Lights* scene_lights_desc; //0x4F94(r13)
-static HSD_CObjDesc* scene_cobj_desc; //0x4F98(r13)
+
 u32 debug_level = 0; //0x6C98(r13)
 
 s32 cache_base[24] = { //803BA638
@@ -79,78 +73,6 @@ u32 scene_80479C38[14][4]; //80479C38 - Length made up but currently assumed bas
 GameState gamestate; //80479D30
 
 void* unk_cb[19]; //80479D48
-
-//8016795C
-static void Scene_InitStartMeleeData(s8* addr)
-{
-    memset(addr, 0, 0x24u);
-    addr[0] = 33;
-    addr[1] = 3;
-    addr[2] = 0;
-    addr[3] = 0;
-    addr[4] = 0;
-    addr[5] = -1;
-    addr[6] = 0;
-    addr[7] = 0;
-    addr[8] = 9;
-    addr[9] = 0;
-    addr[10] = 120;
-    addr[11] = 0;
-    addr[12] &= 0x7Fu;
-    addr[12] = (u8)(addr[12] & 0xBF) | 0x40;
-    addr[14] = 4;
-    addr[15] = 0;
-    *((u16*)addr + 9) = 0;
-    *((u16*)addr + 10) = 0;
-    *((f32*)addr + 6) = 1.0f;
-    *((f32*)addr + 7) = 1.0f;
-    *((f32*)addr + 8) = 1.0f;
-}
-
-//80167A14
-static void __InitStartMeleeData(s8* addr)
-{
-    for (u32 i = 0; i < 6; ++i) {
-        Scene_InitStartMeleeData(addr);
-        addr += 36;
-    }
-}
-
-//80167A64
-static void Scene_InitStartMeleeStruct(s8* addr)
-{
-    memset(addr, 0, 0x60u);
-    addr[0] = (addr[0] & 0xE3) | 0x10;
-    addr[12] = 0;
-    addr[11] = 2;
-    *((u32*)addr + 9) = -1;
-    *((u32*)addr + 8) = -1;
-    *((u32*)addr + 10) = 0;
-    addr[3] = (addr[3] & 0xBF) | 0x40;
-    addr[3] = (addr[3] & 0xFB) | 4;
-    addr[3] = (addr[3] & 0xF7) | 8;
-    addr[4] = (addr[4] & 0x7F) | 0x80;
-    addr[1] &= 0xFDu;
-    addr[2] = (addr[2] & 0xFB) | 4;
-    addr[2] = (addr[2] & 0xFD) | 2;
-    *((f32*)addr + 11) = 1.0f;
-    *((f32*)addr + 12) = 1.0f;
-    *((f32*)addr + 13) = 1.0f;
-    addr[4] = (addr[4] & 0xFD) | 2;
-    addr[4] = (u8)(addr[4] & 0xFE) | 1;
-    addr[13] = 110;
-    addr[10] = 0;
-}
-
-//80167B50
-void Scene_InitUsableStructs(s8* sm_struct)
-{
-    Scene_InitStartMeleeStruct(&sm_struct[8]);
-    __InitStartMeleeData(&sm_struct[0x68u]);
-    sm_struct[0] = -1;
-    sm_struct[1] = -1;
-    sm_struct[2] = -1;
-}
 
 //8016B3A0
 BOOL Scene_IsCurrSceneSuperSuddenDeath()
@@ -279,124 +201,6 @@ static u32 sub_80019A30(u32 idx)
 //8015FBA4
 static void Scene_InitStaticMem()
 {
-}
-
-//801A1C18
-static void Scene_Minor_Class0_OnFrame(u32 unused, u32 inputs)
-{
-    u32 res_r4;
-    Scene_801A36A0(4, NULL, &res_r4);
-    u32* r13_4F8C = Scene_Load4F80_idx3();
-    if (*r13_4F8C != 0) {
-        *r13_4F8C -= 1;
-    } else {
-        u32* pVal = Scene_Load4F80_idx2();
-        *pVal += 1;
-        if (*pVal <= 0x258) {
-            if (*pVal & 0x1000) {
-                SFX_80026F2C(0x1C);
-                SFX_RequestAudioLoad(0xC, 0, 0, 0);
-                SFX_AudioCacheUpdate();
-                SFX_80027648();
-                SFX_Menu_Common(1);
-                *pVal = inputs;
-                MatchController_ChangeScreen();
-            } else if (debug_level >= 3) {
-                if (*pVal & 0x100) {
-                    SFX_Menu_Common(1);
-                    *pVal = inputs;
-                    MatchController_ChangeScreen();
-                } else if (*pVal & 0x400) {
-                    SFX_Menu_Common(1);
-                    *pVal = inputs;
-                    MatchController_ChangeScreen();
-                } else if (*pVal & 0x800) {
-                    SFX_Menu_Common(1);
-                    *pVal = inputs;
-                    MatchController_ChangeScreen();
-                }
-            }
-        } else {
-            *pVal = 0;
-            MatchController_ChangeScreen();
-        }
-    }
-}
-
-//801A1E20
-static void Scene_Minor_Class0_OnLoad(void* unk_struct)
-{
-    SFX_StopMusic();
-    *Scene_Load4F80_idx3() = 0x14;
-    *Scene_Load4F80_idx2() = 0;
-    char* filename = "GmTtAll.usd";
-    /*if(sub_8000ADD4() == TRUE){ //CheckLanguage
-        filename = "GmTtAll.usd";
-    }else{
-        filename = "GmTtAll.dat";
-    }*/
-
-    Archive_LoadFileSections(filename, 24, &title_ptrs.top_joint, "TtlMoji_Top_joint",
-        &title_ptrs.top_animjoint, "TtlMoji_Top_animjoint", &title_ptrs.top_matanim_joint, "TtlMoji_Top_matanim_joint",
-        &title_ptrs.top_shapeanim_joint, "TtlMoji_Top_shapeanim_joint", &scene_cobj_desc, "ScTitle_cam_int1_camera", &scene_lights_desc, "ScTitle_scene_lights",
-        &scene_fog_desc, "ScTitle_fog", &title_ptrs.bg_top_joint, "TtlBg_Top_joint", &title_ptrs.bg_top_animjoint, "TtlBg_Top_animjoint",
-        &title_ptrs.bg_top_matanim_joint, "TtlBg_Top_matanim_joint", &title_ptrs.bg_top_shapeanim_joint, "TtlBg_Top_shapeanim_joint", &scene_sobj_desc, "TitleMark_sobjdesc");
-    SFX_80026F2C(0x12);
-    SFX_RequestAudioLoad(2, 0, 0, 4);
-    SFX_AudioCacheUpdate();
-
-    HSD_GObj* fog_gobj = GObj_Create(GOBJ_CLASS_HSD_FOG, 3, 0);
-    HSD_Fog* fog = HSD_FogLoadDesc(scene_fog_desc);
-    GObj_InitKindObj(fog_gobj, GOBJ_KIND_FOG, fog);
-    GObj_SetupGXLink(fog_gobj, Fog_Set_Callback, 0, 0);
-    GObj_CreateProcWithCallback(fog_gobj, Fog_InterpretAnim_Callback, 0);
-
-    HSD_GObj* lobj_gobj = GObj_Create(GOBJ_CLASS_HSD_LOBJ, 3, 128);
-    HSD_LObj* lobj = LObj_LoadLightDescs(scene_lights_desc);
-    GObj_InitKindObj(lobj_gobj, 2, lobj);
-    GObj_SetupGXLink(lobj_gobj, LObj_Setup_Callback, 0, 0);
-
-    HSD_GObj* menu_gobj = GObj_Create(GOBJ_CLASS_HSD_COBJ_TITLE, 0x14, 0);
-    HSD_CObj* menu_cobj = CObj_Create(scene_cobj_desc);
-    GObj_InitKindObj(menu_gobj, GOBJ_KIND_MENU_COBJ, menu_cobj);
-    GObj_SetupCameraGXLink(menu_gobj, CObj_SetErase_Callback, 0);
-
-    HSD_GObj* menu_gobj_2 = GObj_Create(GOBJ_CLASS_HSD_COBJ_TITLE, 0x14, 0);
-    HSD_CObj* menu_cobj_2 = CObj_Create(scene_cobj_desc);
-    GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_MENU_COBJ, menu_cobj_2);
-    GObj_SetupCameraGXLink(menu_gobj_2, CObj_Texture_Callback, 0xC);
-
-    menu_gobj_2->gxlink_prios = 0x209; //Priority 0, 3, 9
-
-    Menu_Title_SetupLogos();
-    SFX_80027648();
-    Menu_Title_LoadDemo();
-
-    HSD_GObj* gobj_2 = GObj_Create(0xE, 0xF, 0);
-    HSD_JObj* jobj = HSD_JObjLoadJoint((HSD_JObjDesc*)title_ptrs.bg_top_joint);
-    GObj_InitKindObj(gobj_2, GOBJ_KIND_JOBJ, jobj);
-    GObj_SetupGXLink(gobj_2, JObj_SetupInstanceMtx_Callback, 3, 0);
-    HSD_JObjAddAnimAll(jobj, (HSD_AnimJoint*)title_ptrs.bg_top_animjoint,
-        (HSD_MatAnimJoint*)title_ptrs.bg_top_matanim_joint, (HSD_ShapeAnimJoint*)title_ptrs.bg_top_shapeanim_joint);
-    GObj_CreateProcWithCallback(gobj_2, Menu_Title_ReqAnimAll_Callback, 0);
-
-    u8 major = Scene_GetCurrentMajor();
-    u8 minor = Scene_GetCurrentMinor();
-    if (major == 0 || (major == 24 && minor == 2)) { //Even forcing this condition, I couldn't see a visible difference
-        HSD_JObjReqAnimAll(jobj, 130.0f);
-    } else {
-        HSD_JObjReqAnimAll(jobj, title_frames[0]);
-    }
-    HSD_JObjAnimAll(jobj);
-
-    /*if(debug_level >= 1){
-    Menu_CreateTextObj(0, NULL, GOBJ_CLASS_TEXT, 13, 0, 14, 0, 19);
-    u8* unk_struct = sub_803A6754(0, 0);
-    sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", title_ptrs.debug_text);
-    void* unk = sub_803A6B98(unk_struct, "%s", 30.0f, 30.0f); //MenuTextDrawSome
-    unk_struct[0x49] = 1;
-    sub_803A7548(unk, unk_struct, 0.7f, 0.55f);
-  }*/
 }
 
 //801A36A0
