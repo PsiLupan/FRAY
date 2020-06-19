@@ -761,6 +761,29 @@ BOOL Player_CollisonCheck_Ground(HSD_GObj* gobj)
     return FALSE;
 }
 
+//80082708
+u32 Player_CollisionCheck_FallOffLedge(HSD_GObj *gobj)
+{
+    u32 res = 0;
+  Player *player = GOBJ_PLAYER(gobj);
+
+  (player->x6F0_physics).x1C_x24_TopN_prev.x = (player->x6F0_physics).x4_xC_TopN.x;
+  (player->x6F0_physics).x1C_x24_TopN_prev.y = (player->x6F0_physics).x4_xC_TopN.y;
+  (player->x6F0_physics).x1C_x24_TopN_prev.z = (player->x6F0_physics).x4_xC_TopN.z;
+
+  (player->x6F0_physics).x4_xC_TopN.x = (player->xB0_xB8_pos).x;
+  (player->x6F0_physics).x4_xC_TopN.y = (player->xB0_xB8_pos).y;
+  (player->x6F0_physics).x4_xC_TopN.z = (player->xB0_xB8_pos).z;
+
+  res = Physics_FallOffLedge(&player->x6F0_physics);
+
+  (player->xB0_xB8_pos).x = (player->x6F0_physics).x4_xC_TopN.x;
+  (player->xB0_xB8_pos).y = (player->x6F0_physics).x4_xC_TopN.y;
+  (player->xB0_xB8_pos).z = (player->x6F0_physics).x4_xC_TopN.z;
+
+  return res != 0;
+}
+
 //80083F88
 void Player_Collision_KneeBend(HSD_GObj* gobj)
 {
