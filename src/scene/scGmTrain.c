@@ -1,6 +1,7 @@
 #include "scGmTrain.h"
 #include "scene.h"
 
+/*
 //801B2298
 u32 Menu_GmTrain_Init()
 {
@@ -75,4 +76,4 @@ u32 Menu_GmTrain_Init()
         --v2;
     } while (v2);
     return result;
-}
+}*/

@@ -23,8 +23,12 @@ extern f32 title_frames[3];
 
 void Menu_Title_ReqAnimAll_Callback(HSD_GObj*);
 void Menu_Title_SetupLogos();
+
+void Menu_Title_OnFrame(u32, u32);
+void Menu_Title_OnLoad(void*);
+
 void Menu_Title_Prep();
-void Menu_Title_Decide(void* state);
+void Menu_Title_Decide(void*);
 void Menu_Title_LoadDemo();
 
 #endif

@@ -1,21 +1,50 @@
 #include "scGmRst.h"
 
-//8015CDEC
-u8* sub_8015CDEC()
-{
-    u8* result; // r3@2
+#include "scene.h"
+#include "match/match.h"
 
-    for (s32 i = 0; i < 6; ++i) {
-        result = (u8*)sub_8015CE44(i, 0x78);
-        if (result)
-            *result = 5; //stb r31, 0(r3); - so storing 5 in first byte of some struct
-    }
-    return result;
-}
+u8 menu_804D6730[6];
 
 //801A5598
-u8* Menu_GmRst_Init()
+void Menu_CSS_Init()
 {
-    Scene_InitUsableStructs((s8*)&sm_regularvs);
-    return sub_8015CDEC();
+    Match_ResetMatchStruct(Match_VSMode_GetMatchStruct());
+    Match_8015CDEC();
+}
+
+//801A55C4
+//801A55EC
+void Menu_CSS_Load()
+{
+    memset(&menu_804D6730, 0, 6);
+}
+
+//801A5618
+void Menu_CSS_EraseCharData(void* state, void* match_struct, u8 mode)
+{
+    //Mode is assumed as it's some kind of index
+}
+
+//801A5680
+void Menu_CSS_Decide(void* state, void* match_struct)
+{
+    u8* status = Scene_GetPadStatus((GameState*)state);
+
+    if (status[3] == 0x2) {
+        Scene_SetPendingMajor(1);
+    } else {
+
+    }
+}
+
+//801B14A0
+void Menu_CSS_VSMode_Prep(void* state)
+{
+    Menu_CSS_EraseCharData(state, Match_VSMode_GetMatchStruct(), 0);
+}
+
+//801B14DC
+void Menu_CSS_VSMode_Decide(void* state)
+{
+    Menu_CSS_Decide(state, Match_VSMode_GetMatchStruct());
 }
