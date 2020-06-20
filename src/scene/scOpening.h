@@ -3,9 +3,9 @@
 
 #include <gctypes.h>
 
-void Menu_Opening_ProgressiveScan_Prep(void* state);
-void Menu_Opening_ProgressiveScan_Decide(void* state);
-void Menu_Opening_Prep();
-void Menu_Opening_Decide();
+void Menu_Opening_ProgressiveScan_Prep(GameState*);
+void Menu_Opening_ProgressiveScan_Decide(GameState*);
+void Menu_Opening_Prep(GameState*);
+void Menu_Opening_Decide(GameState*);
 
 #endif
