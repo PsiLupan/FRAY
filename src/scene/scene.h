@@ -47,8 +47,8 @@ typedef struct _GameState {
     u8 unk0D;
     u8 unk0E;
     u8 unk0F;
-    u8 (*unk10)();
-    u32* padstatus;
+    void* data;
+    void* data_2;
 } GameState; //80479D30
 
 extern GameState gamestate;
@@ -79,7 +79,6 @@ typedef struct _MinorScene {
 typedef struct _MajorScene {
     u8 preload;
     u8 idx;
-    u16 flags;
 
     void (*Load)();
     void (*Unload)();
@@ -105,16 +104,17 @@ void Scene_801A36A0(u32, u32*, u32*);
 
 void Scene_CompareCacheOnChange(MinorScene*);
 
-u8* Scene_Get10(GameState*);
-u32* Scene_GetPadStatus(GameState*);
+void* Scene_GetData(GameState*);
+void* Scene_GetData2(GameState*);
 void Scene_Set05(u8);
 u8 Scene_Get04();
 u8 Scene_GetCurrentMinor();
 void Scene_SetPendingTrue();
 void Scene_UpdatePendingMajor(u8);
 void Scene_SetPendingMajor(u8);
+void Scene_SetData(void*);
 u8 Scene_GetCurrentMajor();
-u8 Scene_LoadPrevMajor();
+u8 Scene_GetPrevMajor();
 
 BOOL Scene_IsSinglePlayer(u8);
 u8* Scene_ProcessMajor(u8);

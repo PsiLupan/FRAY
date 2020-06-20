@@ -27,8 +27,8 @@ void Menu_Title_SetupLogos();
 void Menu_Title_OnFrame(u32, u32);
 void Menu_Title_OnLoad(void*);
 
-void Menu_Title_Prep();
-void Menu_Title_Decide(void*);
+void Menu_Title_Prep(GameState*);
+void Menu_Title_Decide(GameState*);
 void Menu_Title_LoadDemo();
 
 #endif

@@ -20,15 +20,15 @@ void Menu_CSS_Load()
 }
 
 //801A5618
-void Menu_CSS_EraseCharData(void* state, void* match_struct, u8 mode)
+void Menu_CSS_EraseCharData(GameState* state, StartMelee* match_struct, u8 mode)
 {
     //Mode is assumed as it's some kind of index
 }
 
 //801A5680
-void Menu_CSS_Decide(void* state, void* match_struct)
+void Menu_CSS_Decide(GameState* state, StartMelee* match_struct)
 {
-    u8* status = Scene_GetPadStatus((GameState*)state);
+    u8* status = Scene_GetData2(state);
 
     if (status[3] == 0x2) {
         Scene_SetPendingMajor(1);
@@ -38,13 +38,13 @@ void Menu_CSS_Decide(void* state, void* match_struct)
 }
 
 //801B14A0
-void Menu_CSS_VSMode_Prep(void* state)
+void Menu_CSS_VSMode_Prep(GameState* state)
 {
     Menu_CSS_EraseCharData(state, Match_VSMode_GetMatchStruct(), 0);
 }
 
 //801B14DC
-void Menu_CSS_VSMode_Decide(void* state)
+void Menu_CSS_VSMode_Decide(GameState* state)
 {
     Menu_CSS_Decide(state, Match_VSMode_GetMatchStruct());
 }

@@ -18,9 +18,14 @@ MinorScene GmTitle_Minors[2] = {
     END_MINOR
 }; //803DD6A0
 
+MinorScene MainMenu_Minors[2] = {
+    {0, 2, 0, NULL /*801B0FF8*/, NULL /*801B138C*/, 1, NULL /*804D68B8*/, NULL /*804D68BC*/},
+    END_MINOR
+}; //803DD8B8
+
 MinorScene CSS_Minors[9] = {
-    { 0, 3, 0, Menu_CSS_VSMode_Prep, Menu_CSS_VSMode_Decide, 8, NULL, NULL /*0x804807B0, 0x804807B0 */ },
-    { 1, 3, 0, stub /*801b1514*/, stub /*801b154c*/, 9, NULL, NULL /*0x80480668, 0x80480668 */ },
+    { 0, 3, 0, Menu_CSS_VSMode_Prep, Menu_CSS_VSMode_Decide, 8, NULL /*0x804807B0*/, NULL /*0x804807B0*/ },
+    { 1, 3, 0, stub /*801B1514*/, stub /*801B154C*/, 9, NULL /*0x80480668*/, NULL /*0x80480668*/ },
     //{ 2, 3, 0, }
     END_MINOR
 }; //803DD9A0
@@ -42,11 +47,12 @@ MinorSceneHandler scene_handlers[46] = {
 }; //803DA920 - 45 in length
 
 MajorScene major_scenes[46] = {
-    { 1, 0, 0, NULL, NULL, NULL, &GmTitle_Minors },
-    { 0, 2, 0, Menu_CSS_Load, NULL /*Technically a stubbed function*/, Menu_CSS_Init, &CSS_Minors },
-    { 0, 39, 0, NULL, NULL, NULL, &GmOpening_Progressive_Minors },
-    { 1, 40, 0, NULL, NULL, NULL, &GmOpening_Minors },
-    { 0, 45, 0, NULL, NULL, NULL, NULL }
+    { 1, 0, NULL, NULL, NULL, &GmTitle_Minors },
+    { 1, 1, NULL, NULL, NULL, &MainMenu_Minors },
+    { 0, 2, Menu_CSS_Load, NULL /*Technically a stubbed function*/, Menu_CSS_Init, &CSS_Minors },
+    { 0, 39, NULL, NULL, NULL, &GmOpening_Progressive_Minors },
+    { 1, 40, NULL, NULL, NULL, &GmOpening_Minors },
+    { 0, 45, NULL, NULL, NULL, NULL }
 }; //803DACA4
 
 static u8 r13_3D40; //0x3D40(r13)
@@ -368,15 +374,15 @@ OUT:
 }
 
 //801A427C
-u8* Scene_Get10(GameState* state)
+void* Scene_GetData(GameState* state)
 {
-    return state->unk10;
+    return state->data;
 }
 
 //801A4284
-u32* Scene_GetPadStatus(GameState* state)
+void* Scene_GetData2(GameState* state)
 {
-    return state->padstatus;
+    return state->data_2;
 }
 
 //801A428C
@@ -432,15 +438,15 @@ u8 Scene_GetCurrentMajor()
 }
 
 //801A4320
-u8 Scene_LoadPrevMajor()
+u8 Scene_GetPrevMajor()
 {
     return gamestate.prev_major;
 }
 
 //801A4330
-void Scene_StoreTo10(u8 (*func)())
+void Scene_SetData(void* data)
 {
-    gamestate.unk10 = func;
+    gamestate.data = data;
 }
 
 //801A4340
@@ -488,13 +494,13 @@ u8* Scene_ProcessMajor(u8 scene)
                     (*scene_ptr->Unload)();
                 }
             }
-            if (gamestate.unk10 != NULL) {
+            if (gamestate.data != NULL) {
                 break;
             }
         JMP_PROCESS:
             Scene_ProcessMinor(scene_ptr);
         }
-        u8 major = (*gamestate.unk10)();
+        u8 major = (*(u8(*)(void))gamestate.data)();
         if (major == 45) {
             goto JMP_PROCESS;
         }

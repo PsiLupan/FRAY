@@ -194,15 +194,15 @@ void Menu_Title_OnLoad(void* unk_struct)
 }
 
 //801B087C
-void Menu_Title_Prep()
+void Menu_Title_Prep(GameState* state)
 {
     Scene_PrepCache();
 }
 
 //801B089C
-void Menu_Title_Decide(void* state)
+void Menu_Title_Decide(GameState* state)
 {
-    u32* status = Scene_GetPadStatus((GameState*)state); //804D6878 from the Minors
+    u32* status = (u32*)Scene_GetData2(state); //804D6878 from the Minors
     if(status == NULL){
         return;
     }
