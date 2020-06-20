@@ -19,7 +19,7 @@ MinorScene GmTitle_Minors[2] = {
 }; //803DD6A0
 
 MinorScene MainMenu_Minors[2] = {
-    {0, 2, 0, NULL /*801B0FF8*/, NULL /*801B138C*/, 1, NULL /*804D68B8*/, NULL /*804D68BC*/},
+    {0, 2, 0, NULL /*801B0FF8*/, Menu_MainMenu_Decide, 1, NULL /*804D68B8*/, NULL /*804D68BC*/},
     END_MINOR
 }; //803DD8B8
 
