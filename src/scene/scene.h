@@ -26,10 +26,13 @@
 #include "ogcext/dvd.h"
 
 //Scenes
-#include "scene/scGmRst.h"
-#include "scene/scGmTitle.h"
-#include "scene/scGmTrain.h"
-#include "scene/scOpening.h"
+#include "scGmRst.h"
+#include "scGmTitle.h"
+#include "scGmTrain.h"
+#include "scOpening.h"
+
+//Menu
+#include "mnMain.h"
 
 //Length: 0x14(20)
 typedef struct _GameState {
