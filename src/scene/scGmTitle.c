@@ -123,11 +123,6 @@ void Menu_Title_OnLoad(void* unk_struct)
     *Scene_Load4F80_idx3() = 0x14;
     *Scene_Load4F80_idx2() = 0;
     char* filename = "GmTtAll.usd";
-    /*if(sub_8000ADD4() == TRUE){ //CheckLanguage
-        filename = "GmTtAll.usd";
-    }else{
-        filename = "GmTtAll.dat";
-    }*/
 
     Archive_LoadFileSections(filename, 24, &title_ptrs.top_joint, "TtlMoji_Top_joint",
         &title_ptrs.top_animjoint, "TtlMoji_Top_animjoint", &title_ptrs.top_matanim_joint, "TtlMoji_Top_matanim_joint",

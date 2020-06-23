@@ -51,6 +51,7 @@ MinorScene GmOpening_Minors[2] = {
 
 MinorSceneHandler scene_handlers[46] = {
     { 0, Menu_Title_OnFrame, Menu_Title_OnLoad, NULL, NULL },
+    { 8, Menu_CSS_OnFrame, Menu_CSS_OnLoad, Menu_CSS_OnLeave, NULL},
     { 40, Scene_Minor_Class40_OnFrame, Scene_Minor_Class40_OnLoad, Scene_Minor_Class40_OnLeave, NULL },
     { 45, NULL, NULL, NULL, NULL }
 }; //803DA920 - 45 in length
