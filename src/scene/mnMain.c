@@ -1,5 +1,11 @@
 #include "mnMain.h"
 
+//801B0FF8
+void Menu_MainMenu_Prep(GameState* state)
+{
+    
+}
+
 //801B138C
 void Menu_MainMenu_Decide(GameState* state)
 {

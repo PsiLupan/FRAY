@@ -1,5 +1,14 @@
 #include "scene.h"
 
+//Scenes
+#include "scGmRst.h"
+#include "scGmTitle.h"
+#include "scGmTrain.h"
+#include "scOpening.h"
+
+//Menu
+#include "mnMain.h"
+
 static void Scene_Minor_Class40_OnFrame();
 static void Scene_Minor_Class40_OnLoad();
 static void Scene_Minor_Class40_OnLeave();
@@ -19,13 +28,13 @@ MinorScene GmTitle_Minors[2] = {
 }; //803DD6A0
 
 MinorScene MainMenu_Minors[2] = {
-    {0, 2, 0, NULL /*801B0FF8*/, Menu_MainMenu_Decide, 1, NULL /*804D68B8*/, NULL /*804D68BC*/},
+    {0, 2, 0, Menu_MainMenu_Prep, Menu_MainMenu_Decide, 1, NULL /*804D68B8*/, NULL /*804D68BC*/},
     END_MINOR
 }; //803DD8B8
 
 MinorScene CSS_Minors[9] = {
     { 0, 3, 0, Menu_CSS_VSMode_Prep, Menu_CSS_VSMode_Decide, 8, NULL /*0x804807B0*/, NULL /*0x804807B0*/ },
-    { 1, 3, 0, stub /*801B1514*/, stub /*801B154C*/, 9, NULL /*0x80480668*/, NULL /*0x80480668*/ },
+    { 1, 3, 0, Menu_SSS_VSMode_Prep, Menu_SSS_VSMode_Decide, 9, NULL /*0x80480668*/, NULL /*0x80480668*/ },
     //{ 2, 3, 0, }
     END_MINOR
 }; //803DD9A0
@@ -324,11 +333,11 @@ OUT:
         if (minor_scene->Decide != NULL) {
             minor_scene->Decide(&gamestate);
         }
-        gamestate.unk04 = gamestate.curr_minor;
+        gamestate.prev_minor = gamestate.curr_minor;
 
-        if (gamestate.unk05 != 0) {
-            gamestate.curr_minor = gamestate.unk05 - 1;
-            gamestate.unk05 = 0;
+        if (gamestate.pending_minor != 0) {
+            gamestate.curr_minor = gamestate.pending_minor - 1;
+            gamestate.pending_minor = 0;
         } else {
             for (u32 i = 0; i < 255; i++) {
                 if (minor_scenes[i].idx > gamestate.curr_minor) {
@@ -389,21 +398,19 @@ void* Scene_GetData2(GameState* state)
 void Scene_Set03And04(u8 val)
 {
     gamestate.curr_minor = val;
-    gamestate.unk04 = val;
+    gamestate.prev_minor = val;
 }
 
 //801A42A0
-void Scene_Set05(u8 val)
+void Scene_SetPendingMinor(u8 val)
 {
-    u8 v1;
-    v1 = val + 1;
-    gamestate.unk05 = v1;
+    gamestate.pending_minor = val + 1;
 }
 
 //801A42B4
-u8 Scene_Get04()
+u8 Scene_GetPrevMinor()
 {
-    return gamestate.unk04;
+    return gamestate.prev_minor;
 }
 
 //801A42C4
@@ -480,8 +487,8 @@ u8* Scene_ProcessMajor(u8 scene)
     HSD_CheckAssert("Scene_ProcessMajor: scene_ptr == NULL", scene_ptr != NULL);
     gamestate.pending = FALSE;
     gamestate.curr_major = 0;
-    gamestate.unk04 = 0;
-    gamestate.unk05 = 0;
+    gamestate.prev_minor = 0;
+    gamestate.pending_minor = 0;
     Scene_SetPreloadBool(scene_ptr->preload);
     if (scene_ptr->Load != NULL) {
         (*scene_ptr->Load)();
@@ -505,8 +512,8 @@ u8* Scene_ProcessMajor(u8 scene)
             goto JMP_PROCESS;
         }
         gamestate.unk06 = gamestate.curr_major;
-        gamestate.unk0A = gamestate.unk04;
-        gamestate.unk0B = gamestate.unk05;
+        gamestate.unk0A = gamestate.prev_minor;
+        gamestate.unk0B = gamestate.pending_minor;
         gamestate.pending = FALSE;
         gamestate.curr_major = 0;
         scene_ptr = NULL;
@@ -518,7 +525,7 @@ u8* Scene_ProcessMajor(u8 scene)
         Scene_ProcessMinor(scene_ptr);
         if (dword_8046B0F0.unk04 == FALSE) {
             gamestate.curr_major = gamestate.unk06;
-            gamestate.unk04 = gamestate.unk0A;
+            gamestate.prev_minor = gamestate.unk0A;
         }
     } while (true);
     return result;

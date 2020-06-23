@@ -25,23 +25,14 @@
 
 #include "ogcext/dvd.h"
 
-//Scenes
-#include "scGmRst.h"
-#include "scGmTitle.h"
-#include "scGmTrain.h"
-#include "scOpening.h"
-
-//Menu
-#include "mnMain.h"
-
 //Length: 0x14(20)
 typedef struct _GameState {
     u8 curr_major;
     u8 pending_major;
     u8 prev_major;
     u8 curr_minor;
-    u8 unk04;
-    s8 unk05;
+    u8 prev_minor;
+    u8 pending_minor;
     u16 unk06;
     u16 unk08;
     u8 unk0A;
@@ -101,6 +92,8 @@ extern u32 debug_level;
 
 extern unk_8046B0F0 dword_8046B0F0;
 
+void Scene_PrepCache();
+
 void Scene_CopyDataToCache();
 
 void Scene_801A36A0(u32, u32*, u32*);
@@ -109,8 +102,8 @@ void Scene_CompareCacheOnChange(MinorScene*);
 
 void* Scene_GetData(GameState*);
 void* Scene_GetData2(GameState*);
-void Scene_Set05(u8);
-u8 Scene_Get04();
+void Scene_SetPendingMinor(u8);
+u8 Scene_GetPrevMinor();
 u8 Scene_GetCurrentMinor();
 void Scene_SetPendingTrue();
 void Scene_UpdatePendingMajor(u8);

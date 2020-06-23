@@ -3,6 +3,8 @@
 
 #include <gctypes.h>
 
+#include "scene.h"
+
 void Menu_Opening_ProgressiveScan_Prep(GameState*);
 void Menu_Opening_ProgressiveScan_Decide(GameState*);
 void Menu_Opening_Prep(GameState*);

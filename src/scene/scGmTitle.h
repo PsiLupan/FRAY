@@ -5,6 +5,8 @@
 
 #include "hsd/hsd_gobj.h"
 
+#include "scene.h"
+
 typedef struct _GmTitle_File {
     void* top_joint;
     void* top_animjoint;
