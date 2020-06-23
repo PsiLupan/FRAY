@@ -738,6 +738,8 @@ typedef struct _List {
 void GObj_Init(u32* param_1)
 {
     *((u32*)&HSD_GObjLibInitData.p_link_max) = param_1[0];
+    HSD_GObjLibInitData.unk_1 = param_1[1];
+    HSD_GObjLibInitData.unk_2 = (u32*)param_1[2];
 
     plinkhigh_gobjs = HSD_MemAlloc(HSD_GObjLibInitData.gx_link_max * 4);
     plinklow_gobjs = HSD_MemAlloc(HSD_GObjLibInitData.gx_link_max * 4);
