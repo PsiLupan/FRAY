@@ -3,6 +3,7 @@
 
 #include <gctypes.h>
 
+#include "hsd/hsd_cobj.h"
 #include "hsd/hsd_gobj.h"
 
 #include "scene.h"

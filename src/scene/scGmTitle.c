@@ -117,7 +117,7 @@ void Menu_Title_OnFrame(u32 unused, u32 inputs)
 }
 
 //801A1E20
-void Menu_Title_OnLoad(void* unk_struct)
+void Menu_Title_OnLoad(void* data_struct)
 {
     SFX_StopMusic();
     *Scene_Load4F80_idx3() = 0x14;
@@ -133,23 +133,23 @@ void Menu_Title_OnLoad(void* unk_struct)
     SFX_RequestAudioLoad(2, 0, 0, 4);
     SFX_AudioCacheUpdate();
 
-    HSD_GObj* fog_gobj = GObj_Create(GOBJ_CLASS_HSD_FOG, 3, 0);
+    HSD_GObj* fog_gobj = GObj_Create(0xA, 3, 0);
     HSD_Fog* fog = HSD_FogLoadDesc(scene_fog_desc);
     GObj_InitKindObj(fog_gobj, GOBJ_KIND_FOG, fog);
     GObj_SetupGXLink(fog_gobj, Fog_Set_Callback, 0, 0);
     GObj_CreateProcWithCallback(fog_gobj, Fog_InterpretAnim_Callback, 0);
 
-    HSD_GObj* lobj_gobj = GObj_Create(GOBJ_CLASS_HSD_LOBJ, 3, 128);
+    HSD_GObj* lobj_gobj = GObj_Create(0xB, 3, 128);
     HSD_LObj* lobj = LObj_LoadLightDescs(scene_lights_desc);
-    GObj_InitKindObj(lobj_gobj, 2, lobj);
+    GObj_InitKindObj(lobj_gobj, GOBJ_KIND_LIGHT, lobj);
     GObj_SetupGXLink(lobj_gobj, LObj_Setup_Callback, 0, 0);
 
-    HSD_GObj* menu_gobj = GObj_Create(GOBJ_CLASS_HSD_COBJ_TITLE, 0x14, 0);
+    HSD_GObj* menu_gobj = GObj_Create(0x13, 0x14, 0);
     HSD_CObj* menu_cobj = CObj_Create(scene_cobj_desc);
     GObj_InitKindObj(menu_gobj, GOBJ_KIND_MENU_COBJ, menu_cobj);
     GObj_SetupCameraGXLink(menu_gobj, CObj_SetErase_Callback, 0);
 
-    HSD_GObj* menu_gobj_2 = GObj_Create(GOBJ_CLASS_HSD_COBJ_TITLE, 0x14, 0);
+    HSD_GObj* menu_gobj_2 = GObj_Create(0x13, 0x14, 0);
     HSD_CObj* menu_cobj_2 = CObj_Create(scene_cobj_desc);
     GObj_InitKindObj(menu_gobj_2, GOBJ_KIND_MENU_COBJ, menu_cobj_2);
     GObj_SetupCameraGXLink(menu_gobj_2, CObj_Texture_Callback, 0xC);
@@ -179,11 +179,11 @@ void Menu_Title_OnLoad(void* unk_struct)
 
     /*if(debug_level >= 1){
     Menu_CreateTextObj(0, NULL, GOBJ_CLASS_TEXT, 13, 0, 14, 0, 19);
-    u8* unk_struct = sub_803A6754(0, 0);
+    data_struct = sub_803A6754(0, 0);
     sub_801A1D38("DATE Feb 13 2002  TIME 22:06:27", title_ptrs.debug_text);
-    void* unk = sub_803A6B98(unk_struct, "%s", 30.0f, 30.0f); //MenuTextDrawSome
-    unk_struct[0x49] = 1;
-    sub_803A7548(unk, unk_struct, 0.7f, 0.55f);
+    void* unk = sub_803A6B98(data_struct, "%s", 30.0f, 30.0f); //MenuTextDrawSome
+    (u8*)data_struct[0x49] = 1;
+    sub_803A7548(unk, data_struct, 0.7f, 0.55f);
   }*/
 }
 
