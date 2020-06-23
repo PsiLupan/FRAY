@@ -15,18 +15,53 @@
 #include "scene.h"
 
 typedef struct _MnSlChar_joints {
-    HSD_JObjDesc* jobjdesc;
-    HSD_AnimJoint* animjoint;
-    HSD_MatAnimJoint* matanimjoint;
-    HSD_ShapeAnimJoint* shapeanimjoint;
+    HSD_JObjDesc* x0_jobjdesc;
+    HSD_AnimJoint* x4_animjoint;
+    HSD_MatAnimJoint* x8_matanimjoint;
+    HSD_ShapeAnimJoint* xC_shapeanimjoint;
+
+    HSD_JObjDesc* x10_jobjdesc;
+    HSD_AnimJoint* x14_animjoint;
+    HSD_MatAnimJoint* x18_matanimjoint;
+    HSD_ShapeAnimJoint* x1C_shapeanimjoint;
+
+    HSD_JObjDesc* x20_jobjdesc;
+    HSD_AnimJoint* x24_animjoint;
+    HSD_MatAnimJoint* x28_matanimjoint;
+    HSD_ShapeAnimJoint* x2C_shapeanimjoint;
+
+    HSD_JObjDesc* x30_jobjdesc;
+    HSD_AnimJoint* x34_animjoint;
+    HSD_MatAnimJoint* x38_matanimjoint;
+    HSD_ShapeAnimJoint* x3C_shapeanimjoint;
+
+    HSD_JObjDesc* x40_jobjdesc;
+    HSD_AnimJoint* x44_animjoint;
+    HSD_MatAnimJoint* x48_matanimjoint;
+    HSD_ShapeAnimJoint* x4C_shapeanimjoint;
+
+    HSD_JObjDesc* x50_jobjdesc;
+    HSD_AnimJoint* x54_animjoint;
+    HSD_MatAnimJoint* x58_matanimjoint;
+    HSD_ShapeAnimJoint* x5C_shapeanimjoint;
+
+    HSD_JObjDesc* x60_jobjdesc;
+    HSD_AnimJoint* x64_animjoint;
+    HSD_MatAnimJoint* x68_matanimjoint;
+    HSD_ShapeAnimJoint* x6C_shapeanimjoint;
+
+    HSD_JObjDesc* x70_jobjdesc;
+    HSD_AnimJoint* x74_animjoint;
+    HSD_MatAnimJoint* x78_matanimjoint;
+    HSD_ShapeAnimJoint* x7C_shapeanimjoint;
 } MnSlChar_joints;
 
 typedef struct _MnSlChar_file {
-    HSD_CObjDesc* cobjdesc;
-    HSD_LightDesc* lightdesc_1;
-    HSD_LightDesc* lightdesc_2;
-    HSD_FogDesc* fogdesc;
-    struct _MnSlChar_joints joints;
+    HSD_CObjDesc* cobjdesc; //0x00
+    HSD_LightDesc* lightdesc_1; //0x04
+    HSD_LightDesc* lightdesc_2; //0x08
+    HSD_FogDesc* fogdesc; //0x0C
+    struct _MnSlChar_joints joints; //0x1C - ??
 } MnSlChar_file;
 
 void Menu_CSS_Init();

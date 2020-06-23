@@ -9,7 +9,8 @@ static HSD_CObjDesc* css_cobjdesc = NULL; //r13_4ADC
 static void* r13_49F0 = NULL; //r13_49F0
 static MnSlChar_file* css_data_table = NULL; // r13_49EC
 static HSD_GObj* css_gobj_camera = NULL; //r13_49E8
-static u32 r13_49E4 = 0; // r13_49E4
+static HSD_GObj* css_gobj_jobj = NULL; // r13_49E4
+static HSD_JObj* css_jobj = NULL; //r13_49E0
 
 static HSD_Archive* css_file = NULL; // r13_49D0
 static HSD_Archive* menu_ext_file = NULL; // r13_49CC
@@ -241,13 +242,13 @@ void Menu_CSS_Setup()
     GObj_InitKindObj(css_gobj_camera, GOBJ_KIND_MENU_COBJ, HSD_CObjLoadDesc(css_cobjdesc));
     GObj_SetupCameraGXLink(css_gobj_camera, GObj_SetCamera, 0);
     css_gobj_camera->gxlink_prios = 0x1F; //Priority ???
-    //GObj_CreateProcWithCallback(css_gobj_camera, NULL /*sub_8022BA1C*/, 5);
+    //GObj_CreateProcWithCallback(css_gobj_camera, sub_8022BA1C, 5);
     //iVar18 = Menu_CreateTextObj(0, css_gobj_camera, 7, 8, 0x80, 1, 0x80, 0);
 
     HSD_GObj* lobj_gobj = GObj_Create(3, 4, 0x80);
     HSD_LObj* lobj_1 = HSD_LObjLoadDesc(css_data_table->lightdesc_1);
     HSD_LObj* lobj_2 = HSD_LObjLoadDesc(css_data_table->lightdesc_2);
-    HSD_CheckAssert("lobj1 in Menu_CSS_Setup == NULL", lobj_1 != NULL);
+    HSD_CheckAssert("Menu_CSS_Setup: lobj_1 == NULL", lobj_1 != NULL);
     lobj_1->next = lobj_2;
     GObj_InitKindObj(lobj_gobj, GOBJ_KIND_LIGHT, lobj_1);
     GObj_SetupGXLink(lobj_gobj, LObj_Setup_Callback, 0, 0x80);
@@ -258,15 +259,27 @@ void Menu_CSS_Setup()
     GObj_SetupGXLink(fog_gobj, Fog_Set_Callback, 0, 0x80);
 
     HSD_GObj* jobj_gobj = GObj_Create(4, 5, 0x80);
-    HSD_JObj* jobj = HSD_JObjLoadJoint(css_joints->jobjdesc);
-    HSD_JObjAddAnimAll(jobj, css_joints->animjoint, css_joints->matanimjoint, css_joints->shapeanimjoint);
+    HSD_JObj* jobj = HSD_JObjLoadJoint(css_joints->x0_jobjdesc);
+    HSD_JObjAddAnimAll(jobj, css_joints->x4_animjoint, css_joints->x8_matanimjoint, css_joints->xC_shapeanimjoint);
     GObj_InitKindObj(jobj_gobj, GOBJ_KIND_JOBJ, jobj);
     GObj_SetupGXLink(jobj_gobj, JObj_SetupInstanceMtx_Callback, 1, 0x80);
     GObj_CreateProcWithCallback(jobj_gobj, Menu_CSS_JObjCallback, 4);
     HSD_JObjReqAnimAll(jobj, 0.f);
     HSD_JObjAnimAll(jobj);
 
-    //TODO
+    css_gobj_jobj = GObj_Create(4, 5, 0x80);
+    if (r13_49AB == 1){ //FIXME: Currently, the 0 case leads to an resolveEnvelope assert
+        css_jobj = HSD_JObjLoadJoint(css_joints->x60_jobjdesc);
+        HSD_JObjAddAnimAll(css_jobj, css_joints->x64_animjoint, css_joints->x68_matanimjoint, css_joints->x6C_shapeanimjoint);
+    }else{
+        css_jobj = HSD_JObjLoadJoint(css_joints->x30_jobjdesc);
+        HSD_JObjAddAnimAll(css_jobj, css_joints->x34_animjoint, css_joints->x38_matanimjoint, css_joints->x3C_shapeanimjoint);
+    }
+    GObj_InitKindObj(css_gobj_jobj, GOBJ_KIND_JOBJ, css_jobj);
+    GObj_SetupGXLink(css_gobj_jobj, JObj_SetupInstanceMtx_Callback, 1, 0x80);
+    //GObj_CreateProcWithCallback(css_gobj_jobj, sub_8025f0e0, 4);
+    HSD_JObjReqAnimAll(css_jobj, 0.f);
+    HSD_JObjAnimAll(css_jobj);
 }
 
 //8026688C
