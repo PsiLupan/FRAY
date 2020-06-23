@@ -1,5 +1,4 @@
 #include "scOpening.h"
-#include "scene.h"
 
 //801BF8F8
 void Menu_Opening_ProgressiveScan_Prep(GameState* state)

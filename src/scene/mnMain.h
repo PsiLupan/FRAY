@@ -5,6 +5,7 @@
 
 #include "scene.h"
 
+void Menu_MainMenu_Prep(GameState*);
 void Menu_MainMenu_Decide(GameState*);
 
 #endif

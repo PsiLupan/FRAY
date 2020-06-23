@@ -1,6 +1,5 @@
 #include "scGmTitle.h"
 #include "hsd_jobj_ext.h"
-#include "scene.h"
 
 GmTitle_File title_ptrs; //80479B28
 u32 title_inputs; //804D6878
