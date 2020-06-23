@@ -8,6 +8,7 @@
 #include "hsd_jobj.h"
 
 #define GOBJ_KIND_MENU_COBJ 1
+#define GOBJ_KIND_LIGHT 2
 #define GOBJ_KIND_JOBJ 3
 #define GOBJ_KIND_FOG 4
 
@@ -80,7 +81,7 @@ void GObj_RunProcs(void);
 s32 GObj_GetFlagFromArray(s32);
 void GObj_SetTextureCamera(HSD_GObj*, u32);
 void GObj_RunGXLinkMaxCallbacks(void);
-void GObj_SetCamera(HSD_GObj*);
+void GObj_SetCamera(HSD_GObj*, s32);
 void GObj_InitializeLibInitData(u32*);
 void GObj_Init(u32*);
 

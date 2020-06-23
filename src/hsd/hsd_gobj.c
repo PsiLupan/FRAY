@@ -690,7 +690,7 @@ void GObj_RunGXLinkMaxCallbacks(void)
 }
 
 //803910D8
-void GObj_SetCamera(HSD_GObj* gobj)
+void GObj_SetCamera(HSD_GObj* gobj, s32 unused)
 {
     BOOL res = HSD_CObjSetCurrent(GOBJ_HSD_COBJ(gobj));
     if (res == FALSE) {
