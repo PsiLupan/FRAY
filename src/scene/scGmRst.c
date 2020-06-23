@@ -34,7 +34,6 @@ void __CopyMatchStruct(u32* copy, StartMelee* match)
 
         copy += 2;
         original += 2;
-        --i;
     }
 }
 
