@@ -35,7 +35,7 @@ MinorScene MainMenu_Minors[2] = {
 MinorScene CSS_Minors[9] = {
     { 0, 3, 0, Menu_CSS_VSMode_Prep, Menu_CSS_VSMode_Decide, 8, NULL /*0x804807B0*/, NULL /*0x804807B0*/ },
     { 1, 3, 0, Menu_SSS_VSMode_Prep, Menu_SSS_VSMode_Decide, 9, NULL /*0x80480668*/, NULL /*0x80480668*/ },
-    //{ 2, 3, 0, }
+    { 2, 3, 0, NULL /*801b1588*/, NULL /*801b15c8*/, 2, NULL /*80480530*/, NULL /*80479d98*/},
     END_MINOR
 }; //803DD9A0
 
