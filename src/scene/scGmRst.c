@@ -209,7 +209,7 @@ void Menu_CSS_Setup()
         u32 i = 0;
 
         if (r13_49AB_copy != 0) {
-            if (8 < r13_49AB_copy && (i = r13_49AB_copy - 1 >> 3, 0 < (r13_49AB_copy - 8))) {
+            if (8 < r13_49AB_copy && (i = (r13_49AB_copy - 1) >> 3, 0 < (r13_49AB_copy - 8))) {
                 do {
                     ((u8*)r13_49F0)[temp_offset + 0x78] = 9;
                     ((u8*)r13_49F0)[temp_offset + 0x9C] = 9;
