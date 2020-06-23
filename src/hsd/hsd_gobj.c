@@ -700,23 +700,21 @@ void GObj_SetCamera(HSD_GObj* gobj, s32 unused)
 }
 
 //80391260
-/*void FUN_80391260(int iParm1)
+void GObj_80391260(s32* iParm1)
 {
-    int iVar1;
-    char cVar2;
-    int in_r13;
+    s32 iVar1;
+    s8 cVar2;
   
-    iVar1 = GObj_803912A8(iParm1,(int *)&DAT_80408610);
-    cVar2 = (char)iVar1;
-    *(char *)(in_r13 + -0x3e55) = cVar2;
-    *(char *)(in_r13 + -0x3e56) = cVar2 + '\x01';
-    *(char *)(in_r13 + -0x3e57) = cVar2 + '\x02';
-    *(char *)(in_r13 + -0x3e58) = cVar2 + '\x03';
-    return;
-}*/
+    iVar1 = GObj_803912A8(iParm1, NULL/*80408610*/);
+    cVar2 = (s8)iVar1;
+    //*(char *)(in_r13 + -0x3e55) = cVar2;
+    //*(char *)(in_r13 + -0x3e56) = cVar2 + '\x01';
+    //*(char *)(in_r13 + -0x3e57) = cVar2 + '\x02';
+    //*(char *)(in_r13 + -0x3e58) = cVar2 + '\x03';
+}
 
 //803912A8
-u32 GObj_803912A8(u32 array[], u32* unk)
+s32 GObj_803912A8(u32* array, u32* unk)
 {
     return 0;
 }
@@ -737,6 +735,8 @@ typedef struct _List {
 //80391304
 void GObj_Init(u32* param_1)
 {
+    GObj_80391260(param_1);
+
     *((u32*)&HSD_GObjLibInitData.p_link_max) = param_1[0];
     HSD_GObjLibInitData.unk_1 = param_1[1];
     HSD_GObjLibInitData.unk_2 = (u32*)param_1[2];
