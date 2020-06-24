@@ -270,10 +270,10 @@ static void resolveCnsOrientation(HSD_RObj* robj, void* obj, void (*obj_update)(
         for (u32 i = 0; i < 3; ++i) {
             guVector vec = { guMtxRowCol(mtx, 0, i), guMtxRowCol(mtx, 1, i), guMtxRowCol(mtx, 2, i) };
             mag = vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
-            if(1e-10F < mag){
+            if (1e-10F < mag) {
                 mag = 1.0F / mag;
             }
-            
+
             vec.x = guMtxRowCol(jobj->mtx, 0, i);
             vec.y = guMtxRowCol(jobj->mtx, 1, i);
             vec.z = guMtxRowCol(jobj->mtx, 2, i);
@@ -601,4 +601,22 @@ void HSD_RvalueResolveRefsAll(HSD_Rvalue* rval, HSD_RvalueList* desc)
             desc = desc->next;
         }
     }
+}
+
+//8037CC90
+void HSD_RObjSetConstraintObj(HSD_RObj* robj, void* jobj)
+{
+    if (robj != NULL) {
+        if (robj->u.jobj != NULL) {
+            HSD_JObjUnrefThis(robj->u.jobj);
+            robj->u.jobj = NULL;
+        }
+        if (hsdObjIsDescendantOf((HSD_Obj*)jobj, (HSD_ClassInfo*)&hsdJObj) == 0) {
+            HSD_Halt("HSD_RObjSetConstraintObj: constraint only support jobj target");
+        } else {
+            robj->u.jobj = jobj;
+            HSD_JObjRefThis(jobj);
+        }
+    }
+    return;
 }

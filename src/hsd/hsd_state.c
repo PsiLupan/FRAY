@@ -1,6 +1,7 @@
 #include "hsd_state.h"
 
 #include "hsd_lobj.h"
+#include "hsd_pobj.h"
 
 static u8 state_num_chans = -1; //r13_40A0
 static u8 state_num_tevstages; //r13_40A8

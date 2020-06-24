@@ -48,7 +48,10 @@ typedef struct _Item {
 } Item;
 
 BOOL Item_PlayerHasHammer(HSD_GObj*);
+void Item_DestroyItem(HSD_GObj*);
+void Item_GetPosition(HSD_GObj*, f32*);
 u32 Item_GetItemType(HSD_GObj*);
+f32 Item_GetDefaultDuration(HSD_GObj*);
 
 void Item_8026B73C(HSD_GObj*);
 u32 Item_8026B7E8(HSD_GObj*);

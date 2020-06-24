@@ -1,6 +1,7 @@
 #include "player.h"
 
 #include "actionstate.h"
+#include "staticplayer.h"
 
 static f32* r13_514C;
 
@@ -453,6 +454,12 @@ void Player_ChangeActionState(HSD_GObj* gobj, u32 state, u32 flags, HSD_GObj* go
     *(undefined4*)&player->field_0x21e4 = 0;*/
 }
 
+//8006F238
+BOOL Player_CheckFrameTimer(HSD_GObj* gobj)
+{
+    
+}
+
 //80074A4C
 void Player_SetCharacterFlags(HSD_GObj* gobj, u32 offset, u32 flags)
 {
@@ -762,26 +769,26 @@ BOOL Player_CollisonCheck_Ground(HSD_GObj* gobj)
 }
 
 //80082708
-u32 Player_CollisionCheck_FallOffLedge(HSD_GObj *gobj)
+BOOL Player_CollisionCheck_AllowGroundToAir(HSD_GObj* gobj)
 {
     u32 res = 0;
-  Player *player = GOBJ_PLAYER(gobj);
+    Player* player = GOBJ_PLAYER(gobj);
 
-  (player->x6F0_physics).x1C_x24_TopN_prev.x = (player->x6F0_physics).x4_xC_TopN.x;
-  (player->x6F0_physics).x1C_x24_TopN_prev.y = (player->x6F0_physics).x4_xC_TopN.y;
-  (player->x6F0_physics).x1C_x24_TopN_prev.z = (player->x6F0_physics).x4_xC_TopN.z;
+    (player->x6F0_physics).x1C_x24_TopN_prev.x = (player->x6F0_physics).x4_xC_TopN.x;
+    (player->x6F0_physics).x1C_x24_TopN_prev.y = (player->x6F0_physics).x4_xC_TopN.y;
+    (player->x6F0_physics).x1C_x24_TopN_prev.z = (player->x6F0_physics).x4_xC_TopN.z;
 
-  (player->x6F0_physics).x4_xC_TopN.x = (player->xB0_xB8_pos).x;
-  (player->x6F0_physics).x4_xC_TopN.y = (player->xB0_xB8_pos).y;
-  (player->x6F0_physics).x4_xC_TopN.z = (player->xB0_xB8_pos).z;
+    (player->x6F0_physics).x4_xC_TopN.x = (player->xB0_xB8_pos).x;
+    (player->x6F0_physics).x4_xC_TopN.y = (player->xB0_xB8_pos).y;
+    (player->x6F0_physics).x4_xC_TopN.z = (player->xB0_xB8_pos).z;
 
-  res = Physics_FallOffLedge(&player->x6F0_physics);
+    res = Physics_FallOffLedge(&player->x6F0_physics);
 
-  (player->xB0_xB8_pos).x = (player->x6F0_physics).x4_xC_TopN.x;
-  (player->xB0_xB8_pos).y = (player->x6F0_physics).x4_xC_TopN.y;
-  (player->xB0_xB8_pos).z = (player->x6F0_physics).x4_xC_TopN.z;
+    (player->xB0_xB8_pos).x = (player->x6F0_physics).x4_xC_TopN.x;
+    (player->xB0_xB8_pos).y = (player->x6F0_physics).x4_xC_TopN.y;
+    (player->xB0_xB8_pos).z = (player->x6F0_physics).x4_xC_TopN.z;
 
-  return res != 0;
+    return res != 0;
 }
 
 //80083F88
@@ -889,7 +896,7 @@ void Player_PlaySFX(Player* player, u32 pitch_id, u32 unk1, u32 unk2)
 }
 
 //8008A4D4
-void Player_Interrupt_Wait()
+void Player_Interrupt_Wait(HSD_GObj* gobj)
 {
 }
 
@@ -917,6 +924,12 @@ BOOL Player_IsCPU(Player* player)
         return player->x1A94_cpu_flags != 5;
     }
     return FALSE;
+}
+
+//800CCAAC
+BOOL Player_Interrupt_Fall(HSD_GObj* gobj)
+{
+
 }
 
 //800D65B8

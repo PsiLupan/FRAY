@@ -295,12 +295,17 @@ void Scene_ProcessMinor(MajorScene* scene)
     ctr = 255 - gamestate.curr_minor;
     if (gamestate.curr_minor != 255) {
         do {
-            MinorScene curr;
-            for (u32 i = 0; i < 255 && curr.idx != 255; i++) {
-                curr = minor_scenes[i];
-                if (curr.idx == curr_minor) {
-                    minor_scene = &minor_scenes[i];
-                    goto OUT;
+            MinorScene* curr;
+            for (u32 i = 0; i < 255; i++) {
+                curr = &minor_scenes[i];
+                if (curr != NULL) {
+                    if (curr->idx == 255){
+                        break;
+                    }
+                    if (curr->idx == curr_minor){
+                        minor_scene = curr;
+                        goto OUT;
+                    }
                 }
             }
             curr_minor += 1;

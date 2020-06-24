@@ -640,15 +640,15 @@ static void MakeColorGenTExp(u32 lightmap, HSD_TObj* tobj, HSD_TExp** c, HSD_TEx
     u8* in;
     HSD_TExp *e0, *tmp;
 
-    HSD_TExp* konst_rgb;
-    HSD_TExp* konst_r;
-    HSD_TExp* konst_g;
-    HSD_TExp* konst_b;
-    HSD_TExp* konst_a;
-    HSD_TExp* reg0_rgb;
-    HSD_TExp* reg0_a;
-    HSD_TExp* reg1_rgb;
-    HSD_TExp* reg1_a;
+    HSD_TExp* konst_rgb = NULL;
+    HSD_TExp* konst_r = NULL;
+    HSD_TExp* konst_g = NULL;
+    HSD_TExp* konst_b = NULL;
+    HSD_TExp* konst_a = NULL;
+    HSD_TExp* reg0_rgb = NULL;
+    HSD_TExp* reg0_a = NULL;
+    HSD_TExp* reg1_rgb = NULL;
+    HSD_TExp* reg1_a = NULL;
 
     s32 use_k_rgb = 0;
     s32 use_k_r = 0;

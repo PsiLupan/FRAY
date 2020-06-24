@@ -277,7 +277,7 @@ void HSD_PObjResolveRefsAll(HSD_PObj* pobj, HSD_PObjDesc* pdesc)
 }
 
 //8036C244
-void HSD_ClearVtxDesc(void)
+void HSD_ClearVtxDesc()
 {
     GX_ClearVtxDesc();
     prev_vtxdesclist_array = NULL;
@@ -328,8 +328,7 @@ static void setupVtxDesc(HSD_PObj* pobj)
 //8036C384
 static void setupShapeAnimArrayDesc(HSD_VtxDescList* verts)
 {
-    HSD_VtxDescList* desc;
-    for (desc = verts; desc->attr != GX_VA_NULL; desc++) {
+    for (HSD_VtxDescList* desc = verts; desc->attr != GX_VA_NULL; desc++) {
         if (desc->attr_type != GX_DIRECT) {
             switch (desc->attr) {
             case GX_VA_NBT:
@@ -664,9 +663,9 @@ static void interpretShapeAnimDisplayList(HSD_PObj* pobj, f32 (*vertex)[3], f32 
 static void drawShapeAnim(HSD_PObj* pobj)
 {
     HSD_ShapeSet* shape_set = pobj->u.shape_set;
-    f32 blend;
-    s32 shape_id;
-    s32 blend_nbt;
+    f32 blend = 0.f;
+    s32 shape_id = 0;
+    s32 blend_nbt = 0;
 
     if (vertex_buffer_size == 0) {
         vertex_buffer_size = HSD_DEFAULT_MAX_SHAPE_VERTICES;

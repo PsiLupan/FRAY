@@ -106,5 +106,6 @@ void HSD_RvalueRemoveAll(HSD_Rvalue*);
 void expLoadDesc(HSD_Exp*, HSD_ExpDesc*);
 void bcexpLoadDesc(HSD_Exp*, HSD_ByteCodeExpDesc*);
 void HSD_RvalueResolveRefsAll(HSD_Rvalue*, HSD_RvalueList*);
+void HSD_RObjSetConstraintObj(HSD_RObj*, void*);
 
 #endif

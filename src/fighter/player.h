@@ -29,34 +29,6 @@
 #define INTERNAL_MASTERHAND 0x1B
 #define INTERNAL_CRAZYHAND 0x1C
 
-typedef struct _Hitbox {
-    u32 x0_status;
-    u32 x4_active;
-    guVector x10_x18_position;
-    f32 x1C_size;
-    u32 x24_kb_growth;
-    u32 x28_kb_weight_scale;
-    u32 x2C_kb_base;
-    u32 x30_element;
-    u32 x34_shield_damage;
-    u32 x38_hit_sfx;
-    u32 x3C_hit_sfx_type;
-    u8 x40_flags;
-    u8 x41_flags;
-    u8 x42_flags;
-    u8 x43_flags;
-} Hitbox;
-
-typedef struct _SubactionInfo {
-    u32 timer; //0x00
-    f32 frame_count; //0x04
-    u32* data_position; //0x08
-    u32 loop_count; //0x0C
-    void (*EventReturn)(); //0x10
-    u32 loop_count_dup; //0x14
-    u32 unk; //0x18
-} SubactionInfo;
-
 typedef struct _Attributes {
     f32 x0_walkInitVel; //0x00
     f32 x4_walkAccel; //0x04
@@ -294,21 +266,63 @@ typedef struct _Player {
 
 void Player_ChangeActionState(HSD_GObj*, u32, u32, HSD_GObj*, f32, f32, f32);
 
+BOOL Player_CheckFrameTimer(HSD_GObj*);
+
 void Player_SetCharacterFlags(HSD_GObj*, u32, u32);
 
 u32 Player_BoneID2Index(Player*, u32);
 
+void Player_CalculateAirMobility(Player*, f32, f32, f32, f32);
+void Player_UpdateHorzVelocity(Player*);
 void Player_CalculateHorzMobility(Player*, f32);
+void Player_ClampHorzVelocity(Player*, f32);
+void Player_ClampMaxHorzVelocity(Player*);
+void Player_UpdateFallingVelocity(Player*, f32, f32);
+void Player_UpdateVelocityFromFastFall(Player*);
+void Player_ClampVertVelocity(Player*, f32);
+void Player_UpdateAscendingVelocity(Player*, f32, f32);
+BOOL Player_Interrupt_Fastfall(Player*);
+void Player_ECBBottom_EnableUpdate(Player*);
+void Player_LoseGroundJump_ECBDisable(Player*);
+void Player_LoseAllJumps_ECBDisable(Player*);
+void Player_UseAllJumps(Player*);
+void Player_SetGroundedState(Player*);
+f64 Player_GetJoystickAngle_AbsX(Player*);
+f64 Player_GetCStickAngle_AbsX(Player*);
+f64 Player_GetJoystickAngle(Player*);
+void Player_UpdateFacingFromStick(Player*);
 
 void Player_SetGrabbableFlags(Player*, u16);
+void Player_SetIndicatorDisplay(Player*, u16);
 
-u32 Player_GetSpawnCount(HSD_GObj*);
+BOOL Player_CollisonCheck_Ground(HSD_GObj*);
+BOOL Player_CollisionCheck_AllowGroundToAir(HSD_GObj *);
+
+void Player_Collision_KneeBend(HSD_GObj*);
+
+void Player_CheckFastFallAndUpdate(HSD_GObj*);
 
 u32* Player_FetchAnimHeader(Player*, u32);
 
+f32 Player_GetFacing(HSD_GObj*);
+BOOL Player_IsInAir(HSD_GObj*);
+u8 Player_GetPort(HSD_GObj*);
+u32 Player_GetActionState(HSD_GObj*);
+u32 Player_GetInternalID(HSD_GObj*);
+
+u32 Player_GetLastAtkerIdx(HSD_GObj*);
+u32 Player_GetSpawnCount(HSD_GObj*);
+
 void Player_PlaySFX(Player*, u32, u32, u32);
 
+void Player_Interrupt_Wait(HSD_GObj*);
+
 BOOL Player_IsCPU(Player*);
+
+BOOL Player_Interrupt_Fall(HSD_GObj*);
+
 BOOL Player_IsDPadUpInstantPressed(HSD_GObj*);
+
+BOOL Player_SwapItem(HSD_GObj*);
 
 #endif

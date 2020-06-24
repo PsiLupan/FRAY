@@ -2,6 +2,7 @@
 
 #include <ogc/cache.h>
 
+#include "hsd_display.h"
 #include "hsd_lobj.h"
 #include "hsd_state.h"
 

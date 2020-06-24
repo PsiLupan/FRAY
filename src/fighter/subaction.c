@@ -1,5 +1,7 @@
 #include "subaction.h"
 
+#include "player.h"
+
 //800059DC
 void Subaction_Event_0C(SubactionInfo* event)
 { //SetLoop

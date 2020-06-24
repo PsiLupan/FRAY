@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "hsd_debug.h"
 
 //803801E4
 s32 HSD_ArchiveParse(HSD_Archive* archive, u8* src, u32 file_size)

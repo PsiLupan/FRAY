@@ -626,9 +626,13 @@ void HSD_PadRumbleInterpret(void)
             u32 res = HSD_PadRumbleInterpret1(d, &HSD_PadRumbleData[i].status);
             if (res != 0){
                 HSD_PadRumbleListData* curr;
-                for (HSD_PadRumbleListData* dp = HSD_PadRumbleData[i].listdatap; dp != d; dp = curr->next){
+                HSD_PadRumbleListData* dp = HSD_PadRumbleData[i].listdatap;
+                
+                do {
                     curr = dp;
-                }
+                    dp = curr->next;
+                } while (dp != d);
+
                 curr->next = d->next;
                 HSD_PadRumbleData[i].nb_list -= 1;
                 d->next = HSD_PadLibData.rumble_info.listdatap;

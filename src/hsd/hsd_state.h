@@ -8,6 +8,7 @@
 
 #include "hsd_aobj.h"
 #include "hsd_mobj.h"
+#include "hsd_texp.h"
 
 #define HSD_STATE_ALL -1
 #define HSD_STATE_NONE 0

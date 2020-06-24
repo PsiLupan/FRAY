@@ -423,7 +423,7 @@ void FObjUpdateAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(void*, u32, FO
 void HSD_FObjInterpretAnim(HSD_FObj* fobj, void* obj, void (*obj_update)(), f32 rate)
 {
     u32 state;
-    f32 fterm;
+    f32 fterm = 0.f;
 
     if (fobj != NULL) {
         state = HSD_FObjGetState(fobj);

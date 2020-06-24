@@ -142,6 +142,12 @@ void ActionState_Wait(HSD_GObj* gobj, const f32 unk)
     }
 }
 
+//80090780
+void ActionState_DamageFall(HSD_GObj* gobj)
+{
+
+}
+
 //800C4ED8
 void ActionState_HammerWait(HSD_GObj* gobj)
 {

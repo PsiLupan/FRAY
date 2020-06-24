@@ -208,6 +208,7 @@ void HSD_TExpAlphaOp(HSD_TExp*, u8, u8, u8, u8);
 void HSD_TExpColorIn(HSD_TExp*, HSD_TEInput, HSD_TExp*, HSD_TEInput, HSD_TExp*, HSD_TEInput, HSD_TExp*, HSD_TEInput, HSD_TExp*);
 void HSD_TExpAlphaIn(HSD_TExp*, HSD_TEInput, HSD_TExp*, HSD_TEInput, HSD_TExp*, HSD_TEInput, HSD_TExp*, HSD_TEInput, HSD_TExp*);
 void HSD_TExpOrder(HSD_TExp*, struct _HSD_TObj*, u8);
+void HSD_TExpSetupTev(HSD_TExpTevDesc*, HSD_TExp*);
 s32 HSD_TExpCompile(HSD_TExp*, HSD_TExpTevDesc**, HSD_TExp**);
 void HSD_TExpFreeTevDesc(HSD_TExpTevDesc*);
 s32 HSD_TExpMakeDag(HSD_TExp*, HSD_TExpDag*);

@@ -28,7 +28,7 @@ INCLUDES	:= src/hsd/ src/hsd/ext/ src/audio/ src/fighter/ src/item/ src/match/ s
 #---------------------------------------------------------------------------------
 
 #NODEBUG = -DNDEBUG
-CFLAGS	:= -O1 -mogc -fstack-protector-all -Wno-implicit-function-declaration -pedantic $(MACHDEP) $(INCLUDE) $(NODEBUG)
+CFLAGS	:= -O1 -Wall -Wno-missing-braces -Wno-switch -Wno-unused-function -mogc -fstack-protector-all $(MACHDEP) $(INCLUDE) $(NODEBUG)
 CXXFLAGS	:= $(CFLAGS)
 
 LDFLAGS	:=	$(MACHDEP) -Wl,-Map,$(notdir $@).map,--section-start,.init=0x80003100

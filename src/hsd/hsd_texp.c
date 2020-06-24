@@ -355,6 +355,7 @@ static void HSD_TExpColorInSub(HSD_TETev* tev, HSD_TEInput sel, HSD_TExp* exp, u
             swap = GX_TEV_KCSEL_7_8;
             break;
         default:
+            swap = 0;
             HSD_Halt("HSD_TExpColorInSub: Unexpected kcsel");
         }
 
@@ -1056,7 +1057,7 @@ void HSD_TExpSetReg(HSD_TExp* texp)
             continue;
         }
 
-        s32 x;
+        s32 x = 0;
         changed |= (1 << (u32)texp->cnst.reg);
         if (texp->cnst.comp != HSD_TE_RGB) {
             switch (texp->cnst.ctype) {
