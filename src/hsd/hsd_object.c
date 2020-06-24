@@ -44,10 +44,11 @@ s32 HSD_ObjAllocAddFree(HSD_ObjAllocData* obj_def, u32 num)
         if (heap == NULL) {
             return 0;
         }
+        obj_pos = (u32)heap;
         objheap.bytes_remaining -= size;
     } else {
-        u32 heap_end = (objheap.heap_start + objheap.size);
-        obj_pos = (objheap.heap_pos + obj_def->align & ~obj_def->align);
+        u32 heap_end = objheap.heap_start + objheap.size;
+        obj_pos = ((objheap.heap_pos + obj_def->align) & ~obj_def->align);
         if (heap_end < obj_pos) {
             return 0;
         }
@@ -320,6 +321,28 @@ BOOL hsdIsDescendantOf(HSD_ClassInfo* i, HSD_ClassInfo* p)
                 break;
             }
             i = i->head.parent;
+        }
+        return TRUE;
+    }
+    return FALSE;
+}
+
+//80382538
+BOOL hsdObjIsDescendantOf(HSD_Obj* o, HSD_ClassInfo* p)
+{
+    if (o != NULL && p != NULL) {
+        HSD_ClassInfo* info = o->parent.class_info;
+        if ((p->head.flags & 1) == 0) {
+            (*p->head.info_init)();
+        }
+        while (true) {
+            if (info == NULL) {
+                return FALSE;
+            }
+            if (info == p) {
+                break;
+            }
+            info = info->head.parent;
         }
         return TRUE;
     }

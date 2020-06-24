@@ -29,7 +29,7 @@ INCLUDES	:= src/hsd/ src/hsd/ext/ src/audio/ src/fighter/ src/item/ src/match/ s
 #---------------------------------------------------------------------------------
 
 #NODEBUG = -DNDEBUG
-CFLAGS	:= -O1 -std=gnu18 -fstack-protector-strong -Wall -Wno-implicit-function-declaration -Wno-missing-braces -Wno-switch $(MACHDEP) $(INCLUDE) $(NODEBUG)
+CFLAGS	:= -O1 -std=gnu18 -fstack-protector-strong -Wall -Wno-missing-braces -Wno-switch $(MACHDEP) $(INCLUDE) $(NODEBUG)
 CXXFLAGS	:= $(CFLAGS)
 
 LDFLAGS	:= -g $(MACHDEP) -Wl,--unresolved-symbols=ignore-in-object-files,-Map,$(notdir $@).map -T$(PWD)/ogc.ld

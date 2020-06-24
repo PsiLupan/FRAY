@@ -1,5 +1,7 @@
 #include "hitbox.h"
 
+#include "player.h"
+
 //80008428
 void Hitbox_Deactivate(Hitbox* hitbox)
 {

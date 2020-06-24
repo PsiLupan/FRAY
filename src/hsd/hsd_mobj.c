@@ -2,6 +2,7 @@
 
 #include "hsd_aobj.h"
 #include "hsd_state.h"
+#include "hsd_texp.h"
 
 static void MObjInfoInit(void);
 
@@ -563,7 +564,6 @@ void HSD_MObjSetup(HSD_MObj* mobj, u32 rendermode)
 //80363B68
 void HSD_MObjUnset(HSD_MObj* mobj, u32 rendermode)
 {
-#pragma unused(mobj, rendermode)
     HSD_TObjSetup(NULL);
 }
 

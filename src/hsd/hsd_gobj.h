@@ -82,6 +82,10 @@ s32 GObj_GetFlagFromArray(s32);
 void GObj_SetTextureCamera(HSD_GObj*, u32);
 void GObj_RunGXLinkMaxCallbacks(void);
 void GObj_SetCamera(HSD_GObj*, s32);
+
+void GObj_80391260(u32*);
+u32 GObj_803912A8(u32*, u32*);
+
 void GObj_InitializeLibInitData(u32*);
 void GObj_Init(u32*);
 

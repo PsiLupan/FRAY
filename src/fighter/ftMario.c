@@ -76,7 +76,7 @@ void Mario_Special_Neutral_SetActionState_x157(HSD_GObj* gobj)
 //800E0E18
 void Mario_Special_Neutral_AnimationInterrupt(HSD_GObj* gobj)
 {
-    if (Player_CheckFrameTimer(gobj) == 0.0f) {
+    if (Player_CheckFrameTimer(gobj) == FALSE) {
         ActionState_Wait_CheckPlayer(gobj);
     }
 }
@@ -99,7 +99,7 @@ void Mario_Special_Neutral_Physics(HSD_GObj* gobj)
 //800E0EA4
 void Mario_Special_Neutral_CollInterrupt(HSD_GObj* gobj)
 {
-    if (Player_CopyCurrFramePhysicsToPrev(gobj) == FALSE) {
+    if (Player_CollisionCheck_AllowGroundToAir(gobj) == FALSE) {
         Mario_Special_Neutral_SetActionState_x158(gobj);
     }
 }
@@ -175,7 +175,7 @@ void Mario_Special_Neutral_Air_Physics(HSD_GObj* gobj)
 //800E113C
 void Mario_Special_Neutral_Air_CollInterrupt(HSD_GObj* gobj)
 {
-    if (Player_CollisonCheck_Ground(gobj) == TRUE) {
+    if (Player_CollisionCheck_AllowGroundToAir(gobj) == TRUE) {
         Mario_Special_Neutral_Air_SetActionState_x157(gobj);
     }
 }

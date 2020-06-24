@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+#include "hsd_lobj.h"
+
 static void (*sptcl_callback)(s32, s32, s32, HSD_JObj*) = NULL; //r13_4008
 
 static GXColor erase_color = { 0, 0, 0, 0 }; //-0x58C8(r13)

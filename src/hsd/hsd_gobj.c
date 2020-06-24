@@ -700,13 +700,13 @@ void GObj_SetCamera(HSD_GObj* gobj, s32 unused)
 }
 
 //80391260
-void GObj_80391260(s32* iParm1)
+void GObj_80391260(u32* iParm1)
 {
-    s32 iVar1;
-    s8 cVar2;
+    u32 iVar1;
+    u8 cVar2;
   
     iVar1 = GObj_803912A8(iParm1, NULL/*80408610*/);
-    cVar2 = (s8)iVar1;
+    cVar2 = (u8)iVar1;
     //*(char *)(in_r13 + -0x3e55) = cVar2;
     //*(char *)(in_r13 + -0x3e56) = cVar2 + '\x01';
     //*(char *)(in_r13 + -0x3e57) = cVar2 + '\x02';
@@ -714,7 +714,7 @@ void GObj_80391260(s32* iParm1)
 }
 
 //803912A8
-s32 GObj_803912A8(u32* array, u32* unk)
+u32 GObj_803912A8(u32* array, u32* unk)
 {
     return 0;
 }

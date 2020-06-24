@@ -98,7 +98,7 @@ void Archive_LoadFileIntoMemory(char* filepath, u8* mem, u32 filelength)
         HSD_Halt("Archive_LoadFileIntoMemory: Could not open file");
     }
     //dvdcmdblk cmdblk;
-    DVD_ReadPrio(&handle.block, mem, filelength + 0x1F & 0xFFFFFFE0, handle.addr, 2);
+    DVD_ReadPrio(&handle.block, mem, (filelength + 0x1F) & 0xFFFFFFE0, handle.addr, 2);
     /*do {
         file_load_status = Archive_GetFileLoadStatus();
     } while (file_load_status == 0);*/
@@ -122,7 +122,7 @@ void Archive_InitializeDAT(HSD_Archive* archive, u8* dat_file, u32 file_size)
 HSD_Archive* Archive_LoadFile(char* filename)
 {
     u32 file_size = Archive_GetDVDFileLengthByName(filename);
-    u8* dat_file = HSD_MemAlloc(file_size + 0x1F & 0xFFFFFFE0); //This (size + 0x1F) & 0xFFFFFFE0 aligns the file size along 0x20 sized boundaries, IE Anything from 0x74581 - 0x745A0 would become 0x745A0
+    u8* dat_file = HSD_MemAlloc((file_size + 0x1F) & 0xFFFFFFE0); //This (size + 0x1F) & 0xFFFFFFE0 aligns the file size along 0x20 sized boundaries, IE Anything from 0x74581 - 0x745A0 would become 0x745A0
     HSD_Archive* archive = (HSD_Archive*)HSD_MemAlloc(sizeof(HSD_Archive));
     Archive_LoadFileIntoMemory(filename, dat_file, file_size);
     Archive_InitializeDAT(archive, dat_file, file_size);
