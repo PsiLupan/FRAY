@@ -66,8 +66,8 @@ typedef struct _Attributes {
     f32 fastWalkSpeed; //0x14
     f32 grFriction; //0x18
     f32 dashInitVel; //0x1C
-    f32 turnInitVel; //0x20 - Called Accel A in doc
-    f32 turnPeakVel; //0x24 - Called Accel B in doc.
+    f32 x20_turnAccelMulti; //0x20
+    f32 x24_turnAccelConst; //0x24
     f32 runInitVel; //0x28
     f32 runAnimScale; //0x2C
     u32 runAccel; //0x30
@@ -83,8 +83,8 @@ typedef struct _Attributes {
     f32 maxJumps; //0x58
     f32 gravity; //0x5C
     f32 termVel; //0x60
-    f32 airMobilityA; //0x64
-    f32 airMobilityB; //0x68
+    f32 x64_airMobilityMulti; //0x64
+    f32 x68_airMobilityConst; //0x68
     f32 airMaxHorzSpeed; //0x6C
     f32 airFriction; //0x70
     f32 fallTermVel; //0x74
