@@ -13,8 +13,10 @@
 #define MARIO_ACTIONSTATE_SPECIAL_NEUTRAL_157 0x157
 #define MARIO_ACTIONSTATE_SPECIAL_NEUTRAL_158 0x158
 
-void Mario_OnLoad(HSD_GObj* gobj);
-void Mario_OnDeath(HSD_GObj* gobj);
+void Mario_OnLoad(HSD_GObj*);
+void Mario_OnDeath(HSD_GObj*);
+
+void Mario_UpdateAttributes(HSD_GObj*);
 
 void Mario_SpawnProjectile(HSD_GObj*, guVector);
 
@@ -25,6 +27,7 @@ void Mario_Special_Neutral_Air_CollInterrupt(HSD_GObj*);
 void Mario_Special_Neutral_SetActionState_x158(HSD_GObj*);
 void Mario_Special_Neutral_Air_SetActionState_x157(HSD_GObj*);
 
-void DocMario_OnDeath(HSD_GObj* gobj);
+void DocMario_OnDeath(HSD_GObj*);
+void DocMario_UpdateAttributes(HSD_GObj*);
 
 #endif

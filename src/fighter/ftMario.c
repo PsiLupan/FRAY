@@ -19,20 +19,12 @@ void Mario_OnLoad(HSD_GObj* gobj)
     Player* player = GOBJ_PLAYER(gobj);
     player->x2224_flags = (player->x2224_flags & 0xFE) | 1;
 
-    u32** char_dat = (u32**)player->x10C_char_dat;
-    u32* projectile_data = char_dat[17];
-    f32* dat_file = (f32*)char_dat[1];
+    u32* projectile_data =  player->x10C_ftData->x48_items;
+    f32* dat_file = player->x10C_ftData->x4_charAttributes;
     f32* player_afp = player->x2D8_player_article_floats;
 
-    u32 i = 16;
-    u32 index = 0;
-    do {
-        player_afp[index] = dat_file[index];
-        player_afp[index + 1] = dat_file[index + 1];
-        index += 2;
-        --i;
-    } while (i > 0);
-    player_afp[index] = dat_file[index]; //Since index was incremented at the end, we can just get that index as entry 33
+    memcpy(player_afp, dat_file, 34*sizeof(f32));
+
     player->x2D4_player_article_floats = player->x2D8_player_article_floats;
     u32 fireball_related = projectile_data[0];
     sub_8026B3F8(fireball_related, 0x30); //Storing something about the fireball
@@ -43,23 +35,13 @@ void Mario_OnLoad(HSD_GObj* gobj)
 }
 
 //800E0BE4
-//80149724 - Doctor Mario's Attributes update, which just calls this function
 void Mario_UpdateAttributes(HSD_GObj* gobj)
 {
     Player* player = GOBJ_PLAYER(gobj);
-    u32** char_dat = (u32**)player->x10C_char_dat;
-    f32* dat_file = (f32*)char_dat[1];
-    f32* player_afp = player->x2D4_player_article_floats;
+    u32* dat_file = player->x10C_ftData->x4_charAttributes;
+    u32* player_afp = player->x2D8_player_article_floats;
 
-    u32 i = 16;
-    u32 index = 0;
-    do {
-        player_afp[index] = dat_file[index];
-        player_afp[index + 1] = dat_file[index + 1];
-        index += 2;
-        --i;
-    } while (i > 0);
-    player_afp[index] = dat_file[index];
+    memcpy(player_afp, dat_file, 34*sizeof(f32));
 }
 
 //800E0DA8
@@ -207,4 +189,10 @@ void DocMario_OnDeath(HSD_GObj* gobj)
     player->x2238_flags = 0;
     player->x223C_pend_item = NULL;
     player->x2240_flags = 0;
+}
+
+//80149724 - Doctor Mario's Attributes update, which just calls this function
+void DocMario_UpdateAttributes(HSD_GObj* gobj)
+{
+    void Mario_UpdateAttributes(gobj);
 }
