@@ -16,7 +16,7 @@ void CFalcon_OnLoad(HSD_GObj* gobj)
     Player* player = GOBJ_PLAYER(gobj);
     player->x2224_flags = (player->x2224_flags & 0xFE) | 1;
 
-    Shared_OnLoad(GOBJ_PLAYER(gobj));
+    __OnLoad(GOBJ_PLAYER(gobj));
 }
 
 //800E2B40
@@ -33,7 +33,7 @@ void CFalcon_UpdateAttributes(HSD_GObj* gobj)
 //8014EE1C
 void Ganon_OnLoad(HSD_GObj* gobj)
 {
-    Shared_OnLoad(GOBJ_PLAYER(gobj));
+    __OnLoad(GOBJ_PLAYER(gobj));
 }
 
 
