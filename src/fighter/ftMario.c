@@ -194,5 +194,5 @@ void DocMario_OnDeath(HSD_GObj* gobj)
 //80149724 - Doctor Mario's Attributes update, which just calls this function
 void DocMario_UpdateAttributes(HSD_GObj* gobj)
 {
-    void Mario_UpdateAttributes(gobj);
+    Mario_UpdateAttributes(gobj);
 }
