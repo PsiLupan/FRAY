@@ -129,6 +129,34 @@ typedef struct _Attributes {
     u32 throwSpeedFlags; //0x180
 } Attributes;
 
+typedef struct _ftData
+{
+    u8 x0_footBoneL;
+    u8 x1_footBoneR;
+    f32* x4_charAttributes;
+    u8* x8_modelLookup;
+    u32 xC_animFlags;
+    u32 x10_animDynamics;
+    u32 x14;
+    u32 x18;
+    u32 x1C;
+    u32 x20;
+    u32 x24;
+    u32 x28;
+    u32 x2C_dynamics;
+    u32 x30_hurtbox;
+    u32* x34_center_bubble;
+    u32 x38;
+    u32 x3C;
+    u32 x40;
+    u32 x44_coll;
+    u32* x48_items;
+    u32* x4C;
+    u32 x50;
+    u32 x54;
+    u32* x58_boneLookup;
+} ftData;
+
 typedef struct _Player {
     struct _HSD_GObj* parent;
     u32 x4_internal_id;
@@ -171,7 +199,7 @@ typedef struct _Player {
     f32 x100_unk;
     void* x104_unk;
     void* x108_unk;
-    void* x10C_char_dat;
+    ftData* x10C_ftData;
     Attributes attribs;
 
     f32* x2D4_player_article_floats;

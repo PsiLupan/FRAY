@@ -9,4 +9,10 @@
 #include "item.h"
 #include "player.h"
 
+void CFalcon_OnLoad(HSD_GObj*);
+void CFalcon_UpdateAttributes(HSD_GObj*);
+
+void Ganon_OnLoad(HSD_GObj*);
+void Ganon_UpdateAttributes(HSD_GObj*);
+
 #endif

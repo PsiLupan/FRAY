@@ -9,4 +9,8 @@
 #include "item.h"
 #include "player.h"
 
+void Fox_UpdateAttributes(HSD_GObj*);
+
+void Falco_UpdateAttributes(HSD_GObj*);
+
 #endif
