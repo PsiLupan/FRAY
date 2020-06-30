@@ -6,23 +6,23 @@
 
 static void (*sptcl_callback)(s32, s32, s32, HSD_JObj*) = NULL; //r13_4008
 
-static GXColor erase_color = { 0, 0, 0, 0 }; //-0x58C8(r13)
+static GXColor erase_color = { 0, 0, 0, 0 }; //r13_58C8
 
-static HSD_ObjAllocData zlist_alloc_data;
+static HSD_ObjAllocData zlist_alloc_data; //804C0918
 
-static int zsort_listing = 0;
-static int zsort_sorting = 0; //-0x4004(r13)
+static int zsort_listing = 0; //r13_4004
+static int zsort_sorting = 0; //r13_4000
 
-static HSD_ZList* zlist_top = NULL;
-static HSD_ZList** zlist_bottom = &zlist_top;
+static HSD_ZList* zlist_top = NULL; //r13_3FFC
+static HSD_ZList** zlist_bottom = &zlist_top; //r13_58C4
 
-static HSD_ZList* zlist_texedge_top = NULL;
-static HSD_ZList** zlist_texedge_bottom = &zlist_texedge_top;
-static int zlist_texedge_nb = 0;
+static HSD_ZList* zlist_texedge_top = NULL; //r13_3FF8
+static HSD_ZList** zlist_texedge_bottom = &zlist_texedge_top; //r13_58C0
+static int zlist_texedge_nb = 0; //r13_3FF4
 
-static HSD_ZList* zlist_xlu_top = NULL;
-static HSD_ZList** zlist_xlu_bottom = &zlist_xlu_top;
-static int zlist_xlu_nb = 0;
+static HSD_ZList* zlist_xlu_top = NULL; //r13_3FF0
+static HSD_ZList** zlist_xlu_bottom = &zlist_xlu_top; //r13_58BC
+static int zlist_xlu_nb = 0; //r13_3FEC
 
 #define ZLIST_NEXT(list, offset) (*(HSD_ZList**)(((u8*)(list)) + (offset)))
 
