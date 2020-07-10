@@ -1,3 +1,5 @@
+# Work on FRAY is currently ceased. See https://github.com/doldecomp/Melee for ongoing work.
+
 [![Build Status](https://www.travis-ci.org/PsiLupan/FRAY.svg?branch=master)](https://www.travis-ci.org/PsiLupan/FRAY)
 # What is FRAY?
 FRAY is a intended to be a recompilable version of the Super Smash Bros. Melee NTSC 1.02 DOL (or DOLphin executable). The term "fray" itself is a synonym to "melee," as I prefer not to infringe on "brawl" or the original game's name.
