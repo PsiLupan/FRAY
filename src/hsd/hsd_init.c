@@ -32,7 +32,7 @@ static HSD_CacheBit need_invalidate;
 
 static HSD_VIStatus vi_status;
 
-//80374F28
+//80374E48
 void HSD_InitComponent(void)
 {
     //HSD_OSInit();
