@@ -159,12 +159,13 @@ void HSD_ObjFree(HSD_ObjAllocData* init_obj, HSD_ObjAllocLink* obj)
 void HSD_ObjAllocInit(HSD_ObjAllocData* init_obj, u32 size, u32 align)
 {
     assert(init_obj != NULL);
-    HSD_ObjAllocData* obj = current_obj;
-    while (obj != NULL) {
+    HSD_ObjAllocData** obj_ptr = &current_obj;
+    HSD_ObjAllocData* obj = *obj_ptr;
+    for (; obj != NULL; ) {
         if (obj == init_obj) {
-            current_obj = obj->next;
+            *obj_ptr = obj->next;
         } else {
-            obj = obj->next;
+            obj_ptr = &obj->next;
         }
     }
     memset(init_obj, 0, 0x2Cu);

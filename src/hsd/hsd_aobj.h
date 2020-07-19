@@ -6,6 +6,7 @@
 #include "hsd_object.h"
 
 #include "hsd_fobj.h"
+#include "hsd_util.h"
 
 #define AOBJ_REWINDED (1 << 26)
 #define AOBJ_FIRST_PLAY (1 << 27)

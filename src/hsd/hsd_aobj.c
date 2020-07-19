@@ -4,17 +4,12 @@
 
 #include "hsd_jobj.h"
 
-static u32 r13_4070 = 0; //frames elapsed
-static u32 r13_4074 = 0; //conditional frames elapsed
+static s32 r13_4070 = 0; //frames elapsed
+static s32 r13_4074 = 0; //conditional frames elapsed
 
 HSD_ObjAllocData aobj_alloc_data; //804C0880
 
-typedef struct _callback {
-    struct _callback* next;
-    void (*func_ptr)(void);
-} callback;
-
-static callback r13_4078;
+static HSD_SList* r13_4078;
 
 //80363FC8
 void HSD_AObjInitAllocData(void)
@@ -45,7 +40,7 @@ void HSD_AObjSetFlags(HSD_AObj* aobj, u32 flags)
 void HSD_AObjClearFlags(HSD_AObj* aobj, u32 flags)
 {
     if (aobj != NULL)
-        aobj->flags &= ~flags;
+        aobj->flags &= ~(flags & (AOBJ_LOOP | AOBJ_NO_UPDATE));
 }
 
 //80364054
@@ -69,10 +64,11 @@ void HSD_AObjInitEndCallBack(void)
 void HSD_AObjInvokeCallBacks(void)
 {
     if (r13_4074 != 0 && r13_4070 == 0) {
-        callback* cb = &r13_4078;
-        while (cb != NULL) {
-            (r13_4078.func_ptr)();
-            cb = cb->next;
+        HSD_SList* list = r13_4078;
+        while (list != NULL) {
+            void (*func)(void) = list->data;
+            (*func)();
+            list = list->next;
         }
     }
 }
@@ -99,7 +95,7 @@ void HSD_AObjStopAnim(HSD_AObj* aobj, void* obj, void (*callback)())
 //80364190
 void HSD_AObjInterpretAnim(HSD_AObj* aobj, void* caller_obj, void (*updatecb)())
 {
-    f32 framerate = 0;
+    f32 framerate = 0.0F;
 
     if (aobj != NULL) {
         if (!(aobj->flags & AOBJ_NO_ANIM)) {
@@ -116,9 +112,7 @@ void HSD_AObjInterpretAnim(HSD_AObj* aobj, void* caller_obj, void (*updatecb)())
                     aobj->curr_frame = aobj->end_frame;
                 } else {
                     HSD_FObjStopAnimAll(aobj->fobj, caller_obj, updatecb, framerate);
-                    f32 c_frame = aobj->curr_frame - aobj->rewind_frame;
-                    f32 e_frame = aobj->end_frame - aobj->rewind_frame;
-                    aobj->curr_frame = aobj->rewind_frame + fmodf(c_frame, e_frame);
+                    aobj->curr_frame = aobj->rewind_frame + fmodf((aobj->curr_frame - aobj->rewind_frame), (aobj->end_frame - aobj->rewind_frame));
                     HSD_FObjReqAnimAll(aobj->fobj, aobj->curr_frame);
                 }
                 framerate = 0.0F;
@@ -128,7 +122,7 @@ void HSD_AObjInterpretAnim(HSD_AObj* aobj, void* caller_obj, void (*updatecb)())
             }
 
             if (aobj->flags & AOBJ_NO_UPDATE) {
-                HSD_FObjInterpretAnimAll(aobj->fobj, caller_obj, updatecb, 0);
+                HSD_FObjInterpretAnimAll(aobj->fobj, caller_obj, NULL, framerate);
             } else {
                 HSD_FObjInterpretAnimAll(aobj->fobj, caller_obj, updatecb, framerate);
             }
@@ -256,5 +250,5 @@ void HSD_AObjSetCurrentFrame(HSD_AObj* aobj, f32 frame)
 //80365390
 void _HSD_AObjForgetMemory(void)
 {
-    r13_4078.next = NULL;
+    r13_4078 = NULL;
 }
